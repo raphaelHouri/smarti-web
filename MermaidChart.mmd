@@ -1,0 +1,141 @@
+erDiagram
+
+users ||--|| subscriptions : has
+users ||--|| user_settings : has
+users ||--o{ user_lesson_results : attempts
+subscriptions ||--o| coupons : uses
+subscriptions }o--|| plans : belongs_to
+coupons }o--o{ plans : valid_for
+lesson_category ||--o{ lessons : contains
+lessons ||--o{ user_lesson_results : tracks
+lessons ||--o{ lesson_question_groups : groups
+lesson_question_groups ||--o{ questions : includes
+questions ||--o{ user_lesson_results : answered_in
+organisation_info ||--o{ organisation_years : owns
+organisation_years ||--o{ coupons : issues
+user_wrong_questions |{--o| questions : includes
+user_wrong_questions |{--}| users : includes
+users {
+  UUID id PK
+  TEXT name
+  TEXT email
+  UUID[] managed_organisation
+  TIMESTAMP created_at
+  UUID organisation_year_id FK "index"
+  UUID user_settings_id 
+  INT experience
+  INT geniues_score
+}
+
+user_settings {
+  UUID id PK
+  UUID user_id
+  INT lesson_clock
+  INT quiz_clock
+  TEXT grade_class
+  TEXT gender
+  TEXT avatar 
+}
+
+subscriptions {
+  UUID id PK
+  UUID user_id FK
+  TIMESTAMP system_until
+  NUMERIC price
+  TEXT receipt_id
+  UUID coupon_id FK
+  TIMESTAMP created_at
+  UUID plan_id
+}
+
+coupons {
+  UUID id PK
+  TEXT code
+  TEXT coupon_type
+  NUMERIC value
+  TIMESTAMP valid_from
+  TIMESTAMP valid_until
+  BOOLEAN is_active
+  INT max_uses
+  UUID plan_id FK
+  UUID organisation_year_id FK 
+  TIMESTAMP created_at
+}
+
+plans {
+  UUID id PK
+  TEXT name
+  TEXT description
+  INT days
+  NUMERIC price
+  TIMESTAMP created_at
+}
+
+lesson_category  {
+  UUID id PK
+  TEXT category_type
+  TIMESTAMP created_at
+}
+
+lessons {
+  UUID id PK
+  UUID lesson_category_id FK
+  INT lesson_order
+  TIMESTAMP created_at
+}
+
+lesson_question_groups {
+  UUID id PK
+  UUID lesson_id FK
+  TEXT category
+  UUID[] question_list
+  INT time
+  TIMESTAMP created_at
+}
+
+questions {
+  UUID id PK
+  TEXT content
+  TEXT question
+  TEXT format
+  JSONB options
+  TEXT topic_type
+  TEXT explanation
+  TIMESTAMP created_at
+}
+
+user_lesson_results {
+  UUID id PK
+  UUID user_id FK "index"
+  UUID lesson_id FK
+  TIMESTAMP started_at
+  TIMESTAMP completed_at
+  JSONB answers
+  INT total_score
+  TIMESTAMP created_at
+}
+
+organisation_info {
+  UUID id PK
+  TEXT name
+  TEXT contact_email
+  TEXT address
+  TEXT city
+  TEXT phone
+  TIMESTAMP created_at
+}
+
+organisation_years {
+  UUID id PK
+  UUID organisation_id FK
+  INT year
+  TEXT notes
+  TIMESTAMP created_at
+}
+
+user_wrong_questions{
+  UUID id PK
+  UUID question_id FK "index"
+  UUID user_id FK "index"
+
+}

@@ -62,12 +62,12 @@ const main = async () => {
             id: userId,
             name: "Alice Genius",
             email: "alice@example.com",
-            managedorganization: [orgId],
+            managedOrganization: [orgId],
             createdAt: new Date(),
             organizationYearId: orgYearId,
             userSettingsId: settingsId,
             experience: 100,
-            geniuesScore: 200,
+            geniusScore: 200,
         });
 
         await db.insert(schema.userSettings).values({
@@ -75,7 +75,7 @@ const main = async () => {
             userId,
             lessonClock: 30,
             quizClock: 15,
-            grade: "6",
+            grade_class: "2nd Grade",
             gender: "female",
             avatar: "🧠"
         });
@@ -108,7 +108,7 @@ const main = async () => {
             userId,
             systemUntil: new Date(Date.now() + 1000 * 60 * 60 * 24 * 90),
             price: 99,
-            recepentId: "stripe-user-123",
+            receiptId: "stripe-user-123",
             couponId,
             createdAt: new Date(),
             planId

@@ -10,14 +10,14 @@ const db = drizzle(sql, { schema });
 const main = async () => {
     try {
         console.log("Seeding started");
-        await db.delete(schema.courses);
-        await db.delete(schema.userProgress);
-        await db.delete(schema.units);
-        await db.delete(schema.lessons);
-        await db.delete(schema.challenges);
-        await db.delete(schema.challengesOptions);
-        await db.delete(schema.challengesProgress);
-        await db.delete(schema.userSubscription);
+        // await db.delete(schema.courses);
+        // await db.delete(schema.userProgress);
+        // await db.delete(schema.units);
+        // await db.delete(schema.lessons);
+        // await db.delete(schema.challenges);
+        // await db.delete(schema.challengesOptions);
+        // await db.delete(schema.challengesProgress);
+        // await db.delete(schema.userSubscription);
         await db.insert(schema.courses).values([
             {
                 id: 1,
@@ -180,37 +180,37 @@ const main = async () => {
             },
         ]);
 
-    // await db.insert(schema.challenges).values([
-    //     {
-    //         id: 1,
-    //         lessonId: 1, 
-    //         type: "SELECT",
-    //         order: "1",
-    //         question: 'Which one of these is "the man"?'
-    //     },  
-    //     {
-    //         id: 2,
-    //         lessonId: 1,
-    //         type: "ASSIST",
-    //         order: "2",
-    //         question: '"the man"',
-    //     },  
-    //     {
-    //         id: 3,
-    //         lessonId: 1,
-    //         type: "SELECT",
-    //         order: "3",
-    //         question: 'Which one of these is "the robot"',
-    //     },  
-    // ]);
+        // await db.insert(schema.challenges).values([
+        //     {
+        //         id: 1,
+        //         lessonId: 1, 
+        //         type: "SELECT",
+        //         order: "1",
+        //         question: 'Which one of these is "the man"?'
+        //     },  
+        //     {
+        //         id: 2,
+        //         lessonId: 1,
+        //         type: "ASSIST",
+        //         order: "2",
+        //         question: '"the man"',
+        //     },  
+        //     {
+        //         id: 3,
+        //         lessonId: 1,
+        //         type: "SELECT",
+        //         order: "3",
+        //         question: 'Which one of these is "the robot"',
+        //     },  
+        // ]);
 
 
-console.log("Seeding finished");    
+        console.log("Seeding finished");
     }
     catch (err) {
-    console.error(err);
-    throw new Error("Failed to seed database")
-}
+        console.error(err);
+        throw new Error("Failed to seed database")
+    }
 }
 
 main()

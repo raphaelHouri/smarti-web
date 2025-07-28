@@ -1,50 +1,22 @@
 import { relations } from "drizzle-orm";
 import { uuid, text, timestamp, integer, boolean, jsonb, pgTable } from "drizzle-orm/pg-core";
 
-export const users = pgTable("users", {
+// Declare tables used in references FIRST
+export const organizationInfo = pgTable("organization_info", {
     id: uuid("id").primaryKey(),
     name: text("name").notNull(),
-    email: text("email").notNull(),
-    managedOrganization: uuid("managed_organization").array(),
+    contactEmail: text("contact_email"),
+    address: text("address"),
+    city: text("city"),
+    phone: text("phone"),
     createdAt: timestamp("created_at").notNull(),
-    organizationYearId: uuid("organization_year_id"),
-    userSettingsId: uuid("user_settings_id"),
-    experience: integer("experience"),
-    geniuesScore: integer("geniues_score"),
 });
 
-export const userSettings = pgTable("user_settings", {
+export const organizationYears = pgTable("organization_years", {
     id: uuid("id").primaryKey(),
-    userId: uuid("user_id").notNull(),
-    lessonClock: integer("lesson_clock"),
-    quizClock: integer("quiz_clock"),
-    grade: text("grade"),
-    gender: text("gender"),
-    avatar: text("avatar"),
-});
-
-export const subscriptions = pgTable("subscriptions", {
-    id: uuid("id").primaryKey(),
-    userId: uuid("user_id").notNull(),
-    systemUntil: timestamp("system_until"),
-    price: integer("price"),
-    recipientId: text("recepent_id"),
-    couponId: uuid("coupon_id"),
-    createdAt: timestamp("created_at"),
-    planId: uuid("plan_id"),
-});
-
-export const coupons = pgTable("coupons", {
-    id: uuid("id").primaryKey(),
-    code: text("code").notNull(),
-    couponType: text("coupon_type").notNull(),
-    value: integer("value").notNull(),
-    validFrom: timestamp("valid_from").notNull(),
-    validUntil: timestamp("valid_until").notNull(),
-    isActive: boolean("is_active").notNull(),
-    maxUses: integer("max_uses").notNull(),
-    planId: uuid("plan_id").notNull(),
-    organizationYearId: uuid("organization_year_id").notNull(),
+    organizationId: uuid("organization_id").references(() => organizationInfo.id, { onDelete: "cascade" }).notNull(),
+    year: integer("year").notNull(),
+    notes: text("notes"),
     createdAt: timestamp("created_at").notNull(),
 });
 
@@ -57,6 +29,20 @@ export const plans = pgTable("plans", {
     createdAt: timestamp("created_at").notNull(),
 });
 
+export const coupons = pgTable("coupons", {
+    id: uuid("id").primaryKey(),
+    code: text("code").notNull(),
+    couponType: text("coupon_type").notNull(),
+    value: integer("value").notNull(),
+    validFrom: timestamp("valid_from").notNull(),
+    validUntil: timestamp("valid_until").notNull(),
+    isActive: boolean("is_active").notNull(),
+    maxUses: integer("max_uses").notNull(),
+    planId: uuid("plan_id").references(() => plans.id, { onDelete: "cascade" }).notNull(),
+    organizationYearId: uuid("organization_year_id").references(() => organizationYears.id, { onDelete: "cascade" }).notNull(),
+    createdAt: timestamp("created_at").notNull(),
+});
+
 export const lessonCategory = pgTable("lesson_category", {
     id: uuid("id").primaryKey(),
     categoryType: text("category_type").notNull(),
@@ -65,17 +51,8 @@ export const lessonCategory = pgTable("lesson_category", {
 
 export const lessons = pgTable("lessons", {
     id: uuid("id").primaryKey(),
-    lessonCategoryId: uuid("lesson_category_id").notNull(),
+    lessonCategoryId: uuid("lesson_category_id").references(() => lessonCategory.id, { onDelete: "cascade" }).notNull(),
     lessonOrder: integer("lesson_order"),
-    createdAt: timestamp("created_at").notNull(),
-});
-
-export const lessonQuestionGroups = pgTable("lesson_question_groups", {
-    id: uuid("id").primaryKey(),
-    lessonId: uuid("lesson_id").notNull(),
-    category: text("category"),
-    questionList: uuid("question_list").array(),
-    time: integer("time"),
     createdAt: timestamp("created_at").notNull(),
 });
 
@@ -90,10 +67,52 @@ export const questions = pgTable("questions", {
     createdAt: timestamp("created_at").notNull(),
 });
 
+export const users = pgTable("users", {
+    id: uuid("id").primaryKey(),
+    name: text("name").notNull(),
+    email: text("email").notNull(),
+    managedOrganization: uuid("managed_organization").array(), // You can manually reference in relations if needed
+    createdAt: timestamp("created_at").notNull(),
+    organizationYearId: uuid("organization_year_id").references(() => organizationYears.id, { onDelete: "cascade" }).notNull(),
+    userSettingsId: uuid("user_settings_id"),
+    experience: integer("experience"),
+    geniusScore: integer("genius_score"),
+});
+
+export const userSettings = pgTable("user_settings", {
+    id: uuid("id").primaryKey(),
+    userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+    lessonClock: integer("lesson_clock"),
+    quizClock: integer("quiz_clock"),
+    grade_class: text("grade_class"),
+    gender: text("gender"),
+    avatar: text("avatar"),
+});
+
+export const subscriptions = pgTable("subscriptions", {
+    id: uuid("id").primaryKey(),
+    userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+    systemUntil: timestamp("system_until"),
+    price: integer("price"),
+    receiptId: text("receipt_id"),
+    couponId: uuid("coupon_id").references(() => coupons.id, { onDelete: "cascade" }).notNull(),
+    createdAt: timestamp("created_at"),
+    planId: uuid("plan_id").references(() => plans.id, { onDelete: "cascade" }).notNull(),
+});
+
+export const lessonQuestionGroups = pgTable("lesson_question_groups", {
+    id: uuid("id").primaryKey(),
+    lessonId: uuid("lesson_id").references(() => lessons.id, { onDelete: "cascade" }).notNull(),
+    category: text("category"),
+    questionList: uuid("question_list").array(), // No array foreign key support
+    time: integer("time"),
+    createdAt: timestamp("created_at").notNull(),
+});
+
 export const userLessonResults = pgTable("user_lesson_results", {
     id: uuid("id").primaryKey(),
-    userId: uuid("user_id").notNull(),
-    lessonId: uuid("lesson_id").notNull(),
+    userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+    lessonId: uuid("lesson_id").references(() => lessons.id, { onDelete: "cascade" }).notNull(),
     startedAt: timestamp("started_at"),
     completedAt: timestamp("completed_at"),
     answers: jsonb("answers"),
@@ -101,29 +120,12 @@ export const userLessonResults = pgTable("user_lesson_results", {
     createdAt: timestamp("created_at").notNull(),
 });
 
-export const organizationInfo = pgTable("organization_info", {
-    id: uuid("id").primaryKey(),
-    name: text("name").notNull(),
-    contactEmail: text("contact_email"),
-    address: text("address"),
-    city: text("city"),
-    phone: text("phone"),
-    createdAt: timestamp("created_at").notNull(),
-});
-
-export const organizationYears = pgTable("organization_years", {
-    id: uuid("id").primaryKey(),
-    organizationId: uuid("organization_id").notNull(),
-    year: integer("year").notNull(),
-    notes: text("notes"),
-    createdAt: timestamp("created_at").notNull(),
-});
-
 export const userWrongQuestions = pgTable("user_wrong_questions", {
     id: uuid("id").primaryKey(),
-    questionId: uuid("question_id").notNull(),
-    userId: uuid("user_id").notNull(),
+    questionId: uuid("question_id").references(() => questions.id, { onDelete: "cascade" }).notNull(),
+    userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
 });
+
 
 // === RELATIONS ===
 
