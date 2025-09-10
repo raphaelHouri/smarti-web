@@ -1,4 +1,4 @@
-import { getCourses, getUserProgress } from "@/db/queries";
+import { getCategories, getUser } from "@/db/queries";
 import { cn } from "@/lib/utils";
 import { Poppins } from "next/font/google"
 import { List } from "./_components/List";
@@ -6,23 +6,26 @@ import { List } from "./_components/List";
 
 const font = Poppins({ subsets: ["latin"], weight: ["600"] })
 
-const CoursesPage = async() => {
-    const coursesPromise = getCourses();
-    const userProgressPromise = getUserProgress();
-    
-    const [courses,userProgress] = await Promise.all([coursesPromise,userProgressPromise]);
+const LessonCategoryPage = async () => {
+    const lessonCategoriesPromise = getCategories();
+    const userPromise = getUser();
 
-    return ( 
+    const [lessonCategory, user] = await Promise.all([lessonCategoriesPromise, userPromise]);
+    let lessonCategoryId = null;
+    if (user && 'lessonCategoryId' in user) {
+        lessonCategoryId = user.lessonCategoryId;
+    }
+    return (
         <div className="h-full max-w-[912px] mx-auto px-3">
-        <h1 className={cn("dark:text-slate-200 text-neutral-600 tracking-wide text-2xl font-bold",font.className)}>
-        Language courses
-        </h1>
-        <List    
-        courses={courses}
-        activeCourseId={userProgress?.activeCourseId}
-        />
+            <h1 className={cn("dark:text-slate-200 text-neutral-600 tracking-wide text-2xl font-bold", font.className)}>
+                Language courses
+            </h1>
+            <List
+                lessonCategories={lessonCategory}
+                lessonCategoryId={lessonCategoryId}
+            />
         </div>
     );
 }
 
-export default CoursesPage;
+export default LessonCategoryPage;

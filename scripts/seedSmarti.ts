@@ -32,7 +32,7 @@ const main = async () => {
         const settingsId = uuidv4();
         const planId = uuidv4();
         const couponId = uuidv4();
-        const categoryId = uuidv4();
+        const categoryId = "61758a59-2c5e-4865-9c09-002cc0665881";
         const lessonId = uuidv4();
         const lesson2Id = uuidv4();
         const questionGroupId = uuidv4();
@@ -117,7 +117,10 @@ const main = async () => {
         await db.insert(schema.lessonCategory).values({
             id: categoryId,
             categoryType: "תרגול בעברית",
-            createdAt: new Date()
+            title: "תרגול בעברית",
+            description: "קטגוריה לתרגול שאלות בעברית",
+            createdAt: new Date(),
+            imageSrc: "fr.svg"
         });
 
         await db.insert(schema.lessons).values([
@@ -159,7 +162,7 @@ const main = async () => {
                 id: questionId,
                 content: "<p>מה בירת ישראל?</p>",
                 question: "מה בירת ישראל?",
-                format: "single",
+                format: "SELECT",
                 options: {
                     a: "תל אביב",
                     b: "חיפה",
@@ -174,7 +177,7 @@ const main = async () => {
                 id: question2Id,
                 content: "<p>מתי קמה מדינת ישראל?</p>",
                 question: "מתי קמה מדינת ישראל?",
-                format: "single",
+                format: "SELECT",
                 options: {
                     a: "1945",
                     b: "1947",

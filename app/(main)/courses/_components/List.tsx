@@ -1,48 +1,48 @@
 "use client";
 
-import { courses, userProgress } from "@/db/schema";
+
 import { CardPage } from "./card";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
-import { upsertUserProgress } from "@/actions/user-progress";
+import { updateUserCategory } from "@/actions/user-progress";
 import { toast } from "sonner";
+import { lessonCategory, users } from "@/db/schemaSmarti";
 
 interface ListProps {
-    courses: typeof courses.$inferSelect[];
-    activeCourseId?: typeof userProgress.$inferSelect.activeCourseId,
+    lessonCategories: typeof lessonCategory.$inferSelect[];
+    lessonCategoryId?: typeof users.$inferSelect.lessonCategoryId,
 }
 
 
 export const List = ({
-    courses,
-    activeCourseId,
+    lessonCategories,
+    lessonCategoryId,
 }: ListProps) => {
     const router = useRouter();
     const [pending, startTransition] = useTransition();
-
-    const onClick = (id: number) => {
+    const onClick = (id: string) => {
         if (pending) return;
         //suppose ID is already active then we throw to existing learn page
-        if (id === activeCourseId) {
-            return router.push("/learn");
+        if (id === lessonCategoryId) {
+            return router.push(`/learn/${id}`);
         }
         startTransition(() => {
-            upsertUserProgress(id).
+            updateUserCategory(id).
                 catch(() => toast.error("Something went wrong"))
         })
     }
 
     return (
         <div className="pt-6 grid grid-cols-2 lg:grid-cols-[repeat(auto-fill,minmax(210px,1fr))] gap-4">
-            {courses.map((course) => (
+            {lessonCategories.map((lessonCategory) => (
                 <CardPage
-                    key={course.id}
-                    id={course.id}
-                    title={course.title}
-                    imageSrc={course.imageSrc}
+                    key={lessonCategory.id}
+                    id={lessonCategory.id}
+                    title={lessonCategory.categoryType}
+                    imageSrc={lessonCategory.imageSrc}
                     disabled={pending}
                     onClick={onClick}
-                    active={course.id === activeCourseId}
+                    active={lessonCategory.id === lessonCategoryId}
                 />
             ))}
         </div>

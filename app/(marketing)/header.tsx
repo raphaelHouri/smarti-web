@@ -40,6 +40,7 @@ const HeaderPage = () => {
             <SignedOut>
               <SignInButton
                 forceRedirectUrl="/learn"
+                signUpForceRedirectUrl="/learn"
                 mode="modal"
               >
                 <Button variant="ghost">

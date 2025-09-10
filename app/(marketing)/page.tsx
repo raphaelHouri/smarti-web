@@ -5,10 +5,12 @@ import { Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import ConnectJson from "./connect";
+import { auth } from "@clerk/nextjs/server";
 // import VapiAssistant from "@/components/VapiAssistant";
 
 
-export default function Home() {
+export default async function Home() {
+  const { userId } = await auth();
   return (
     <div className="max-w-[998px] mx-auto flex-1
     w-full flex flex-col lg:flex-row items-center justify-center p-2 gap-2">
@@ -65,6 +67,13 @@ export default function Home() {
               </Button>
             </SignedIn>
           </ClerkLoaded>
+          {/* divider */}
+
+          {!userId ? <><div className="w-full h-[1px] bg-slate-300 dark:bg-slate-700" /><Button variant="primaryOutline" size="lg" className="w-full" asChild>
+            <Link href="/learn">
+              Continue as a guest 👨🏻‍💻
+            </Link>
+          </Button></> : null}
         </div>
       </div>
       {/* <LottieJson/> */}

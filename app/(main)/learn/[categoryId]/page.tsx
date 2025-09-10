@@ -1,0 +1,103 @@
+import FeedWrapper from "@/components/FeedWrapper";
+import StickyWrapper from "@/components/sticky-wrapper";
+import { Header } from "../_components/Header";
+import { UserProgress } from "@/components/UserProgress";
+import { redirect } from "next/navigation";
+import Unit from "../_components/Unit";
+import PromoSection from "../_components/promo";
+import QuestsSection from "../../quests/_components/quests";
+import { getCategories, getLessonCategoryById, getLessonCategoryWithLessonsById, getUser, getUserSubscriptions } from "@/db/queries";
+
+const LearnPage = async ({
+    params,
+}: {
+    params: Promise<{ categoryId: string }>
+}) => {
+    let { categoryId } = await params
+    const userData = getUser();
+    const categories = getCategories();
+    const lessonCategories = getLessonCategoryById(categoryId);
+    const lessonCategoryWithLessons = await getLessonCategoryWithLessonsById(categoryId);
+
+    const [user, lessonsCategory, categoriesData] = await Promise.all([userData, lessonCategories, categories]);
+
+    // Create a new array with 'completed' field
+    const lessonsCategoryWithCompleted = lessonsCategory.map((lessonCategoryItem) => {
+        const matchedLesson = lessonCategoryWithLessons.find(
+            (lesson: any) => lesson.id === lessonCategoryItem.id
+        );
+        const completed = !!matchedLesson;
+        const totalScore = completed ? matchedLesson.totalScore : undefined;
+        return {
+            ...lessonCategoryItem,
+            completed,
+            totalScore,
+        };
+    });
+
+    if (!user) {
+        if (!categoryId) {
+            console.log("User not found, redirecting to courses");
+            redirect("/courses");
+        }
+
+    } else if ('lessonCategoryId' in user && user.lessonCategoryId) {
+        categoryId = user.lessonCategoryId;
+    }
+    else {
+        redirect("/courses");
+    }
+    
+    const categoryDetails = categoriesData.find(cat => cat.id === categoryId)
+    if (!categoryDetails) {
+        console.log("Category not found, redirecting to courses");
+        redirect("/courses");
+    }
+
+
+    return (
+        <div className="flex gap-[48px] px-2">
+            <FeedWrapper>
+                <Header title={categoryDetails.categoryType || ""} />
+
+                <div key={categoryDetails.id} className="mb-10">
+                    <Unit
+                        id={categoryDetails.id}
+                        title={categoryDetails.title}
+                        description={categoryDetails.description}
+                        lessons={lessonsCategoryWithCompleted}
+
+                    />
+                </div>
+            </FeedWrapper>
+            <StickyWrapper>
+                <UserProgress
+                    activeCourse={{
+                        id: categoryDetails.id,
+                        title: categoryDetails.categoryType,
+                        imageSrc: "/girl.svg",
+                    }}
+                    geniusScore={
+                        user && "geniusScore" in user && typeof user.geniusScore === "number"
+                            ? user.geniusScore
+                            : 0
+                    }
+                    experience={
+                        user && "experience" in user && typeof user.experience === "number"
+                            ? user.experience
+                            : 0
+                    }
+                    hasActiveSubscription={false}
+                />
+                {!false && (
+                    <PromoSection
+                    />
+                )}
+                <QuestsSection experience={user && "experience" in user && typeof user.experience === "number" ? user.experience : 0} />
+            </StickyWrapper>
+        </div>
+    );
+}
+
+export default LearnPage;
+

@@ -22,6 +22,7 @@ users {
   UUID[] managed_organisation
   TIMESTAMP created_at
   UUID organisation_year_id FK "index"
+  UUID lessonCategoryId FK 
   UUID user_settings_id 
   INT experience
   INT geniues_score
@@ -75,6 +76,9 @@ lesson_category  {
   UUID id PK
   TEXT category_type
   TIMESTAMP created_at
+  TEXT title
+  TEXT description
+  TEXT imageSrc
 }
 
 lessons {

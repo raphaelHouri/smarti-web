@@ -1,7 +1,7 @@
 "use server";
 
 import db from "@/db/drizzle";
-import { getCourseById, getUserProgress, getUserSubscriptions } from "@/db/queries";
+import { getLessonsOfCategoryById, getUserProgress } from "@/db/queries";
 import { challenges, userProgress } from "@/db/schema";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
@@ -9,33 +9,30 @@ import { redirect } from "next/navigation";
 import { challengesProgress } from '../db/schema';
 import { and, eq } from "drizzle-orm";
 import { POINTS_TO_REFILL } from "@/constants";
+import { users } from "@/db/schemaSmarti";
 
 
-export const upsertUserProgress = async (courseId: number) => {
+export const updateUserCategory = async (courseId: string) => {
     //authentication
     try {
         const { userId } = await auth();
         const user = await currentUser();
+
+        const lessons = await getLessonsOfCategoryById(courseId);
+        if (!lessons || (Array.isArray(lessons) && lessons.length === 0)) {
+            throw new Error("lessons not found");
+        }
+
         if (!userId || !user) {
-            throw new Error("UnAuthorized");
-        }
-        const courses = await getCourseById(courseId);
-        if (!courses) {
-            throw new Error("Course not found");
+            redirect(`/learn/${courseId}`);
+
         }
 
-        if (!courses.units.length || !courses.units[0].lessons.length) {
-            throw new Error("Course is empty");
-        }
-
-        const existingUserProgress = await getUserProgress();
-        if (existingUserProgress) {
+        if (user) {
             //all I have to do is await and update over here
-            const data = await db.update(userProgress).set({
-                activeCourseId: courseId,
-                //adding a fallback if user changes image or username
-                userName: user.firstName || "User",
-                userImageSrc: user.imageUrl || "/mascot.svg",
+            // Replace 'activeCourseId' with a valid property from the users schema, e.g., 'activeCategoryId'
+            const data = await db.update(users).set({
+                lessonCategoryId: courseId,
             })
             //break the cache and revalidate
             revalidatePath("/courses");
@@ -43,12 +40,7 @@ export const upsertUserProgress = async (courseId: number) => {
             redirect("/learn")
         }
 
-        const data = await db.insert(userProgress).values({
-            userId,
-            activeCourseId: courseId,
-            userName: user.firstName || "User",
-            userImageSrc: user.imageUrl || "/mascot.svg",
-        })
+
         //break the cache and revalidate
         revalidatePath("/courses");
         revalidatePath("/learn");
@@ -60,7 +52,7 @@ export const upsertUserProgress = async (courseId: number) => {
     }
 }
 
-export const reduceHearts = async (challengeId: number) => {
+export const reduceHearts = async (challengeId: string) => {
     const { userId } = await auth();
     if (!userId) {
         throw new Error("UnAuthorized");

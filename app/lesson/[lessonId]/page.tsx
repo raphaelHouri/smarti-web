@@ -1,38 +1,32 @@
-import { getLesson, getUserProgress, getUserSubscriptions } from "@/db/queries";
-import { redirect } from "next/navigation";
 import Quiz from "../_components/Quiz";
-
+import { getQuizDataByLessonId } from "@/db/queries";
 type Props = {
-    params:{
-        lessonId:number
+    params: {
+        lessonId: string
     }
 }
-const LessonIdPage = async({
+const LessonIdPage = async ({
     params,
-}:Props) => {
-    const lessonData =  getLesson(params.lessonId);
-    const userProgressData =  getUserProgress();
-    const userSubscriptionData = getUserSubscriptions();
+}: Props) => {
+
+    const { lessonId } = await params;
+    const quizDataByLessonId = getQuizDataByLessonId(lessonId);
 
 
-    const[lesson,userProgress,userSubscription] = await Promise.all([lessonData,userProgressData,userSubscriptionData]);
+    const [{ questionGroups, questionsDict }] = await Promise.all([quizDataByLessonId]);
+    console.log(questionGroups, questionsDict)
 
-    
-    if(!lesson || !userProgress) {
-        redirect("/learn");
-    }
 
-    const initialPercentage = lesson.challenges
-    .filter((challenge)=>challenge.completed)
-    .length / lesson.challenges.length*100;
 
-    return ( 
+
+
+    return (
         <Quiz
-        initialLessonId = {lesson.id}
-        initialLessonChallenges = {lesson.challenges}
-        initialHearts = {userProgress.hearts}
-        initialPercentage = {initialPercentage}
-        userSubscription= {userSubscription}
+
+            initialLessonId={lessonId}
+            initialHearts={10}
+            questionGroups={questionGroups}
+            questionsDict={questionsDict}
         />
     );
 }

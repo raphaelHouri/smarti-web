@@ -7,7 +7,9 @@ import { Poppins } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import ExitModal from "@/components/modals/useExitModal";
 import HeartsModal from "@/components/modals/useHeartsModal";
-import PractiseModal from "@/components/modals/usePractiseModal";
+import PracticeModal from "@/components/modals/usePracticeModal";
+import FinishLessonModal from "@/components/modals/useFinishLessonModal";
+import RegisterModal from "@/components/modals/useRegisterModal";
 
 const font = Poppins({ subsets: ["latin"], weight: ["500"] })
 
@@ -15,7 +17,7 @@ export const metadata: Metadata = {
   title: "Linguify",
   description: "AI based Language Learning App",
   icons: {
-    icon: './public/mascot.svg'
+    icon: '/mascot.svg'
   }
 };
 
@@ -45,7 +47,9 @@ export default function RootLayout({
             <Toaster richColors position="bottom-right" />
             <ExitModal />
             <HeartsModal />
-            <PractiseModal />
+            <PracticeModal />
+            <FinishLessonModal />
+            <RegisterModal />
             {children}
           </ThemeProvider>
         </body>

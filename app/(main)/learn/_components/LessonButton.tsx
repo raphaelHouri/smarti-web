@@ -8,12 +8,12 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 interface LessonButtonProps {
-    id: number,
+    id: string,
     index: number,
     locked?: boolean,
     current?: boolean,
-    percentage: number,
-    totalCount: number
+    percentage: number | null | undefined,
+    totalCount: number | null | undefined,
 }
 
 
@@ -51,7 +51,7 @@ const LessonButton = ({
     const isCompleted = !current && !locked;
 
     const Icon = isCompleted ? Check : isLast ? Crown : Star;
-    const href = isCompleted ? `/lesson/${id}` : "/lesson";
+    const href = isCompleted ? `/lesson/${id}` : `/lesson/${id}`;
 
 
     return (
@@ -80,7 +80,7 @@ const LessonButton = ({
                             />
                         </div>
                         <CircularProgressbarWithChildren
-                            value={Number.isNaN(percentage) ? 0 : percentage}
+                            value={!percentage || Number.isNaN(percentage) ? 0 : percentage}
                             styles={{
                                 path: {
                                     stroke: "#4ade80",

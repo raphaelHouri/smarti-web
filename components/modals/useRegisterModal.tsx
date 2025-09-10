@@ -3,22 +3,20 @@ import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/_dialog";
 import Image from "next/image";
 import { Button } from "../ui/button";
-import { usePractiseModal } from "@/store/use-practice-modal";
+import { useRegisterModal } from "@/store/use-register-modal";
+import { useAuth, useClerk } from "@clerk/nextjs";
 
-const PractiseModal = () => {
+const RegisterModal = () => {
     const [isClient, setIsClient] = useState<boolean>(false)
-    const { isOpen, close, open } = usePractiseModal();
-
+    const { isOpen, close } = useRegisterModal();
+    const { openSignUp } = useClerk();
     //Doing this to avoid hydration errors
-    // mounting the component
     useEffect(() => {
         setIsClient(true);
     }, [])
-
     if (!isClient) {
         return null;
     }
-
 
     //  isOpen and close are states from zustand
     return (
@@ -27,32 +25,35 @@ const PractiseModal = () => {
                 <DialogHeader>
                     <div className="items-center justify-center flex w-full mb-5">
                         <Image
-                            src="/heart.svg"
-                            alt="Heart"
-                            height={80}
-                            width={80}
-                        />
-                        <Image
-                            src="/points.svg"
-                            alt="Point"
+                            src="mascot_sad.svg"
+                            alt="Mascot"
                             height={80}
                             width={80}
                         />
                     </div>
                     <DialogTitle className="text-center
                 font-bold text-2xl">
-                        Practise Lesson.
+                        הרשמה למערכת
                     </DialogTitle>
                     <DialogDescription className="text-center text-base">
-                        Use practise lesson to regain hearts and points, you can&apos;t
-                        loose it here.
+                        האם תרצה להירשם מערכת כדי לקבל גישה לכל התכנים?
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
                     <div className="flex flex-col gap-y-3 w-full">
                         <Button variant="primary" size="default" className="w-full"
-                            onClick={close}>
-                            I understand!
+                            onClick={() => {
+                                openSignUp()
+                                close()
+                            }}>
+                            המשך להרשמה
+                        </Button>
+                        <Button variant="dangerOutline" size="default" className="w-full"
+                            onClick={() => {
+                                close();
+
+                            }}>
+                            המשך בלי הרשמה
                         </Button>
                     </div>
                 </DialogFooter>
@@ -61,4 +62,4 @@ const PractiseModal = () => {
     );
 }
 
-export default PractiseModal;
+export default RegisterModal;

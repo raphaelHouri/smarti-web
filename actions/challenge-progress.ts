@@ -8,7 +8,7 @@ import { and, eq} from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 const MAX_HEARTS = 5;
-export const upsertChallengeProgress = async(challengeId:number) => {
+export const upsertChallengeProgress = async(challengeId:string) => {
     const {userId} = await auth();
     const user = await currentUser();
     if(!userId || !user){

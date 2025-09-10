@@ -6,10 +6,10 @@ import { quests } from "@/constants";
 import { Progress } from "@/components/ui/progress";
 
 type Props = {
-    points: number
+    experience: number
 }
 
-const QuestsSection = ({ points }: Props) => {
+const QuestsSection = ({ experience }: Props) => {
     return (
         <div className="border-2 rounded-xl p-4 pb-4 mb-6 space-y-4 ">
             <div className="flex items-center justify-between
@@ -30,14 +30,14 @@ const QuestsSection = ({ points }: Props) => {
             <ul className="w=full">
                 <Link href="/learn">
                     {quests.map((quest) => {
-                        const progress = (points / quest.value) * 100;
+                        const progress = (experience / quest.value) * 100;
                         return (
                             <div key={quest.title}
                                 className="w-full flex items-center p-4 gap-x-4 border-t-2"
                             >
                                 <Image
-                                    src="/points.svg"
-                                    alt="Points"
+                                    src="/experience.svg"
+                                    alt="experience"
                                     height={40}
                                     width={40}
                                 />

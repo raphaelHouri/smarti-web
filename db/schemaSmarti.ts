@@ -1,5 +1,5 @@
-import { relations } from "drizzle-orm";
-import { uuid, text, timestamp, integer, boolean, jsonb, pgTable } from "drizzle-orm/pg-core";
+import { uuid, text, timestamp, integer, boolean, jsonb, pgTable, pgEnum } from "drizzle-orm/pg-core";
+import { desc, relations } from "drizzle-orm";
 
 // Declare tables used in references FIRST
 export const organizationInfo = pgTable("organization_info", {
@@ -9,7 +9,7 @@ export const organizationInfo = pgTable("organization_info", {
     address: text("address"),
     city: text("city"),
     phone: text("phone"),
-    createdAt: timestamp("created_at").notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const organizationYears = pgTable("organization_years", {
@@ -17,7 +17,7 @@ export const organizationYears = pgTable("organization_years", {
     organizationId: uuid("organization_id").references(() => organizationInfo.id, { onDelete: "cascade" }).notNull(),
     year: integer("year").notNull(),
     notes: text("notes"),
-    createdAt: timestamp("created_at").notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const plans = pgTable("plans", {
@@ -26,7 +26,7 @@ export const plans = pgTable("plans", {
     description: text("description"),
     days: integer("days").notNull(),
     price: integer("price").notNull(),
-    createdAt: timestamp("created_at").notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const coupons = pgTable("coupons", {
@@ -40,48 +40,58 @@ export const coupons = pgTable("coupons", {
     maxUses: integer("max_uses").notNull(),
     planId: uuid("plan_id").references(() => plans.id, { onDelete: "cascade" }).notNull(),
     organizationYearId: uuid("organization_year_id").references(() => organizationYears.id, { onDelete: "cascade" }).notNull(),
-    createdAt: timestamp("created_at").notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const lessonCategory = pgTable("lesson_category", {
     id: uuid("id").primaryKey(),
     categoryType: text("category_type").notNull(),
-    createdAt: timestamp("created_at").notNull(),
+    title: text("title").notNull(),
+    description: text("description").notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+    imageSrc: text("image_src").notNull(),
 });
 
 export const lessons = pgTable("lessons", {
     id: uuid("id").primaryKey(),
     lessonCategoryId: uuid("lesson_category_id").references(() => lessonCategory.id, { onDelete: "cascade" }).notNull(),
-    lessonOrder: integer("lesson_order"),
-    createdAt: timestamp("created_at").notNull(),
-});
+    lessonOrder: integer("lesson_order").notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+}, (table) => ({
+    uniqueCategoryOrder: {
+        columns: [table.lessonCategoryId, table.lessonOrder],
+        unique: true,
+    }
+}));
+export const formatEnum = pgEnum("format", ["SELECT", "ASSIST"])
 
 export const questions = pgTable("questions", {
     id: uuid("id").primaryKey(),
     content: text("content"),
     question: text("question").notNull(),
-    format: text("format"),
+    format: formatEnum("format").notNull(),
     options: jsonb("options"),
     topicType: text("topic_type"),
     explanation: text("explanation"),
-    createdAt: timestamp("created_at").notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const users = pgTable("users", {
-    id: uuid("id").primaryKey(),
+    id: text("id").primaryKey(),
     name: text("name").notNull(),
     email: text("email").notNull(),
     managedOrganization: uuid("managed_organization").array(), // You can manually reference in relations if needed
-    createdAt: timestamp("created_at").notNull(),
-    organizationYearId: uuid("organization_year_id").references(() => organizationYears.id, { onDelete: "cascade" }).notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+    organizationYearId: uuid("organization_year_id").references(() => organizationYears.id, { onDelete: "cascade" }),
     userSettingsId: uuid("user_settings_id"),
-    experience: integer("experience"),
-    geniusScore: integer("genius_score"),
+    lessonCategoryId: uuid("lesson_category_id").references(() => lessonCategory.id, { onDelete: "cascade" }),
+    experience: integer("experience").default(0),
+    geniusScore: integer("genius_score").default(0),
 });
 
 export const userSettings = pgTable("user_settings", {
     id: uuid("id").primaryKey(),
-    userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+    userId: text("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
     lessonClock: integer("lesson_clock"),
     quizClock: integer("quiz_clock"),
     grade_class: text("grade_class"),
@@ -91,7 +101,7 @@ export const userSettings = pgTable("user_settings", {
 
 export const subscriptions = pgTable("subscriptions", {
     id: uuid("id").primaryKey(),
-    userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+    userId: text("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
     systemUntil: timestamp("system_until"),
     price: integer("price"),
     receiptId: text("receipt_id"),
@@ -104,27 +114,29 @@ export const lessonQuestionGroups = pgTable("lesson_question_groups", {
     id: uuid("id").primaryKey(),
     lessonId: uuid("lesson_id").references(() => lessons.id, { onDelete: "cascade" }).notNull(),
     category: text("category"),
-    questionList: uuid("question_list").array(), // No array foreign key support
-    time: integer("time"),
-    createdAt: timestamp("created_at").notNull(),
+    questionList: uuid("question_list").array().notNull(), // No array foreign key support
+    time: integer("time").notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const userLessonResults = pgTable("user_lesson_results", {
     id: uuid("id").primaryKey(),
-    userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+    userId: text("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
     lessonId: uuid("lesson_id").references(() => lessons.id, { onDelete: "cascade" }).notNull(),
     startedAt: timestamp("started_at"),
     completedAt: timestamp("completed_at"),
     answers: jsonb("answers"),
     totalScore: integer("total_score"),
-    createdAt: timestamp("created_at").notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const userWrongQuestions = pgTable("user_wrong_questions", {
     id: uuid("id").primaryKey(),
+    isNull: boolean("is_null").default(false),
     questionId: uuid("question_id").references(() => questions.id, { onDelete: "cascade" }).notNull(),
-    userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+    userId: text("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
 });
+
 
 
 // === RELATIONS ===
@@ -133,6 +145,10 @@ export const userRelations = relations(users, ({ one, many }) => ({
     settings: one(userSettings, {
         fields: [users.userSettingsId],
         references: [userSettings.id],
+    }),
+    lessonCategory: one(lessonCategory, {
+        fields: [users.lessonCategoryId],
+        references: [lessonCategory.id],
     }),
     subscriptions: many(subscriptions),
     lessonResults: many(userLessonResults),
@@ -230,3 +246,5 @@ export const userWrongQuestionRelations = relations(userWrongQuestions, ({ one }
         references: [users.id],
     })
 }));
+
+
