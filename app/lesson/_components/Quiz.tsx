@@ -67,6 +67,7 @@ const Quiz = ({
         return <p>no challenges displayed</p>;
     }
 
+
     // ---- CURRENT QUESTION ----
     const total = challenges.questionList.length;
     const currentQuestionId = challenges.questionList[activeIndex];
@@ -203,27 +204,43 @@ const Quiz = ({
             <div className="w-full p-6 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/10 shadow-xl">
                 <div className="grid grid-cols-5 gap-4 mb-6">
                     {resultList.map((result, index) => {
-                        const isCorrect = result === "a";
+                        const isAnswered = result !== null;
                         return (
                             <button
                                 key={index}
                                 onClick={() => {
-                                    setMode("review");
-                                    goTo(index);
+                                    if (mode === "quiz") {
+                                        goTo(index);
+                                    } else {
+                                        setMode("review");
+                                        goTo(index);
+                                    }
                                 }}
-                                className={`
-                                                    relative group flex flex-col items-center justify-center px-3 py-1 rounded-xl
-                                                    transition-all duration-300 hover:scale-110
-                                                    ${result ? (isCorrect ? 'bg-green-500/10 hover:bg-green-500/20' : 'bg-red-500/10 hover:bg-red-500/20') : 'bg-red-500/10 hover:bg-red-500/20'}
-
-                                                `}
+                                className={`relative group flex flex-col items-center justify-center px-3 py-1 rounded-xl
+                                    transition-all duration-300 hover:scale-110
+                                    ${mode === "quiz"
+                                        ? isAnswered
+                                            ? 'bg-sky-500/20 hover:bg-sky-500/40 border-sky-500/60 border-1'
+                                            : 'bg-gray-500/10 hover:bg-gray-500/20'
+                                        : result
+                                            ? result === "a"
+                                                ? 'bg-green-500/10 hover:bg-green-500/20'
+                                                : 'bg-red-500/10 hover:bg-red-500/20'
+                                            : 'bg-red-500/10 hover:bg-red-500/20'
+                                    }
+                                `}
                             >
-                                <span className="text-sm font-medium ">
+                                <span className="text-sm font-medium">
                                     {index + 1}
                                 </span>
-                                {result && (
-                                    <span className={`text-xl ${isCorrect ? 'text-green-400' : 'text-red-400'}`}>
-                                        {isCorrect ? '✓' : '✗'}
+                                {mode !== "quiz" && result && (
+                                    <span
+                                        className={`text-xl ${result === "a"
+                                            ? 'text-green-400'
+                                            : 'text-red-400'
+                                            }`}
+                                    >
+                                        {result === "a" ? '✓' : '✗'}
                                     </span>
                                 )}
                             </button>
@@ -231,18 +248,20 @@ const Quiz = ({
                     })}
                 </div>
                 <p className="text-center text-sm text-neutral-400 dark:text-neutral-500">
-                    Tap any question number to review your answer
+                    Tap any question number to {mode === "quiz" ? "navigate" : "review your answer"}
                 </p>
-                <div className="flex justify-center pt-2">
-                    <Button
-                        className="w-full lg:w-auto"
-                        onClick={() => router.back()}
-                        size={isMobile ? "sm" : "lg"}
-                        variant="secondary"
-                    >
-                        חזור לדף התרגול
-                    </Button>
-                </div>
+                {mode === "review" ? (
+                    <div className="flex justify-center pt-2">
+                        <Button
+                            className="w-full lg:w-auto"
+                            onClick={() => router.back()}
+                            size={isMobile ? "sm" : "lg"}
+                            variant="secondary"
+                        >
+                            חזור לדף התרגול
+                        </Button>
+                    </div>
+                ) : null}
             </div>
         );
     };
@@ -331,13 +350,13 @@ const Quiz = ({
                             {title}
                         </h1>
 
-                        {mode === "review" && (
-                            <div className="hidden md:block absolute right-6 top-1/4 transform -translate-y-1/2 w-[300px]">
-                                <div className="w-full mx-auto">
-                                    {renderResultGrid()}
-                                </div>
+                        {/* {mode === "review" && ( */}
+                        <div className="hidden md:block absolute right-6 top-1/4 transform -translate-y-1/2 w-[300px]">
+                            <div className="w-full mx-auto">
+                                {renderResultGrid()}
                             </div>
-                        )}
+                        </div>
+                        {/* )} */}
 
                         <div>
                             {'ASSIST' === 'ASSIST' && (

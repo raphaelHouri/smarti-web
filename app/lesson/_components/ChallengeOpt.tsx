@@ -1,11 +1,12 @@
 import { challenges, challengesOptions } from "@/db/schema"
-import { cn } from "@/lib/utils";
+import { cn, fnv1a, seededShuffle } from "@/lib/utils";
 import CardLesson from "./CardLesson";
 import { Options } from "./Quiz";
 import { formatEnum, questions } from "@/db/schemaSmarti";
+import { useMemo } from "react";
 
 interface ChallengeProps {
-    mode: "quiz" | "review" ;
+    mode: "quiz" | "review";
     options: Options;
     questionDetails: typeof questions.$inferSelect;
     onSelect: (option: "a" | "b" | "c" | "d") => void;
@@ -23,6 +24,16 @@ const Challenge = ({
     status,
     selectedOption
 }: ChallengeProps) => {
+
+    const shuffledOptions = useMemo(() => {
+        // The seed is derived from the question id + the options’ content
+        // so it is stable for the same question, but different across questions.
+        const seed = fnv1a(
+            String(questionDetails.id) + "::" + JSON.stringify(options)
+        );
+        return seededShuffle(Object.entries(options), seed); // [ [key, value], ... ]
+    }, [questionDetails.id, options]);
+
     return (
         <div className=
             {cn("grid gap-2",
@@ -30,7 +41,7 @@ const Challenge = ({
                 questionDetails.format === "SELECT" && "grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(0,1fr))]"
             )}
         >
-            {Object.entries(options).map(([key, value], index) => (
+            {shuffledOptions.map(([key, value], index) => (
                 <CardLesson
                     mode={mode}
                     type={questionDetails.format}
