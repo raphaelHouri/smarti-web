@@ -6,7 +6,8 @@ import { redirect } from "next/navigation";
 import Unit from "../_components/Unit";
 import PromoSection from "../_components/promo";
 import QuestsSection from "../../quests/_components/quests";
-import { getCategories, getLessonCategoryById, getLessonCategoryWithLessonsById, getUser, getUserSubscriptions } from "@/db/queries";
+import { getCategories, getLessonCategoryById, getLessonCategoryWithLessonsById, getOrCreateUserFromGuest, getUserSubscriptions } from "@/db/queries";
+import LessonCategoryPage from "../../courses/page";
 
 const LearnPage = async ({
     params,
@@ -14,7 +15,7 @@ const LearnPage = async ({
     params: Promise<{ categoryId: string }>
 }) => {
     let { categoryId } = await params
-    const userData = getUser();
+    const userData = getOrCreateUserFromGuest();
     const categories = getCategories();
     const lessonCategories = getLessonCategoryById(categoryId);
     const lessonCategoryWithLessons = await getLessonCategoryWithLessonsById(categoryId);
@@ -24,14 +25,16 @@ const LearnPage = async ({
     // Create a new array with 'completed' field
     const lessonsCategoryWithCompleted = lessonsCategory.map((lessonCategoryItem) => {
         const matchedLesson = lessonCategoryWithLessons.find(
-            (lesson: any) => lesson.id === lessonCategoryItem.id
+            (lesson: any) => lesson.lessonId === lessonCategoryItem.id
         );
         const completed = !!matchedLesson;
-        const totalScore = completed ? matchedLesson.totalScore : undefined;
+        const rightQuestions = completed ? matchedLesson.rightQuestions : undefined;
+        const totalQuestions = completed ? matchedLesson.totalQuestions : undefined;
         return {
             ...lessonCategoryItem,
             completed,
-            totalScore,
+            rightQuestions,
+            totalQuestions,
         };
     });
 
@@ -47,7 +50,7 @@ const LearnPage = async ({
     else {
         redirect("/courses");
     }
-    
+
     const categoryDetails = categoriesData.find(cat => cat.id === categoryId)
     if (!categoryDetails) {
         console.log("Category not found, redirecting to courses");
@@ -57,7 +60,9 @@ const LearnPage = async ({
 
     return (
         <div className="flex gap-[48px] px-2">
+
             <FeedWrapper>
+                <LessonCategoryPage />
                 <Header title={categoryDetails.categoryType || ""} />
 
                 <div key={categoryDetails.id} className="mb-10">

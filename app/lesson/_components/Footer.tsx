@@ -6,39 +6,43 @@ import {
     ChevronLeft,
     ChevronRight,
     EyeIcon,
+    RotateCcwIcon,
+
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useKey, useMedia } from "react-use";
 
 interface FooterProps {
+    mode: "quiz" | "review" | "summary";
     disabled?: boolean;
     status: "correct" | "wrong" | "none" | "completed";
     onCheck: () => void;        // primary action when status === "none" (e.g., Check)
     onNext?: () => void;        // go to next / finish when status !== "none"
     onPrev?: () => void;        // go to previous
     handleWatchAgain?: () => void;
+    handlePracticeAgain?: () => void;
     activeIndex?: number;       // current question index (0-based)
     total?: number;             // total questions
-    lessonId?: string;
 }
 
 const Footer = ({
+    mode,
     disabled,
     status,
     onCheck,
     onNext,
     onPrev,
     handleWatchAgain,
+    handlePracticeAgain,
     activeIndex,
     total,
-    lessonId,
 }: FooterProps) => {
     const router = useRouter();
     const isMobile = useMedia("(max-width:1024px)");
 
     // Primary button decides action by status
     const handlePrimary = () => {
-        if (status === "correct" || status === "completed") {
+        if (status === "correct" || mode === "review") {
             onNext?.();
         } else if (status === "wrong") {
             // Keep "Retry" semantics as "re-check" (parent can clear state or re-validate)
@@ -56,12 +60,12 @@ const Footer = ({
     const showNav = typeof activeIndex === "number" && typeof total === "number";
 
     const primaryLabel =
-        status === "none"
-            ? "Finish"
+        status === "none" && mode !== "review"
+            ? "סיום"
             : status === "wrong"
                 ? "Retry"
-                : status === "completed"
-                    ? "Continue"
+                : mode === "review"
+                    ? activeIndex !== undefined && total !== undefined && activeIndex === total - 1 ? "חזור לדף הסיכום" : "המשך"
                     : activeIndex !== undefined && total !== undefined && activeIndex === total - 1
                         ? "Finish"
                         : "Next";
@@ -89,47 +93,43 @@ const Footer = ({
                             Oops! Wrong answer. Please retry 😟
                         </div>
                     )}
-                    {status === "completed" && (
-                        // if you like to watch it again open modal that said are you sure your answers can delete 
+                </div>
+                {mode === "summary" ? (
+                    <div className="w-full flex flex-col lg:flex-row items-center gap-4 lg:gap-6 justify-between">
                         <Button
                             variant="default"
                             size={isMobile ? "sm" : "lg"}
-                            onClick={() => (window.location.href = `/lesson/${lessonId}`)}
+                            onClick={handlePracticeAgain}
+                            className="w-full lg:w-auto"
                         >
-                            Practice Again
+                            <RotateCcwIcon className="h-4 w-4 lg:h-6 lg:w-10 ml-2" />
+                            לתרגול חזור
                         </Button>
-
-                    )}
-                    {status === "completed" && (
                         <Button
                             variant="default"
                             size={isMobile ? "sm" : "lg"}
                             onClick={handleWatchAgain}
+                            className="w-full lg:w-auto flex items-center justify-center"
                         >
-                            <EyeIcon className="h-6 w-6 lg:h-10 lg:w-10 mr-3" />
+                            <EyeIcon className="h-4 w-4 lg:h-6 lg:w-10 mr-2" />
                             לצפייה בתרגול
                         </Button>
-
-                    )}
-
-                    {status === "completed" && (
-
                         <Button
-
-                            className="ml-auto"
+                            className="w-full lg:w-auto"
                             onClick={() => router.back()}
                             size={isMobile ? "sm" : "lg"}
                             variant="secondary"
                         >
-
-                            {status === "completed" && "Continue"}
+                            חזור לדף התרגול
                         </Button>
+                    </div>
 
-                    )}
-                </div>
+                ) : null}
+
+
 
                 {/* Center: Navigation (Prev / counter / Next) */}
-                {showNav && status !== "completed" && (
+                {showNav && (mode === "quiz" || mode == "review") && (
                     <div className="w-full flex items-center gap-2 sm:gap-3 md:grid md:grid-cols-3 md:items-center md:gap-0">
                         <Button
                             variant="ghost"

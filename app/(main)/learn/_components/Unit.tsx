@@ -11,7 +11,8 @@ interface UnitProps {
 
     lessons: (typeof lessons.$inferSelect & {
         completed: boolean
-        totalScore: number | null | undefined
+        rightQuestions: number | undefined
+        totalQuestions: number | undefined
     })[],
 }
 const Unit = ({
@@ -36,7 +37,8 @@ const Unit = ({
                             totalCount={lessons.length - 1}
                             locked={isLocked}
                             current={isCurrent}
-                            percentage={lesson.totalScore }
+                            rightQuestions={lesson.rightQuestions}
+                            totalQuestions={lesson.totalQuestions}
                         />
                     )
                 })}

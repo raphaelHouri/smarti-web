@@ -2,8 +2,9 @@
 import { cache } from "react";
 import db from "./drizzle";
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { lessonCategory, lessonQuestionGroups, lessons, userLessonResults, users, userWrongQuestions } from './schemaSmarti';
+import { lessonCategory, lessonQuestionGroups, lessons, userLessonResults, users, userSettings, userWrongQuestions } from './schemaSmarti';
 import { and, desc, eq, inArray } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 
 export type LessonWithResults =
     typeof lessons.$inferSelect & {
@@ -34,53 +35,155 @@ export const getLessonCategoryById = cache(async (categoryId: string) => {
 
 
 
-export const createUserFromGuest = cache(async (lessonCategoryId: string) => {
+export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string) => {
     const { userId } = await auth();
     if (!userId) return null;
-    const data = await db.query.users.findFirst({
-        where: eq(users.id, userId),
 
-    })
-    if (!data) {
-        // create user if not exists with the userId
-        const clerkInstance = await clerkClient()
-        const user = await clerkInstance.users.getUser(userId)
-        const userEmail = user.emailAddresses.find((e: { id: string; emailAddress: string }) => e.id === user.primaryEmailAddressId)?.emailAddress ?? "";
-        const data = await db.insert(users).values({
-            id: userId,
-            name: "Guest User",
-            email: userEmail,
-        })
-        console.log(data)
-        return data;
+    const existingUser = await db.query.users.findFirst({
+        where: eq(users.id, userId),
+    });
+
+    if (!existingUser) {
+        try {
+            // Perform all inserts inside a transaction to ensure data integrity.
+            // If any part fails, all changes are rolled back.
+            const clerkInstance = await clerkClient();
+            const user = await clerkInstance.users.getUser(userId);
+            const userEmail = user.emailAddresses.find((e: { id: string; emailAddress: string }) => e.id === user.primaryEmailAddressId)?.emailAddress ?? "";
+            let lesson
+            if (lessonCategoryId) {
+                lesson = await db.query.lessons.findFirst({
+                    where: eq(lessons.lessonCategoryId, lessonCategoryId),
+                });
+            } else {
+                lesson = await db.query.lessons.findFirst({
+                    orderBy: (lessons, { asc }) => [asc(lessons.lessonOrder)],
+                });
+            }
+            const newLessonCategoryId = lesson?.lessonCategoryId;
+
+            // 1. Insert the new user.
+            await db.insert(users).values({
+                id: userId,
+                name: user.firstName || "Guest User", // Use the user's name from Clerk
+                email: userEmail,
+                lessonCategoryId: newLessonCategoryId,
+            });
+
+            // 2. Insert the corresponding user settings.
+            await db.insert(userSettings).values({
+                id: crypto.randomUUID(),
+                userId: userId,
+            });
+
+            const newUser = await db.query.users.findFirst({
+                where: eq(users.id, userId),
+            });
+
+            console.log("Successfully created new user:", newUser);
+            return newUser;
+        } catch (error) {
+            console.error("Failed to create new user and settings:", error);
+            return null;
+        }
+    }
+
+    return existingUser;
+});
+
+
+
+export const addResultsToUser = cache(async (lessonId: string, userId: string, answers: any[], questionList: string[], startAt: Date | null) => {
+
+    const existingResult = await db.query.userLessonResults.findFirst({
+        where: and(eq(userLessonResults.userId, userId), eq(userLessonResults.lessonId, lessonId)),
+    });
+    const user = await db.query.users.findFirst({
+        where: eq(users.id, userId),
+    });
+    if (!user) {
+        throw new Error(`User with ID ${userId} not found.`);
+    }
+
+    if (existingResult) {
+        await db.update(userLessonResults)
+            .set({
+                startedAt: startAt,
+                completedAt: new Date(),
+                answers,
+                rightQuestions: answers.filter(answer => answer == "a").length,
+                totalQuestions: answers.length,
+                createdAt: new Date(),
+            })
+            .where(eq(userLessonResults.id, existingResult.id));
+    } else {
+        await db.insert(userLessonResults).values({
+            id: crypto.randomUUID(),
+            userId: userId,
+            answers,
+            lessonId: lessonId,
+            startedAt: startAt,
+            completedAt: new Date(),
+            rightQuestions: answers.filter(answer => answer == "a").length,
+            totalQuestions: answers.length,
+            createdAt: new Date(),
+        });
+        await db.update(users)
+            .set({
+                experience: user.experience + answers.reduce((acc, answer) => acc + (answer === 'a' || answer != null ? 10 : 0), 0),
+                geniusScore: user.geniusScore + answers.reduce((acc, answer, index) => acc + (answer === 'a' ? (index <= 1 ? 5 : 5 + Math.round(acc / 3)) : 0), 0),
+            })
+            .where(eq(users.id, userId));
 
     }
-    return data;
-})
 
-export const getUser = cache(async () => {
-    const { userId } = await auth();
-    if (!userId) return null;
-    const data = await db.query.users.findFirst({
-        where: eq(users.id, userId),
+    answers.forEach(async (answer, index) => {
+        if (answer !== "a" && answer !== null) {
+            const existingWrongQuestion = await db.query.userWrongQuestions.findFirst({
+                where: and(
+                    eq(userWrongQuestions.userId, userId),
+                    eq(userWrongQuestions.questionId, questionList[index])
+                ),
+            });
 
-    })
-    if (!data) {
-        // create user if not exists with the userId
-        const clerkInstance = await clerkClient()
-        const user = await clerkInstance.users.getUser(userId)
-        const userEmail = user.emailAddresses.find((e: { id: string; emailAddress: string }) => e.id === user.primaryEmailAddressId)?.emailAddress ?? "";
-        const data = await db.insert(users).values({
-            id: userId,
-            name: "Guest User",
-            email: userEmail,
-        })
-        console.log(data)
-        return data;
+            if (!existingWrongQuestion) {
+                await db.insert(userWrongQuestions).values({
+                    id: crypto.randomUUID(),
+                    questionId: questionList[index],
+                    userId: userId,
+                    isNull: answer ? false : true,
+                });
+            }
+        }
+        revalidatePath("/learn/[slug]")
+    });
 
-    }
-    return data;
-})
+
+});
+
+// export const getOrCreateUserFromGuest = cache(async () => {
+//     const { userId } = await auth();
+//     if (!userId) return null;
+//     const data = await db.query.users.findFirst({
+//         where: eq(users.id, userId),
+
+//     })
+//     if (!data) {
+//         // create user if not exists with the userId
+//         const clerkInstance = await clerkClient()
+//         const user = await clerkInstance.users.getOrCreateUserFromGuest(userId)
+//         const userEmail = user.emailAddresses.find((e: { id: string; emailAddress: string }) => e.id === user.primaryEmailAddressId)?.emailAddress ?? "";
+//         const data = await db.insert(users).values({
+//             id: userId,
+//             name: "Guest User",
+//             email: userEmail,
+//         })
+//         console.log(data)
+//         return data;
+
+//     }
+//     return data;
+// })
 
 // getFirstCategory
 export const getFirstCategory = cache(async () => {
@@ -115,7 +218,8 @@ export const getLessonCategoryWithLessonsById = cache(async (categoryId: string)
             startedAt: userLessonResults.startedAt,
             completedAt: userLessonResults.completedAt,
             answers: userLessonResults.answers,
-            totalScore: userLessonResults.totalScore,
+            rightQuestions: userLessonResults.rightQuestions,
+            totalQuestions: userLessonResults.totalQuestions,
             createdAt: userLessonResults.createdAt,
             lessonCategoryId: lessons.lessonCategoryId,
         })
@@ -179,6 +283,19 @@ export const getUserSubscriptions = cache(async () => {
 // cancelling the subscription tells stripe not to renew next month
 
 export const getQuizDataByLessonId = cache(async (lessonId: string) => {
+    const { userId } = await auth();
+    let userPreviousAnswers = null;
+    if (userId) {
+        const result = await db.query.userLessonResults.findFirst({
+            where: and(
+
+                eq(userLessonResults.userId, userId),
+                eq(userLessonResults.lessonId, lessonId)
+            ),
+            orderBy: (userLessonResults, { desc }) => [desc(userLessonResults.createdAt)],
+        });
+        userPreviousAnswers = result?.answers ?? null;
+    }
     // Get all question groups for the lesson
     const questionGroups = await db.query.lessonQuestionGroups.findMany({
         where: eq(lessonQuestionGroups.lessonId, lessonId),
@@ -208,7 +325,8 @@ export const getQuizDataByLessonId = cache(async (lessonId: string) => {
 
     return {
         questionGroups,
-        questionsDict
+        questionsDict,
+        userPreviousAnswers: userPreviousAnswers as Array<"a" | "b" | "c" | "d" | null> | null,
     };
 });
 
@@ -228,7 +346,8 @@ export const saveUserResult = cache(async (result: Array<"a" | "b" | "c" | "d" |
         startedAt: new Date(),
         completedAt: new Date(),
         answers: result,
-        totalScore: Math.round((totalScore / result.length) * 100),
+        rightQuestions: totalScore,
+        totalQuestions: result.length,
         createdAt: new Date(),
     });
 
@@ -265,6 +384,25 @@ export const saveUserResult = cache(async (result: Array<"a" | "b" | "c" | "d" |
     }
 });
 
+
+export const getTopUsers = cache(async () => {
+    const { userId } = await auth();
+    if (!userId) {
+        return [];
+    }
+    const data = await db.query.users.findMany({
+        orderBy: (users, { desc }) => [desc(users.experience)],
+        limit: 10,
+        columns: {
+            id: true,
+            email: true,
+            // add nickname and image  
+            // image: true,
+            experience: true,
+        },
+    })
+    return data;
+})
 
 
 

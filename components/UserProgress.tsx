@@ -12,7 +12,8 @@ interface ActiveCourse {
 }
 
 interface UserProgressProps {
-    activeCourse: ActiveCourse;
+    title: string;
+    imageSrc: string;
     geniusScore: number;
     experience: number;
     hasActiveSubscription: boolean;
@@ -20,7 +21,8 @@ interface UserProgressProps {
 
 
 export const UserProgress = ({
-    activeCourse,
+    title,
+    imageSrc,
     experience,
     geniusScore,
     hasActiveSubscription
@@ -33,8 +35,9 @@ export const UserProgress = ({
                     variant="ghost"
                 >
                     <Image
-                        src={activeCourse.imageSrc}
-                        alt={activeCourse.title}
+                        // activeCourse?.imageSrc ||
+                        src={"/fr.svg"}
+                        alt={title || "course"}
                         className="rounded-md border"
                         height={32}
                         width={32}

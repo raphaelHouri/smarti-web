@@ -83,20 +83,20 @@ export const users = pgTable("users", {
     managedOrganization: uuid("managed_organization").array(), // You can manually reference in relations if needed
     createdAt: timestamp("created_at").defaultNow(),
     organizationYearId: uuid("organization_year_id").references(() => organizationYears.id, { onDelete: "cascade" }),
-    userSettingsId: uuid("user_settings_id"),
+    // userSettingsId: uuid("user_settings_id"),
     lessonCategoryId: uuid("lesson_category_id").references(() => lessonCategory.id, { onDelete: "cascade" }),
-    experience: integer("experience").default(0),
-    geniusScore: integer("genius_score").default(0),
+    experience: integer("experience").default(0).notNull(),
+    geniusScore: integer("genius_score").default(0).notNull(),
 });
 
 export const userSettings = pgTable("user_settings", {
     id: uuid("id").primaryKey(),
     userId: text("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
-    lessonClock: integer("lesson_clock"),
-    quizClock: integer("quiz_clock"),
+    lessonClock: boolean("lesson_clock").default(true),
+    quizClock: boolean("quiz_clock").default(true),
     grade_class: text("grade_class"),
     gender: text("gender"),
-    avatar: text("avatar"),
+    avatar: text("avatar").default("🧠"),
 });
 
 export const subscriptions = pgTable("subscriptions", {
@@ -123,10 +123,11 @@ export const userLessonResults = pgTable("user_lesson_results", {
     id: uuid("id").primaryKey(),
     userId: text("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
     lessonId: uuid("lesson_id").references(() => lessons.id, { onDelete: "cascade" }).notNull(),
-    startedAt: timestamp("started_at"),
-    completedAt: timestamp("completed_at"),
-    answers: jsonb("answers"),
-    totalScore: integer("total_score"),
+    startedAt: timestamp("started_at").defaultNow(),
+    completedAt: timestamp("completed_at").defaultNow(),
+    answers: jsonb("answers").notNull(), // Store answers as JSONB
+    rightQuestions: integer("right_questions").notNull(),
+    totalQuestions: integer("total_questions").notNull(),
     createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -142,10 +143,10 @@ export const userWrongQuestions = pgTable("user_wrong_questions", {
 // === RELATIONS ===
 
 export const userRelations = relations(users, ({ one, many }) => ({
-    settings: one(userSettings, {
-        fields: [users.userSettingsId],
-        references: [userSettings.id],
-    }),
+    // settings: one(userSettings, {
+    //     fields: [users.userSettingsId],
+    //     references: [userSettings.id],
+    // }),
     lessonCategory: one(lessonCategory, {
         fields: [users.lessonCategoryId],
         references: [lessonCategory.id],
@@ -210,7 +211,6 @@ export const lessonQuestionGroupRelations = relations(lessonQuestionGroups, ({ o
 
 export const questionRelations = relations(questions, ({ many }) => ({
     wrongQuestions: many(userWrongQuestions),
-    lessonResults: many(userLessonResults),
 }));
 
 export const userLessonResultRelations = relations(userLessonResults, ({ one }) => ({

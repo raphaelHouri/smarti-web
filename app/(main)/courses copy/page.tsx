@@ -6,7 +6,7 @@ import { List } from "./_components/List";
 
 const font = Poppins({ subsets: ["latin"], weight: ["600"] })
 
-export const LessonCategoryPage = async () => {
+ export const LessonCategoryPage = async () => {
     const lessonCategoriesPromise = getCategories();
     const userPromise = getOrCreateUserFromGuest();
 
@@ -15,10 +15,9 @@ export const LessonCategoryPage = async () => {
     if (user && 'lessonCategoryId' in user) {
         lessonCategoryId = user.lessonCategoryId;
     }
-    console.log(lessonCategory)
     return (
-        <div className="max-w-[768px] mx-auto px-2">
-            <h1 className={cn("dark:text-slate-200 text-neutral-600 tracking-wide text-sm font-bold", font.className)}>
+        <div className="h-full max-w-[912px] mx-auto px-3">
+            <h1 className={cn("dark:text-slate-200 text-neutral-600 tracking-wide text-2xl font-bold", font.className)}>
                 Language courses
             </h1>
             <List

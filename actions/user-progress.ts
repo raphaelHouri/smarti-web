@@ -12,6 +12,7 @@ import { POINTS_TO_REFILL } from "@/constants";
 import { users } from "@/db/schemaSmarti";
 
 
+
 export const updateUserCategory = async (courseId: string) => {
     //authentication
     try {

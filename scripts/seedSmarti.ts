@@ -39,6 +39,14 @@ const main = async () => {
         const questionGroup2Id = uuidv4();
         const questionId = uuidv4();
         const question2Id = uuidv4();
+        const question3Id = uuidv4();
+        const question4Id = uuidv4();
+        const question5Id = uuidv4();
+        const question6Id = uuidv4();
+        const question7Id = uuidv4();
+        const question8Id = uuidv4();
+        const question9Id = uuidv4();
+        const question10Id = uuidv4();
 
         await db.insert(schema.organizationInfo).values({
             id: orgId,
@@ -65,7 +73,7 @@ const main = async () => {
             managedOrganization: [orgId],
             createdAt: new Date(),
             organizationYearId: orgYearId,
-            userSettingsId: settingsId,
+            // userSettingsId: settingsId,
             experience: 100,
             geniusScore: 200,
         });
@@ -73,8 +81,6 @@ const main = async () => {
         await db.insert(schema.userSettings).values({
             id: settingsId,
             userId,
-            lessonClock: 30,
-            quizClock: 15,
             grade_class: "2nd Grade",
             gender: "female",
             avatar: "🧠"
@@ -122,6 +128,162 @@ const main = async () => {
             createdAt: new Date(),
             imageSrc: "fr.svg"
         });
+        // Add new categories
+        const category2Id = uuidv4();
+        const category3Id = uuidv4();
+
+        await db.insert(schema.lessonCategory).values([
+            {
+                id: category2Id,
+                categoryType: "תרגול באנגלית",
+                title: "תרגול באנגלית",
+                description: "קטגוריה לתרגול שאלות באנגלית",
+                createdAt: new Date(),
+                imageSrc: "en.svg"
+            },
+            {
+                id: category3Id,
+                categoryType: "תרגול במתמטיקה",
+                title: "תרגול במתמטיקה",
+                description: "קטגוריה לתרגול שאלות במתמטיקה",
+                createdAt: new Date(),
+                imageSrc: "math.svg"
+            }
+        ]);
+
+        // Add lessons for the new categories
+        const lesson3Id = uuidv4();
+        const lesson4Id = uuidv4();
+        const lesson5Id = uuidv4();
+
+        await db.insert(schema.lessons).values([
+            {
+                id: lesson3Id,
+                lessonCategoryId: category2Id,
+                lessonOrder: 1,
+                createdAt: new Date()
+            },
+            {
+                id: lesson4Id,
+                lessonCategoryId: category3Id,
+                lessonOrder: 1,
+                createdAt: new Date()
+            },
+            {
+                id: lesson5Id,
+                lessonCategoryId: category3Id,
+                lessonOrder: 2,
+                createdAt: new Date()
+            }
+        ]);
+
+        // Add questions for the new categories
+        const question11Id = uuidv4();
+        const question12Id = uuidv4();
+        const question13Id = uuidv4();
+        const question14Id = uuidv4();
+        const question15Id = uuidv4();
+
+        await db.insert(schema.questions).values([
+            {
+                id: question11Id,
+                content: "<p>What is the capital of France?</p>",
+                question: "What is the capital of France?",
+                format: "SELECT",
+                options: {
+                    a: "Berlin",
+                    b: "Madrid",
+                    c: "Paris",
+                    d: "Rome"
+                },
+                topicType: "Geography",
+                explanation: "Paris is the capital of France.",
+                createdAt: new Date()
+            },
+            {
+                id: question12Id,
+                content: "<p>What is 5 + 7?</p>",
+                question: "What is 5 + 7?",
+                format: "SELECT",
+                options: {
+                    a: "10",
+                    b: "11",
+                    c: "12",
+                    d: "13"
+                },
+                topicType: "Mathematics",
+                explanation: "5 + 7 equals 12.",
+                createdAt: new Date()
+            },
+            {
+                id: question13Id,
+                content: "<p>What is the largest planet in our solar system?</p>",
+                question: "What is the largest planet in our solar system?",
+                format: "SELECT",
+                options: {
+                    a: "Earth",
+                    b: "Mars",
+                    c: "Jupiter",
+                    d: "Saturn"
+                },
+                topicType: "Astronomy",
+                explanation: "Jupiter is the largest planet in our solar system.",
+                createdAt: new Date()
+            },
+            {
+                id: question14Id,
+                content: "<p>What is 9 x 6?</p>",
+                question: "What is 9 x 6?",
+                format: "SELECT",
+                options: {
+                    a: "54",
+                    b: "56",
+                    c: "58",
+                    d: "60"
+                },
+                topicType: "Mathematics",
+                explanation: "9 x 6 equals 54.",
+                createdAt: new Date()
+            },
+            {
+                id: question15Id,
+                content: "<p>What is the synonym of 'happy'?</p>",
+                question: "What is the synonym of 'happy'?",
+                format: "SELECT",
+                options: {
+                    a: "Sad",
+                    b: "Angry",
+                    c: "Joyful",
+                    d: "Tired"
+                },
+                topicType: "English",
+                explanation: "'Joyful' is a synonym of 'happy'.",
+                createdAt: new Date()
+            }
+        ]);
+
+        // Add question groups for the new lessons
+        const questionGroup3Id = uuidv4();
+        const questionGroup4Id = uuidv4();
+
+        await db.insert(schema.lessonQuestionGroups).values([
+            {
+                id: questionGroup3Id,
+                lessonId: lesson3Id,
+                category: "קל",
+                questionList: [question11Id, question15Id],
+                time: 600,
+                createdAt: new Date()
+            },
+            {
+                id: questionGroup4Id,
+                lessonId: lesson4Id,
+                category: "בינוני",
+                questionList: [question12Id, question14Id],
+                time: 900,
+                createdAt: new Date()
+            }
+        ]);
 
         await db.insert(schema.lessons).values([
             {
@@ -143,7 +305,7 @@ const main = async () => {
                 id: questionGroupId,
                 lessonId,
                 category: "בינוני",
-                questionList: [questionId],
+                questionList: [questionId, question3Id, question4Id, question5Id, question6Id, question7Id, question8Id, question9Id, question10Id],
                 time: 600,
                 createdAt: new Date()
             },
@@ -187,6 +349,126 @@ const main = async () => {
                 topicType: "היסטוריה",
                 explanation: "מדינת ישראל הוקמה ב־14 במאי 1948.",
                 createdAt: new Date()
+            },
+            {
+                id: question3Id,
+                content: "<p>מהי השפה הרשמית של ישראל?</p>",
+                question: "מהי השפה הרשמית של ישראל?",
+                format: "SELECT",
+                options: {
+                    a: "אנגלית",
+                    b: "עברית",
+                    c: "ערבית",
+                    d: "רוסית"
+                },
+                topicType: "שפה",
+                explanation: "עברית היא השפה הרשמית של ישראל.",
+                createdAt: new Date()
+            },
+            {
+                id: question4Id,
+                content: "<p>איזה ים נמצא במזרח ישראל?</p>",
+                question: "איזה ים נמצא במזרח ישראל?",
+                format: "SELECT",
+                options: {
+                    a: "ים התיכון",
+                    b: "ים סוף",
+                    c: "ים המלח",
+                    d: "ים כנרת"
+                },
+                topicType: "גיאוגרפיה",
+                explanation: "ים המלח נמצא במזרח ישראל.",
+                createdAt: new Date()
+            },
+            {
+                id: question5Id,
+                content: "<p>מהו ההר הגבוה ביותר בישראל?</p>",
+                question: "מהו ההר הגבוה ביותר בישראל?",
+                format: "SELECT",
+                options: {
+                    a: "הר תבור",
+                    b: "הר מירון",
+                    c: "הר חרמון",
+                    d: "הר הכרמל"
+                },
+                topicType: "גיאוגרפיה",
+                explanation: "הר חרמון הוא ההר הגבוה ביותר בישראל.",
+                createdAt: new Date()
+            },
+            {
+                id: question6Id,
+                content: "<p>מי היה ראש הממשלה הראשון של ישראל?</p>",
+                question: "מי היה ראש הממשלה הראשון של ישראל?",
+                format: "SELECT",
+                options: {
+                    a: "גולדה מאיר",
+                    b: "בנימין נתניהו",
+                    c: "דוד בן גוריון",
+                    d: "יצחק רבין"
+                },
+                topicType: "היסטוריה",
+                explanation: "דוד בן גוריון היה ראש הממשלה הראשון של ישראל.",
+                createdAt: new Date()
+            },
+            {
+                id: question7Id,
+                content: "<p>מהי עיר הנמל המרכזית של ישראל?</p>",
+                question: "מהי עיר הנמל המרכזית של ישראל?",
+                format: "SELECT",
+                options: {
+                    a: "אשדוד",
+                    b: "חיפה",
+                    c: "תל אביב",
+                    d: "עכו"
+                },
+                topicType: "גיאוגרפיה",
+                explanation: "חיפה היא עיר הנמל המרכזית של ישראל.",
+                createdAt: new Date()
+            },
+            {
+                id: question8Id,
+                content: "<p>באיזו שנה נכבשה ירושלים במלחמת ששת הימים?</p>",
+                question: "באיזו שנה נכבשה ירושלים במלחמת ששת הימים?",
+                format: "SELECT",
+                options: {
+                    a: "1967",
+                    b: "1973",
+                    c: "1956",
+                    d: "1948"
+                },
+                topicType: "היסטוריה",
+                explanation: "ירושלים נכבשה מחדש במלחמת ששת הימים בשנת 1967.",
+                createdAt: new Date()
+            },
+            {
+                id: question9Id,
+                content: "<p>מהו הנהר הארוך ביותר בישראל?</p>",
+                question: "מהו הנהר הארוך ביותר בישראל?",
+                format: "SELECT",
+                options: {
+                    a: "הירקון",
+                    b: "הירדן",
+                    c: "הבשור",
+                    d: "הקישון"
+                },
+                topicType: "גיאוגרפיה",
+                explanation: "הירדן הוא הנהר הארוך ביותר בישראל.",
+                createdAt: new Date()
+            },
+            {
+                id: question10Id,
+                content: "<p>איזו עיר נחשבת לעיר הבירה הכלכלית של ישראל?</p>",
+                question: "איזו עיר נחשבת לעיר הבירה הכלכלית של ישראל?",
+                format: "SELECT",
+                options: {
+                    a: "תל אביב",
+                    b: "חיפה",
+                    c: "ירושלים",
+                    d: "באר שבע"
+                },
+                topicType: "כלכלה",
+                explanation: "תל אביב נחשבת לעיר הבירה הכלכלית של ישראל.",
+                createdAt: new Date()
             }
         ]);
 
@@ -197,7 +479,8 @@ const main = async () => {
             startedAt: new Date(Date.now() - 1000 * 60 * 30),
             completedAt: new Date(),
             answers: { c: true },
-            totalScore: 100,
+            rightQuestions: 1,
+            totalQuestions: 1,
             createdAt: new Date()
         });
 

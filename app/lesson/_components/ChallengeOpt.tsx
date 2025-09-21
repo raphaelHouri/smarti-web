@@ -5,15 +5,17 @@ import { Options } from "./Quiz";
 import { formatEnum, questions } from "@/db/schemaSmarti";
 
 interface ChallengeProps {
+    mode: "quiz" | "review" ;
     options: Options;
     questionDetails: typeof questions.$inferSelect;
     onSelect: (option: "a" | "b" | "c" | "d") => void;
     disabled?: boolean;
     status: "correct" | "wrong" | "none";
-    selectedOption?: "a" | "b" | "c" | "d";
+    selectedOption?: "a" | "b" | "c" | "d" | null;
 }
 
 const Challenge = ({
+    mode,
     options,
     questionDetails,
     onSelect,
@@ -30,8 +32,10 @@ const Challenge = ({
         >
             {Object.entries(options).map(([key, value], index) => (
                 <CardLesson
+                    mode={mode}
                     type={questionDetails.format}
                     key={key}
+                    cardId={key}
                     id={questionDetails.id + key}
                     imageSrc={'/girl.svg'}
                     audioSrc={'/es_girl.mp3'}

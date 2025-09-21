@@ -1,11 +1,11 @@
 import { redirect } from "next/navigation";
 import LoadingPage from "./loading";
-import { getFirstCategory, getUser } from "@/db/queries";
+import {  getOrCreateUserFromGuest } from "@/db/queries";
 
 
 const LearnPage = async () => {
 
-    const userData = getUser();
+    const userData = await getOrCreateUserFromGuest();
 
 
     const [user] = await Promise.all([userData]);

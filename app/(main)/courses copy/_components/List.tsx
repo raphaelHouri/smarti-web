@@ -33,7 +33,7 @@ export const List = ({
     }
 
     return (
-        <div className="pt-1 grid grid-cols-2  gap-1 mb-6">
+        <div className="pt-6 grid grid-cols-2 lg:grid-cols-[repeat(auto-fill,minmax(210px,1fr))] gap-4">
             {lessonCategories.map((lessonCategory) => (
                 <CardPage
                     key={lessonCategory.id}

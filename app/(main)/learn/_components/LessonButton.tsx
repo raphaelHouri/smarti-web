@@ -12,7 +12,8 @@ interface LessonButtonProps {
     index: number,
     locked?: boolean,
     current?: boolean,
-    percentage: number | null | undefined,
+    rightQuestions: number | undefined
+    totalQuestions: number | undefined
     totalCount: number | null | undefined,
 }
 
@@ -22,9 +23,11 @@ const LessonButton = ({
     index,
     locked,
     current,
-    percentage,
+    rightQuestions,
+    totalQuestions,
     totalCount
 }: LessonButtonProps) => {
+    const percentage = rightQuestions && totalQuestions ? (rightQuestions / totalQuestions) * 100 : 0;
     const cycleLength = 8;
     const cycleIndex = index % cycleLength;
     // jab index = 1 or 2 % 8  
@@ -60,16 +63,14 @@ const LessonButton = ({
                 pointerEvents: locked ? "none" : "auto"
             }}
         >
-            <div className="relative"
+            <div className="relative flex flex-col items-center"
                 style={{
                     right: `${rightPosition}px`,
                     marginTop: isFirst && !isCompleted ? 60 : 24,
                 }}
             >
-                {/* if current is active then */}
                 {current ? (
                     <div className="h-[102px] w-[102px]">
-                        {/* relative */}
                         <div className="absolute -top-6 left-2.5 px-3 py-2.5
                 border-2 font-bold uppercase text-green-500 bg-white rounded-xl
                 animate-bounce tracking-wide z-10">
@@ -117,6 +118,13 @@ const LessonButton = ({
                             )}
                         />
                     </Button>
+                )}
+                {!locked && rightQuestions !== undefined && totalQuestions !== undefined && (
+                    <div className="mt-2 px-2 py-0.5 rounded-full bg-green-100 border border-green-200">
+                        <span className="text-sm font-semibold text-green-600">
+                            {rightQuestions}/{totalQuestions}
+                        </span>
+                    </div>
                 )}
             </div>
         </Link>

@@ -1,7 +1,8 @@
 erDiagram
 
 users ||--|| subscriptions : has
-users ||--|| user_settings : has
+%% users ||--|| user_settings : has
+user_settings ||--|| users : has
 users ||--o{ user_lesson_results : attempts
 subscriptions ||--o| coupons : uses
 subscriptions }o--|| plans : belongs_to
@@ -21,9 +22,9 @@ users {
   TEXT email
   UUID[] managed_organisation
   TIMESTAMP created_at
-  UUID organisation_year_id FK "index"
-  UUID lessonCategoryId FK 
-  UUID user_settings_id 
+  UUID organisation_year_id FK 
+  UUID lessonCategoryId FK
+%%   UUID user_settings_id 
   INT experience
   INT geniues_score
 }
@@ -31,8 +32,8 @@ users {
 user_settings {
   UUID id PK
   UUID user_id
-  INT lesson_clock
-  INT quiz_clock
+  BOOLEAN lesson_clock
+  BOOLEAN quiz_clock
   TEXT grade_class
   TEXT gender
   TEXT avatar 
@@ -115,7 +116,8 @@ user_lesson_results {
   TIMESTAMP started_at
   TIMESTAMP completed_at
   JSONB answers
-  INT total_score
+  INT total_questions
+  INT right_questions
   TIMESTAMP created_at
 }
 

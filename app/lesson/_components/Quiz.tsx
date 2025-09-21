@@ -11,18 +11,19 @@ import Challenge from "./ChallengeOpt";
 import Footer from "./Footer";
 import { upsertChallengeProgress } from "@/actions/challenge-progress";
 import { toast } from "sonner";
-import { useAudio, useMount } from "react-use";
+import { useAudio, useMedia, useMount } from "react-use";
 import ResultCard from "./result-card";
 import { useRouter } from "next/navigation";
 import { useHeartsModal } from "@/store/use-hearts";
 import { usePracticeModal } from "@/store/use-practice-modal";
 import CelebrateJson from "./lottie";
 import { lessonQuestionGroups, questions } from "@/db/schemaSmarti";
-import { set, z } from "zod";
+import { date, set, z } from "zod";
 import { useFinishLessonModal } from "@/store/use-finish-lesson-modal";
 import { useRegisterModal } from "@/store/use-register-modal";
 import { useAuth, useClerk } from "@clerk/nextjs";
-import { getUser } from "@/db/queries";
+import { addResultsToUser, getOrCreateUserFromGuest } from "@/db/queries";
+import { Button } from "@/components/ui/button";
 
 const optionsSchema = z.object({
     a: z.string(),
@@ -37,25 +38,29 @@ interface QuizProps {
     initialHearts: number
     questionGroups: (typeof lessonQuestionGroups.$inferSelect)[]
     questionsDict: { [q: string]: typeof questions.$inferSelect };
+    userPreviousAnswers: ("a" | "b" | "c" | "d" | null)[] | null;
 }
 
 const Quiz = ({
     initialLessonId,
     initialHearts,
     questionGroups,
-    questionsDict
+    questionsDict,
+    userPreviousAnswers = null
 }: QuizProps) => {
     const [hearts, setHearts] = useState(initialHearts);
     const [challenges] = useState(questionGroups[0]);
     const [status, setStatus] = useState<"correct" | "wrong" | "none">("none")
     const [resultList, setResultList] = useState<Array<"a" | "b" | "c" | "d" | null>>(Array(questionGroups[0].questionList.length).fill(null));
-    const [selectedOption, setSelectedOption] = useState<"a" | "b" | "c" | "d">()
+    const [selectedOption, setSelectedOption] = useState<"a" | "b" | "c" | "d" | null>()
     const [pending, startTransition] = useTransition();
     const [guest, setGuest] = useState(false);
     const [lessonId] = useState(initialLessonId)
     const [activeIndex, setActiveIndex] = useState(0)
+    const [mode, setMode] = useState<"quiz" | "review" | "summary">("quiz")
     const { userId } = useAuth();
-
+    const [startAt, setStartAt] = useState<Date | null>(null);
+    const isMobile = useMedia("(max-width:1024px)");
 
     const router = useRouter();
     if (!challenges || !challenges.questionList || challenges.questionList.length === 0) {
@@ -73,24 +78,38 @@ const Quiz = ({
 
     const { open: OpenHeartsModal } = useHeartsModal();
     const { open: OpenPracticeModal } = usePracticeModal();
-    const { open: OpenFinishLessonModal, isApproved: isFinishApproved } = useFinishLessonModal();
-    const { open: OpenRegisterModal } = useRegisterModal();
+    const { open: OpenFinishLessonModal, isApproved: isFinishApproved, clearApprove, approve } = useFinishLessonModal();
+    const { open: OpenRegisterModal, } = useRegisterModal();
 
     useMount(() => {
+        if (userPreviousAnswers) {
+            setMode("summary")
+            setResultList([...userPreviousAnswers])
+        }
         const initialPercentage = Math.floor(Math.random() * 101)
         if (true || initialPercentage === 100) {
-            OpenPracticeModal();
+            // OpenPracticeModal();
         }
+        setStartAt(new Date());
     })
+    useEffect(() => {
+        const handleFinishApproval = async () => {
+            if (isFinishApproved && userId) {
+                await addResultsToUser(lessonId, userId, resultList, challenges.questionList, startAt);
+                setMode("summary");
+                clearApprove();
+            }
+        };
+        handleFinishApproval();
+    }, [isFinishApproved]);
     useEffect(() => {
         const handleUserEffect = async () => {
             if (userId && guest) {
                 // need to save the resultList
                 console.log(resultList);
                 // createUser
-                await getUser()
-                
-                
+                await getOrCreateUserFromGuest(initialLessonId);
+                await addResultsToUser(lessonId, userId, resultList, challenges.questionList, startAt);
                 setGuest(false);
 
             } else {
@@ -121,19 +140,41 @@ const Quiz = ({
 
     const onPrev = () => goTo(activeIndex - 1);
     const onNextNav = () => {
-        if (activeIndex < total - 1) goTo(activeIndex + 1);
-        else OpenFinishLessonModal();
+
+        if (activeIndex < total - 1) {
+
+            goTo(activeIndex + 1);
+        } else {
+            if (mode === "review") setMode("summary");
+            else OpenFinishLessonModal();
+        }
     };
 
 
-    const handleWatchAgain = () => {
+    const handleWatchAgain = async () => {
+        if (mode === "review") {
+            setMode("summary");
+        }
+        if (!userId) {
+            OpenRegisterModal();
+        } else {
+            setMode("review");
+            goTo(0);
+        }
+
+    }
+
+    const handlePracticeAgain = () => {
         if (!userId) {
             OpenRegisterModal()
 
         } else {
+            setMode("quiz");
+            setResultList(Array(total).fill(null));
+            setStatus("none");
+            setSelectedOption(null);
             goTo(0);
         }
-
     }
 
     const onCheck = () => {
@@ -157,9 +198,58 @@ const Quiz = ({
 
     const { width, height } = useWindowSize();
 
+    const renderResultGrid = () => {
+        return (
+            <div className="w-full p-6 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/10 shadow-xl">
+                <div className="grid grid-cols-5 gap-4 mb-6">
+                    {resultList.map((result, index) => {
+                        const isCorrect = result === "a";
+                        return (
+                            <button
+                                key={index}
+                                onClick={() => {
+                                    setMode("review");
+                                    goTo(index);
+                                }}
+                                className={`
+                                                    relative group flex flex-col items-center justify-center px-3 py-1 rounded-xl
+                                                    transition-all duration-300 hover:scale-110
+                                                    ${result ? (isCorrect ? 'bg-green-500/10 hover:bg-green-500/20' : 'bg-red-500/10 hover:bg-red-500/20') : 'bg-red-500/10 hover:bg-red-500/20'}
+
+                                                `}
+                            >
+                                <span className="text-sm font-medium ">
+                                    {index + 1}
+                                </span>
+                                {result && (
+                                    <span className={`text-xl ${isCorrect ? 'text-green-400' : 'text-red-400'}`}>
+                                        {isCorrect ? '✓' : '✗'}
+                                    </span>
+                                )}
+                            </button>
+                        );
+                    })}
+                </div>
+                <p className="text-center text-sm text-neutral-400 dark:text-neutral-500">
+                    Tap any question number to review your answer
+                </p>
+                <div className="flex justify-center pt-2">
+                    <Button
+                        className="w-full lg:w-auto"
+                        onClick={() => router.back()}
+                        size={isMobile ? "sm" : "lg"}
+                        variant="secondary"
+                    >
+                        חזור לדף התרגול
+                    </Button>
+                </div>
+            </div>
+        );
+    };
+
     // ---- FINISH SCREEN ----
     // FIX LETTER ACTIVE = 0
-    if (activeIndex === total || isFinishApproved) {
+    if (mode === "summary") {
         return (
             <>
                 <Confetti
@@ -169,21 +259,34 @@ const Quiz = ({
                     numberOfPieces={1000}
                     tweenDuration={10000}
                 />
-                <div className="flex flex-col gap-y-4 lg:gap-y-8 items-center justify-center h-full max-w-lg mx-auto">
+                <div className="flex flex-col gap-y-8 items-center justify-center h-full max-w-xl mx-auto px-4">
                     <CelebrateJson />
-                    <h1 className="text-xl text-center lg:text-3xl font-bold text-neutral-700 dark:text-slate-200">
-                        Great Job! <br /> You&apos;ve completed the lesson.
-                    </h1>
-                    <div className="flex items-center gap-x-4 w-full">
-                        <ResultCard variant="points" value={total * 10} />
-                        <ResultCard variant="hearts" value={hearts} />
+                    <div className="space-y-4 text-center animate-fade-in">
+                        <h1 className="text-2xl lg:text-4xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
+                            Fantastic Work! 🎉
+                        </h1>
+                        <p className="text-lg text-neutral-600 dark:text-neutral-300">
+                            You've mastered this lesson
+                        </p>
+                    </div>,,
+                    <div className="flex items-center gap-x-6 w-full max-w-md">
+                        <ResultCard
+                            variant="points"
+                            value={resultList.reduce((acc, answer) => acc + (answer === 'a' || answer != null ? 10 : 0), 0)}
+                        />
+                        <ResultCard
+                            variant="hearts"
+                            value={resultList.reduce((acc, answer, index) => acc + (answer === 'a' ? (index <= 1 ? 5 : 5 + Math.round(acc / 3)) : 0), 0)}
+                        />
                     </div>
+                    {renderResultGrid()}
                 </div>
                 <Footer
-                    lessonId={lessonId}
+                    mode={mode}
                     status="completed"
                     onCheck={onCheck}
                     handleWatchAgain={handleWatchAgain}
+                    handlePracticeAgain={handlePracticeAgain}
                 />
             </>
         )
@@ -192,6 +295,10 @@ const Quiz = ({
     const title = question.question
 
     const onSelect = (option: "a" | "b" | "c" | "d") => {
+        if (mode === "review") {
+            toast.info("הינך במצב צפייה, לא ניתן לבצע פעולות נוספות");
+            return;
+        }
         setStatus("none");
         setResultList((current) => {
             const newList = [...current];
@@ -215,6 +322,7 @@ const Quiz = ({
                 percentage={progressPct /* UPDATED */}
                 hasActiveSubscription={isPro}
             />
+
             <div className="flex-1">
                 <div className="h-full justify-center flex items-center">
                     <div className="lg:min-h-[300px] w-full lg:w-[600px] lg:px-0 px-6 flex flex-col gap-y-6">
@@ -223,11 +331,20 @@ const Quiz = ({
                             {title}
                         </h1>
 
+                        {mode === "review" && (
+                            <div className="hidden md:block absolute right-6 top-1/4 transform -translate-y-1/2 w-[300px]">
+                                <div className="w-full mx-auto">
+                                    {renderResultGrid()}
+                                </div>
+                            </div>
+                        )}
+
                         <div>
                             {'ASSIST' === 'ASSIST' && (
                                 <QuestionBubble question={question.question} />
                             )}
                             <Challenge
+                                mode={mode}
                                 options={options}
                                 questionDetails={question}
                                 onSelect={onSelect}
@@ -241,6 +358,7 @@ const Quiz = ({
             </div>
 
             <Footer
+                mode={mode}
                 disabled={pending}
                 status={status}
                 onCheck={onContinue}         // your existing "continue/check" handler
@@ -249,7 +367,6 @@ const Quiz = ({
                 handleWatchAgain={handleWatchAgain}
                 activeIndex={activeIndex}
                 total={total}
-                lessonId={lessonId}
             />
         </>
     );
