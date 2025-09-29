@@ -18,12 +18,16 @@ import { useHeartsModal } from "@/store/use-hearts";
 import { usePracticeModal } from "@/store/use-practice-modal";
 import CelebrateJson from "./lottie";
 import { lessonQuestionGroups, questions } from "@/db/schemaSmarti";
-import { date, set, z } from "zod";
+import { z } from "zod";
 import { useFinishLessonModal } from "@/store/use-finish-lesson-modal";
 import { useRegisterModal } from "@/store/use-register-modal";
-import { useAuth, useClerk } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
 import { addResultsToUser, getOrCreateUserFromGuest } from "@/db/queries";
 import { Button } from "@/components/ui/button";
+import CountdownTimer from "./CountdownTimer";
+
+
+
 
 const optionsSchema = z.object({
     a: z.string(),
@@ -49,9 +53,8 @@ const Quiz = ({
     userPreviousAnswers = null
 }: QuizProps) => {
     const [hearts, setHearts] = useState(initialHearts);
-    const [challenges] = useState(questionGroups[0]);
     const [status, setStatus] = useState<"correct" | "wrong" | "none">("none")
-    const [resultList, setResultList] = useState<Array<"a" | "b" | "c" | "d" | null>>(Array(questionGroups[0].questionList.length).fill(null));
+    const [resultList, setResultList] = useState<Array<"a" | "b" | "c" | "d" | null>>(questionGroups.flatMap(categoryValue => categoryValue.questionList.map(() => null)));
     const [selectedOption, setSelectedOption] = useState<"a" | "b" | "c" | "d" | null>()
     const [pending, startTransition] = useTransition();
     const [guest, setGuest] = useState(false);
@@ -61,17 +64,27 @@ const Quiz = ({
     const { userId } = useAuth();
     const [startAt, setStartAt] = useState<Date | null>(null);
     const isMobile = useMedia("(max-width:1024px)");
+    const questionsMap = questionGroups.flatMap((categoryValue, index1) =>
+        categoryValue.questionList.map((questionValue, index2) => ({
+            placeY: index1,
+            placeX: index2,
+            category: categoryValue.category,
+            questionId: questionValue
+        }))
+    );
+
+
 
     const router = useRouter();
-    if (!challenges || !challenges.questionList || challenges.questionList.length === 0) {
+    if (!questionsMap || questionsMap.length === 0) {
         return <p>no challenges displayed</p>;
     }
 
 
     // ---- CURRENT QUESTION ----
-    const total = challenges.questionList.length;
-    const currentQuestionId = challenges.questionList[activeIndex];
-    const question = questionsDict[currentQuestionId];
+    const total = questionsMap.length;
+    const currentQuestion = questionsMap[activeIndex];
+    const question = questionsDict[currentQuestion.questionId];
     if (!question) return <p>Question not found</p>;
 
     const options = optionsSchema.parse(question.options);
@@ -96,7 +109,7 @@ const Quiz = ({
     useEffect(() => {
         const handleFinishApproval = async () => {
             if (isFinishApproved && userId) {
-                await addResultsToUser(lessonId, userId, resultList, challenges.questionList, startAt);
+                await addResultsToUser(lessonId, userId, resultList, questionsMap.map(q => q.questionId), startAt);
                 setMode("summary");
                 clearApprove();
             }
@@ -110,7 +123,7 @@ const Quiz = ({
                 console.log(resultList);
                 // createUser
                 await getOrCreateUserFromGuest(initialLessonId);
-                await addResultsToUser(lessonId, userId, resultList, challenges.questionList, startAt);
+                await addResultsToUser(lessonId, userId, resultList, questionsMap.map(q => q.questionId), startAt);
                 setGuest(false);
 
             } else {
@@ -130,6 +143,10 @@ const Quiz = ({
         },
         [activeIndex, total, selectedOption]
     );
+    const totalTime = useMemo(() => {
+        if (mode !== "quiz") return null; // Only calculate in quiz mode
+        return questionGroups.reduce((total, group) => total + 5, 0);
+    }, [mode, questionGroups]);
 
     const goTo = (idx: number) => {
         console.log("Going to index:", idx);
@@ -180,7 +197,7 @@ const Quiz = ({
 
     const onCheck = () => {
         startTransition(() => {
-            upsertChallengeProgress(challenges.lessonId)
+            upsertChallengeProgress(initialLessonId)
                 .then((res) => {
                     if (res?.error) {
                         OpenHeartsModal();
@@ -202,51 +219,65 @@ const Quiz = ({
     const renderResultGrid = () => {
         return (
             <div className="w-full p-6 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/10 shadow-xl">
-                <div className="grid grid-cols-5 gap-4 mb-6">
-                    {resultList.map((result, index) => {
-                        const isAnswered = result !== null;
-                        return (
-                            <button
-                                key={index}
-                                onClick={() => {
-                                    if (mode === "quiz") {
-                                        goTo(index);
-                                    } else {
-                                        setMode("review");
-                                        goTo(index);
-                                    }
-                                }}
-                                className={`relative group flex flex-col items-center justify-center px-3 py-1 rounded-xl
-                                    transition-all duration-300 hover:scale-110
-                                    ${mode === "quiz"
-                                        ? isAnswered
-                                            ? 'bg-sky-500/20 hover:bg-sky-500/40 border-sky-500/60 border-1'
-                                            : 'bg-gray-500/10 hover:bg-gray-500/20'
-                                        : result
-                                            ? result === "a"
-                                                ? 'bg-green-500/10 hover:bg-green-500/20'
-                                                : 'bg-red-500/10 hover:bg-red-500/20'
-                                            : 'bg-red-500/10 hover:bg-red-500/20'
-                                    }
-                                `}
-                            >
-                                <span className="text-sm font-medium">
-                                    {index + 1}
-                                </span>
-                                {mode !== "quiz" && result && (
-                                    <span
-                                        className={`text-xl ${result === "a"
-                                            ? 'text-green-400'
-                                            : 'text-red-400'
-                                            }`}
+                {questionGroups.map((categoryValue, categoryIndex) => (
+                    <div key={categoryIndex} className="mb-6">
+                        <h3 className="text-lg font-semibold text-neutral-700 dark:text-neutral-300 mb-4">
+                            {categoryValue.category}
+                        </h3>
+                        <div className="grid grid-cols-5 gap-4">
+                            {categoryValue.questionList.map((_, questionIndex) => {
+                                const index = categoryValue.questionList
+                                    .slice(0, questionIndex + 1)
+                                    .reduce((acc, _, i) => acc + (i === 0 ? 0 : 1), 0) +
+                                    questionGroups
+                                        .slice(0, categoryIndex)
+                                        .reduce((acc, group) => acc + group.questionList.length, 0);
+                                const result = resultList[index];
+                                const isAnswered = result !== null;
+                                return (
+                                    <button
+                                        key={index}
+                                        onClick={() => {
+                                            if (mode === "quiz") {
+                                                goTo(index);
+                                            } else {
+                                                setMode("review");
+                                                goTo(index);
+                                            }
+                                        }}
+                                        className={`relative group flex flex-col items-center justify-center px-3 py-1 rounded-xl
+                                            transition-all duration-300 hover:scale-110
+                                            ${mode === "quiz"
+                                                ? isAnswered
+                                                    ? 'bg-sky-500/20 hover:bg-sky-500/40 border-sky-500/60 border-1'
+                                                    : 'bg-gray-500/10 hover:bg-gray-500/20'
+                                                : result
+                                                    ? result === "a"
+                                                        ? 'bg-green-500/10 hover:bg-green-500/20'
+                                                        : 'bg-red-500/10 hover:bg-red-500/20'
+                                                    : 'bg-red-500/10 hover:bg-red-500/20'
+                                            }
+                                        `}
                                     >
-                                        {result === "a" ? '✓' : '✗'}
-                                    </span>
-                                )}
-                            </button>
-                        );
-                    })}
-                </div>
+                                        <span className="text-sm font-medium">
+                                            {index + 1}
+                                        </span>
+                                        {mode !== "quiz" && result && (
+                                            <span
+                                                className={`text-xl ${result === "a"
+                                                    ? 'text-green-400'
+                                                    : 'text-red-400'
+                                                    }`}
+                                            >
+                                                {result === "a" ? '✓' : '✗'}
+                                            </span>
+                                        )}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                ))}
                 <p className="text-center text-sm text-neutral-400 dark:text-neutral-500">
                     Tap any question number to {mode === "quiz" ? "navigate" : "review your answer"}
                 </p>
@@ -334,6 +365,7 @@ const Quiz = ({
 
     const isPro = true
 
+
     return (
         <>
             <Header
@@ -341,6 +373,20 @@ const Quiz = ({
                 percentage={progressPct /* UPDATED */}
                 hasActiveSubscription={isPro}
             />
+            {totalTime && (
+                <div className="w-full flex justify-center">
+                    <div className="relative px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500/10 to-pink-500/10 backdrop-blur-sm">
+                        <CountdownTimer
+                            initialTime={totalTime}
+                            onFinish={() => {
+                                OpenFinishLessonModal();
+                            }}
+                        />
+                    </div>
+                </div>
+            )}
+
+
 
             <div className="flex-1">
                 <div className="h-full justify-center flex items-center">

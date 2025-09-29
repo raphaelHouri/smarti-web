@@ -6,17 +6,17 @@ import Link from "next/link";
 import { SideBarItems } from "./sideBar-items";
 import { ClerkLoaded, ClerkLoading, UserButton } from "@clerk/nextjs";
 import { ChevronFirst, Loader } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 interface SideBarProps {
     className?: string;
 }
 
 const sidebarItems = [
-    { href: '/learn', label: 'Learn', iconSrc: '/learn.svg' },
-    { href: '/leaderboard', label: 'Leaderboard', iconSrc: '/leaderboard.svg' },
-    { href: '/quests', label: 'Quests', iconSrc: '/quests.svg' },
-    { href: '/shop', label: 'Shop', iconSrc: '/shop.svg' },
+    { href: '/learn', label: 'Learn', iconSrc: '/learn.svg', registerOnly: true },
+    { href: '/leaderboard', label: 'Leaderboard', iconSrc: '/leaderboard.svg', registerOnly: true },
+    { href: '/quests', label: 'Quests', iconSrc: '/quests.svg', registerOnly: true },
+    { href: '/settings', label: 'Settings', iconSrc: '/setting-profile.svg', registerOnly: true },
+    { href: '/shop', label: 'Shop', iconSrc: '/shop.svg', registerOnly: true },
 ];
 
 export const SideBar = ({
@@ -44,6 +44,7 @@ export const SideBar = ({
                         label={item.label}
                         iconSrc={item.iconSrc}
                         href={item.href}
+                        registerOnly={item.registerOnly}
                     />
                 ))}
             </div>

@@ -50,17 +50,21 @@ export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string) 
             const clerkInstance = await clerkClient();
             const user = await clerkInstance.users.getUser(userId);
             const userEmail = user.emailAddresses.find((e: { id: string; emailAddress: string }) => e.id === user.primaryEmailAddressId)?.emailAddress ?? "";
-            let lesson
+            let newLessonCategoryId
             if (lessonCategoryId) {
-                lesson = await db.query.lessons.findFirst({
+                const lesson = await db.query.lessons.findFirst({
                     where: eq(lessons.lessonCategoryId, lessonCategoryId),
                 });
+                if (!lesson) {
+                    throw new Error("Invalid lesson category ID");
+                }
+                newLessonCategoryId = lessonCategoryId
+
             } else {
-                lesson = await db.query.lessons.findFirst({
-                    orderBy: (lessons, { asc }) => [asc(lessons.lessonOrder)],
-                });
+                const category = await getFirstCategory();
+                newLessonCategoryId = category?.id || null;
             }
-            const newLessonCategoryId = lesson?.lessonCategoryId;
+
 
             // 1. Insert the new user.
             await db.insert(users).values({
@@ -155,8 +159,8 @@ export const addResultsToUser = cache(async (lessonId: string, userId: string, a
                 });
             }
         }
-        revalidatePath("/learn/[slug]")
     });
+    revalidatePath("/learn/[slug]")
 
 
 });
@@ -188,8 +192,9 @@ export const addResultsToUser = cache(async (lessonId: string, userId: string, a
 // getFirstCategory
 export const getFirstCategory = cache(async () => {
     const data = await db.query.lessonCategory.findFirst({
-        orderBy: (lessonCategory, { asc }) => [asc(lessonCategory.createdAt)],
+        orderBy: (lessonCategory, { asc }) => [asc(lessonCategory.categoryType)],
     });
+
     return data ?? null;
 });
 
@@ -382,6 +387,7 @@ export const saveUserResult = cache(async (result: Array<"a" | "b" | "c" | "d" |
             await db.insert(userWrongQuestions).values(wrongQuestionEntries);
         }
     }
+
 });
 
 
@@ -404,6 +410,19 @@ export const getTopUsers = cache(async () => {
     return data;
 })
 
+export const getUserByAuthId = async (authId: string) => {
+    const data = await db.query.users.findFirst({
+        where: eq(users.id, authId),
+    });
+    return data;
+}
+
+export const getUserSettingsById = async (userId: string) => {
+    const data = await db.query.userSettings.findFirst({
+        where: eq(userSettings.userId, userId),
+    });
+    return data;
+}
 
 
 

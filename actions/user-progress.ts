@@ -16,18 +16,22 @@ import { users } from "@/db/schemaSmarti";
 export const updateUserCategory = async (courseId: string) => {
     //authentication
     try {
+        console.log(1)
         const { userId } = await auth();
+        console.log(2)
         const user = await currentUser();
+        console.log(3)
+        
+        if (!userId || !user) {
+            console.log(4)
+            redirect(`/learn/${courseId}`);
 
+        }
         const lessons = await getLessonsOfCategoryById(courseId);
         if (!lessons || (Array.isArray(lessons) && lessons.length === 0)) {
             throw new Error("lessons not found");
         }
 
-        if (!userId || !user) {
-            redirect(`/learn/${courseId}`);
-
-        }
 
         if (user) {
             //all I have to do is await and update over here

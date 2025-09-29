@@ -14,6 +14,7 @@ const LessonIdPage = async ({
 
 
     const [{ questionGroups, questionsDict, userPreviousAnswers }] = await Promise.all([quizDataByLessonId]);
+
     console.log(questionGroups, questionsDict)
 
 

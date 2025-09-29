@@ -4,10 +4,13 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import Image from "next/image";
 import { Button } from "../ui/button";
 import { useFinishLessonModal } from "@/store/use-finish-lesson-modal";
+import { useCountdownStore } from "@/store/use-countdown-timer";
+import { toast } from "sonner";
 
 const FinishLessonModal = () => {
     const [isClient, setIsClient] = useState<boolean>(false)
     const { isOpen, close, approve } = useFinishLessonModal();
+    const { isRunning } = useCountdownStore();
 
     //Doing this to avoid hydration errors
     useEffect(() => {
@@ -19,8 +22,8 @@ const FinishLessonModal = () => {
 
     //  isOpen and close are states from zustand
     return (
-        <Dialog open={isOpen} onOpenChange={close}>
-            <DialogContent className="max-w-md mx-auto">
+        <Dialog open={isOpen} onOpenChange={!isRunning ? () => toast.info("Time's up! Press to continue!") : close} >
+            <DialogContent className="max-w-md mx-auto" removeX={!isRunning}>
                 <DialogHeader>
                     <div className="items-center justify-center flex w-full mb-5">
                         <Image
@@ -30,27 +33,54 @@ const FinishLessonModal = () => {
                             width={80}
                         />
                     </div>
-                    <DialogTitle className="text-center
-                font-bold text-2xl">
-                        סיום תרגול
+                    <DialogTitle className="text-center font-bold text-2xl">
+                        {isRunning ? "סיום תרגול" : "זמן התרגול הסתיים"}
                     </DialogTitle>
-                    <DialogDescription className="text-center text-base">
-                        האם אתה בטוח שברצונך לסיים את התרגול?
-                    </DialogDescription>
+                    {isRunning ? (
+                        <DialogDescription className="text-center text-base">
+                            האם אתה בטוח שברצונך לסיים את התרגול?
+                        </DialogDescription>
+                    ) : <DialogDescription className="text-center text-base">
+                        המשך לסיכום התרגול כדי לראות את התוצאות שלך!
+                    </DialogDescription>}
                 </DialogHeader>
                 <DialogFooter>
                     <div className="flex flex-col gap-y-3 w-full">
-                        <Button variant="primary" size="default" className="w-full"
-                            onClick={close}>
-                            המשך לתרגל
-                        </Button>
-                        <Button variant="dangerOutline" size="default" className="w-full"
-                            onClick={() => {
-                                close();
-                                approve()
-                            }}>
-                            לסיום תרגול
-                        </Button>
+                        {isRunning ? (
+                            <>
+                                <Button
+                                    variant="primary"
+                                    size="default"
+                                    className="w-full"
+                                    onClick={close}
+                                >
+                                    המשך לתרגל
+                                </Button>
+                                <Button
+                                    variant="dangerOutline"
+                                    size="default"
+                                    className="w-full"
+                                    onClick={() => {
+                                        close();
+                                        approve();
+                                    }}
+                                >
+                                    לסיום תרגול
+                                </Button>
+                            </>
+                        ) : (
+                            <Button
+                                variant="primary"
+                                size="default"
+                                className="w-full"
+                                onClick={() => {
+                                    close();
+                                    approve();
+                                }}
+                            >
+                                המשך לסיכום
+                            </Button>
+                        )}
                     </div>
                 </DialogFooter>
             </DialogContent>

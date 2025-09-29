@@ -15,15 +15,14 @@ const LeaderBoardPage = async () => {
     const userSubscriptionData = getUserSubscriptions();
     const topTenUsersData = getTopUsers();
 
+
     const [userProgress, userSubscription, topTenUsers] = await Promise.all([userProgressData, userSubscriptionData, topTenUsersData])
 
     if (!userProgress || !userProgress.lessonCategoryId) {
-        redirect("/courses");
+        redirect("/learn");
     }
 
-    const isPro = true
-    // const isPro = !!userSubscription?.isActive
-
+    const isPro = userSubscription?.isPro;
 
     return (
         <div className="flex flex-row-reverse gap-[42px] px-6">

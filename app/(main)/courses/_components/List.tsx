@@ -2,8 +2,8 @@
 
 
 import { CardPage } from "./card";
-import { useRouter } from "next/navigation";
-import { useTransition } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useMemo, useTransition } from "react";
 import { updateUserCategory } from "@/actions/user-progress";
 import { toast } from "sonner";
 import { lessonCategory, users } from "@/db/schemaSmarti";
@@ -19,6 +19,14 @@ export const List = ({
     lessonCategoryId,
 }: ListProps) => {
     const router = useRouter();
+    const pathname = usePathname();
+
+    // Robustly extract `/learn/<id>` from the current path, if prop not given
+    lessonCategoryId = useMemo(() => {
+        if (lessonCategoryId) return lessonCategoryId;
+        const m = pathname.match(/^\/learn\/([^\/?#]+)/);
+        return m?.[1]; // undefined if not on /learn/<id>
+    }, [lessonCategoryId, pathname]);
     const [pending, startTransition] = useTransition();
     const onClick = (id: string) => {
         if (pending) return;
@@ -28,8 +36,12 @@ export const List = ({
         }
         startTransition(() => {
             updateUserCategory(id).
-                catch(() => toast.error("Something went wrong"))
-        })
+                catch((error) => {
+                    if (typeof error?.digest === 'string' && error.digest.startsWith('NEXT_REDIRECT')) return;
+                    toast.error("Error updating user category:", error);
+                    // toast.error("Something went wrong1");
+                });
+        });
     }
 
     return (

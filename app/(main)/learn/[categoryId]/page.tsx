@@ -6,8 +6,9 @@ import { redirect } from "next/navigation";
 import Unit from "../_components/Unit";
 import PromoSection from "../_components/promo";
 import QuestsSection from "../../quests/_components/quests";
-import { getCategories, getLessonCategoryById, getLessonCategoryWithLessonsById, getOrCreateUserFromGuest, getUserSubscriptions } from "@/db/queries";
+import { getCategories, getFirstCategory, getLessonCategoryById, getLessonCategoryWithLessonsById, getOrCreateUserFromGuest, getUserSubscriptions } from "@/db/queries";
 import LessonCategoryPage from "../../courses/page";
+import { tr } from "zod/v4/locales";
 
 const LearnPage = async ({
     params,
@@ -39,15 +40,18 @@ const LearnPage = async ({
     });
 
     if (!user) {
-        if (!categoryId) {
-            console.log("User not found, redirecting to courses");
-            redirect("/courses");
+        if (categoryId) {
+            // No additional logic needed, categoryId is already set
+        } else {
+            const category = await getFirstCategory();
+            if (!category || !category.id) {
+                throw new Error("No categories found");
+            }
+            categoryId = category.id;
         }
-
-    } else if ('lessonCategoryId' in user && user.lessonCategoryId) {
+    } else if (user.lessonCategoryId) {
         categoryId = user.lessonCategoryId;
-    }
-    else {
+    } else {
         redirect("/courses");
     }
 
