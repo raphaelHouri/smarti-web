@@ -4,12 +4,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { quests } from "@/constants";
 import { Progress } from "@/components/ui/progress";
+import { useRegisterModal } from "@/store/use-register-modal";
+import { useAuth } from "@clerk/nextjs";
 
 type Props = {
     experience: number
 }
 
 const QuestsSection = ({ experience }: Props) => {
+    const { open: OpenRegisterModal } = useRegisterModal();
+    const { userId } = useAuth();
+
+
     return (
         <div className="border-2 rounded-xl p-4 pb-4 mb-6 space-y-4 ">
             <div className="flex items-center justify-between
@@ -17,7 +23,16 @@ const QuestsSection = ({ experience }: Props) => {
                 <h3 className="text-lg font-bold">
                     Quests
                 </h3>
-                <Link href="/quests">
+                {!userId ? (
+                    <Button
+                        onClick={OpenRegisterModal}
+                        variant="primaryOutline"
+                        size="sm"
+                        className="mb-2"
+                    >
+                        View all
+                    </Button>
+                ) : <Link href="/quests">
                     <Button
                         variant="primaryOutline"
                         size="sm"
@@ -25,7 +40,8 @@ const QuestsSection = ({ experience }: Props) => {
                     >
                         View all
                     </Button>
-                </Link>
+                </Link>}
+
             </div>
             <ul className="w=full">
                 <Link href="/learn">

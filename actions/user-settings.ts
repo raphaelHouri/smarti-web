@@ -17,48 +17,52 @@ interface UpdateUserParams {
 }
 
 export async function updateUser(params: UpdateUserParams) {
-    const { userId } = auth();
+    const { userId } = await auth();
 
     if (!userId) {
         throw new Error("Unauthorized");
     }
 
-    // Start a transaction if you need to update multiple tables atomically
-    await db.transaction(async (tx) => {
-        // Update user's name
-        if (params.name !== undefined) {
-            await tx.update(users)
-                .set({ name: params.name })
-                .where(eq(users.id, userId));
-        }
+    // Update user's name
+    if (params.name !== undefined) {
+        await db.update(users)
+            .set({ name: params.name })
+            .where(eq(users.id, userId));
+    }
 
-        // Update or insert user settings
-        const existingSettings = await tx.query.userSettings.findFirst({
-            where: eq(userSettings.userId, userId),
-        });
+    // Update or insert user settings
+    const existingSettings = await db.query.userSettings.findFirst({
+        where: eq(userSettings.userId, userId),
+    });
 
-        if (existingSettings) {
-            await tx.update(userSettings)
-                .set({
-                    lessonClock: params.lessonClock,
-                    quizClock: params.quizClock,
-                    grade_class: params.grade_class,
-                    gender: params.gender,
-                    avatar: params.avatar,
-                })
-                .where(eq(userSettings.userId, userId));
-        } else {
-            // If settings don't exist, create them
-            await tx.insert(userSettings).values({
-                userId: userId,
+    if (existingSettings) {
+        const updateData = Object.fromEntries(
+            Object.entries({
                 lessonClock: params.lessonClock,
                 quizClock: params.quizClock,
                 grade_class: params.grade_class,
                 gender: params.gender,
                 avatar: params.avatar,
-            });
+            }).filter(([_, value]) => value !== undefined)
+        );
+
+        if (Object.keys(updateData).length > 0) {
+            await db.update(userSettings)
+                .set(updateData)
+                .where(eq(userSettings.userId, userId));
         }
-    });
+    } else {
+        // If settings don't exist, create them
+        await db.insert(userSettings).values({
+            id: crypto.randomUUID(), // Generate a unique ID for the new record
+            userId: userId,
+            lessonClock: params.lessonClock,
+            quizClock: params.quizClock,
+            grade_class: params.grade_class,
+            gender: params.gender,
+            avatar: params.avatar,
+        });
+    }
 
     revalidatePath("/settings"); // Revalidate the settings page to show updated data
 }

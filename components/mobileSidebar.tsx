@@ -1,22 +1,22 @@
 
 import {
-    Sheet,
-    SheetContent,
-    SheetTrigger
+  Sheet,
+  SheetContent,
+  SheetTrigger
 }
-from "@/components/ui/sheet";
+  from "@/components/ui/sheet";
 import { SideBar } from "./sideBar";
 import { MenuIcon } from "lucide-react";
 
 export const MobileSideBar = () => {
-  return(
+  return (
     <Sheet>
       <SheetTrigger>
-        <MenuIcon className="text-white"/>
+        <MenuIcon className="text-white" />
       </SheetTrigger>
-        <SheetContent className='p-0 z-[100]' side="left">
-        <SideBar/>
-        </SheetContent>
+      <SheetContent className='p-0 z-[100]' side="right">
+        <SideBar />
+      </SheetContent>
     </Sheet>
   )
 }

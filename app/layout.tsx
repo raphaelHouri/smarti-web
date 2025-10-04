@@ -10,6 +10,7 @@ import HeartsModal from "@/components/modals/useHeartsModal";
 import PracticeModal from "@/components/modals/usePracticeModal";
 import FinishLessonModal from "@/components/modals/useFinishLessonModal";
 import RegisterModal from "@/components/modals/useRegisterModal";
+import { heIL } from '@clerk/localizations'
 
 const font = Poppins({ subsets: ["latin"], weight: ["500"] })
 
@@ -28,6 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider
+      localization={heIL}
       afterSignOutUrl="/"
 
 
@@ -35,10 +37,10 @@ export default function RootLayout({
     //   baseTheme:neobrutalism
     // }}
     >
-      <html lang="en" suppressHydrationWarning>
-        <head>
+      <html lang="he" dir="rtl" suppressHydrationWarning>
+        {/* <head>
           <script src="https://beamanalytics.b-cdn.net/beam.min.js" data-token="8efceb49-2776-47f5-bb58-33fcc018acc9" async></script>
-        </head>
+        </head> */}
         <body className={font.className}>
           <ThemeProvider
             attribute="class"

@@ -1,6 +1,6 @@
 import FeedWrapper from "@/components/FeedWrapper";
 import StickyWrapper from "@/components/sticky-wrapper";
-import { Header } from "../_components/Header";
+// import { Header } from "../_components/Header";
 import { UserProgress } from "@/components/UserProgress";
 import { redirect } from "next/navigation";
 import Unit from "../_components/Unit";
@@ -67,7 +67,7 @@ const LearnPage = async ({
 
             <FeedWrapper>
                 <LessonCategoryPage />
-                <Header title={categoryDetails.categoryType || ""} />
+                {/* <Header title={categoryDetails.categoryType || ""} /> */}
 
                 <div key={categoryDetails.id} className="mb-10">
                     <Unit

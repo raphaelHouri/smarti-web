@@ -590,3 +590,8 @@ body,
     @apply bg-background text-foreground;
   }
 }
+
+.cl-modalBackdrop,
+.cl-popoverBox {
+  direction: rtl;
+}

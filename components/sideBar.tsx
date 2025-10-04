@@ -23,7 +23,7 @@ export const SideBar = ({
     className
 }: SideBarProps) => {
     return (
-        <div className={cn("flex h-full lg:w-[256px] lg:fixed left-0 top-0 px-4 border-r-2 flex-col", className)}>
+        <div className={cn("flex h-full lg:w-[256px] lg:fixed right-0 top-0 px-4 border-l-2 flex-col", className)}>
             <Link href="/">
                 <div className="pt-8 pb-7 pl-4 flex items-center gap-x-3">
                     <Image

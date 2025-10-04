@@ -145,7 +145,7 @@ const Quiz = ({
     );
     const totalTime = useMemo(() => {
         if (mode !== "quiz") return null; // Only calculate in quiz mode
-        return questionGroups.reduce((total, group) => total + 5, 0);
+        return questionGroups.reduce((total, group) => total + group.time, 0);
     }, [mode, questionGroups]);
 
     const goTo = (idx: number) => {

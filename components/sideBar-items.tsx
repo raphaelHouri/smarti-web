@@ -19,7 +19,7 @@ export const SideBarItems = ({
     label,
     iconSrc,
     href,
-    registerOnly    
+    registerOnly
 }: SideBarItemsProps) => {
     //usePathname to manage the routes whether active or not
 
@@ -35,7 +35,6 @@ export const SideBarItems = ({
                 className="justify-start h-[52px]"
                 onClick={OpenRegisterModal}
             >
-                {label}
                 <Image
                     src={iconSrc}
                     alt="label"
@@ -43,6 +42,7 @@ export const SideBarItems = ({
                     height={32}
                     width={32}
                 />
+                {label}
             </Button>
         );
     }
@@ -53,7 +53,6 @@ export const SideBarItems = ({
             asChild
         >
             <Link href={href} className="dark:text-slate-200">
-                {label}
                 <Image
                     src={iconSrc}
                     alt="label"
@@ -61,6 +60,7 @@ export const SideBarItems = ({
                     height={32}
                     width={32}
                 />
+                {label}
             </Link>
         </Button>
     )
