@@ -6,7 +6,7 @@ import { List } from "./_components/List";
 
 const font = Poppins({ subsets: ["latin"], weight: ["600"] })
 
-export const LessonCategoryPage = async () => {
+const LessonCategoryPage = async () => {
     const lessonCategoriesPromise = getCategories();
     const userPromise = getOrCreateUserFromGuest();
 
@@ -27,6 +27,8 @@ export const LessonCategoryPage = async () => {
             />
         </div>
     );
-}
+};
 
-export default LessonCategoryPage;
+export default async function Page() {
+    return await LessonCategoryPage();
+}
