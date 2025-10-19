@@ -12,10 +12,11 @@ interface SideBarProps {
 }
 
 const sidebarItems = [
-    { href: '/learn', label: 'Learn', iconSrc: '/learn.svg', registerOnly: true },
+    { href: '/learn', label: 'Learn', iconSrc: '/learn.svg', registerOnly: false },
     { href: '/leaderboard', label: 'Leaderboard', iconSrc: '/leaderboard.svg', registerOnly: true },
     { href: '/quests', label: 'Quests', iconSrc: '/quests.svg', registerOnly: true },
     { href: '/settings', label: 'Settings', iconSrc: '/setting-profile.svg', registerOnly: true },
+    { href: '/practice', label: 'Practice Again', iconSrc: '/practice.svg', registerOnly: true },
     { href: '/shop', label: 'Shop', iconSrc: '/shop.svg', registerOnly: true },
 ];
 

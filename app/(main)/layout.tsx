@@ -14,6 +14,7 @@ const MainLayout = ({
             <SideBar className="hidden lg:flex" />
             <main className="w-full lg:pr-[256px]  h-full pt-[50px] lg:pt-0">
                 <div className="w-full sm:max-w-[1650px] mx-auto p-6   ">
+                    
                     {children}
                 </div>
             </main>

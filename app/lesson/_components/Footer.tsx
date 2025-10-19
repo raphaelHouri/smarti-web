@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 import { useKey, useMedia } from "react-use";
 
 interface FooterProps {
-    mode: "quiz" | "review" | "summary";
+    mode: "quiz" | "review" | "summary" | "practiceMode";
     disabled?: boolean;
     status: "correct" | "wrong" | "none" | "completed";
     onCheck: () => void;        // primary action when status === "none" (e.g., Check)
@@ -54,7 +54,7 @@ const Footer = ({
 
     // Keyboard: Enter = primary; ← = prev; → = primary (Next/Finish or Check)
     useKey("Enter", handlePrimary, {}, [status, onCheck, onNext]);
-    useKey("ArrowLeft", () => onPrev?.(), {}, [onPrev]);
+    useKey("ArrowLeft", () => mode !== "practiceMode" ? onPrev?.() : undefined, {}, [onPrev]);
     useKey("ArrowRight", handlePrimary, {}, [status, onCheck, onNext]);
 
     const showNav = typeof activeIndex === "number" && typeof total === "number";
@@ -138,8 +138,9 @@ const Footer = ({
                             disabled={!onPrev || (activeIndex as number) <= 0}
                             className="whitespace-nowrap"
                         >
-                            <ChevronLeft className="h-4 w-4 mr-2" />
-                            Previous
+                            <ChevronRight className="h-4 w-4 ml-2" />
+
+                            הקודם
                         </Button>
 
                         <div className="px-2 text-sm sm:text-base text-neutral-700 dark:text-neutral-300 select-none text-center mx-auto md:justify-self-center md:col-start-2">
@@ -167,9 +168,54 @@ const Footer = ({
                             className="whitespace-nowrap"
                         >
                             {activeIndex !== undefined && total !== undefined && activeIndex === total - 1
-                                ? "Finish"
-                                : "Next"}
-                            <ChevronRight className="h-4 w-4 ml-2" />
+                                ? "לסיום"
+                                : "הבא"}
+                            <ChevronLeft className="h-4 w-4 mr-2" />
+                        </Button>}
+
+                    </div>
+                )}
+                {/* Center: Navigation (Prev / counter / Next) */}
+                {showNav && (mode === "practiceMode") && (
+                    <div className="w-full flex items-center gap-2 sm:gap-3 md:grid md:grid-cols-3 md:items-center md:gap-0">
+                        <Button
+                            variant="secondary"
+                            size={isMobile ? "sm" : "lg"}
+                            onClick={onPrev}
+                        >
+
+                            הסר שאלה מרשימת התרגול החוזר
+                            <CheckCircle2 className="h-4 w-4 mr-2" />
+                        </Button>
+
+                        <div className="px-2 text-sm sm:text-base text-neutral-700 dark:text-neutral-300 select-none text-center mx-auto md:justify-self-center md:col-start-2">
+                            Question{" "}
+                            <span className="font-semibold">
+                                {(activeIndex as number) + 1}
+                            </span>{" "}
+                            / {total}
+                        </div>
+                        {(typeof total === "number" && activeIndex == total - 1) ? (
+                            <Button
+                                disabled={disabled}
+                                className="ml-auto"
+                                onClick={handlePrimary}
+                                size={isMobile ? "sm" : "lg"}
+                                variant={status === "wrong" ? "danger" : "secondary"}
+                            >
+                                {primaryLabel}
+                            </Button>
+                        ) : <Button
+                            variant="ghost"
+                            size={isMobile ? "sm" : "lg"}
+                            onClick={onNext}
+                            disabled={!onNext}
+                            className="whitespace-nowrap"
+                        >
+                            {activeIndex !== undefined && total !== undefined && activeIndex === total - 1
+                                ? "לסיום"
+                                : "הבא"}
+                            <ChevronLeft className="h-4 w-4 mr-2" />
                         </Button>}
 
                     </div>

@@ -11,6 +11,7 @@ import PracticeModal from "@/components/modals/usePracticeModal";
 import FinishLessonModal from "@/components/modals/useFinishLessonModal";
 import RegisterModal from "@/components/modals/useRegisterModal";
 import { heIL } from '@clerk/localizations'
+import FeedbackModal from "@/components/modals/useFeedbacksModal";
 
 const font = Poppins({ subsets: ["latin"], weight: ["500"] })
 
@@ -51,6 +52,7 @@ export default function RootLayout({
             <HeartsModal />
             <PracticeModal />
             <FinishLessonModal />
+            <FeedbackModal />
             <RegisterModal />
             {children}
           </ThemeProvider>

@@ -2,8 +2,8 @@
 import { cache } from "react";
 import db from "./drizzle";
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { lessonCategory, lessonQuestionGroups, lessons, userLessonResults, users, userSettings, userWrongQuestions } from './schemaSmarti';
-import { and, desc, eq, inArray } from "drizzle-orm";
+import { lessonCategory, lessonQuestionGroups, lessons, questions, userLessonResults, users, userSettings, userWrongQuestions } from './schemaSmarti';
+import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 export type LessonWithResults =
@@ -286,6 +286,46 @@ export const getUserSubscriptions = cache(async () => {
     // PURCHASING AND CANCELLING HANDLED
 })
 // cancelling the subscription tells stripe not to renew next month
+async function getLessonQuestionGroupsWithFirstQuestionCategorySingleQuery(lessonId: string) {
+    const result = await db.select({
+        id: lessonQuestionGroups.id,
+        lessonId: lessonQuestionGroups.lessonId,
+        // --- IMPORTANT CHANGE HERE ---
+        // Explicitly cast questionList to `string[]` using sql.type
+        questionList: sql<string[]>`${lessonQuestionGroups.questionList}`,
+        // Alternatively, if you prefer using the column directly:
+        // questionList: sql<string[]>`${lessonQuestionGroups.questionList}::text[]`, // PostgreSQL explicit cast
+        // Or sometimes just:
+        // questionList: lessonQuestionGroups.questionList, // This *should* work but seems to be failing inference
+        // Let's stick with the most explicit `sql<string[]>` to ensure the type.
+        // If the above still fails, try `sql<string[]>`${lessonQuestionGroups.questionList}::uuid[]` or `::text[]` for PostgreSQL type cast.
+
+        time: lessonQuestionGroups.time,
+        createdAt: lessonQuestionGroups.createdAt,
+
+
+        categoryType: lessonCategory.categoryType,
+        categoryId: lessonCategory.id,
+    })
+        .from(lessonQuestionGroups)
+        .leftJoin(lessons, eq(lessonQuestionGroups.lessonId, lessons.id))
+        .leftJoin(questions, eq(questions.id, sql<string>`${lessonQuestionGroups.questionList}[1]`))
+        .leftJoin(lessonCategory, eq(lessonCategory.id, questions.categoryId))
+        .where(eq(lessonQuestionGroups.lessonId, lessonId))
+        .orderBy(asc(lessonQuestionGroups.createdAt));
+
+    const formattedResult = result.map(row => ({
+        id: row.id,
+        lessonId: row.lessonId,
+        questionList: row.questionList, // This should now correctly be string[]
+        time: row.time,
+        createdAt: row.createdAt as Date,
+        categoryId: row.categoryId as string,
+        categoryType: row.categoryType as string,
+    }));
+
+    return formattedResult;
+}
 
 export const getQuizDataByLessonId = cache(async (lessonId: string) => {
     const { userId } = await auth();
@@ -301,11 +341,32 @@ export const getQuizDataByLessonId = cache(async (lessonId: string) => {
         });
         userPreviousAnswers = result?.answers ?? null;
     }
-    // Get all question groups for the lesson
-    const questionGroups = await db.query.lessonQuestionGroups.findMany({
+
+    const questionGroupsResult = await db.query.lessonQuestionGroups.findMany({
         where: eq(lessonQuestionGroups.lessonId, lessonId),
         orderBy: (lessonQuestionGroups, { asc }) => [asc(lessonQuestionGroups.createdAt)],
+        with: {
+            category: {
+                columns: {
+                    categoryType: true, // Select the categoryType from lessonCategory
+                },
+            },
+        },
     });
+
+    // TypeScript will now correctly infer the types for group.category.categoryType
+    const questionGroups = questionGroupsResult.map(group => ({
+
+        time: group.time,
+        id: group.id,
+        createdAt: group.createdAt,
+        lessonId: group.lessonId,
+        questionList: group.questionList,
+        categoryId: group.categoryId,
+        categoryType: group.category.categoryType,
+    }));
+
+
 
     // Flatten all question IDs from all groups
     const questionIds = questionGroups.flatMap(group => group.questionList ?? []);
@@ -329,10 +390,89 @@ export const getQuizDataByLessonId = cache(async (lessonId: string) => {
 
 
     return {
-        questionGroups,
+        questionGroups: questionGroups,
         questionsDict,
         userPreviousAnswers: userPreviousAnswers as Array<"a" | "b" | "c" | "d" | null> | null,
     };
+});
+
+
+export const getUserWrongQuestionsByCategoryId = cache(async (categoryId: string) => {
+    const { userId } = await auth();
+    if (!userId) {
+        return {
+            questionGroups: [],
+            questionsDict: {},
+            userPreviousAnswers: null
+        };
+    }
+
+    // Fetch all user wrong questions for the given category using Drizzle syntax
+    const wrongQuestions = await db.query.userWrongQuestions.findMany({
+        where: (wrongQuestionsAlias, { eq, and, inArray }) => and(
+            eq(wrongQuestionsAlias.userId, userId),
+            inArray(wrongQuestionsAlias.questionId,
+                db.select({ id: questions.id })
+                    .from(questions)
+                    .where(eq(questions.categoryId, categoryId))
+            )
+        ),
+        with: {
+            question: true,
+        },
+        limit: 30,
+    });
+    console.log("Wrong Questions:", wrongQuestions);
+
+    // Extract question IDs
+    const questionIds = wrongQuestions.map(wq => wq.questionId);
+
+    // Fetch questions for those IDs
+    const questionsList = questionIds.length
+        ? await db.query.questions.findMany({
+            where: (q) => inArray(q.id, questionIds),
+        })
+        : [];
+
+    // Create a dictionary of questions
+    const questionsDict = Object.fromEntries(
+        questionsList.map(q => [q.id, q])
+    );
+
+    // Create a fake question group for the return format
+    const questionGroups = [
+        {
+            id: "fake-group-id",
+            createdAt: new Date(),
+            lessonId: "fake-lesson-id",
+            category: "fake-category",
+            categoryType: "fake-category-type",
+            questionList: questionIds,
+            time: 0
+        },
+    ];
+
+    return {
+        questionsDict,
+        questionGroups,
+        userPreviousAnswers: null
+    };
+});
+export const removeQuestionsWrongByQuestionId = cache(async (questionId: string) => {
+    const { userId } = await auth();
+
+    if (!userId) {
+        throw new Error("User ID is required.");
+    }
+
+    await db.delete(userWrongQuestions).where(
+        and(
+            eq(userWrongQuestions.userId, userId),
+            eq(userWrongQuestions.questionId, questionId)
+        )
+    );
+    revalidatePath("/lesson/[slug]");
+
 });
 
 
@@ -424,7 +564,36 @@ export const getUserSettingsById = async (userId: string) => {
     return data;
 }
 
+export const getAllWrongQuestionsWithDetails = async () => {
+    const { userId } = await auth();
 
+    if (!userId) {
+        return [];
+    }
+
+    // Fetch all userWrongQuestions for the current user
+    // And eagerly load the related 'questions' data using 'with'
+    const wrongQuestionsWithDetails = await db.query.userWrongQuestions.findMany({
+        where: eq(userWrongQuestions.userId, userId),
+        with: {
+            question: {
+                with: {
+                    category: true, // Assuming 'category' is the relation to fetch category details
+                },
+            },
+        },
+    });
+
+    // Replace categoryId with category title
+    const result = wrongQuestionsWithDetails.map((entry) => ({
+        ...entry,
+        question: {
+            ...entry.question
+        },
+    }));
+
+    return result;
+};
 
 
 

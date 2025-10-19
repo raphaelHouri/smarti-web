@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import db from "@/db/drizzle";
-import { lessons } from "@/db/schema";
+import { lessons } from "@/db/schemaSmarti";
 import { IsAdmin } from "@/lib/admin";
 
 export async function GET(){
@@ -16,7 +16,7 @@ export async function POST(req:Request){
         return new NextResponse("UnAuthorized",{status:401})
     }
     const body = await req.json();
-    const data = await db.insert(lessons).values({  
+    const data = await db.insert(lessons).values({
     ...body
     }).returning()
 

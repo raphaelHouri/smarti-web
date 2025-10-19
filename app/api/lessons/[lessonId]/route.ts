@@ -1,48 +1,48 @@
 import db from "@/db/drizzle"
-import { lessons } from "@/db/schema"
+import { lessons } from "@/db/schemaSmarti"
 import { IsAdmin } from "@/lib/admin"
 import { eq } from "drizzle-orm"
 import { NextResponse } from "next/server"
 
 
 export const GET = async (
-    req:Request,
-    {params}:{params:{lessonId:number}}
+    req: Request,
+    { params }: { params: { lessonId: string } }
 ) => {
-    if(!IsAdmin()){
-        return new NextResponse("UnAuthorized",{status:403})
+    if (!IsAdmin()) {
+        return new NextResponse("UnAuthorized", { status: 403 })
     }
 
     const data = await db.query.lessons.findFirst({
-    where:eq(lessons.id,params.lessonId)
+        where: eq(lessons.id, params.lessonId)
     })
     return NextResponse.json(data);
 }
 
 export const PUT = async (
-    req:Request,
-    {params}:{params:{lessonId:number}}
+    req: Request,
+    { params }: { params: { lessonId: string } }
 ) => {
-        if(!IsAdmin()){
-            return new NextResponse("UnAuthorized",{status:403})
-        }
-        const body = await req.json();
-        const data = await db.update(lessons).set({
+    if (!IsAdmin()) {
+        return new NextResponse("UnAuthorized", { status: 403 })
+    }
+    const body = await req.json();
+    const data = await db.update(lessons).set({
         ...body
-        }).where(
-            eq(lessons.id,params.lessonId)
-        ).returning()
-        return NextResponse.json(data[0]);
+    }).where(
+        eq(lessons.id, params.lessonId)
+    ).returning()
+    return NextResponse.json(data[0]);
 }
 
 export const DELETE = async (
-    req:Request,
-    {params}:{params:{lessonId:number}},
+    req: Request,
+    { params }: { params: { lessonId: string } },
 ) => {
-        if(!IsAdmin()){
-            return new NextResponse("UnAuthorized",{status:403})
-        }
-        const data = await db.delete(lessons).
-        where(eq(lessons.id,params.lessonId)).returning()
-        return NextResponse.json(data[0]);
+    if (!IsAdmin()) {
+        return new NextResponse("UnAuthorized", { status: 403 })
+    }
+    const data = await db.delete(lessons).
+        where(eq(lessons.id, params.lessonId)).returning()
+    return NextResponse.json(data[0]);
 }

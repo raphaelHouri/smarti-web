@@ -6,7 +6,7 @@ import { formatEnum, questions } from "@/db/schemaSmarti";
 import { useMemo } from "react";
 
 interface ChallengeProps {
-    mode: "quiz" | "review";
+    mode: "quiz" | "review" | "practiceMode";
     options: Options;
     questionDetails: typeof questions.$inferSelect;
     onSelect: (option: "a" | "b" | "c" | "d") => void;

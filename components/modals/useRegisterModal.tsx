@@ -25,7 +25,7 @@ const RegisterModal = () => {
                 <DialogHeader>
                     <div className="items-center justify-center flex w-full mb-5">
                         <Image
-                            src="mascot_sad.svg"
+                            src="/mascot_sad.svg"
                             alt="Mascot"
                             height={80}
                             width={80}

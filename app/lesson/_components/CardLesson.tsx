@@ -6,7 +6,7 @@ import { useCallback } from "react";
 import { useAudio, useKey } from "react-use";
 
 interface CardLessonProps {
-    mode: "quiz" | "review";
+    mode: "quiz" | "review" | "practiceMode";
     type: typeof challenges.$inferSelect["type"];
     id: string;
     cardId: string;
@@ -51,8 +51,8 @@ const CardLesson = ({
             className={cn
                 ("h-full border-2 border-b-4 rounded-xl hover:bg-black/5 p-4 lg:p-6 cursor-pointer active:border-b-2",
                     selected && "dark:bg-sky-300 dark:text-black border-sky-300 bg-sky-100 hover:bg-sky-100",
-                    mode == "review" && cardId == "a" && "dark:border-green-500 border-green-300 bg-green-100 dark:bg-green-200 hover:bg-green-100",
-                    mode == "review" && selected && cardId != "a" && "dark:bg-rose-200 dark:hover:bg-rose-200  border-rose-300 bg-rose-100 hover:bg-rose-100",
+                    (mode == "review" || (mode == "practiceMode" && selected)) && cardId == "a" && "dark:border-green-500 border-green-300 bg-green-100 dark:bg-green-200 hover:bg-green-100",
+                    (mode == "review" || mode == "practiceMode") && selected && cardId != "a" && "dark:bg-rose-200 dark:hover:bg-rose-200  border-rose-300 bg-rose-100 hover:bg-rose-100",
                     disabled && "pointer-events-none opacity-50",
                     type === "ASSIST" && "lg:p-3 w-full"
                 )

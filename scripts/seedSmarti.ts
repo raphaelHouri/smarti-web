@@ -197,6 +197,7 @@ const main = async () => {
                     d: "Rome"
                 },
                 topicType: "Geography",
+                categoryId: category2Id,
                 explanation: "Paris is the capital of France.",
                 createdAt: new Date()
             },
@@ -212,6 +213,7 @@ const main = async () => {
                     d: "13"
                 },
                 topicType: "Mathematics",
+                categoryId: category3Id,
                 explanation: "5 + 7 equals 12.",
                 createdAt: new Date()
             },
@@ -227,6 +229,7 @@ const main = async () => {
                     d: "Saturn"
                 },
                 topicType: "Astronomy",
+                categoryId: category2Id,
                 explanation: "Jupiter is the largest planet in our solar system.",
                 createdAt: new Date()
             },
@@ -242,6 +245,7 @@ const main = async () => {
                     d: "60"
                 },
                 topicType: "Mathematics",
+                categoryId: category3Id,
                 explanation: "9 x 6 equals 54.",
                 createdAt: new Date()
             },
@@ -257,6 +261,7 @@ const main = async () => {
                     d: "Tired"
                 },
                 topicType: "English",
+                categoryId: category2Id,
                 explanation: "'Joyful' is a synonym of 'happy'.",
                 createdAt: new Date()
             }
@@ -265,12 +270,13 @@ const main = async () => {
         // Add question groups for the new lessons
         const questionGroup3Id = uuidv4();
         const questionGroup4Id = uuidv4();
+        const questionGroup5Id = uuidv4();
 
         await db.insert(schema.lessonQuestionGroups).values([
             {
                 id: questionGroup3Id,
                 lessonId: lesson3Id,
-                category: "קל",
+                categoryId: category2Id,
                 questionList: [question11Id, question15Id],
                 time: 600,
                 createdAt: new Date()
@@ -278,7 +284,15 @@ const main = async () => {
             {
                 id: questionGroup4Id,
                 lessonId: lesson4Id,
-                category: "בינוני",
+                categoryId: category3Id,
+                questionList: [question12Id, question14Id],
+                time: 900,
+                createdAt: new Date()
+            },
+            {
+                id: questionGroup5Id,
+                lessonId: lesson5Id,
+                categoryId: category3Id,
                 questionList: [question12Id, question14Id],
                 time: 900,
                 createdAt: new Date()
@@ -304,7 +318,7 @@ const main = async () => {
             {
                 id: questionGroupId,
                 lessonId,
-                category: "בינוני",
+                categoryId: categoryId,
                 questionList: [questionId, question3Id, question4Id, question5Id, question6Id, question7Id, question8Id, question9Id, question10Id],
                 time: 600,
                 createdAt: new Date()
@@ -312,7 +326,7 @@ const main = async () => {
             {
                 id: questionGroup2Id,
                 lessonId: lesson2Id,
-                category: "קשה",
+                categoryId: categoryId,
                 questionList: [question2Id],
                 time: 900,
                 createdAt: new Date()
@@ -334,6 +348,7 @@ const main = async () => {
 
                 },
                 topicType: "ארץ ישראל",
+                categoryId: categoryId,
                 explanation: "ירושלים היא עיר הבירה של מדינת ישראל.",
                 createdAt: new Date()
             },
@@ -349,6 +364,7 @@ const main = async () => {
                     d: "1950"
                 },
                 topicType: "היסטוריה",
+                categoryId: categoryId,
                 explanation: "מדינת ישראל הוקמה ב־14 במאי 1948.",
                 createdAt: new Date()
             },
@@ -364,6 +380,7 @@ const main = async () => {
                     d: "רוסית"
                 },
                 topicType: "שפה",
+                categoryId: categoryId,
                 explanation: "עברית היא השפה הרשמית של ישראל.",
                 createdAt: new Date()
             },
@@ -379,6 +396,7 @@ const main = async () => {
                     d: "ים כנרת"
                 },
                 topicType: "גיאוגרפיה",
+                categoryId: categoryId,
                 explanation: "ים המלח נמצא במזרח ישראל.",
                 createdAt: new Date()
             },
@@ -394,6 +412,7 @@ const main = async () => {
                     d: "הר הכרמל"
                 },
                 topicType: "גיאוגרפיה",
+                categoryId: categoryId,
                 explanation: "הר חרמון הוא ההר הגבוה ביותר בישראל.",
                 createdAt: new Date()
             },
@@ -409,6 +428,7 @@ const main = async () => {
                     d: "יצחק רבין"
                 },
                 topicType: "היסטוריה",
+                categoryId: categoryId,
                 explanation: "דוד בן גוריון היה ראש הממשלה הראשון של ישראל.",
                 createdAt: new Date()
             },
@@ -424,6 +444,7 @@ const main = async () => {
                     d: "עכו"
                 },
                 topicType: "גיאוגרפיה",
+                categoryId: categoryId,
                 explanation: "חיפה היא עיר הנמל המרכזית של ישראל.",
                 createdAt: new Date()
             },
@@ -439,6 +460,7 @@ const main = async () => {
                     d: "1948"
                 },
                 topicType: "היסטוריה",
+                categoryId: categoryId,
                 explanation: "ירושלים נכבשה מחדש במלחמת ששת הימים בשנת 1967.",
                 createdAt: new Date()
             },
@@ -454,6 +476,7 @@ const main = async () => {
                     d: "הקישון"
                 },
                 topicType: "גיאוגרפיה",
+                categoryId: categoryId,
                 explanation: "הירדן הוא הנהר הארוך ביותר בישראל.",
                 createdAt: new Date()
             },
@@ -469,6 +492,7 @@ const main = async () => {
                     d: "באר שבע"
                 },
                 topicType: "כלכלה",
+                categoryId: categoryId,
                 explanation: "תל אביב נחשבת לעיר הבירה הכלכלית של ישראל.",
                 createdAt: new Date()
             }
@@ -491,7 +515,16 @@ const main = async () => {
             questionId: question2Id,
             userId
         });
-
+        await db.insert(schema.feedbacks).values({
+            id: uuidv4(),
+            userId,
+            screenName: "LessonScreen",
+            identifier: lessonId,
+            rate: "5",
+            title: "Great Lesson!",
+            description: "The lesson was very informative and engaging.",
+            createdAt: new Date()
+        });
         console.log("✅ Seeding finished");
     } catch (err) {
         console.error(err);

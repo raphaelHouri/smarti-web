@@ -1,8 +1,7 @@
 "use client"
 
-import { userSubscription } from "@/db/schema"
-import { challengesOptions } from '../../../db/schema';
-import { useState, useTransition, useEffect, useMemo, useCallback } from "react";
+
+import { useState, useTransition, useEffect, useMemo, useCallback, useLayoutEffect } from "react";
 import useWindowSize from 'react-use/lib/useWindowSize'
 import Confetti from 'react-confetti'
 import Header from "./Header";
@@ -22,7 +21,7 @@ import { z } from "zod";
 import { useFinishLessonModal } from "@/store/use-finish-lesson-modal";
 import { useRegisterModal } from "@/store/use-register-modal";
 import { useAuth } from "@clerk/nextjs";
-import { addResultsToUser, getOrCreateUserFromGuest } from "@/db/queries";
+import { addResultsToUser, getOrCreateUserFromGuest, removeQuestionsWrongByQuestionId } from "@/db/queries";
 import { Button } from "@/components/ui/button";
 import CountdownTimer from "./CountdownTimer";
 
@@ -40,7 +39,7 @@ export type Options = z.infer<typeof optionsSchema>;
 interface QuizProps {
     initialLessonId: string
     initialHearts: number
-    questionGroups: (typeof lessonQuestionGroups.$inferSelect)[]
+    questionGroups: (typeof lessonQuestionGroups.$inferSelect & { categoryType: string, categoryId: string })[],
     questionsDict: { [q: string]: typeof questions.$inferSelect };
     userPreviousAnswers: ("a" | "b" | "c" | "d" | null)[] | null;
 }
@@ -60,7 +59,7 @@ const Quiz = ({
     const [guest, setGuest] = useState(false);
     const [lessonId] = useState(initialLessonId)
     const [activeIndex, setActiveIndex] = useState(0)
-    const [mode, setMode] = useState<"quiz" | "review" | "summary">("quiz")
+    const [mode, setMode] = useState<"quiz" | "review" | "summary" | "practiceMode">("quiz")
     const { userId } = useAuth();
     const [startAt, setStartAt] = useState<Date | null>(null);
     const isMobile = useMedia("(max-width:1024px)");
@@ -68,11 +67,11 @@ const Quiz = ({
         categoryValue.questionList.map((questionValue, index2) => ({
             placeY: index1,
             placeX: index2,
-            category: categoryValue.category,
+            category: categoryValue.categoryId,
             questionId: questionValue
         }))
     );
-
+    console.log("hgjjh", questionGroups)
 
 
     const router = useRouter();
@@ -91,11 +90,16 @@ const Quiz = ({
     if (!options) return <p> option not exists</p>
 
     const { open: OpenHeartsModal } = useHeartsModal();
-    const { open: OpenPracticeModal } = usePracticeModal();
     const { open: OpenFinishLessonModal, isApproved: isFinishApproved, clearApprove, approve } = useFinishLessonModal();
-    const { open: OpenRegisterModal, } = useRegisterModal();
-
+    const { open: OpenPracticeModal, isOpen, close } = usePracticeModal();
+    const { open: OpenRegisterModal } = useRegisterModal();
+    useLayoutEffect(() => {
+        if (lessonId == 'practiceMode') {
+            setMode("practiceMode")
+        }
+    }, []);
     useMount(() => {
+
         if (userPreviousAnswers) {
             setMode("summary")
             setResultList([...userPreviousAnswers])
@@ -110,6 +114,10 @@ const Quiz = ({
         const handleFinishApproval = async () => {
             if (isFinishApproved && userId) {
                 await addResultsToUser(lessonId, userId, resultList, questionsMap.map(q => q.questionId), startAt);
+                setMode("summary");
+                clearApprove();
+            }
+            if (isFinishApproved && !userId) {
                 setMode("summary");
                 clearApprove();
             }
@@ -156,7 +164,18 @@ const Quiz = ({
         setActiveIndex(idx);
     };
 
-    const onPrev = () => goTo(activeIndex - 1);
+    const onPrev = async () => {
+        if (mode == "practiceMode") {
+            const wrongQuestionId = questionsMap[activeIndex].questionId;
+            // Assuming you have a function to remove a question from the wrongQuestion db
+            await removeQuestionsWrongByQuestionId(wrongQuestionId)
+            if (activeIndex == total - 1) {
+                router.push(`/practice`)
+            }
+            onNextNav();
+        };
+        goTo(activeIndex - 1);
+    };
     const onNextNav = () => {
 
         if (activeIndex < total - 1) {
@@ -164,6 +183,7 @@ const Quiz = ({
             goTo(activeIndex + 1);
         } else {
             if (mode === "review") setMode("summary");
+            if (mode === "practiceMode") OpenPracticeModal();
             else OpenFinishLessonModal();
         }
     };
@@ -217,12 +237,14 @@ const Quiz = ({
     const { width, height } = useWindowSize();
 
     const renderResultGrid = () => {
+        if (lessonId === "practiceMode") return null;
+
         return (
             <div className="w-full p-6 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/10 shadow-xl">
                 {questionGroups.map((categoryValue, categoryIndex) => (
                     <div key={categoryIndex} className="mb-6">
                         <h3 className="text-lg font-semibold text-neutral-700 dark:text-neutral-300 mb-4">
-                            {categoryValue.category}
+                            {categoryValue.categoryType}
                         </h3>
                         <div className="grid grid-cols-5 gap-4">
                             {categoryValue.questionList.map((_, questionIndex) => {
@@ -238,8 +260,12 @@ const Quiz = ({
                                     <button
                                         key={index}
                                         onClick={() => {
+
                                             if (mode === "quiz") {
                                                 goTo(index);
+                                            }
+                                            if (!userId) {
+                                                OpenRegisterModal();
                                             } else {
                                                 setMode("review");
                                                 goTo(index);
@@ -318,7 +344,7 @@ const Quiz = ({
                         <p className="text-lg text-neutral-600 dark:text-neutral-300">
                             You've mastered this lesson
                         </p>
-                    </div>,,
+                    </div>
                     <div className="flex items-center gap-x-6 w-full max-w-md">
                         <ResultCard
                             variant="points"
@@ -399,7 +425,7 @@ const Quiz = ({
                         {/* {mode === "review" && ( */}
                         <div className="hidden md:block absolute right-6 top-1/4 transform -translate-y-1/2 w-[300px]">
                             <div className="w-full mx-auto">
-                                {renderResultGrid()}
+                                {mode !== "practiceMode" && renderResultGrid()}
                             </div>
                         </div>
                         {/* )} */}

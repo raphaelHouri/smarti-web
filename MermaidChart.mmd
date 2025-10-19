@@ -8,6 +8,7 @@ subscriptions ||--o| coupons : uses
 subscriptions }o--|| plans : belongs_to
 coupons }o--o{ plans : valid_for
 lesson_category ||--o{ lessons : contains
+lesson_category ||--o{ questions : contains
 lessons ||--o{ user_lesson_results : tracks
 lessons ||--o{ lesson_question_groups : groups
 lesson_question_groups ||--o{ questions : includes
@@ -17,7 +18,7 @@ organisation_years ||--o{ coupons : issues
 user_wrong_questions |{--o| questions : includes
 user_wrong_questions |{--}| users : includes
 users {
-  UUID id PK
+  TEXT id PK
   TEXT name
   TEXT email
   UUID[] managed_organisation
@@ -104,6 +105,7 @@ questions {
   TEXT question
   TEXT format
   JSONB options
+  UUID lesson_category_id FK
   TEXT topic_type
   TEXT explanation
   TIMESTAMP created_at

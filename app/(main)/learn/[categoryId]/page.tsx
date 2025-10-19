@@ -9,6 +9,7 @@ import QuestsSection from "../../quests/_components/quests";
 import { getCategories, getFirstCategory, getLessonCategoryById, getLessonCategoryWithLessonsById, getOrCreateUserFromGuest, getUserSubscriptions } from "@/db/queries";
 import LessonCategoryPage from "../../courses/page";
 import { tr } from "zod/v4/locales";
+import FeedbackButton from "@/components/feedbackButton";
 
 const LearnPage = async ({
     params,
@@ -66,6 +67,9 @@ const LearnPage = async ({
         <div className="flex gap-[48px] px-2">
 
             <FeedWrapper>
+                <div className="flex flex-row items-start justify-end ">
+                    <FeedbackButton screenName="learn" identifier={categoryDetails.categoryType} />
+                </div>
                 <LessonCategoryPage />
                 {/* <Header title={categoryDetails.categoryType || ""} /> */}
 
@@ -80,6 +84,7 @@ const LearnPage = async ({
                 </div>
             </FeedWrapper>
             <StickyWrapper>
+
                 <UserProgress
                     activeCourse={{
                         id: categoryDetails.id,

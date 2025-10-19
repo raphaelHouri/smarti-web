@@ -4,8 +4,10 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import Image from "next/image";
 import { Button } from "../ui/button";
 import { usePracticeModal } from "@/store/use-practice-modal";
+import { useRouter } from "next/navigation";
 
 const PracticeModal = () => {
+    const router = useRouter();
     const [isClient, setIsClient] = useState<boolean>(false)
     const { isOpen, close, open } = usePracticeModal();
 
@@ -18,7 +20,6 @@ const PracticeModal = () => {
     if (!isClient) {
         return null;
     }
-
 
     //  isOpen and close are states from zustand
     return (
@@ -41,17 +42,20 @@ const PracticeModal = () => {
                     </div>
                     <DialogTitle className="text-center
                 font-bold text-2xl">
-                        Practise Lesson.
+                        Practice Lesson.
                     </DialogTitle>
                     <DialogDescription className="text-center text-base">
-                        Use practise lesson to regain hearts and points, you can&apos;t
+                        Use practice lesson to regain hearts and points, you can&apos;t
                         loose it here.
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
                     <div className="flex flex-col gap-y-3 w-full">
                         <Button variant="primary" size="default" className="w-full"
-                            onClick={close}>
+                            onClick={() => {
+                                close()
+                                router.push("/practice")
+                            }}>
                             I understand!
                         </Button>
                     </div>
