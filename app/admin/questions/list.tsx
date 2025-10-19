@@ -11,7 +11,11 @@ export const QuestionList = () => (
             <DataTable.Col source="options.b" label="Option B" />
             <DataTable.Col source="options.c" label="Option C" />
             <DataTable.Col source="options.d" label="Option D" />
-            <DataTable.Col source="categoryId" label="Category" />
+            <DataTable.Col source="categoryId" label="Category">
+                <ReferenceField source="categoryId" reference="lessonCategory">
+                    <TextField source="categoryType" />
+                </ReferenceField>
+            </DataTable.Col>
             <DataTable.Col source="topicType" />
             <DataTable.Col source="explanation" />
             <DataTable.Col source="createdAt">

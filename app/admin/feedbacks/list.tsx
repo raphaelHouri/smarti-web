@@ -1,11 +1,13 @@
-import { DataTable, DateField, List, ReferenceField } from 'react-admin';
+import { DataTable, DateField, List, ReferenceField, TextField } from 'react-admin';
 
 export const FeedbackList = () => (
     <List>
         <DataTable>
             <DataTable.Col source="id" />
             <DataTable.Col source="userId">
-                <ReferenceField source="userId" reference="users" />
+                <ReferenceField source="userId" reference="users">
+                    <TextField source="name" />
+                </ReferenceField>
             </DataTable.Col>
             <DataTable.Col source="screenName" />
             <DataTable.Col source="identifier" />
