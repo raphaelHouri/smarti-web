@@ -1,5 +1,6 @@
 import { useCountdownStore } from "@/store/use-countdown-timer";
 import { useEffect } from "react";
+import { cn } from "@/lib/utils";
 
 const CountdownTimer = ({ initialTime, onFinish }: { initialTime: number; onFinish: () => void }) => {
     const { timeLeft, isRunning, setTimeLeft, setIsRunning, resetTimer } = useCountdownStore();
@@ -30,7 +31,10 @@ const CountdownTimer = ({ initialTime, onFinish }: { initialTime: number; onFini
     const seconds = timeLeft % 60;
 
     return (
-        <div className={`transition-all duration-300 ${!isRunning ? "scale-110 text-red-500" : ""}`}>
+        <div className={cn(
+            "transition-all duration-300",
+            !isRunning && "scale-110 text-red-500"
+        )}>
             {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
         </div>
     );

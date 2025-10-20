@@ -52,20 +52,7 @@ const App = () => {
     return (
         <Admin dataProvider={dataProvider}>
 
-            {/* <Resource
-                name="challenges"
-                list={ChallengesList}
-                create={ChallengesCreate}
-                edit={ChallengesEdit}
-                recordRepresentation="question"
-            />
-            <Resource
-                name="challengesOptions"
-                list={ChallengesOptionsList}
-                create={ChallengesOptionsCreate}
-                edit={ChallengesOptionsEdit}
-                recordRepresentation="text"
-            /> */}
+
             <Resource
                 name="feedbacks"
                 list={FeedbackList}

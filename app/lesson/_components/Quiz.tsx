@@ -1,6 +1,6 @@
 "use client"
 
-
+import { cn } from "@/lib/utils";
 import { useState, useTransition, useEffect, useMemo, useCallback, useLayoutEffect } from "react";
 import useWindowSize from 'react-use/lib/useWindowSize'
 import Confetti from 'react-confetti'
@@ -290,10 +290,10 @@ const Quiz = ({
                                         </span>
                                         {mode !== "quiz" && result && (
                                             <span
-                                                className={`text-xl ${result === "a"
-                                                    ? 'text-green-400'
-                                                    : 'text-red-400'
-                                                    }`}
+                                                className={cn(
+                                                    "text-xl",
+                                                    result === "a" ? "text-green-400" : "text-red-400"
+                                                )}
                                             >
                                                 {result === "a" ? '✓' : '✗'}
                                             </span>
