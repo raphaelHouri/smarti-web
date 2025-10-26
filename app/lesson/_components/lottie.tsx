@@ -1,13 +1,33 @@
 "use client";
-import animationData from "@/public/celebrate.json";
-import Lottie from "lottie-react";
+import dynamic from "next/dynamic";
+import { useEffect, useRef, useState } from "react";
+
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
+
 const CelebrateJson = () => {
-    return ( 
-    <Lottie
-        animationData={animationData}
-        className="flex items-center justify-center flex-col h-40 -mb-6"
-        loop={true}
-    /> );
+    const containerRef = useRef<HTMLDivElement | null>(null);
+    const [isInView, setIsInView] = useState(false);
+    const [data, setData] = useState<any | null>(null);
+
+    useEffect(() => {
+        if (!containerRef.current) return;
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0]?.isIntersecting) setIsInView(true);
+        }, { rootMargin: "128px" });
+        observer.observe(containerRef.current);
+        return () => observer.disconnect();
+    }, []);
+
+    useEffect(() => {
+        if (!isInView || data) return;
+        import("@/public/celebrate.json").then((m) => setData(m.default)).catch(() => { });
+    }, [isInView, data]);
+
+    return (
+        <div ref={containerRef} className="flex items-center justify-center flex-col h-40 -mb-6">
+            {data ? <Lottie animationData={data} loop /> : null}
+        </div>
+    );
 }
 
 export default CelebrateJson;

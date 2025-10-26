@@ -1,13 +1,33 @@
 "use client";
-import animationData from "@/public/profile_setup.json";
-import Lottie from "lottie-react";
+import dynamic from "next/dynamic";
+import { useEffect, useRef, useState } from "react";
+
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
+
 const SettingsAnimation = () => {
+    const containerRef = useRef<HTMLDivElement | null>(null);
+    const [isInView, setIsInView] = useState(false);
+    const [data, setData] = useState<any | null>(null);
+
+    useEffect(() => {
+        if (!containerRef.current) return;
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0]?.isIntersecting) setIsInView(true);
+        }, { rootMargin: "128px" });
+        observer.observe(containerRef.current);
+        return () => observer.disconnect();
+    }, []);
+
+    useEffect(() => {
+        if (!isInView || data) return;
+        import("@/public/profile_setup.json").then((m) => setData(m.default)).catch(() => { });
+    }, [isInView, data]);
+
     return (
-        <Lottie
-            animationData={animationData}
-            className="flex items-center justify-center flex-col h-52 -mt-6 -mb-12"
-            loop={true}
-        />);
+        <div ref={containerRef} className="flex items-center justify-center flex-col h-52 -mt-6 -mb-12">
+            {data ? <Lottie animationData={data} loop /> : null}
+        </div>
+    );
 }
 
 export default SettingsAnimation;

@@ -1,14 +1,11 @@
 import Image from "next/image";
-import dynamic from "next/dynamic";
+import LottieJson from "./lottie";
 import { ClerkLoaded, ClerkLoading, SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/nextjs";
 import { Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
-const Lottie = dynamic(() => import("./lottie"), {
-  ssr: false,
-  loading: () => null,
-});
+// LottieJson is a client component that already lazy-loads lottie-react.
 
 
 export default async function Home() {
@@ -28,7 +25,7 @@ export default async function Home() {
       <div className="flex flex-col items-center gap-y-6">
 
         <h1 className="font-bold text-xl lg:text-3xl text-neutral-600 max-w-[600px] text-center dark:bg-clip-text dark:text-transparent dark:bg-gradient-to-tr from-slate-500 to-neutral-300/90">
-          <Lottie />
+          <LottieJson />
           Master and refine in learning new languages through Linguify.
         </h1>
         <div className="flex flex-col items-center justify-center gap-y-3 max-w-[330px] w-full">
