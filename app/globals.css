@@ -595,3 +595,21 @@ body,
 .cl-popoverBox {
   direction: rtl;
 }
+
+/* Gentle float animation for background icons */
+@keyframes float-gentle {
+  0%,
+  100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  33% {
+    transform: translateY(-15px) translateX(10px);
+  }
+  66% {
+    transform: translateY(5px) translateX(-10px);
+  }
+}
+
+.animate-float-gentle {
+  animation: float-gentle 8s ease-in-out infinite;
+}
