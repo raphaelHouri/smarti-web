@@ -1,6 +1,8 @@
 "use client"
-import { Admin, EditGuesser, ListGuesser, Resource, ShowGuesser } from "react-admin";
+import { Admin, EditGuesser, ListGuesser, Resource, ShowGuesser, CustomRoutes } from "react-admin";
+import { Route } from 'react-router-dom';
 import simpleRestProvider from "ra-data-simple-rest";
+import AnalyticsWrapper from "./organization-analytics/AnalyticsWrapper";
 import { FeedbackList } from "./feedbacks/list";
 import { FeedbackEdit } from "./feedbacks/edit";
 import { FeedbackShow } from "./feedbacks/show";
@@ -168,7 +170,9 @@ const App = () => {
                 icon={AlertTriangle}
                 show={UserWrongQuestionsShow}
             />
-            Admin
+            <CustomRoutes>
+                <Route path="/organization-analytics" element={<AnalyticsWrapper />} />
+            </CustomRoutes>
         </Admin>
     );
 }
