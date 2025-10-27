@@ -142,7 +142,7 @@ export const addResultsToUser = cache(async (lessonId: string, userId: string, a
     }
 
     answers.forEach(async (answer, index) => {
-        if (answer !== "a" && answer !== null) {
+        if (answer !== "a") {
             const existingWrongQuestion = await db.query.userWrongQuestions.findFirst({
                 where: and(
                     eq(userWrongQuestions.userId, userId),

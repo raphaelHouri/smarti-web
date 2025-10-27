@@ -133,15 +133,12 @@ export async function POST(req: NextRequest) {
                 } else if (header === 'id') {
                     obj.id = String(value);
                 } else if (header === 'format') {
-                    const lowerCaseValue = String(value).toLowerCase();
-                    if (['select'].includes(lowerCaseValue)) {
-                        obj.format = 'SELECT';
-                    } else if (['assist', 'text', 'number'].includes(lowerCaseValue)) {
-                        obj.format = 'ASSIST';
-                    } else if (['image', 'boolean'].includes(lowerCaseValue)) {
-                        obj.format = 'SELECT';
+                    const upperCaseValue = String(value).toUpperCase();
+                    if (['REGULAR', 'SHAPES', 'COMPREHENSION'].includes(upperCaseValue)) {
+                        obj.format = upperCaseValue as DrizzleQuestionInsert['format'];
+
                     } else {
-                        obj.format = 'SELECT';
+                        obj.format = 'REGULAR';
                         console.warn(`Row ${i + 2}: Unrecognized format '${value}'. Defaulting to 'SELECT'.`);
                     }
                 } else if (header.startsWith('options.')) {

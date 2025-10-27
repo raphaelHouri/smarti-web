@@ -63,7 +63,7 @@ export const lessons = pgTable("lessons", {
         unique: true,
     }
 }));
-export const formatEnum = pgEnum("format", ["SELECT", "ASSIST"])
+export const formatEnum = pgEnum("format", ["REGULAR", "SHAPES", "COMPREHENSION"])
 
 export const questions = pgTable("questions", {
     id: uuid("id").defaultRandom().primaryKey(),

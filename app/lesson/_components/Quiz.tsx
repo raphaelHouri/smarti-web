@@ -60,6 +60,7 @@ const Quiz = ({
     const [lessonId] = useState(initialLessonId)
     const [activeIndex, setActiveIndex] = useState(0)
     const [mode, setMode] = useState<"quiz" | "review" | "summary" | "practiceMode">("quiz")
+    const [isExpanded, setIsExpanded] = useState(true)
     const { userId } = useAuth();
     const [startAt, setStartAt] = useState<Date | null>(null);
     const isMobile = useMedia("(max-width:1024px)");
@@ -155,6 +156,11 @@ const Quiz = ({
         if (mode !== "quiz") return null; // Only calculate in quiz mode
         return questionGroups.reduce((total, group) => total + group.time, 0);
     }, [mode, questionGroups]);
+
+    // Reset expanded state when question changes
+    useEffect(() => {
+        setIsExpanded(false);
+    }, [activeIndex]);
 
     const goTo = (idx: number) => {
         console.log("Going to index:", idx);
@@ -256,6 +262,7 @@ const Quiz = ({
                                         .reduce((acc, group) => acc + group.questionList.length, 0);
                                 const result = resultList[index];
                                 const isAnswered = result !== null;
+                                const isCurrent = index === activeIndex;
                                 return (
                                     <button
                                         key={index}
@@ -263,8 +270,7 @@ const Quiz = ({
 
                                             if (mode === "quiz") {
                                                 goTo(index);
-                                            }
-                                            if (!userId) {
+                                            } else if (!userId) {
                                                 OpenRegisterModal();
                                             } else {
                                                 setMode("review");
@@ -273,9 +279,13 @@ const Quiz = ({
                                         }}
                                         className={`relative group flex flex-col items-center justify-center px-3 py-1 rounded-xl
                                             transition-all duration-300 hover:scale-110
+                                            ${isCurrent
+                                                ? "border-2 border-slate-500 shadow-lg z-10"
+                                                : "border border-transparent"
+                                            }
                                             ${mode === "quiz"
                                                 ? isAnswered
-                                                    ? 'bg-sky-500/20 hover:bg-sky-500/40 border-sky-500/60 border-1'
+                                                    ? 'bg-sky-500/20 hover:bg-sky-500/40'
                                                     : 'bg-gray-500/10 hover:bg-gray-500/20'
                                                 : result
                                                     ? result === "a"
@@ -335,9 +345,9 @@ const Quiz = ({
                     numberOfPieces={1000}
                     tweenDuration={10000}
                 />
-                <div className="flex flex-col gap-y-8 items-center justify-center h-full max-w-xl mx-auto px-4">
+                <div className="flex flex-col gap-y-8 items-center justify-center h-full max-w-xl mx-auto px-4 ">
                     <CelebrateJson />
-                    <div className="space-y-4 text-center animate-fade-in">
+                    <div className="space-y-4 text-center animate-fade-in pt-20">
                         <h1 className="text-2xl lg:text-4xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
                             Fantastic Work! 🎉
                         </h1>
@@ -416,11 +426,7 @@ const Quiz = ({
 
             <div className="flex-1">
                 <div className="h-full justify-center flex items-center">
-                    <div className="lg:min-h-[300px] w-full lg:w-[600px] lg:px-0 px-6 flex flex-col gap-y-6">
-
-                        <h1 className="lg:text-3xl text-lg lg:text-start font-bold text-neutral-700 dark:text-neutral-300">
-                            {title}
-                        </h1>
+                    <div className="lg:min-h-[300px] w-full lg:w-[1200px] lg:px-0 px-6 flex flex-col gap-y-6">
 
                         {/* {mode === "review" && ( */}
                         <div className="hidden md:block absolute right-6 top-1/4 transform -translate-y-1/2 w-[300px]">
@@ -431,9 +437,62 @@ const Quiz = ({
                         {/* )} */}
 
                         <div>
-                            {'ASSIST' === 'ASSIST' && (
-                                <QuestionBubble question={question.question} />
+                            {/* Show COMPREHENSION content in box with expand/collapse */}
+                            {question.format === "COMPREHENSION" && question.content && (
+                                <div className="flex flex-col justify-center w-full mb-8 gap-2">
+                                    <div className="flex justify-end">
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => setIsExpanded(!isExpanded)}
+                                            className="text-sm text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300"
+                                        >
+                                            {isExpanded ? "Show Less" : "Show Full"}
+                                        </Button>
+                                    </div>
+                                    <div className="flex justify-center w-full">
+                                        <div
+                                            className="relative bg-gradient-to-tr from-white via-sky-50 to-blue-50 dark:from-[#12131a] dark:via-[#182446] dark:to-[#222c40] border border-sky-100 dark:border-sky-800 rounded-3xl shadow-xl w-full flex gap-6 items-start px-4 py-3 lg:px-7 lg:py-6 overflow-y-auto"
+                                            style={{
+                                                transition: "max-height 0.3s ease-in-out",
+                                                maxHeight: isExpanded ? "" : "300px"
+                                            }}
+                                        >
+                                            <div className="flex-1 min-w-0">
+                                                <div className="whitespace-pre-line font-normal text-lg lg:text-lg tracking-wide text-neutral-900 dark:text-neutral-100" style={{ lineHeight: 1.65 }}>
+                                                    {question.content}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             )}
+
+                            {/* Show SHAPES type question as image centered above the question from bucket */}
+                            {question.format === "SHAPES" && question.content && (
+                                <div className="flex flex-col items-center justify-center w-full mb-8 gap-2">
+                                    <div className="flex justify-center">
+                                        {/* 
+                                            Expected: question.content holds the image path or filename (e.g. 'triangle.png').
+                                            You may want to prepend your bucket URL here if not included.
+                                            Adjust 'process.env.NEXT_PUBLIC_SHAPES_BUCKET_URL' to your env and deployment.
+                                        */}
+                                        <img
+                                            src={question.content}
+                                            alt="Shape question"
+                                            className="max-h-64 max-w-full object-contain rounded-2xl border border-neutral-200 dark:border-neutral-700 shadow-md bg-white dark:bg-neutral-900"
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
+
+                            <h1 className="lg:text-3xl text-lg lg:text-start font-bold text-neutral-700 dark:text-neutral-300 mb-4">
+
+                                <QuestionBubble question={question.question} />
+
+                            </h1>
+
                             <Challenge
                                 mode={mode}
                                 options={options}
@@ -443,6 +502,7 @@ const Quiz = ({
                                 status={status}
                                 selectedOption={selectedOption}
                             />
+                            
                         </div>
                     </div>
                 </div>

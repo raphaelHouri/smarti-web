@@ -189,7 +189,7 @@ const main = async () => {
                 id: question11Id,
                 content: "<p>What is the capital of France?</p>",
                 question: "What is the capital of France?",
-                format: "SELECT",
+                format: "REGULAR",
                 options: {
                     a: "Berlin",
                     b: "Madrid",
@@ -205,7 +205,7 @@ const main = async () => {
                 id: question12Id,
                 content: "<p>What is 5 + 7?</p>",
                 question: "What is 5 + 7?",
-                format: "SELECT",
+                format: "REGULAR",
                 options: {
                     a: "10",
                     b: "11",
@@ -221,7 +221,7 @@ const main = async () => {
                 id: question13Id,
                 content: "<p>What is the largest planet in our solar system?</p>",
                 question: "What is the largest planet in our solar system?",
-                format: "SELECT",
+                format: "REGULAR",
                 options: {
                     a: "Earth",
                     b: "Mars",
@@ -237,7 +237,7 @@ const main = async () => {
                 id: question14Id,
                 content: "<p>What is 9 x 6?</p>",
                 question: "What is 9 x 6?",
-                format: "SELECT",
+                format: "REGULAR",
                 options: {
                     a: "54",
                     b: "56",
@@ -253,7 +253,7 @@ const main = async () => {
                 id: question15Id,
                 content: "<p>What is the synonym of 'happy'?</p>",
                 question: "What is the synonym of 'happy'?",
-                format: "SELECT",
+                format: "REGULAR",
                 options: {
                     a: "Sad",
                     b: "Angry",
@@ -338,7 +338,7 @@ const main = async () => {
                 id: questionId,
                 content: "<p>מה בירת ישראל?</p>",
                 question: "מה בירת ישראל?",
-                format: "SELECT",
+                format: "REGULAR",
                 options: {
 
                     b: "חיפה",
@@ -356,7 +356,7 @@ const main = async () => {
                 id: question2Id,
                 content: "<p>מתי קמה מדינת ישראל?</p>",
                 question: "מתי קמה מדינת ישראל?",
-                format: "SELECT",
+                format: "REGULAR",
                 options: {
                     a: "1945",
                     b: "1947",
@@ -372,7 +372,7 @@ const main = async () => {
                 id: question3Id,
                 content: "<p>מהי השפה הרשמית של ישראל?</p>",
                 question: "מהי השפה הרשמית של ישראל?",
-                format: "SELECT",
+                format: "REGULAR",
                 options: {
                     a: "אנגלית",
                     b: "עברית",
@@ -388,7 +388,7 @@ const main = async () => {
                 id: question4Id,
                 content: "<p>איזה ים נמצא במזרח ישראל?</p>",
                 question: "איזה ים נמצא במזרח ישראל?",
-                format: "SELECT",
+                format: "REGULAR",
                 options: {
                     a: "ים התיכון",
                     b: "ים סוף",
@@ -404,7 +404,7 @@ const main = async () => {
                 id: question5Id,
                 content: "<p>מהו ההר הגבוה ביותר בישראל?</p>",
                 question: "מהו ההר הגבוה ביותר בישראל?",
-                format: "SELECT",
+                format: "REGULAR",
                 options: {
                     a: "הר תבור",
                     b: "הר מירון",
@@ -420,7 +420,7 @@ const main = async () => {
                 id: question6Id,
                 content: "<p>מי היה ראש הממשלה הראשון של ישראל?</p>",
                 question: "מי היה ראש הממשלה הראשון של ישראל?",
-                format: "SELECT",
+                format: "REGULAR",
                 options: {
                     a: "גולדה מאיר",
                     b: "בנימין נתניהו",
@@ -436,7 +436,7 @@ const main = async () => {
                 id: question7Id,
                 content: "<p>מהי עיר הנמל המרכזית של ישראל?</p>",
                 question: "מהי עיר הנמל המרכזית של ישראל?",
-                format: "SELECT",
+                format: "REGULAR",
                 options: {
                     a: "אשדוד",
                     b: "חיפה",
@@ -452,7 +452,7 @@ const main = async () => {
                 id: question8Id,
                 content: "<p>באיזו שנה נכבשה ירושלים במלחמת ששת הימים?</p>",
                 question: "באיזו שנה נכבשה ירושלים במלחמת ששת הימים?",
-                format: "SELECT",
+                format: "REGULAR",
                 options: {
                     a: "1967",
                     b: "1973",
@@ -468,7 +468,7 @@ const main = async () => {
                 id: question9Id,
                 content: "<p>מהו הנהר הארוך ביותר בישראל?</p>",
                 question: "מהו הנהר הארוך ביותר בישראל?",
-                format: "SELECT",
+                format: "REGULAR",
                 options: {
                     a: "הירקון",
                     b: "הירדן",
@@ -484,7 +484,7 @@ const main = async () => {
                 id: question10Id,
                 content: "<p>איזו עיר נחשבת לעיר הבירה הכלכלית של ישראל?</p>",
                 question: "איזו עיר נחשבת לעיר הבירה הכלכלית של ישראל?",
-                format: "SELECT",
+                format: "REGULAR",
                 options: {
                     a: "תל אביב",
                     b: "חיפה",
