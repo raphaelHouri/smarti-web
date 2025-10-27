@@ -23,6 +23,10 @@ export const CouponShow = () => (
                 <TextField source="name" />
             </ReferenceField>
             <ReferenceField source="organizationYearId" reference="organizationYears" label="Organization Year">
+                <ReferenceField source="organizationId" reference="organizationInfo" link={false}>
+                    <TextField source="name" />
+                </ReferenceField>
+                <span> - </span>
                 <TextField source="year" />
             </ReferenceField>
             <DateField source="createdAt" />

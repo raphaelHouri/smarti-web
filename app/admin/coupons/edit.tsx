@@ -32,7 +32,9 @@ export const CouponEdit = () => (
                 <SelectInput optionText="name" />
             </ReferenceInput>
             <ReferenceInput source="organizationYearId" reference="organizationYears" label="Organization Year">
-                <SelectInput optionText="year" />
+                <SelectInput
+                    optionText={(record) => record ? `${record.year}` : ''}
+                />
             </ReferenceInput>
             <DateInput source="createdAt" disabled />
         </SimpleForm>

@@ -23,7 +23,11 @@ export const CouponList = () => (
                 </ReferenceField>
             </DataTable.Col>
             <DataTable.Col source="organizationYearId" label="Organization Year">
-                <ReferenceField source="organizationYearId" reference="organizationYears">
+                <ReferenceField source="organizationYearId" reference="organizationYears" label="">
+                    <ReferenceField source="organizationId" reference="organizationInfo" link={false}>
+                        <TextField source="name" />
+                    </ReferenceField>
+                    <span> - </span>
                     <TextField source="year" />
                 </ReferenceField>
             </DataTable.Col>
