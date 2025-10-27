@@ -1,4 +1,4 @@
-import { DataTable, DateField, List, NumberField, ReferenceField, TextField } from 'react-admin';
+import { ChipField, DataTable, DateField, List, NumberField, ReferenceArrayField, ReferenceField, SingleFieldList, TextField } from 'react-admin';
 
 export const UsersList = () => (
     <List>
@@ -19,6 +19,13 @@ export const UsersList = () => (
                     <span> - </span>
                     <TextField source="year" />
                 </ReferenceField>
+            </DataTable.Col>
+            <DataTable.Col source="managedOrganization" label="Managed Organizations">
+                <ReferenceArrayField source="managedOrganization" reference="organizationInfo">
+                    <SingleFieldList>
+                        <ChipField source="name" size="small" />
+                    </SingleFieldList>
+                </ReferenceArrayField>
             </DataTable.Col>
             <DataTable.NumberCol source="experience" />
             <DataTable.NumberCol source="geniusScore" label="Genius Score" />

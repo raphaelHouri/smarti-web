@@ -1,4 +1,4 @@
-import { DateInput, Edit, NumberInput, ReferenceInput, SelectInput, SimpleForm, TextInput } from 'react-admin';
+import { DateInput, Edit, NumberInput, ReferenceArrayInput, ReferenceInput, SelectArrayInput, SelectInput, SimpleForm, TextInput } from 'react-admin';
 
 export const UsersEdit = () => (
     <Edit>
@@ -14,6 +14,9 @@ export const UsersEdit = () => (
                     optionText={(record) => record ? `Year ${record.year}` : ''}
                 />
             </ReferenceInput>
+            <ReferenceArrayInput source="managedOrganization" reference="organizationInfo" label="Managed Organizations">
+                <SelectArrayInput optionText="name" />
+            </ReferenceArrayInput>
             <NumberInput source="experience" />
             <NumberInput source="geniusScore" label="Genius Score" />
             <DateInput source="createdAt" disabled />
