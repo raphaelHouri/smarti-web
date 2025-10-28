@@ -25,6 +25,10 @@ export async function GET(req: Request) {
             return new NextResponse("No managed organizations found", { status: 403 });
         }
 
+        // Optional filter by organizationYearId
+        const url = new URL(req.url);
+        const organizationYearId = url.searchParams.get('organizationYearId');
+
         // If user has managed organizations, they have admin-level access to those organizations
         // Fetch only their managed organizations
         const managedOrgIds = currentUser.managedOrganization || [];
@@ -34,9 +38,12 @@ export async function GET(req: Request) {
 
         // Fetch analytics for each organization
         const analyticsPromises = organizationData.map(async (org) => {
-            // Get organization years
+            // Get organization years (optionally restricted to a specific year)
             const orgYears = await db.query.organizationYears.findMany({
-                where: (oy, { eq }) => eq(oy.organizationId, org.id),
+                where: (oy, { eq, and }) => and(
+                    eq(oy.organizationId, org.id),
+                    organizationYearId ? eq(oy.id, organizationYearId) : undefined as any
+                ),
                 orderBy: [desc(organizationYears.year)],
             });
 
