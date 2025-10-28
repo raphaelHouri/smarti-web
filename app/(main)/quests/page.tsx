@@ -3,13 +3,13 @@ import StickyWrapper from "@/components/sticky-wrapper";
 import { UserProgress } from "@/components/UserProgress";
 import { getUserProgress, getUserSubscriptions } from "@/db/queries";
 import { redirect } from "next/navigation";
-import ShopJson from "./_components/lottie";
 import { Progress } from "@/components/ui/progress";
 import Image from "next/image";
 import { Award, Flame, TrendingUp, Star } from "lucide-react";
 import Link from "next/link";
 import PromoSection from "../learn/_components/promo";
 import { quests } from "@/constants";
+import QuestsJson from "./_components/lottie";
 
 const QuestsPage = async () => {
     const userProgressData = getUserProgress();
@@ -45,7 +45,7 @@ const QuestsPage = async () => {
             <FeedWrapper
             >
                 <div className="w-full flex flex-col items-center" dir="rtl">
-                    <ShopJson />
+                    <QuestsJson />
                     <h1 className="text-center font-bold text-neutral-800 dark:text-slate-200 text-2xl my-6">
                         🎯 שלבים
                     </h1>
