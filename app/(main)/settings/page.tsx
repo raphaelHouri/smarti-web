@@ -59,13 +59,13 @@ const SettingsPage = async () => {
                 <QuestsSection experience={userProgress.experience} />
             </StickyWrapper>
             <FeedWrapper>
-                <div className="w-full flex flex-col items-center">
+                <div className="w-full flex flex-col items-center" dir="rtl">
                     <SettingsAnimation />
                     <h1 className="text-center font-bold text-neutral-800 dark:text-slate-200 text-2xl my-6">
-                        Your Settings ⚙️
+                        הגדרות ⚙️
                     </h1>
                     <p className="text-muted-foreground text-center text-lg mb-4">
-                        Manage your profile, learning preferences, and more.
+                        נהל את הפרופיל שלך, העדפות הלמידה ועוד.
                     </p>
                     <Separator className="mb-4 h-0.5 rounded-full" />
 

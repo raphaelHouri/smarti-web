@@ -21,11 +21,18 @@ function Switch({
       <SwitchPrimitive.Thumb
         data-slot="switch-thumb"
         className={cn(
-          "bg-background dark:data-[state=unchecked]:bg-foreground dark:data-[state=checked]:bg-primary-foreground pointer-events-none block size-4 rounded-full ring-0 transition-transform data-[state=checked]:translate-x-[calc(100%-2px)] data-[state=unchecked]:translate-x-0"
+          // Larger, more selectable thumb, with stronger color and a visible shadow.
+          // Extreme translate for overhang on the right.
+          "bg-white dark:bg-primary-foreground pointer-events-none block h-6 w-6 rounded-full ring-0 shadow-md transition-transform duration-200" +
+          " data-[state=checked]:translate-x-[calc(100%-2px)] data-[state=unchecked]:-translate-x-[1.0rem] " +
+          "data-[state=checked]:shadow-lg border-2 border-primary" +
+          " data-[state=checked]:translate-x-[0.75rem]"
+          // Simulate "overhang" off the right when checked
+
         )}
       />
     </SwitchPrimitive.Root>
-  )
+  );
 }
 
 export { Switch }

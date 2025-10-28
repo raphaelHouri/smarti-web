@@ -37,18 +37,18 @@ const debounce = (func: Function, delay: number) => {
 
 // Define the available avatars
 const AVAILABLE_AVATARS = [
-    { src: "/man.svg", alt: "Man avatar" }, // Make sure paths are correct, e.g., "/avatars/man.svg"
-    { src: "/woman.svg", alt: "Woman avatar" },
-    { src: "/zombie.svg", alt: "Zombie avatar" },
-    { src: "/girl.svg", alt: "Girl avatar" },
+    { src: "/man.svg", alt: "אוואטר גבר" },
+    { src: "/woman.svg", alt: "אוואטר אישה" },
+    { src: "/zombie.svg", alt: "אוואטר זומבי" },
+    { src: "/girl.svg", alt: "אוואטר ילדה" },
 ];
 
 // Define schema for profile form
 const profileFormSchema = z.object({
     name: z.string().min(2, {
-        message: "Name must be at least 2 characters.",
+        message: "השם חייב להכיל לפחות 2 תווים.",
     }).max(30, {
-        message: "Name must not be longer than 30 characters.",
+        message: "השם אינו יכול להיות ארוך מ-30 תווים.",
     }),
     lessonClock: z.boolean().default(true).optional(),
     quizClock: z.boolean().default(true).optional(),
@@ -109,10 +109,10 @@ export function ProfileSettingsForm({
             updatePayload[fieldName] = (typeof value === 'string' && value === '') ? null : value;
 
             await updateUser(updatePayload);
-            toast.success(`${fieldName.replace(/([A-Z])/g, ' $1').trim()} updated!`); // Nicer toast message
+            toast.success(`עודכן בהצלחה`);
         } catch (error) {
             console.error(`Failed to update ${fieldName}:`, error);
-            toast.error(`Failed to update ${fieldName}.`);
+            toast.error(`עדכון נכשל`);
         } finally {
             setLoading(false);
         }
@@ -153,7 +153,7 @@ export function ProfileSettingsForm({
         if (isValid) {
             saveField("name", form.getValues("name"), setIsSavingName);
         } else {
-            toast.error("Name field has errors.");
+            toast.error("שם אינו תקין.");
         }
     };
 
@@ -161,14 +161,14 @@ export function ProfileSettingsForm({
     return (
         <Form {...form}>
             {/* No form onSubmit needed with auto-save */}
-            <div className="space-y-6">
-                {/* Personal Information */}
+            <div className="space-y-6" dir="rtl">
+                {/* מידע אישי */}
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
                     <h2 className="text-xl font-semibold text-neutral-800 dark:text-slate-200 mb-4 flex items-center gap-2">
-                        <span role="img" aria-label="user icon">👤</span> Personal Information
+                        <span role="img" aria-label="user icon">👤</span> מידע אישי
                     </h2>
                     <FormDescription className="mb-4">
-                        Update your public profile details.
+                        עדכן פרטי פרופיל ציבורי.
                     </FormDescription>
                     <Separator className="my-4" />
                     <FormField
@@ -176,10 +176,10 @@ export function ProfileSettingsForm({
                         name="name"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Name</FormLabel>
+                                <FormLabel>שם</FormLabel>
                                 <div className="flex items-center space-x-2">
                                     <FormControl>
-                                        <Input placeholder="Your name" {...field} className="flex-1" />
+                                        <Input placeholder="השם שלך" {...field} className="flex-1" />
                                     </FormControl>
                                     <Button
                                         type="button"
@@ -197,7 +197,7 @@ export function ProfileSettingsForm({
                                     </Button>
                                 </div>
                                 <FormDescription>
-                                    This is your public display name.
+                                    שם התצוגה הציבורי שלך.
                                 </FormDescription>
                                 <FormMessage />
                             </FormItem>
@@ -209,7 +209,7 @@ export function ProfileSettingsForm({
                         name="avatar"
                         render={({ field }) => (
                             <FormItem className="mt-6">
-                                <FormLabel>Select Avatar</FormLabel>
+                                <FormLabel>בחר אוואטר</FormLabel>
                                 <FormControl>
                                     <AvatarSelector
                                         value={field.value}
@@ -218,7 +218,7 @@ export function ProfileSettingsForm({
                                     />
                                 </FormControl>
                                 <FormDescription>
-                                    Choose an avatar to represent you.
+                                    בחר תמונת ייצוג.
                                 </FormDescription>
                                 <FormMessage />
                             </FormItem>
@@ -226,13 +226,13 @@ export function ProfileSettingsForm({
                     />
                 </div>
 
-                {/* Learning Preferences */}
+                {/* העדפות למידה */}
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
                     <h2 className="text-xl font-semibold text-neutral-800 dark:text-slate-200 mb-4 flex items-center gap-2">
-                        <span role="img" aria-label="preferences icon">📚</span> Learning Preferences
+                        <span role="img" aria-label="preferences icon">📚</span> העדפות למידה
                     </h2>
                     <FormDescription className="mb-4">
-                        Customize your learning experience settings.
+                        התאם את הגדרות חוויית הלמידה שלך.
                     </FormDescription>
                     <Separator className="my-4" />
                     <FormField
@@ -241,9 +241,9 @@ export function ProfileSettingsForm({
                         render={({ field }) => (
                             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                                 <div className="space-y-0.5">
-                                    <FormLabel className="text-base">Lesson Clock</FormLabel>
+                                    <FormLabel className="text-base">שעון בשיעור</FormLabel>
                                     <FormDescription>
-                                        Display a timer during lessons.
+                                        הצג טיימר במהלך השיעורים.
                                     </FormDescription>
                                 </div>
                                 <FormControl>
@@ -263,9 +263,9 @@ export function ProfileSettingsForm({
                         render={({ field }) => (
                             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 mt-4">
                                 <div className="space-y-0.5">
-                                    <FormLabel className="text-base">Quiz Clock</FormLabel>
+                                    <FormLabel className="text-base">שעון במבחן</FormLabel>
                                     <FormDescription>
-                                        Display a timer during quizzes.
+                                        הצג טיימר במהלך המבחנים.
                                     </FormDescription>
                                 </div>
                                 <FormControl>
@@ -281,13 +281,13 @@ export function ProfileSettingsForm({
                     />
                 </div>
 
-                {/* Additional Details */}
+                {/* פרטים נוספים */}
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
                     <h2 className="text-xl font-semibold text-neutral-800 dark:text-slate-200 mb-4 flex items-center gap-2">
-                        <span role="img" aria-label="details icon">ℹ️</span> Additional Details
+                        <span role="img" aria-label="details icon">ℹ️</span> פרטים נוספים
                     </h2>
                     <FormDescription className="mb-4">
-                        Provide optional information about yourself.
+                        ספק מידע אופציונלי על עצמך.
                     </FormDescription>
                     <Separator className="my-4" />
                     <FormField
@@ -295,27 +295,24 @@ export function ProfileSettingsForm({
                         name="grade_class"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Grade/Class</FormLabel>
+                                <FormLabel>כיתה</FormLabel>
                                 <Select onValueChange={field.onChange} value={field.value || ""}>
                                     <FormControl>
                                         <SelectTrigger disabled={isSavingGradeClass}>
-                                            <SelectValue placeholder="Select your grade or class" />
+                                            <SelectValue placeholder="בחר כיתה" />
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                        {/* Value must not be an empty string, so use a distinct identifier for "no selection" */}
-                                        <SelectItem value="null_grade">Prefer not to say</SelectItem>
-                                        <SelectItem value="Kindergarten">Kindergarten</SelectItem>
-                                        <SelectItem value="1st Grade">1st Grade</SelectItem>
-                                        <SelectItem value="2nd Grade">2nd Grade</SelectItem>
-                                        {/* Add more grades/classes as needed */}
-                                        <SelectItem value="High School">High School</SelectItem>
-                                        <SelectItem value="College">College</SelectItem>
-                                        <SelectItem value="Adult Learner">Adult Learner</SelectItem>
+
+                                        <SelectItem value="1st Grade">כיתה א׳</SelectItem>
+                                        <SelectItem value="2nd Grade">כיתה ב׳</SelectItem>
+                                        <SelectItem value="3rd Grade">כיתה ג׳</SelectItem>
+                                        <SelectItem value="4th Grade">כיתה ד׳</SelectItem>
+                                        <SelectItem value="5th Grade">כיתה ה׳</SelectItem>                                        
                                     </SelectContent>
                                 </Select>
                                 <FormDescription>
-                                    This helps us tailor your learning experience.
+                                    זה עוזר לנו להתאים את חוויית הלמידה שלך.
                                 </FormDescription>
                                 <FormMessage />
                                 {isSavingGradeClass && <Loader2 className="h-4 w-4 animate-spin mt-2" />}
@@ -327,23 +324,21 @@ export function ProfileSettingsForm({
                         name="gender"
                         render={({ field }) => (
                             <FormItem className="mt-4">
-                                <FormLabel>Gender</FormLabel>
+                                <FormLabel>מגדר</FormLabel>
                                 <Select onValueChange={field.onChange} value={field.value || ""}>
                                     <FormControl>
                                         <SelectTrigger disabled={isSavingGender}>
-                                            <SelectValue placeholder="Select your gender (optional)" />
+                                            <SelectValue placeholder="בחר מגדר (אופציונלי)" />
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
                                         {/* Value must not be an empty string */}
-                                        <SelectItem value="null_gender">Prefer not to say</SelectItem>
-                                        <SelectItem value="Male">Male</SelectItem>
-                                        <SelectItem value="Female">Female</SelectItem>
-                                        <SelectItem value="Non-binary">Non-binary</SelectItem>
+                                        <SelectItem value="Male">זכר</SelectItem>
+                                        <SelectItem value="Female">נקבה</SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <FormDescription>
-                                    This information is optional.
+                                    מידע זה אופציונלי.
                                 </FormDescription>
                                 <FormMessage />
                                 {isSavingGender && <Loader2 className="h-4 w-4 animate-spin mt-2" />}

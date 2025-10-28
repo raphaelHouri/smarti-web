@@ -69,7 +69,7 @@ export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string) 
             // 1. Insert the new user.
             await db.insert(users).values({
                 id: userId,
-                name: user.firstName || "Guest User", // Use the user's name from Clerk
+                name: user.firstName || "משתמש אורח", // Use the user's name from Clerk
                 email: userEmail,
                 lessonCategoryId: newLessonCategoryId,
             });
