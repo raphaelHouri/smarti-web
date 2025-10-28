@@ -8,7 +8,6 @@ import Header from "./Header";
 import QuestionBubble from "./QuestionBubble";
 import Challenge from "./ChallengeOpt";
 import Footer from "./Footer";
-import { upsertChallengeProgress } from "@/actions/challenge-progress";
 import { toast } from "sonner";
 import { useAudio, useMedia, useMount } from "react-use";
 import ResultCard from "./result-card";
@@ -218,21 +217,6 @@ const Quiz = ({
     }
 
     const onCheck = () => {
-        startTransition(() => {
-            upsertChallengeProgress(initialLessonId)
-                .then((res) => {
-                    if (res?.error) {
-                        OpenHeartsModal();
-                        return;
-                    }
-                    setStatus("correct")
-                    const initialPercentage = Math.floor(Math.random() * 101)
-                    if (initialPercentage === 100) {
-                        setHearts((prev) => Math.min(prev + 1, 5))
-                    }
-                })
-                .catch(() => toast.error("Something went wrong"))
-        });
         router.push(`/learn`)
     }
 
