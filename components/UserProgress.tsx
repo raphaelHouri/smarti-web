@@ -1,8 +1,7 @@
 import Link from "next/link"
 import { Button } from "./ui/button"
 import Image from "next/image"
-import { Infinity, InfinityIcon } from "lucide-react"
-import { courses } from "@/db/schema"
+import { InfinityIcon } from "lucide-react"
 
 
 interface ActiveCourse {
@@ -35,8 +34,7 @@ export const UserProgress = ({
                     variant="ghost"
                 >
                     <Image
-                        // activeCourse?.imageSrc ||
-                        src={"/fr.svg"}
+                        src={imageSrc}
                         alt={title || "course"}
                         className="rounded-md border"
                         height={32}

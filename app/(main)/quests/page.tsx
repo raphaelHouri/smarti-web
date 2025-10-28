@@ -33,7 +33,7 @@ const QuestsPage = async () => {
                 <UserProgress
                     experience={userProgress.experience}
                     geniusScore={userProgress.geniusScore}
-                    imageSrc={userProgress.lessonCategory?.imageSrc || "fr.svg"}
+                    imageSrc={userProgress.settings?.avatar || "/fr.svg"}
                     title={userProgress.lessonCategory?.title || "French"}
                     hasActiveSubscription={isPro}
                 />

@@ -13,10 +13,10 @@ export const AnimatedTooltip = ({
   items,
 }: {
   items: {
-    userId: string;
+    id: string;
     userName: string;
     points: number;
-    // userImageSrc: string;
+    avatar: string;
   }[];
 }) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -43,10 +43,10 @@ export const AnimatedTooltip = ({
         <div
           className="-mr-4  relative group"
           key={item.userName}
-          onMouseEnter={() => setHoveredIndex(item.userId as any)}
+          onMouseEnter={() => setHoveredIndex(item.id as any)}
           onMouseLeave={() => setHoveredIndex(null)}
         >
-          {hoveredIndex === item.userId as any && (
+          {hoveredIndex === item.id as any && (
             <motion.div
               initial={{ opacity: 0, y: 20, scale: 0.6 }}
               animate={{
@@ -79,7 +79,7 @@ export const AnimatedTooltip = ({
             onMouseMove={handleMouseMove}
             height={100}
             width={100}
-            src={item?.userImageSrc || "fr.svg"}
+            src={item?.avatar || "fr.svg"}
             alt={item.userName}
             className="object-cover !m-0 !p-0 object-top rounded-full h-14 w-14 border-2 group-hover:scale-105 group-hover:z-30 border-white  relative transition duration-500"
           />

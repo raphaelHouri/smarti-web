@@ -157,10 +157,10 @@ export const feedbacks = pgTable("feedbacks", {
 // === RELATIONS ===
 
 export const userRelations = relations(users, ({ one, many }) => ({
-    // settings: one(userSettings, {
-    //     fields: [users.userSettingsId],
-    //     references: [userSettings.id],
-    // }),
+    settings: one(userSettings, {
+        fields: [users.id],
+        references: [userSettings.userId],
+    }),
     lessonCategory: one(lessonCategory, {
         fields: [users.lessonCategoryId],
         references: [lessonCategory.id],

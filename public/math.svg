@@ -1,0 +1,17 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="gradMath" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#F59E0B" />
+            <stop offset="1" stop-color="#D97706" />
+        </linearGradient>
+        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"
+            color-interpolation-filters="sRGB">
+            <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.15" />
+        </filter>
+    </defs>
+    <rect x="12" y="12" width="104" height="104" rx="24" fill="url(#gradMath)" filter="url(#shadow)" />
+    <g transform="translate(64 64)">
+        <text x="0" y="14" text-anchor="middle" font-family="Inter, Arial, Helvetica, sans-serif"
+            font-size="56" font-weight="800" fill="#FFFFFF">∑</text>
+    </g>
+</svg>

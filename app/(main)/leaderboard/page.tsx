@@ -28,8 +28,8 @@ const LeaderBoardPage = async () => {
         <div className="flex flex-row-reverse gap-[42px] px-6">
             <StickyWrapper>
                 <UserProgress
-                    imageSrc={"activeCourse.imageSrc"}
-                    title={"activeCourse.title"}
+                    imageSrc={userProgress.settings?.avatar || "/fr.svg"}
+                    title={userProgress.lessonCategory?.categoryType || "Math"}
                     experience={userProgress.experience}
                     geniusScore={userProgress.geniusScore}
                     hasActiveSubscription={isPro}
@@ -51,28 +51,32 @@ const LeaderBoardPage = async () => {
                         Check where you stand among other learners.
                     </p>
                     <Separator className="mb-4 h-0.5 rounded-full" />
-                    {topTenUsers.map((userProgress, index) => (
-                        <div key={userProgress.id}
+                    {topTenUsers.map((userDetail, index) => (
+                        <div key={userDetail.id}
                             className="items-center justify-center px-4
                     flex w-full p-2 hover:bg-gray-200/50 dark:hover:bg-accent rounded-xl cursor-pointer"
                         >
                             <p className="font-bold text-slate-700 mr-4 dark:text-slate-200">{index + 1}</p>
                             <Avatar className="border bg-slate-100 h-8 w-8 mr-6 cursor-pointer">
-                                <AvatarImage
-                                    className="object-cover"
-                                    src={"fr.svg" || userProgress?.userImageSrc || "/default-avatar.png"}
-                                />
+                                <AvatarImage className="object-cover" src={userDetail.avatar || "/default-avatar.png"} />
                             </Avatar>
                             <p className="font-bold text-neutral-800 flex-1 dark:text-slate-200">
-                                {userProgress.email.split("@")[0]}
+                                {userDetail.email.split("@")[0]}
                             </p>
                             <p className="text-muted-foreground dark:text-slate-200">
-                                {userProgress.experience} XP
+                                {userDetail.experience} XP
                             </p>
                         </div>
                     ))}
                     <div className="flex mt-4 items-center justify-center mb-10 w-full cursor-pointer">
-                        <AnimatedTooltip items={topTenUsers} />
+                        <AnimatedTooltip
+                            items={topTenUsers.map((u) => ({
+                                id: u.id,
+                                userName: u.email,
+                                points: u.experience,
+                                avatar: u.avatar ?? "/default-avatar.png",
+                            }))}
+                        />
                     </div>
                 </div>
             </FeedWrapper>

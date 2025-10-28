@@ -41,6 +41,9 @@ export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string) 
 
     const existingUser = await db.query.users.findFirst({
         where: eq(users.id, userId),
+        with: {
+            settings: true,
+        }
     });
 
     if (!existingUser) {
@@ -82,6 +85,9 @@ export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string) 
 
             const newUser = await db.query.users.findFirst({
                 where: eq(users.id, userId),
+                with: {
+                    settings: true,
+                }
             });
 
             return newUser;
@@ -245,6 +251,7 @@ export const getUserProgress = cache(async () => {
         where: eq(users.id, userId),
         with: {
             lessonCategory: true,
+            settings: true,
         }
     })
     return data;
@@ -533,17 +540,17 @@ export const getTopUsers = cache(async () => {
     if (!userId) {
         return [];
     }
-    const data = await db.query.users.findMany({
-        orderBy: (users, { desc }) => [desc(users.experience)],
-        limit: 10,
-        columns: {
-            id: true,
-            email: true,
-            // add nickname and image  
-            // image: true,
-            experience: true,
-        },
-    })
+    const data = await db
+        .select({
+            id: users.id,
+            email: users.email,
+            experience: users.experience,
+            avatar: userSettings.avatar,
+        })
+        .from(users)
+        .leftJoin(userSettings, eq(userSettings.userId, users.id))
+        .orderBy(desc(users.experience))
+        .limit(10);
     return data;
 })
 

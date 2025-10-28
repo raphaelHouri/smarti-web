@@ -47,8 +47,8 @@ const SettingsPage = async () => {
         <div className="flex flex-row-reverse gap-[42px] px-6">
             <StickyWrapper>
                 <UserProgress
-                    imageSrc={"activeCourse.imageSrc"} // Make sure activeCourse is defined or fetched
-                    title={"activeCourse.title"} // Make sure activeCourse is defined or fetched
+                    imageSrc={userProgress.settings?.avatar || "/fr.svg"} // Make sure activeCourse is defined or fetched
+                    title={userProgress.lessonCategory?.categoryType || "Math"} // Make sure activeCourse is defined or fetched
                     experience={userProgress.experience}
                     geniusScore={userProgress.geniusScore}
                     hasActiveSubscription={isPro}

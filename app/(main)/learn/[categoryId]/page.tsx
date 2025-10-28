@@ -85,11 +85,8 @@ const LearnPage = async ({
             <StickyWrapper>
 
                 <UserProgress
-                    activeCourse={{
-                        id: categoryDetails.id,
-                        title: categoryDetails.categoryType,
-                        imageSrc: "/girl.svg",
-                    }}
+                    imageSrc={categoryDetails.imageSrc || "/fr.svg"}
+                    title={categoryDetails.categoryType}
                     geniusScore={
                         user && "geniusScore" in user && typeof user.geniusScore === "number"
                             ? user.geniusScore
