@@ -6,14 +6,13 @@ import { and, eq, sql } from "drizzle-orm";
 
 export async function GET(
     req: Request,
-    { params }: { params: { organizationId: string; userId: string } }
+    { params }: { params: Promise<{ organizationId: string; userId: string }> }
 ) {
     try {
         const { userId: clerkUserId } = await auth();
         if (!clerkUserId) return new NextResponse("Unauthorized", { status: 401 });
 
-        const orgId = params.organizationId;
-        const targetUserId = params.userId;
+        const { organizationId: orgId, userId: targetUserId } = await params;
         const url = new URL(req.url);
         const organizationYearId = url.searchParams.get("organizationYearId");
 

@@ -7,42 +7,45 @@ import { NextResponse } from "next/server"
 
 export const GET = async (
     req: Request,
-    { params }: { params: { couponId: string } }
+    { params }: { params: Promise<{ couponId: string }> }
 ) => {
     if (!IsAdmin()) {
         return new NextResponse("UnAuthorized", { status: 403 })
     }
 
+    const { couponId } = await params;
     const data = await db.query.coupons.findFirst({
-        where: eq(coupons.id, params.couponId)
+        where: eq(coupons.id, couponId)
     })
     return NextResponse.json(data);
 }
 
 export const PUT = async (
     req: Request,
-    { params }: { params: { couponId: string } }
+    { params }: { params: Promise<{ couponId: string }> }
 ) => {
     if (!IsAdmin()) {
         return new NextResponse("UnAuthorized", { status: 403 })
     }
+    const { couponId } = await params;
     const body = await req.json();
     const data = await db.update(coupons).set({
         ...body
     }).where(
-        eq(coupons.id, params.couponId)
+        eq(coupons.id, couponId)
     ).returning()
     return NextResponse.json(data[0]);
 }
 
 export const DELETE = async (
     req: Request,
-    { params }: { params: { couponId: string } },
+    { params }: { params: Promise<{ couponId: string }> },
 ) => {
     if (!IsAdmin()) {
         return new NextResponse("UnAuthorized", { status: 403 })
     }
+    const { couponId } = await params;
     const data = await db.delete(coupons).
-        where(eq(coupons.id, params.couponId)).returning()
+        where(eq(coupons.id, couponId)).returning()
     return NextResponse.json(data[0]);
 }

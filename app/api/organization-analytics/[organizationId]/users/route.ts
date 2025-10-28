@@ -6,7 +6,7 @@ import { desc, and, inArray, gte, lt, eq } from "drizzle-orm";
 
 export async function GET(
     req: Request,
-    { params }: { params: { organizationId: string } }
+    { params }: { params: Promise<{ organizationId: string }> }
 ) {
     try {
         const { userId } = await auth();
@@ -23,14 +23,15 @@ export async function GET(
             return new NextResponse("No managed organizations found", { status: 403 });
         }
 
+        const { organizationId } = await params;
         // Verify the user has access to this organization
-        if (!currentUser.managedOrganization.includes(params.organizationId)) {
+        if (!currentUser.managedOrganization.includes(organizationId)) {
             return new NextResponse("Access denied", { status: 403 });
         }
 
         // Get organization years
         const orgYears = await db.query.organizationYears.findMany({
-            where: (oy, { eq }) => eq(oy.organizationId, params.organizationId),
+            where: (oy, { eq }) => eq(oy.organizationId, organizationId),
             orderBy: [desc(organizationYears.year)],
         });
 

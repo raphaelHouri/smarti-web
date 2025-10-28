@@ -7,42 +7,45 @@ import { NextResponse } from "next/server"
 
 export const GET = async (
     req: Request,
-    { params }: { params: { organizationInfoId: string } }
+    { params }: { params: Promise<{ organizationInfoId: string }> }
 ) => {
     if (!IsAdmin()) {
         return new NextResponse("UnAuthorized", { status: 403 })
     }
 
+    const { organizationInfoId } = await params;
     const data = await db.query.organizationInfo.findFirst({
-        where: eq(organizationInfo.id, params.organizationInfoId)
+        where: eq(organizationInfo.id, organizationInfoId)
     })
     return NextResponse.json(data);
 }
 
 export const PUT = async (
     req: Request,
-    { params }: { params: { organizationInfoId: string } }
+    { params }: { params: Promise<{ organizationInfoId: string }> }
 ) => {
     if (!IsAdmin()) {
         return new NextResponse("UnAuthorized", { status: 403 })
     }
+    const { organizationInfoId } = await params;
     const body = await req.json();
     const data = await db.update(organizationInfo).set({
         ...body
     }).where(
-        eq(organizationInfo.id, params.organizationInfoId)
+        eq(organizationInfo.id, organizationInfoId)
     ).returning()
     return NextResponse.json(data[0]);
 }
 
 export const DELETE = async (
     req: Request,
-    { params }: { params: { organizationInfoId: string } },
+    { params }: { params: Promise<{ organizationInfoId: string }> },
 ) => {
     if (!IsAdmin()) {
         return new NextResponse("UnAuthorized", { status: 403 })
     }
+    const { organizationInfoId } = await params;
     const data = await db.delete(organizationInfo).
-        where(eq(organizationInfo.id, params.organizationInfoId)).returning()
+        where(eq(organizationInfo.id, organizationInfoId)).returning()
     return NextResponse.json(data[0]);
 }

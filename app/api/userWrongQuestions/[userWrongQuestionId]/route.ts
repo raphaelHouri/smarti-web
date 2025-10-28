@@ -7,42 +7,45 @@ import { NextResponse } from "next/server"
 
 export const GET = async (
     req: Request,
-    { params }: { params: { userWrongQuestionId: string } }
+    { params }: { params: Promise<{ userWrongQuestionId: string }> }
 ) => {
     if (!IsAdmin()) {
         return new NextResponse("UnAuthorized", { status: 403 })
     }
 
+    const { userWrongQuestionId } = await params;
     const data = await db.query.userWrongQuestions.findFirst({
-        where: eq(userWrongQuestions.id, params.userWrongQuestionId)
+        where: eq(userWrongQuestions.id, userWrongQuestionId)
     })
     return NextResponse.json(data);
 }
 
 export const PUT = async (
     req: Request,
-    { params }: { params: { userWrongQuestionId: string } }
+    { params }: { params: Promise<{ userWrongQuestionId: string }> }
 ) => {
     if (!IsAdmin()) {
         return new NextResponse("UnAuthorized", { status: 403 })
     }
+    const { userWrongQuestionId } = await params;
     const body = await req.json();
     const data = await db.update(userWrongQuestions).set({
         ...body
     }).where(
-        eq(userWrongQuestions.id, params.userWrongQuestionId)
+        eq(userWrongQuestions.id, userWrongQuestionId)
     ).returning()
     return NextResponse.json(data[0]);
 }
 
 export const DELETE = async (
     req: Request,
-    { params }: { params: { userWrongQuestionId: string } },
+    { params }: { params: Promise<{ userWrongQuestionId: string }> },
 ) => {
     if (!IsAdmin()) {
         return new NextResponse("UnAuthorized", { status: 403 })
     }
+    const { userWrongQuestionId } = await params;
     const data = await db.delete(userWrongQuestions).
-        where(eq(userWrongQuestions.id, params.userWrongQuestionId)).returning()
+        where(eq(userWrongQuestions.id, userWrongQuestionId)).returning()
     return NextResponse.json(data[0]);
 }
