@@ -16,14 +16,10 @@ import { users } from "@/db/schemaSmarti";
 export const updateUserCategory = async (courseId: string) => {
     //authentication
     try {
-        console.log(1)
         const { userId } = await auth();
-        console.log(2)
         const user = await currentUser();
-        console.log(3)
         
         if (!userId || !user) {
-            console.log(4)
             redirect(`/learn/${courseId}`);
 
         }

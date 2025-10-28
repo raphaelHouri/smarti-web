@@ -18,8 +18,6 @@ const PracticeCategoryIdPage = async ({
 
     const [{ questionGroups, questionsDict, userPreviousAnswers }] = await Promise.all([quizDataByCategoryId]);
 
-    console.log(questionGroups, questionsDict)
-
 
 
 

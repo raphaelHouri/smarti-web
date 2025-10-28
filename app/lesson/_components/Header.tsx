@@ -16,7 +16,6 @@ const Header = ({
     hasActiveSubscription
 }: HeaderProps) => {
     const { open } = useExitModal();
-    console.log("Header props:", { hearts, percentage, hasActiveSubscription });
     return (
         <div className="lg:pt-[50px] pt-[20px] max-w-[1140px]
         items-center justify-between mx-auto px-10 flex gap-x-7 w-full">

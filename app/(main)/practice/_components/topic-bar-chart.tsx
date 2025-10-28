@@ -15,7 +15,7 @@ const TopicBarChart = ({ labels, data }: TopicBarChartProps) => {
         labels: labels,
         datasets: [
             {
-                label: 'Wrong Questions',
+                label: 'שאלות שטעיתי בהן',
                 data: data,
                 backgroundColor: 'rgba(59, 130, 246, 0.6)', // Tailwind blue-500 with transparency
                 borderColor: 'rgba(59, 130, 246, 1)',

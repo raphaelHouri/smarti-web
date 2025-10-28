@@ -134,7 +134,6 @@ export default function PurchasePageShop() {
     }, [selectedCategory]);
 
     const toggleBookOption = (planType: string) => {
-        console.log('Toggling book option for:', planType, 'Current state:', planBookOptions[planType]);
         setPlanBookOptions(prev => ({
             ...prev,
             [planType]: !prev[planType]

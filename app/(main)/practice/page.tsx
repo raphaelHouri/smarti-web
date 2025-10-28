@@ -101,27 +101,27 @@ const PracticePage = async () => {
                 <QuestsSection experience={userProgress.experience} />
             </StickyWrapper>
             <FeedWrapper>
-                <div className="w-full flex flex-col items-center">
+                <div className="w-full flex flex-col items-center" dir="rtl">
                     <PracticeAnimation />
                     <h1 className="text-center font-bold text-neutral-800 dark:text-slate-200 text-2xl my-6">
-                        Practice Makes Perfect! 🏋️‍♂️
+                        תרגול מביא לשלמות! 🏋️‍♂️
                     </h1>
                     <p className="text-muted-foreground text-center text-lg mb-4">
-                        Review and re-attempt questions you got wrong.
+                        חזור על שאלות שטעית בהן ונסה שוב.
                     </p>
                     <Separator className="mb-6 h-0.5 rounded-full" />
 
                     {totalWrongQuestions === 0 ? (
                         <Card className="w-full max-w-xl text-center p-8 bg-gradient-to-r from-green-50 to-emerald-150 dark:from-green-900 dark:to-emerald-950 border-green-200 dark:border-green-800 shadow-lg">
                             <CardHeader>
-                                <CardTitle className="text-green-700 dark:text-green-300">No Wrong Questions (Yet!)</CardTitle>
+                                <CardTitle className="text-green-700 dark:text-green-300">אין טעויות (בינתיים)</CardTitle>
                                 <CardDescription className="text-green-600 dark:text-green-400">
-                                    Keep up the great work! You haven't made any mistakes that we've tracked.
+                                    המשך כך! לא זיהינו טעויות לתרגול.
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <Button asChild className="mt-4 bg-green-600 hover:bg-green-700 text-white">
-                                    <Link href="/learn">Start Learning</Link>
+                                    <Link href="/learn">התחל ללמוד</Link>
                                 </Button>
                             </CardContent>
                         </Card>
@@ -130,17 +130,17 @@ const PracticePage = async () => {
                             <Card className="w-full shadow-lg dark:bg-gray-800">
                                 <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900 dark:to-pink-950 rounded-t-lg p-4">
                                     <CardTitle className="text-purple-800 dark:text-purple-200 text-xl font-bold flex items-center gap-2">
-                                        Your Wrong Question Analytics 📊
+                                        ניתוח טעויות שלך 📊
                                     </CardTitle>
                                     <CardDescription className="text-purple-700 dark:text-purple-300">
-                                        Visual insights into your learning challenges.
+                                        תובנות חזותיות על אתגרי הלמידה שלך.
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent className="p-4 space-y-6">
                                     <div className="flex flex-col lg:flex-row lg:justify-around lg:items-start lg:gap-8">
                                         <div className="flex flex-col items-center lg:w-1/2">
                                             <h3 className="text-lg font-semibold mb-3 text-neutral-800 dark:text-slate-200">
-                                                Wrong Questions by Format
+                                                טעויות לפי קטגוריה
                                             </h3>
                                             <div className="relative h-[150px] w-[150px] sm:h-[200px] sm:w-[200px]">
                                                 <FormatPieChart {...categoryIdPieChartProps} />
@@ -148,7 +148,7 @@ const PracticePage = async () => {
                                         </div>
                                         <div className="flex flex-col items-center mt-6 lg:mt-0 lg:w-1/2">
                                             <h3 className="text-lg font-semibold mb-3 text-neutral-800 dark:text-slate-200">
-                                                Top Wrong Topics
+                                                הנושאים שבהם הכי טעית
                                             </h3>
                                             <div className="relative h-[180px] w-full max-w-xs">
                                                 <TopicBarChart {...topicBarChartProps} />
@@ -161,20 +161,18 @@ const PracticePage = async () => {
                             {Object.entries(groupedSummary).map(([format, data]) => (
                                 <Card key={format} className="w-full shadow-lg dark:bg-gray-800">
                                     <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-950 rounded-t-lg p-4">
-                                        <CardTitle className="text-blue-800 dark:text-blue-200 text-xl font-bold flex items-center gap-2">
-                                            {format === "SELECT" ? "Multiple Choice Questions" : "Assisted Input Questions"}
+
+                                        <CardTitle className="text-blue-800 dark:text-blue-200 text-lg font-regular flex items-center gap-2">
+                                            <strong className="font-bold text-lg">{data.categoryType} - </strong> נושאים שכדאי לחזור עליהן.
                                             <span className="text-sm font-normal text-blue-600 dark:text-blue-400">
-                                                ({data.totalWrong} total wrong)
+                                                ({data.totalWrong} טעויות)
                                             </span>
                                         </CardTitle>
-                                        <CardDescription className="text-blue-700 dark:text-blue-300">
-                                            Questions in {data.categoryType} format you need to review.
-                                        </CardDescription>
                                     </CardHeader>
                                     <CardContent className="p-4 space-y-3">
                                         {data.topics.length === 0 ? (
                                             <p className="text-muted-foreground italic">
-                                                No specific topics with wrong questions in this format.
+                                                אין נושאים ספציפיים עם טעויות בקטגוריה זו.
                                             </p>
                                         ) : (
                                             data.topics
@@ -185,11 +183,11 @@ const PracticePage = async () => {
                                                         className="flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md"
                                                     >
                                                         <p className="font-medium text-neutral-700 dark:text-slate-200">
-                                                            {topic.topicType || "General Topic"}
+                                                            {topic.topicType || "נושא כללי"}
                                                         </p>
                                                         <div className="flex items-center gap-x-2">
                                                             <span className="text-red-500 font-semibold">{topic.count}</span>
-                                                            <span className="text-muted-foreground">Wrong</span>
+                                                            <span className="text-muted-foreground">טעויות</span>
                                                         </div>
                                                     </div>
                                                 ))
@@ -198,7 +196,7 @@ const PracticePage = async () => {
                                     <CardFooter className="p-4 border-t dark:border-gray-700 flex justify-end">
                                         <Button asChild className="bg-indigo-600 hover:bg-indigo-700 text-white">
                                             <Link href={`/practice/${data.categoryId}`}>
-                                                Practice All {data.categoryType} Questions
+                                                תרגל את כל שאלות {data.categoryType}
                                             </Link>
                                         </Button>
                                     </CardFooter>

@@ -72,7 +72,6 @@ const Quiz = ({
             questionId: questionValue
         }))
     );
-    console.log("hgjjh", questionGroups)
 
 
     const router = useRouter();
@@ -128,8 +127,6 @@ const Quiz = ({
     useEffect(() => {
         const handleUserEffect = async () => {
             if (userId && guest) {
-                // need to save the resultList
-                console.log(resultList);
                 // createUser
                 await getOrCreateUserFromGuest(initialLessonId);
                 await addResultsToUser(lessonId, userId, resultList, questionsMap.map(q => q.questionId), startAt);
@@ -163,7 +160,6 @@ const Quiz = ({
     }, [activeIndex]);
 
     const goTo = (idx: number) => {
-        console.log("Going to index:", idx);
         setStatus("none");
         setSelectedOption(resultList[idx] ? resultList[idx] : undefined);
         if (idx < 0 || idx >= total) return;
@@ -502,7 +498,7 @@ const Quiz = ({
                                 status={status}
                                 selectedOption={selectedOption}
                             />
-                            
+
                         </div>
                     </div>
                 </div>

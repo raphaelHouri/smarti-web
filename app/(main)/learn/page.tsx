@@ -16,7 +16,6 @@ const LearnPage = async () => {
 
     if (!user || ('user' in user && !(user as any)?.user?.lessonCategoryId)) {
         const firstCategory = await getFirstCategory();
-        console.log("Category not found, redirecting to courses");
         redirect(`/learn/${firstCategory?.id}`);
     }
     if (user && 'lessonCategoryId' in user && user.lessonCategoryId) {

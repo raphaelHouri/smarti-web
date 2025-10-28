@@ -58,7 +58,6 @@ const LearnPage = async ({
 
     const categoryDetails = categoriesData.find(cat => cat.id === categoryId)
     if (!categoryDetails) {
-        console.log("Category not found, redirecting to courses");
         redirect("/courses");
     }
 

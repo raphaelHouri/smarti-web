@@ -84,10 +84,8 @@ export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string) 
                 where: eq(users.id, userId),
             });
 
-            console.log("Successfully created new user:", newUser);
             return newUser;
         } catch (error) {
-            console.error("Failed to create new user and settings:", error);
             return null;
         }
     }
@@ -422,7 +420,6 @@ export const getUserWrongQuestionsByCategoryId = cache(async (categoryId: string
         },
         limit: 30,
     });
-    console.log("Wrong Questions:", wrongQuestions);
 
     // Extract question IDs
     const questionIds = wrongQuestions.map(wq => wq.questionId);
