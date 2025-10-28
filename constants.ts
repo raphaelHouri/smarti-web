@@ -3,19 +3,27 @@ export const DAY_IN_MS = 86_400_000;
 
 export const quests = [
     {
-        title: "Earn 20 XP",
+        title: "תלמיד - צבור 20 נקודות",
         value: 20
     },
     {
-        title: "Earn 50 XP",
+        title: "מוכשר - צבור 50 נקודות",
         value: 50
     },
     {
-        title: "Earn 100 XP",
+        title: "ידען - צבור 100 נקודות",
         value: 100
     },
     {
-        title: "Earn 1000 XP",
+        title: "נבון - צבור 1000 נקודות",
         value: 1000
+    },
+    {
+        title: "גאון - צבור 5000 נקודות",
+        value: 5000
+    },
+    {
+        title: "סופר-חכם - צבור 20000 נקודות",
+        value: 20000
     }
 ]
