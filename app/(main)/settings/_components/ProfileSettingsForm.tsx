@@ -184,7 +184,7 @@ export function ProfileSettingsForm({
                                     <Button
                                         type="button"
                                         size="icon"
-                                        variant="outline"
+                                        variant="secondary"
                                         onClick={handleNameSave}
                                         disabled={isSavingName || !form.formState.dirtyFields.name || !form.formState.isValid}
                                         className="w-8 h-8"

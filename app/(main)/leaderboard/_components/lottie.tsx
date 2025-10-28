@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
-const ShopJson = () => {
+const TrophyJson = () => {
     const containerRef = useRef<HTMLDivElement | null>(null);
     const [isInView, setIsInView] = useState(false);
     const [data, setData] = useState<any | null>(null);
@@ -20,7 +20,7 @@ const ShopJson = () => {
 
     useEffect(() => {
         if (!isInView || data) return;
-        import("@/public/shop.json").then((m) => setData(m.default)).catch(() => { });
+        import("@/public/trophy.json").then((m) => setData(m.default)).catch(() => { });
     }, [isInView, data]);
 
     return (
@@ -30,4 +30,4 @@ const ShopJson = () => {
     );
 }
 
-export default ShopJson;
+export default TrophyJson;

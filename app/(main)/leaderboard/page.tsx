@@ -3,7 +3,7 @@ import StickyWrapper from "@/components/sticky-wrapper";
 import { UserProgress } from "@/components/UserProgress";
 import { getTopUsers, getUserProgress, getUserSubscriptions } from "@/db/queries";
 import { redirect } from "next/navigation";
-import ShopJson from "./_components/lottie";
+import TrophyJson from "./_components/lottie";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { AnimatedTooltip } from "@/components/animated-tooltip";
@@ -43,7 +43,7 @@ const LeaderBoardPage = async () => {
             <FeedWrapper
             >
                 <div className="w-full flex flex-col items-center">
-                    <ShopJson />
+                    <TrophyJson />
                     <h1 className="text-center font-bold text-neutral-800 dark:text-slate-200 text-2xl my-6">
                         LeaderBoard 🥇
                     </h1>
