@@ -2,9 +2,7 @@
 import Quiz from "@/app/lesson/_components/Quiz";
 import { getUserWrongQuestionsByCategoryId } from "@/db/queries";
 type Props = {
-    params: {
-        categoryId: string
-    }
+    params: Promise<{ categoryId: string }>
 }
 const PracticeCategoryIdPage = async ({
     params,
