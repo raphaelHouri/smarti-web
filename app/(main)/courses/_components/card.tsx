@@ -34,7 +34,7 @@ export const CardPage = ({
             <Avatar className="border bg-slate-100 h-8 w-8 mr-6 cursor-pointer">
                 <AvatarImage
                     className="object-cover"
-                    src={`/${imageSrc}`}
+                    src={`${imageSrc}`}
                 />
             </Avatar>
             {/* <Image
