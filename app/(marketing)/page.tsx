@@ -11,7 +11,7 @@ import { auth } from "@clerk/nextjs/server";
 export default async function Home() {
   const { userId } = await auth();
   return (
-    <div className="max-w-[998px] mx-auto flex-1 w-full flex flex-col lg:flex-row items-center justify-center p-2 gap-2">
+    <div className="max-w-[998px] mx-auto flex-1 w-full flex flex-col lg:flex-row items-center justify-center p-2 gap-2" dir="rtl">
       {/* container to hold image */}
       <div className="relative w-[240px] h-[240px] lg:w-[424px] lg:h-[424px] mb-8 lg:mb-0">
         <Image
@@ -26,7 +26,7 @@ export default async function Home() {
 
         <h1 className="font-bold text-xl lg:text-3xl text-neutral-600 max-w-[600px] text-center dark:bg-clip-text dark:text-transparent dark:bg-gradient-to-tr from-slate-500 to-neutral-300/90">
           <LottieJson />
-          Master and refine in learning new languages through Linguify.
+          שלוט ושפר את כישורי השפה שלך עם Linguify.
         </h1>
         <div className="flex flex-col items-center justify-center gap-y-3 max-w-[330px] w-full">
           <ClerkLoading>
@@ -39,7 +39,7 @@ export default async function Home() {
                 forceRedirectUrl="/learn"
               >
                 <Button size="lg" variant="secondary" className="w-full">
-                  Get Started
+                  התחילו עכשיו
                 </Button>
               </SignUpButton>
               <SignInButton
@@ -47,7 +47,7 @@ export default async function Home() {
                 forceRedirectUrl="/learn"
               >
                 <Button size="lg" variant="primaryOutline" className="w-full">
-                  I already have an account
+                  כבר יש לי חשבון
                 </Button>
 
               </SignInButton>
@@ -55,7 +55,7 @@ export default async function Home() {
             <SignedIn>
               <Button variant="secondary" size="lg" className="w-full" asChild>
                 <Link href="/learn">
-                  Continue Learning
+                  המשך ללמוד
                 </Link>
               </Button>
             </SignedIn>
@@ -64,7 +64,7 @@ export default async function Home() {
 
           {!userId ? <><div className="w-full h-[1px] bg-slate-300 dark:bg-slate-700" /><Button variant="primaryOutline" size="lg" className="w-full" asChild>
             <Link href="/learn">
-              Continue as a guest 👨🏻‍💻
+              המשך כאורח 👨🏻‍💻
             </Link>
           </Button></> : null}
         </div>
