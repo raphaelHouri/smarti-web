@@ -22,7 +22,7 @@ const ExitModal = () => {
     //  isOpen and close are states from zustand
     return (
         <Dialog open={isOpen} onOpenChange={close}>
-            <DialogContent className="max-w-md mx-auto">
+            <DialogContent className="max-w-md mx-auto" dir="rtl">
                 <DialogHeader>
                     <div className="items-center justify-center flex w-full mb-5">
                         <Image
@@ -34,24 +34,23 @@ const ExitModal = () => {
                     </div>
                     <DialogTitle className="text-center
                 font-bold text-2xl">
-                        Wait don&apos;t go!!!
-                    </DialogTitle>
+                        סיים תרגול                    </DialogTitle>
                     <DialogDescription className="text-center text-base">
-                        You&apos;re about to leave the lesson. Are you sure?
+                        אתם עומדים לעזוב את השיעור. האם אתם בטוחים?
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
                     <div className="flex flex-col gap-y-3 w-full">
                         <Button variant="primary" size="default" className="w-full"
                             onClick={close}>
-                            Keep Learning
+                            המשיכו לתרגל
                         </Button>
                         <Button variant="dangerOutline" size="default" className="w-full"
                             onClick={() => {
                                 close();
                                 router.push("/learn")
                             }}>
-                            End Session
+                            סיום התרגול
                         </Button>
                     </div>
                 </DialogFooter>
