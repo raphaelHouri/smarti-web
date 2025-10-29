@@ -5,13 +5,6 @@ const lessonsExporter: Exporter = (records) => {
     exportToXlsx('lessons', records, {
         sheetName: 'lessons',
         headersOrder: ['id', 'lessonCategoryId', 'lessonOrder', 'isPremium', 'createdAt'],
-        headersLabel: {
-            id: 'ID',
-            lessonCategoryId: 'Category',
-            lessonOrder: 'Order',
-            isPremium: 'Premium',
-            createdAt: 'Created At',
-        },
     });
 };
 

@@ -19,20 +19,6 @@ const questionsExporter: Exporter = (records) => {
     exportToXlsx('questions', rows, {
         sheetName: 'questions',
         headersOrder: ['id', 'content', 'question', 'format', 'optionA', 'optionB', 'optionC', 'optionD', 'categoryId', 'topicType', 'explanation', 'createdAt'],
-        headersLabel: {
-            id: 'ID',
-            content: 'Content',
-            question: 'Question',
-            format: 'Format',
-            optionA: 'Option A',
-            optionB: 'Option B',
-            optionC: 'Option C',
-            optionD: 'Option D',
-            categoryId: 'Category',
-            topicType: 'Topic Type',
-            explanation: 'Explanation',
-            createdAt: 'Created At',
-        },
     });
 };
 
