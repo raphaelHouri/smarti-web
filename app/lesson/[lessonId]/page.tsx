@@ -1,9 +1,9 @@
 import Quiz from "../_components/Quiz";
 import { getQuizDataByLessonId } from "@/db/queries";
 type Props = {
-    params: {
+    params: Promise<{
         lessonId: string
-    }
+    }>
 }
 const LessonIdPage = async ({
     params,
