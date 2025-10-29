@@ -10,6 +10,7 @@ import HeartsModal from "@/components/modals/useHeartsModal";
 import PracticeModal from "@/components/modals/usePracticeModal";
 import FinishLessonModal from "@/components/modals/useFinishLessonModal";
 import RegisterModal from "@/components/modals/useRegisterModal";
+import PremiumModal from "@/components/modals/usePremiumModal";
 import { heIL } from '@clerk/localizations'
 import FeedbackModal from "@/components/modals/useFeedbacksModal";
 
@@ -54,6 +55,7 @@ export default function RootLayout({
             <FinishLessonModal />
             <FeedbackModal />
             <RegisterModal />
+            <PremiumModal />
             {children}
           </ThemeProvider>
         </body>

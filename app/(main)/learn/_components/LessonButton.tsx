@@ -6,6 +6,7 @@ import "react-circular-progressbar/dist/styles.css";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { usePremiumModal } from "@/store/use-premium-modal";
 
 interface LessonButtonProps {
     id: string,
@@ -15,6 +16,7 @@ interface LessonButtonProps {
     rightQuestions: number | undefined
     totalQuestions: number | undefined
     totalCount: number | null | undefined,
+    isPremium: boolean,
 }
 
 
@@ -25,8 +27,10 @@ const LessonButton = ({
     current,
     rightQuestions,
     totalQuestions,
-    totalCount
+    totalCount,
+    isPremium
 }: LessonButtonProps) => {
+    const { open } = usePremiumModal();
     const percentage = rightQuestions && totalQuestions ? (rightQuestions / totalQuestions) * 100 : 0;
     const cycleLength = 8;
     const cycleIndex = index % cycleLength;
@@ -54,13 +58,19 @@ const LessonButton = ({
     const isCompleted = !current && !locked;
 
     const Icon = isCompleted ? Check : isLast ? Crown : Star;
-    const href = isCompleted ? `/lesson/${id}` : `/lesson/${id}`;
+    const href = `/lesson/${id}`;
 
 
     return (
         <Link href={href} aria-disabled={locked}
             style={{
                 pointerEvents: locked ? "none" : "auto"
+            }}
+            onClick={(e) => {
+                if (isPremium) {
+                    e.preventDefault();
+                    open();
+                }
             }}
         >
             <div className="relative flex flex-col items-center"
@@ -69,12 +79,17 @@ const LessonButton = ({
                     marginTop: isFirst && !isCompleted ? 60 : 24,
                 }}
             >
+                {isPremium && (
+                    <div className="absolute -top-2 -right-2 z-20 flex items-center justify-center rounded-full bg-amber-100 border border-amber-300 p-1">
+                        <Crown className="h-3.5 w-3.5 text-amber-600" />
+                    </div>
+                )}
                 {current ? (
                     <div className="h-[102px] w-[102px]">
                         <div className="absolute -top-6 left-2.5 px-3 py-2.5
                 border-2 font-bold uppercase text-green-500 bg-white rounded-xl
                 animate-bounce tracking-wide z-10">
-                            Start
+                            התחלה
                             <div
                                 className="absolute -bottom-2 left-1/2 w-0 h-0 border-x-8
                 border-x-transparent border-t-8 transform -translate-x-1/2"

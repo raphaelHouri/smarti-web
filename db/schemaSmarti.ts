@@ -56,6 +56,7 @@ export const lessons = pgTable("lessons", {
     id: uuid("id").primaryKey(),
     lessonCategoryId: uuid("lesson_category_id").references(() => lessonCategory.id, { onDelete: "cascade" }).notNull(),
     lessonOrder: integer("lesson_order").notNull(),
+    isPremium: boolean("is_premium").default(true).notNull(),
     createdAt: timestamp("created_at").defaultNow(),
 }, (table) => ({
     uniqueCategoryOrder: {

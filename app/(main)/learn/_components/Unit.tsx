@@ -39,6 +39,7 @@ const Unit = ({
                             current={isCurrent}
                             rightQuestions={lesson.rightQuestions}
                             totalQuestions={lesson.totalQuestions}
+                            isPremium={(lesson as any).isPremium}
                         />
                     )
                 })}

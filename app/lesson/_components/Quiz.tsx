@@ -23,6 +23,7 @@ import { useAuth } from "@clerk/nextjs";
 import { addResultsToUser, getOrCreateUserFromGuest, removeQuestionsWrongByQuestionId } from "@/db/queries";
 import { Button } from "@/components/ui/button";
 import CountdownTimer from "./CountdownTimer";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 const optionsSchema = z.object({
     a: z.string(),
@@ -72,17 +73,17 @@ const Quiz = ({
 
     const router = useRouter();
     if (!questionsMap || questionsMap.length === 0) {
-        return <p>no challenges displayed</p>;
+        return <p>אין תרגילים להצגה</p>;
     }
 
     // ---- CURRENT QUESTION ----
     const total = questionsMap.length;
     const currentQuestion = questionsMap[activeIndex];
     const question = questionsDict[currentQuestion.questionId];
-    if (!question) return <p>Question not found</p>;
+    if (!question) return <p>השאלה לא נמצאה</p>;
 
     const options = optionsSchema.parse(question.options);
-    if (!options) return <p> option not exists</p>
+    if (!options) return <p>אפשרויות התשובה אינן קיימות</p>
 
     const { open: OpenHeartsModal } = useHeartsModal();
     const { open: OpenFinishLessonModal, isApproved: isFinishApproved, clearApprove, approve } = useFinishLessonModal();
@@ -298,7 +299,7 @@ const Quiz = ({
                     </div>
                 ))}
                 <p className="text-center text-xs lg:text-sm text-neutral-400 dark:text-neutral-500 mt-2">
-                    Tap any question number to {mode === "quiz" ? "navigate" : "review your answer"}
+                    הקישו על מספר שאלה כדי {mode === "quiz" ? "לנווט" : "לסקור את תשובתכם"}
                 </p>
                 {mode === "review" ? (
                     <div className="flex justify-center pt-2">
@@ -332,10 +333,10 @@ const Quiz = ({
                     <CelebrateJson />
                     <div className="space-y-4 text-center animate-fade-in pt-12 sm:pt-20">
                         <h1 className="text-xl sm:text-2xl lg:text-4xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
-                            Fantastic Work! 🎉
+                            עבודה מצוינת! 🎉
                         </h1>
                         <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-300">
-                            You've mastered this lesson
+                            השלמתם את השיעור בהצלחה
                         </p>
                     </div>
                     <div className="flex flex-row items-center  sm:gap-x-6 gap-x-3 w-full max-w-xs sm:max-w-md">
@@ -431,7 +432,17 @@ const Quiz = ({
                                             onClick={() => setIsExpanded(!isExpanded)}
                                             className="text-xs sm:text-sm text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300"
                                         >
-                                            {isExpanded ? "Show Less" : "Show Full"}
+                                            {isExpanded ? (
+                                                <>
+                                                    הציגו פחות
+                                                    <ChevronUp className="inline ml-1 align-middle w-4 h-4 text-sky-700 dark:text-sky-300" />
+                                                </>
+                                            ) : (
+                                                <>
+                                                    הציגו הכל
+                                                    <ChevronDown className="inline ml-1 align-middle w-4 h-4 text-sky-700 dark:text-sky-300" />
+                                                </>
+                                            )}
                                         </Button>
                                     </div>
                                     <div className="flex justify-center w-full">
@@ -457,7 +468,7 @@ const Quiz = ({
                                     <div className="flex justify-center">
                                         <img
                                             src={question.content}
-                                            alt="Shape question"
+                                            alt="שאלת צורות"
                                             className="max-h-40 sm:max-h-52 lg:max-h-64 max-w-full object-contain rounded-2xl border border-neutral-200 dark:border-neutral-700 shadow-md bg-white dark:bg-neutral-900"
                                         />
                                     </div>

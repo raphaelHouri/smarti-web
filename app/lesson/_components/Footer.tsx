@@ -61,14 +61,14 @@ const Footer = ({
 
     const primaryLabel =
         status === "none" && mode !== "review"
-            ? "סיום"
+            ? "בדוק"
             : status === "wrong"
-                ? "Retry"
+                ? "נסה שוב"
                 : mode === "review"
                     ? activeIndex !== undefined && total !== undefined && activeIndex === total - 1 ? "חזור לדף הסיכום" : "המשך"
                     : activeIndex !== undefined && total !== undefined && activeIndex === total - 1
-                        ? "Finish"
-                        : "Next";
+                        ? "סיום"
+                        : "הבא";
 
     return (
         <footer
@@ -85,13 +85,13 @@ const Footer = ({
                     {status === "correct" && (
                         <div className="text-green-600 text-base font-bold lg:text-2xl flex items-center">
                             <CheckCircle2 className="h-6 w-6 lg:h-10 lg:w-10 mr-3" />
-                            Nicely Done! 🤩
+                            כל הכבוד! 🤩
                         </div>
                     )}
                     {status === "wrong" && (
                         <div className="text-rose-600 text-base font-bold lg:text-2xl flex items-center">
                             <CircleX className="h-6 w-6 lg:h-10 lg:w-10 mr-3" />
-                            Oops! Wrong answer. Please retry 😟
+                            אופס! תשובה שגויה. נסו שוב 😟
                         </div>
                     )}
                 </div>
@@ -104,7 +104,7 @@ const Footer = ({
                             className="w-full lg:w-auto"
                         >
                             <RotateCcwIcon className="h-4 w-4 lg:h-6 lg:w-10 ml-2" />
-                            לתרגול חזור
+                            חזרה לתרגול
                         </Button>
                         <Button
                             variant="default"
@@ -113,7 +113,7 @@ const Footer = ({
                             className="w-full lg:w-auto flex items-center justify-center"
                         >
                             <EyeIcon className="h-4 w-4 lg:h-6 lg:w-10 mr-2" />
-                            לצפייה בתרגול
+                            צפייה בתרגול
                         </Button>
                         <Button
                             className="w-full lg:w-auto"
@@ -145,7 +145,7 @@ const Footer = ({
                         </Button>
 
                         <div className="px-2 text-sm sm:text-base text-neutral-700 dark:text-neutral-300 select-none text-center mx-auto md:justify-self-center md:col-start-2">
-                            Question{" "}
+                            שאלה{" "}
                             <span className="font-semibold">
                                 {(activeIndex as number) + 1}
                             </span>{" "}
@@ -190,7 +190,7 @@ const Footer = ({
                         </Button>
 
                         <div className="px-2 text-sm sm:text-base text-neutral-700 dark:text-neutral-300 select-none text-center mx-auto md:justify-self-center md:col-start-2">
-                            Question{" "}
+                            שאלה{" "}
                             <span className="font-semibold">
                                 {(activeIndex as number) + 1}
                             </span>{" "}
