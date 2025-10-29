@@ -12,7 +12,10 @@
     "db:seed": "tsx ./scripts/seed.ts",
     "db:seedSmarti": "tsx ./scripts/seedSmarti.ts",
     "db:reset": "tsx ./scripts/reset.ts",
-    "db:resetSmarti": "tsx ./scripts/resetSmarti.ts"
+    "db:resetSmarti": "tsx ./scripts/resetSmarti.ts",
+    "typecheck": "tsc --noEmit",
+    "precheck": "npm run lint && npm run typecheck",
+    "ci-check": "npm run precheck && npm run vercel:pull:preview && npm run vercel:build"
   },
   "dependencies": {
     "@clerk/clerk-sdk-node": "^5.1.6",
@@ -65,8 +68,9 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "drizzle-kit": "^0.31.4",
+    "eslint-config-next": "16.0.1",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.5",
-    "typescript": "^5"
+    "typescript": "^5.9.3"
   }
 }
