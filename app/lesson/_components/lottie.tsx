@@ -24,8 +24,8 @@ const CelebrateJson = () => {
     }, [isInView, data]);
 
     return (
-        <div ref={containerRef} className="flex items-center justify-center flex-col h-40 -mb-6">
-            {data ? <Lottie animationData={data} loop /> : null}
+        <div ref={containerRef} className="flex items-center justify-center flex-col h-52 -mt-6 -mb-12">
+            {data ? <Lottie animationData={data} loop className="flex items-center justify-center flex-col h-52 -mt-6 -mb-12" /> : null}
         </div>
     );
 }

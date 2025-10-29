@@ -74,11 +74,12 @@ const Footer = ({
         <footer
             className={cn(
                 "lg:h-[120px] h-[100px] border-t-2",
+                mode === "summary" && "h-[240px]",
                 status === "correct" && "border-transparent bg-green-100",
                 status === "wrong" && "border-transparent bg-rose-100"
             )}
         >
-            <div className="max-w-[1040px] h-full mx-auto flex items-center justify-between px-6 lg:px-10 gap-3">
+            <div className="max-w-[1040px] h-full mx-auto flex items-center justify-between px-6 lg:px-10 gap-1.5 lg:gap-3 py-2 lg:py-0">
                 {/* Left: Status message OR "Practice Again" when completed */}
                 <div className="min-w-0">
                     {status === "correct" && (

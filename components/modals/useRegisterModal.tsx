@@ -5,11 +5,12 @@ import Image from "next/image";
 import { Button } from "../ui/button";
 import { useRegisterModal } from "@/store/use-register-modal";
 import { useAuth, useClerk } from "@clerk/nextjs";
+import { UserPlus, LogIn, ArrowRightFromLine } from "lucide-react";
 
 const RegisterModal = () => {
     const [isClient, setIsClient] = useState<boolean>(false)
     const { isOpen, close } = useRegisterModal();
-    const { openSignUp } = useClerk();
+    const { openSignUp, openSignIn } = useClerk();
     //Doing this to avoid hydration errors
     useEffect(() => {
         setIsClient(true);
@@ -41,17 +42,34 @@ const RegisterModal = () => {
                 </DialogHeader>
                 <DialogFooter>
                     <div className="flex flex-col gap-y-3 w-full">
-                        <Button variant="primary" size="default" className="w-full"
+                        <Button
+                            variant="primary"
+                            size="default"
+                            className="w-full flex items-center justify-center gap-2"
                             onClick={() => {
                                 openSignUp()
                                 close()
                             }}>
+                            <UserPlus className="w-5 h-5" />
                             המשך להרשמה
                         </Button>
-                        <Button variant="dangerOutline" size="default" className="w-full"
+                        <Button
+                            variant="primaryOutlineBorder"
+                            size="default"
+                            className="w-full flex items-center justify-center gap-2"
+                            onClick={() => {
+                                openSignIn()
+                                close()
+                            }}>
+                            <LogIn className="w-5 h-5" />
+                            המשך להתחברות
+                        </Button>
+                        <Button
+                            variant="dangerOutline"
+                            size="default"
+                            className="w-full flex items-center justify-center gap-2"
                             onClick={() => {
                                 close();
-
                             }}>
                             המשך בלי הרשמה
                         </Button>

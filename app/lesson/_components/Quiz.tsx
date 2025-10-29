@@ -24,9 +24,6 @@ import { addResultsToUser, getOrCreateUserFromGuest, removeQuestionsWrongByQuest
 import { Button } from "@/components/ui/button";
 import CountdownTimer from "./CountdownTimer";
 
-
-
-
 const optionsSchema = z.object({
     a: z.string(),
     b: z.string(),
@@ -63,6 +60,7 @@ const Quiz = ({
     const { userId } = useAuth();
     const [startAt, setStartAt] = useState<Date | null>(null);
     const isMobile = useMedia("(max-width:1024px)");
+    const isReallyMobile = useMedia("(max-width:640px)");
     const questionsMap = questionGroups.flatMap((categoryValue, index1) =>
         categoryValue.questionList.map((questionValue, index2) => ({
             placeY: index1,
@@ -72,12 +70,10 @@ const Quiz = ({
         }))
     );
 
-
     const router = useRouter();
     if (!questionsMap || questionsMap.length === 0) {
         return <p>no challenges displayed</p>;
     }
-
 
     // ---- CURRENT QUESTION ----
     const total = questionsMap.length;
@@ -98,7 +94,6 @@ const Quiz = ({
         }
     }, []);
     useMount(() => {
-
         if (userPreviousAnswers) {
             setMode("summary")
             setResultList([...userPreviousAnswers])
@@ -137,13 +132,8 @@ const Quiz = ({
         };
         handleUserEffect();
     }, [userId]);
-    // const answeredCount = useMemo(
-    //     () => resultList.filter((v) => v !== null).length,
-    //     [resultList]
-    // );
     const progressPct = useMemo(
         () => {
-
             return ((activeIndex + (!!selectedOption ? 1 : 0)) / total) * 100
         },
         [activeIndex, total, selectedOption]
@@ -178,9 +168,7 @@ const Quiz = ({
         goTo(activeIndex - 1);
     };
     const onNextNav = () => {
-
         if (activeIndex < total - 1) {
-
             goTo(activeIndex + 1);
         } else {
             if (mode === "review") setMode("summary");
@@ -188,7 +176,6 @@ const Quiz = ({
             else OpenFinishLessonModal();
         }
     };
-
 
     const handleWatchAgain = async () => {
         if (mode === "review") {
@@ -200,13 +187,11 @@ const Quiz = ({
             setMode("review");
             goTo(0);
         }
-
     }
 
     const handlePracticeAgain = () => {
         if (!userId) {
             OpenRegisterModal()
-
         } else {
             setMode("quiz");
             setResultList(Array(total).fill(null));
@@ -222,17 +207,31 @@ const Quiz = ({
 
     const { width, height } = useWindowSize();
 
+    // Responsive: 2-cols on mobile (<640px), 3-cols for tablets (<1024px), 5-cols for desktop
+    const getGridCols = () => {
+        if (isReallyMobile) return "grid-cols-5";
+        if (isMobile) return "grid-cols-5";
+        return "grid-cols-5";
+    };
+
     const renderResultGrid = () => {
         if (lessonId === "practiceMode") return null;
 
         return (
-            <div className="w-full p-6 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/10 shadow-xl">
+            <div
+                className={cn(
+                    "w-full p-4 lg:p-6 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/10 shadow-xl",
+                    "sm:max-w-md mx-auto", // center + limit on mobile/tablet
+                )}
+            >
                 {questionGroups.map((categoryValue, categoryIndex) => (
                     <div key={categoryIndex} className="mb-6">
-                        <h3 className="text-lg font-semibold text-neutral-700 dark:text-neutral-300 mb-4">
+                        <h3 className={cn(
+                            "text-base lg:text-lg font-semibold text-neutral-700 dark:text-neutral-300 mb-2 lg:mb-4"
+                        )}>
                             {categoryValue.categoryType}
                         </h3>
-                        <div className="grid grid-cols-5 gap-4">
+                        <div className={`grid gap-2 lg:gap-4 ${getGridCols()}`}>
                             {categoryValue.questionList.map((_, questionIndex) => {
                                 const index = categoryValue.questionList
                                     .slice(0, questionIndex + 1)
@@ -247,7 +246,6 @@ const Quiz = ({
                                     <button
                                         key={index}
                                         onClick={() => {
-
                                             if (mode === "quiz") {
                                                 goTo(index);
                                             } else if (!userId) {
@@ -257,13 +255,12 @@ const Quiz = ({
                                                 goTo(index);
                                             }
                                         }}
-                                        className={`relative group flex flex-col items-center justify-center px-3 py-1 rounded-xl
-                                            transition-all duration-300 hover:scale-110
-                                            ${isCurrent
+                                        className={cn(
+                                            "relative group flex flex-col items-center justify-center px-2 py-1 rounded-xl transition-all duration-300 hover:scale-105",
+                                            isCurrent
                                                 ? "border-2 border-slate-500 shadow-lg z-10"
-                                                : "border border-transparent"
-                                            }
-                                            ${mode === "quiz"
+                                                : "border border-transparent",
+                                            mode === "quiz"
                                                 ? isAnswered
                                                     ? 'bg-sky-500/20 hover:bg-sky-500/40'
                                                     : 'bg-gray-500/10 hover:bg-gray-500/20'
@@ -271,9 +268,15 @@ const Quiz = ({
                                                     ? result === "a"
                                                         ? 'bg-green-500/10 hover:bg-green-500/20'
                                                         : 'bg-red-500/10 hover:bg-red-500/20'
-                                                    : 'bg-red-500/10 hover:bg-red-500/20'
-                                            }
-                                        `}
+                                                    : 'bg-red-500/10 hover:bg-red-500/20',
+                                            "min-h-[38px] sm:min-h-[38px] min-w-[38px] sm:min-w-[38px] text-base sm:text-base"
+                                        )}
+                                        style={{
+                                            fontSize: isReallyMobile ? "0.95rem" : undefined,
+                                            minWidth: isReallyMobile ? 34 : 38,
+                                            minHeight: isReallyMobile ? 34 : 38,
+                                            padding: isReallyMobile ? "0.15rem 0.25rem" : undefined,
+                                        }}
                                     >
                                         <span className="text-sm font-medium">
                                             {index + 1}
@@ -294,13 +297,13 @@ const Quiz = ({
                         </div>
                     </div>
                 ))}
-                <p className="text-center text-sm text-neutral-400 dark:text-neutral-500">
+                <p className="text-center text-xs lg:text-sm text-neutral-400 dark:text-neutral-500 mt-2">
                     Tap any question number to {mode === "quiz" ? "navigate" : "review your answer"}
                 </p>
                 {mode === "review" ? (
                     <div className="flex justify-center pt-2">
                         <Button
-                            className="w-full lg:w-auto"
+                            className="w-full lg:w-auto text-xs sm:text-sm"
                             onClick={() => router.back()}
                             size={isMobile ? "sm" : "lg"}
                             variant="secondary"
@@ -325,17 +328,17 @@ const Quiz = ({
                     numberOfPieces={1000}
                     tweenDuration={10000}
                 />
-                <div className="flex flex-col gap-y-8 items-center justify-center h-full max-w-xl mx-auto px-4 ">
+                <div className="flex flex-col gap-y-8 items-center justify-center h-full max-w-xl mx-auto px-2 sm:px-4">
                     <CelebrateJson />
-                    <div className="space-y-4 text-center animate-fade-in pt-20">
-                        <h1 className="text-2xl lg:text-4xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
+                    <div className="space-y-4 text-center animate-fade-in pt-12 sm:pt-20">
+                        <h1 className="text-xl sm:text-2xl lg:text-4xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
                             Fantastic Work! 🎉
                         </h1>
-                        <p className="text-lg text-neutral-600 dark:text-neutral-300">
+                        <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-300">
                             You've mastered this lesson
                         </p>
                     </div>
-                    <div className="flex items-center gap-x-6 w-full max-w-md">
+                    <div className="flex flex-row items-center  sm:gap-x-6 gap-x-3 w-full max-w-xs sm:max-w-md">
                         <ResultCard
                             variant="points"
                             value={resultList.reduce((acc, answer) => acc + (answer === 'a' || answer != null ? 10 : 0), 0)}
@@ -345,7 +348,9 @@ const Quiz = ({
                             value={resultList.reduce((acc, answer, index) => acc + (answer === 'a' ? (index <= 1 ? 5 : 5 + Math.round(acc / 3)) : 0), 0)}
                         />
                     </div>
-                    {renderResultGrid()}
+                    <div className="mb-2">
+                        {renderResultGrid()}
+                    </div>
                 </div>
                 <Footer
                     mode={mode}
@@ -381,7 +386,6 @@ const Quiz = ({
 
     const isPro = true
 
-
     return (
         <>
             <Header
@@ -401,45 +405,45 @@ const Quiz = ({
                     </div>
                 </div>
             )}
-
-
-
             <div className="flex-1">
                 <div className="h-full justify-center flex items-center">
-                    <div className="lg:min-h-[300px] w-full lg:w-[1200px] lg:px-0 px-6 flex flex-col gap-y-6">
+                    <div className="lg:min-h-[300px] w-full lg:w-[1200px] lg:px-0 px-2 sm:px-6 flex flex-col gap-y-6">
 
-                        {/* {mode === "review" && ( */}
-                        <div className="hidden md:block absolute right-6 top-1/4 transform -translate-y-1/2 w-[300px]">
+                        {/* Side result grid – mobile position change */}
+                        <div className="block md:hidden mb-2">
+                            {/* Mobile: show the grid above the question */}
+                            {mode !== "practiceMode" && renderResultGrid()}
+                        </div>
+                        <div className="hidden md:block absolute right-2 lg:right-6 top-1/4 transform -translate-y-1/2 w-[150px] sm:w-[220px] lg:w-[300px]">
                             <div className="w-full mx-auto">
                                 {mode !== "practiceMode" && renderResultGrid()}
                             </div>
                         </div>
-                        {/* )} */}
 
                         <div>
                             {/* Show COMPREHENSION content in box with expand/collapse */}
                             {question.format === "COMPREHENSION" && question.content && (
-                                <div className="flex flex-col justify-center w-full mb-8 gap-2">
+                                <div className="flex flex-col justify-center w-full mb-6 sm:mb-8 gap-2">
                                     <div className="flex justify-end">
                                         <Button
                                             variant="ghost"
                                             size="sm"
                                             onClick={() => setIsExpanded(!isExpanded)}
-                                            className="text-sm text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300"
+                                            className="text-xs sm:text-sm text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300"
                                         >
                                             {isExpanded ? "Show Less" : "Show Full"}
                                         </Button>
                                     </div>
                                     <div className="flex justify-center w-full">
                                         <div
-                                            className="relative bg-gradient-to-tr from-white via-sky-50 to-blue-50 dark:from-[#12131a] dark:via-[#182446] dark:to-[#222c40] border border-sky-100 dark:border-sky-800 rounded-3xl shadow-xl w-full flex gap-6 items-start px-4 py-3 lg:px-7 lg:py-6 overflow-y-auto"
+                                            className="relative bg-gradient-to-tr from-white via-sky-50 to-blue-50 dark:from-[#12131a] dark:via-[#182446] dark:to-[#222c40] border border-sky-100 dark:border-sky-800 rounded-2xl lg:rounded-3xl shadow-xl w-full flex gap-3 lg:gap-6 items-start px-2 py-2 sm:px-4 sm:py-3 lg:px-7 lg:py-6 overflow-y-auto"
                                             style={{
                                                 transition: "max-height 0.3s ease-in-out",
-                                                maxHeight: isExpanded ? "" : "300px"
+                                                maxHeight: isExpanded ? "" : "200px"
                                             }}
                                         >
                                             <div className="flex-1 min-w-0">
-                                                <div className="whitespace-pre-line font-normal text-lg lg:text-lg tracking-wide text-neutral-900 dark:text-neutral-100" style={{ lineHeight: 1.65 }}>
+                                                <div className="whitespace-pre-line font-normal text-base sm:text-lg tracking-wide text-neutral-900 dark:text-neutral-100" style={{ lineHeight: 1.65 }}>
                                                     {question.content}
                                                 </div>
                                             </div>
@@ -447,30 +451,21 @@ const Quiz = ({
                                     </div>
                                 </div>
                             )}
-
                             {/* Show SHAPES type question as image centered above the question from bucket */}
                             {question.format === "SHAPES" && question.content && (
-                                <div className="flex flex-col items-center justify-center w-full mb-8 gap-2">
+                                <div className="flex flex-col items-center justify-center w-full mb-6 sm:mb-8 gap-2">
                                     <div className="flex justify-center">
-                                        {/* 
-                                            Expected: question.content holds the image path or filename (e.g. 'triangle.png').
-                                            You may want to prepend your bucket URL here if not included.
-                                            Adjust 'process.env.NEXT_PUBLIC_SHAPES_BUCKET_URL' to your env and deployment.
-                                        */}
                                         <img
                                             src={question.content}
                                             alt="Shape question"
-                                            className="max-h-64 max-w-full object-contain rounded-2xl border border-neutral-200 dark:border-neutral-700 shadow-md bg-white dark:bg-neutral-900"
+                                            className="max-h-40 sm:max-h-52 lg:max-h-64 max-w-full object-contain rounded-2xl border border-neutral-200 dark:border-neutral-700 shadow-md bg-white dark:bg-neutral-900"
                                         />
                                     </div>
                                 </div>
                             )}
 
-
-                            <h1 className="lg:text-3xl text-lg lg:text-start font-bold text-neutral-700 dark:text-neutral-300 mb-4">
-
+                            <h1 className="lg:text-3xl text-lg lg:text-start font-bold text-neutral-700 dark:text-neutral-300 mb-3 sm:mb-4">
                                 <QuestionBubble question={question.question} />
-
                             </h1>
 
                             <Challenge
@@ -482,7 +477,6 @@ const Quiz = ({
                                 status={status}
                                 selectedOption={selectedOption}
                             />
-
                         </div>
                     </div>
                 </div>
@@ -492,9 +486,9 @@ const Quiz = ({
                 mode={mode}
                 disabled={pending}
                 status={status}
-                onCheck={onContinue}         // your existing "continue/check" handler
-                onPrev={onPrev}              // new: create goTo(activeIndex-1)
-                onNext={onNextNav}           // new: create goTo(activeIndex+1) or finish modal
+                onCheck={onContinue}
+                onPrev={onPrev}
+                onNext={onNextNav}
                 handleWatchAgain={handleWatchAgain}
                 activeIndex={activeIndex}
                 total={total}
