@@ -25,7 +25,7 @@ const LeaderBoardPage = async () => {
     const isPro = userSubscription?.isPro;
 
     return (
-        <div className="flex flex-row-reverse gap-[42px] px-6">
+        <div className="flex flex-row-reverse gap-[42px] px-6" dir="rtl">
             <StickyWrapper>
                 <UserProgress
                     imageSrc={userProgress.settings?.avatar || "/fr.svg"}
@@ -45,10 +45,10 @@ const LeaderBoardPage = async () => {
                 <div className="w-full flex flex-col items-center">
                     <TrophyJson />
                     <h1 className="text-center font-bold text-neutral-800 dark:text-slate-200 text-2xl my-6">
-                        LeaderBoard 🥇
+                        טבלת המובילים 🥇
                     </h1>
                     <p className="text-muted-foreground text-center text-lg mb-4">
-                        Check where you stand among other learners.
+                        בדקו את המיקום שלכם בין לומדים אחרים.
                     </p>
                     <Separator className="mb-4 h-0.5 rounded-full" />
                     {topTenUsers.map((userDetail, index) => (
@@ -64,7 +64,11 @@ const LeaderBoardPage = async () => {
                                 {userDetail.email.split("@")[0]}
                             </p>
                             <p className="text-muted-foreground dark:text-slate-200">
-                                {userDetail.experience} XP
+                                <span className="inline-flex items-center gap-1">
+                                    <img src="/points.svg" alt="נקודות" width={20} height={20} className="inline-block" />
+                                    {userDetail.experience}
+                                    <span className="ml-1">XP</span>
+                                </span>
                             </p>
                         </div>
                     ))}

@@ -25,7 +25,7 @@ const TrophyJson = () => {
 
     return (
         <div ref={containerRef} className="flex items-center justify-center flex-col h-52 -mt-6 -mb-12">
-            {data ? <Lottie animationData={data} loop className="flex items-center justify-center flex-col h-42 -mt-6 -mb-12" /> : null}
+            {data ? <Lottie animationData={data} loop className="flex items-center justify-center flex-col h-42 -mt-6 -mb-2" /> : null}
         </div>
     );
 }
