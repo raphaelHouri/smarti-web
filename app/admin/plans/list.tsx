@@ -1,7 +1,18 @@
-import { DataTable, DateField, List, NumberField } from 'react-admin';
+import { DataTable, DateField, List, NumberField, Exporter, ExportButton, TopToolbar } from 'react-admin';
+import { exportToXlsx } from '@/lib/xlsxExport';
+
+const plansExporter: Exporter = (records) => {
+    exportToXlsx('plans', records, { sheetName: 'plans' });
+};
+
+const ListActions = () => (
+    <TopToolbar>
+        <ExportButton exporter={plansExporter} label="Export XLSX" />
+    </TopToolbar>
+);
 
 export const PlanList = () => (
-    <List>
+    <List exporter={false} actions={<ListActions />}>
         <DataTable>
             <DataTable.Col source="id" />
             <DataTable.Col source="name" />

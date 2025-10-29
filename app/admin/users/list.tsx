@@ -1,7 +1,18 @@
-import { ChipField, DataTable, DateField, List, NumberField, ReferenceArrayField, ReferenceField, SingleFieldList, TextField } from 'react-admin';
+import { ChipField, DataTable, DateField, List, NumberField, ReferenceArrayField, ReferenceField, SingleFieldList, TextField, Exporter, ExportButton, TopToolbar } from 'react-admin';
+import { exportToXlsx } from '@/lib/xlsxExport';
+
+const usersExporter: Exporter = (records) => {
+    exportToXlsx('users', records, { sheetName: 'users' });
+};
+
+const ListActions = () => (
+    <TopToolbar>
+        <ExportButton exporter={usersExporter} label="Export XLSX" />
+    </TopToolbar>
+);
 
 export const UsersList = () => (
-    <List>
+    <List exporter={false} actions={<ListActions />}>
         <DataTable>
             <DataTable.Col source="id" />
             <DataTable.Col source="name" />

@@ -1,7 +1,49 @@
-import { DataTable, DateField, FunctionField, List, ReferenceField, TextField } from 'react-admin';
+import { DataTable, DateField, FunctionField, List, ReferenceField, TextField, Exporter, ExportButton, TopToolbar } from 'react-admin';
+import { exportToXlsx } from '@/lib/xlsxExport';
+
+const questionsExporter: Exporter = (records) => {
+    const rows = records.map((r: any) => ({
+        id: r.id,
+        content: r.content,
+        question: r.question,
+        format: r.format,
+        optionA: r?.options?.a,
+        optionB: r?.options?.b,
+        optionC: r?.options?.c,
+        optionD: r?.options?.d,
+        categoryId: r.categoryId,
+        topicType: r.topicType,
+        explanation: r.explanation,
+        createdAt: r.createdAt,
+    }));
+    exportToXlsx('questions', rows, {
+        sheetName: 'questions',
+        headersOrder: ['id', 'content', 'question', 'format', 'optionA', 'optionB', 'optionC', 'optionD', 'categoryId', 'topicType', 'explanation', 'createdAt'],
+        headersLabel: {
+            id: 'ID',
+            content: 'Content',
+            question: 'Question',
+            format: 'Format',
+            optionA: 'Option A',
+            optionB: 'Option B',
+            optionC: 'Option C',
+            optionD: 'Option D',
+            categoryId: 'Category',
+            topicType: 'Topic Type',
+            explanation: 'Explanation',
+            createdAt: 'Created At',
+        },
+    });
+};
+
+const ListActions = () => (
+    <TopToolbar>
+        <ExportButton exporter={questionsExporter} label="Export XLSX" />
+    </TopToolbar>
+);
 
 export const QuestionList = () => (
-    <List>
+    <List exporter={false} actions={<ListActions />}>
         <DataTable>
             <DataTable.Col source="id" />
             <DataTable.Col source="content" />

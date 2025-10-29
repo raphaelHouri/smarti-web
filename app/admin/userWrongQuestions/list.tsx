@@ -1,7 +1,18 @@
-import { DataTable, List, ReferenceField, TextField, BooleanField } from 'react-admin';
+import { DataTable, List, ReferenceField, TextField, BooleanField, Exporter, ExportButton, TopToolbar } from 'react-admin';
+import { exportToXlsx } from '@/lib/xlsxExport';
+
+const userWrongQuestionsExporter: Exporter = (records) => {
+    exportToXlsx('userWrongQuestions', records, { sheetName: 'userWrongQuestions' });
+};
+
+const ListActions = () => (
+    <TopToolbar>
+        <ExportButton exporter={userWrongQuestionsExporter} label="Export XLSX" />
+    </TopToolbar>
+);
 
 export const UserWrongQuestionsList = () => (
-    <List>
+    <List exporter={false} actions={<ListActions />}>
         <DataTable>
             <DataTable.Col source="id" />
             <DataTable.Col source="userId" label="User">
