@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import db from "@/db/drizzle";
-import { users, userLessonResults, organizationInfo, organizationYears } from "@/db/schemaSmarti";
+import { organizationYears } from "@/db/schemaSmarti";
 import { auth } from "@clerk/nextjs/server";
-import { desc, and, inArray, gte, lt, eq } from "drizzle-orm";
+import { desc } from "drizzle-orm";
 
 export async function GET(
     req: Request,
@@ -74,10 +74,8 @@ export async function GET(
 
                 return {
                     id: user.id,
-                    username: user.username,
+                    name: user.name,
                     email: user.email,
-                    firstName: user.firstName,
-                    lastName: user.lastName,
                     experience: user.experience,
                     geniusScore: user.geniusScore,
                     totalLessons,
