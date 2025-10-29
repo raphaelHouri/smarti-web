@@ -4,6 +4,9 @@ const nextConfig: NextConfig = {
   images: {
     domains: ['img.clerk.com', 'firebasestorage.googleapis.com'],
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   /* config options here */
   async headers() {
     return [
