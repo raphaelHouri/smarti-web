@@ -1,4 +1,4 @@
-import { DateInput, Edit, NumberInput, ReferenceInput, SelectInput, SimpleForm, TextInput } from 'react-admin';
+import { BooleanInput, DateInput, Edit, NumberInput, ReferenceInput, SelectInput, SimpleForm, TextInput } from 'react-admin';
 
 export const LessonEdit = () => (
     <Edit>
@@ -8,6 +8,7 @@ export const LessonEdit = () => (
                 <SelectInput optionText="categoryType" />
             </ReferenceInput>
             <NumberInput source="lessonOrder" />
+            <BooleanInput source="isPremium" label="Premium" />
             <DateInput source="createdAt" />
         </SimpleForm>
     </Edit>

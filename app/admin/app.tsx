@@ -17,6 +17,7 @@ import { QuestionCreate } from "./questions/create";
 import { LessonList } from "./lessons/list";
 import { LessonEdit } from "./lessons/edit";
 import { LessonShow } from "./lessons/show";
+import { LessonCreate } from "./lessons/create";
 import { LessonQuestionGroupList } from "./lessonQuestionGroups/list";
 import { LessonQuestionGroupShow } from "./lessonQuestionGroups/show";
 import { LessonQuestionGroupEdit } from "./lessonQuestionGroups/edit";
@@ -85,6 +86,7 @@ const App = () => {
                 name="lessons"
                 list={LessonList}
                 edit={LessonEdit}
+                create={LessonCreate}
                 recordRepresentation="text"
                 icon={BookOpen}
                 show={LessonShow}
