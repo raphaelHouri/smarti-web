@@ -21,6 +21,7 @@ import { LessonCreate } from "./lessons/create";
 import { LessonQuestionGroupList } from "./lessonQuestionGroups/list";
 import { LessonQuestionGroupShow } from "./lessonQuestionGroups/show";
 import { LessonQuestionGroupEdit } from "./lessonQuestionGroups/edit";
+import { LessonQuestionGroupCreate } from "./lessonQuestionGroups/create";
 import { CouponList } from "./coupons/list";
 import { CouponEdit } from "./coupons/edit";
 import { CouponShow } from "./coupons/show";
@@ -95,6 +96,7 @@ const App = () => {
                 name="lessonQuestionGroups"
                 list={LessonQuestionGroupList}
                 edit={LessonQuestionGroupEdit}
+                create={LessonQuestionGroupCreate}
                 recordRepresentation="lessonQuestionGroups"
                 icon={ListTree}
                 show={LessonQuestionGroupShow}

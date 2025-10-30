@@ -145,7 +145,7 @@ const Footer = ({
                         </Button>
 
                         <div className="px-2 text-sm sm:text-base text-neutral-700 dark:text-neutral-300 select-none text-center mx-auto md:justify-self-center md:col-start-2">
-                            שאלה{" "}
+                            <span className="hidden sm:inline">שאלה{" "}</span>
                             <span className="font-semibold">
                                 {(activeIndex as number) + 1}
                             </span>{" "}

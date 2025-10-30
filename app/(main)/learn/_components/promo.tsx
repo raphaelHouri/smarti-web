@@ -15,7 +15,7 @@ const PromoSection = () => {
                         height={26}
                         width={26}
                     />
-                    <h3 className="font-bold text-lg">Uprade to Pro</h3>
+                    <h3 className="font-bold text-lg">Upgrade to Pro</h3>
                 </div>
                 <p className="text-muted-foreground">
                     Get Unlimited hearts and more.

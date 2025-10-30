@@ -29,9 +29,13 @@ export const PUT = async (
     }
     const { lessonId } = await params;
     const body = await req.json();
-    const data = await db.update(lessons).set({
-        ...body
-    }).where(
+    const updatePayload: any = { ...body };
+    // Coerce or strip timestamp fields that may arrive as strings
+    if (typeof updatePayload.createdAt === "string") {
+        const d = new Date(updatePayload.createdAt);
+        updatePayload.createdAt = isNaN(d.getTime()) ? undefined : d;
+    }
+    const data = await db.update(lessons).set(updatePayload).where(
         eq(lessons.id, lessonId)
     ).returning()
     return NextResponse.json(data[0]);

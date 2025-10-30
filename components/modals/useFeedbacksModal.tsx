@@ -35,12 +35,12 @@ import { motion } from "framer-motion"; // 👈 animation library
 const feedbacksFormSchema = z.object({
     title: z
         .string()
-        .min(3, { message: "Title must be at least 3 characters." })
-        .max(100, { message: "Title must not be longer than 100 characters." }),
+        .min(3, { message: "הכותרת חייבת להכיל לפחות 3 תווים." })
+        .max(100, { message: "הכותרת לא יכולה להיות ארוכה מ-100 תווים." }),
     description: z
         .string()
-        .min(10, { message: "Description must be at least 10 characters." })
-        .max(500, { message: "Description must not be longer than 500 characters." }),
+        .min(10, { message: "התיאור חייב להכיל לפחות 10 תווים." })
+        .max(500, { message: "התיאור לא יכול להיות ארוך מ-500 תווים." }),
     rating: z.enum(["terrible", "bad", "ok", "good", "great"]),
     screenName: z.string(),
     identifier: z.string(),
@@ -48,15 +48,14 @@ const feedbacksFormSchema = z.object({
 
 type FeedbacksFormValues = z.infer<typeof feedbacksFormSchema>;
 
+// עברית לאופציות דירוג
 const ratingOptions = [
-    { value: "terrible", label: "😩", text: "Terrible" },
-    { value: "bad", label: "🙁", text: "Bad" },
-    { value: "ok", label: "😐", text: "OK" },
-    { value: "good", label: "🙂", text: "Good" },
-    { value: "great", label: "😃", text: "Great" },
+    { value: "terrible", label: "😩", text: "נורא" },
+    { value: "bad", label: "🙁", text: "רע" },
+    { value: "ok", label: "😐", text: "בסדר" },
+    { value: "good", label: "🙂", text: "טוב" },
+    { value: "great", label: "😃", text: "מעולה" },
 ];
-
-
 
 const FeedbacksModal = () => {
     const [isClient, setIsClient] = useState(false);
@@ -101,10 +100,10 @@ const FeedbacksModal = () => {
             if (result.success) {
                 toast.success(result.message);
                 setTimeout(() => close(), 500);
-            } else toast.error(result.message || "Failed to submit feedback.");
+            } else toast.error(result.message || "שליחת המשוב נכשלה.");
         } catch (error) {
             console.error("[FEEDBACK_MODAL_SUBMIT_ERROR]", error);
-            toast.error("Failed to submit feedback. Please try again.");
+            toast.error("שליחת המשוב נכשלה. נסו שוב.");
         }
     };
 
@@ -117,26 +116,26 @@ const FeedbacksModal = () => {
             >
                 <DialogHeader>
                     <div className="flex justify-center mb-5">
-                        <Image src="/mascot.svg" alt="Mascot" height={80} width={80} />
+                        <Image src="/mascot.svg" alt="קמע" height={80} width={80} />
                     </div>
                     <DialogTitle className="text-center font-bold text-2xl text-gray-800">
-                        We value your feedback!
+                        המשוב שלך חשוב לנו!
                     </DialogTitle>
                     <DialogDescription className="text-center text-gray-600">
-                        Help us improve by sharing your thoughts on our system.
+                        עזרו לנו להשתפר על ידי שיתוף המחשבות והחוויות שלכם מהמערכת.
                     </DialogDescription>
                 </DialogHeader>
 
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-y-5 px-4">
-                        {/* Animated Rating */}
+                        {/* דירוג באנימציה */}
                         <FormField
                             control={form.control}
                             name="rating"
                             render={({ field }) => (
                                 <FormItem className="text-center">
                                     <FormLabel className="block mb-2 font-medium text-gray-700">
-                                        How would you rate your experience?
+                                        איך היית מדרג/ת את החוויה שלך?
                                     </FormLabel>
                                     <FormControl>
                                         <div className="grid grid-cols-5 gap-4 justify-items-center">
@@ -177,16 +176,16 @@ const FeedbacksModal = () => {
                             )}
                         />
 
-                        {/* Title */}
+                        {/* כותרת */}
                         <FormField
                             control={form.control}
                             name="title"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Title</FormLabel>
+                                    <FormLabel>כותרת</FormLabel>
                                     <FormControl>
                                         <Input
-                                            placeholder="Feedback Title (e.g., 'Bug Report', 'Feature Idea')"
+                                            placeholder="כותרת המשוב (למשל, 'דיווח על באג', 'הצעה לשיפור')"
                                             {...field}
                                             disabled={isSubmitting}
                                             className="rounded-xl border-gray-300 focus:ring-2 focus:ring-indigo-400"
@@ -197,16 +196,16 @@ const FeedbacksModal = () => {
                             )}
                         />
 
-                        {/* Description */}
+                        {/* תיאור */}
                         <FormField
                             control={form.control}
                             name="description"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Description</FormLabel>
+                                    <FormLabel>תיאור</FormLabel>
                                     <FormControl>
                                         <Textarea
-                                            placeholder="Tell us more about your experience..."
+                                            placeholder="ספרו לנו עוד על החוויה שלכם..."
                                             rows={5}
                                             {...field}
                                             disabled={isSubmitting}
@@ -218,8 +217,7 @@ const FeedbacksModal = () => {
                             )}
                         />
 
-
-                        {/* Submit Buttons */}
+                        {/* כפתורים */}
                         <DialogFooter className="pt-4">
                             <div className="flex flex-col gap-y-3 w-full">
                                 <Button
@@ -232,10 +230,10 @@ const FeedbacksModal = () => {
                                     {isSubmitting ? (
                                         <>
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Submitting...
+                                            שולח...
                                         </>
                                     ) : (
-                                        "Submit Feedback"
+                                        "שלחו משוב"
                                     )}
                                 </Button>
                                 <Button
@@ -245,7 +243,7 @@ const FeedbacksModal = () => {
                                     onClick={close}
                                     disabled={isSubmitting}
                                 >
-                                    Cancel
+                                    ביטול
                                 </Button>
                             </div>
                         </DialogFooter>

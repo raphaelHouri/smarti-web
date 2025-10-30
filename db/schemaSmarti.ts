@@ -53,7 +53,7 @@ export const lessonCategory = pgTable("lesson_category", {
 });
 
 export const lessons = pgTable("lessons", {
-    id: uuid("id").primaryKey(),
+    id: uuid("id").defaultRandom().primaryKey().notNull(),
     lessonCategoryId: uuid("lesson_category_id").references(() => lessonCategory.id, { onDelete: "cascade" }).notNull(),
     lessonOrder: integer("lesson_order").notNull(),
     isPremium: boolean("is_premium").default(true).notNull(),
@@ -114,7 +114,7 @@ export const subscriptions = pgTable("subscriptions", {
 });
 
 export const lessonQuestionGroups = pgTable("lesson_question_groups", {
-    id: uuid("id").primaryKey(),
+    id: uuid("id").defaultRandom().primaryKey().notNull(),
     lessonId: uuid("lesson_id").references(() => lessons.id, { onDelete: "cascade" }).notNull(),
     categoryId: uuid("category_id").references(() => lessonCategory.id, { onDelete: "cascade" }).notNull(),
     questionList: uuid("question_list").array().notNull(), // No array foreign key support

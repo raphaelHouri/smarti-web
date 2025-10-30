@@ -25,7 +25,7 @@ const HeaderPage = () => {
             </Link>
           </h1>
         </div>
-        <div className="inline-flex gap-x-4 mt-2">
+        <div className="inline-flex gap-x-4 mt-2 ms:ml-0 ml-4">
           <div className="mt-2">
             <ClerkLoading>
               <Loader className="h-5 w-5 text-muted-foreground animate-spin" />

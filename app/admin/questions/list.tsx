@@ -1,4 +1,4 @@
-import { DataTable, DateField, FunctionField, List, ReferenceField, TextField, Exporter, ExportButton, TopToolbar } from 'react-admin';
+import { DataTable, DateField, FunctionField, List, ReferenceField, TextField, Exporter, ExportButton, TopToolbar, CreateButton } from 'react-admin';
 import { exportToXlsx } from '@/lib/xlsxExport';
 
 const questionsExporter: Exporter = (records) => {
@@ -19,11 +19,26 @@ const questionsExporter: Exporter = (records) => {
     exportToXlsx('questions', rows, {
         sheetName: 'questions',
         headersOrder: ['id', 'content', 'question', 'format', 'optionA', 'optionB', 'optionC', 'optionD', 'categoryId', 'topicType', 'explanation', 'createdAt'],
+        headersLabel: {
+            id: 'id',
+            content: 'content',
+            question: 'question',
+            format: 'format',
+            optionA: 'options.a',
+            optionB: 'options.b',
+            optionC: 'options.c',
+            optionD: 'options.d',
+            categoryId: 'categoryId',
+            topicType: 'topicType',
+            explanation: 'explanation',
+            createdAt: 'createdAt',
+        },
     });
 };
 
 const ListActions = () => (
     <TopToolbar>
+        <CreateButton />
         <ExportButton exporter={questionsExporter} label="Export XLSX" />
     </TopToolbar>
 );

@@ -128,7 +128,7 @@ export async function POST(req: NextRequest) {
                     obj.content = String(value);
 
                 } else if (header === 'question') {
-                    obj.content = String(value);
+                    obj.question = String(value);
 
                 } else if (header === 'id') {
                     obj.id = String(value);

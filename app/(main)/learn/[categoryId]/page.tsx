@@ -6,10 +6,11 @@ import { redirect } from "next/navigation";
 import Unit from "../_components/Unit";
 import PromoSection from "../_components/promo";
 import QuestsSection from "../../quests/_components/quests";
-import { getCategories, getFirstCategory, getLessonCategoryById, getLessonCategoryWithLessonsById, getOrCreateUserFromGuest, getUserSubscriptions } from "@/db/queries";
+import { getCategories, getFirstCategory, getLessonCategoryById, getLessonCategoryWithLessonsById, getOrCreateUserFromGuest } from "@/db/queries";
 import LessonCategoryPage from "../../courses/page";
-import { tr } from "zod/v4/locales";
 import FeedbackButton from "@/components/feedbackButton";
+
+// כל הטקסטים, פרופס וכו' יתורגמו לעברית
 
 const LearnPage = async ({
     params,
@@ -24,7 +25,7 @@ const LearnPage = async ({
 
     const [user, lessonsCategory, categoriesData] = await Promise.all([userData, lessonCategories, categories]);
 
-    // Create a new array with 'completed' field
+    // יצירת מערך חדש עם שדה 'הושלם'
     const lessonsCategoryWithCompleted = lessonsCategory.map((lessonCategoryItem) => {
         const matchedLesson = lessonCategoryWithLessons.find(
             (lesson: any) => lesson.lessonId === lessonCategoryItem.id
@@ -42,11 +43,11 @@ const LearnPage = async ({
 
     if (!user) {
         if (categoryId) {
-            // No additional logic needed, categoryId is already set
+            // אין צורך בלוגיקה נוספת, categoryId כבר קיים
         } else {
             const category = await getFirstCategory();
             if (!category || !category.id) {
-                throw new Error("No categories found");
+                throw new Error("לא נמצאו קטגוריות");
             }
             categoryId = category.id;
         }
@@ -61,7 +62,6 @@ const LearnPage = async ({
         redirect("/courses");
     }
 
-
     return (
         <div className="flex gap-[48px] px-2">
 
@@ -75,10 +75,9 @@ const LearnPage = async ({
                 <div key={categoryDetails.id} className="mb-10">
                     <Unit
                         id={categoryDetails.id}
-                        title={categoryDetails.title}
-                        description={categoryDetails.description}
+                        title={categoryDetails.title || "שם היחידה לא מוגדר"}
+                        description={categoryDetails.description || "אין תיאור"}
                         lessons={lessonsCategoryWithCompleted}
-
                     />
                 </div>
             </FeedWrapper>
@@ -86,7 +85,7 @@ const LearnPage = async ({
 
                 <UserProgress
                     imageSrc={categoryDetails.imageSrc || "/fr.svg"}
-                    title={categoryDetails.categoryType}
+                    title={categoryDetails.categoryType || "שם הקטגוריה לא נמצא"}
                     geniusScore={
                         user && "geniusScore" in user && typeof user.geniusScore === "number"
                             ? user.geniusScore
@@ -103,7 +102,9 @@ const LearnPage = async ({
                     <PromoSection
                     />
                 )}
-                <QuestsSection experience={user && "experience" in user && typeof user.experience === "number" ? user.experience : 0} />
+                <QuestsSection
+                    experience={user && "experience" in user && typeof user.experience === "number" ? user.experience : 0}
+                />
             </StickyWrapper>
         </div>
     );

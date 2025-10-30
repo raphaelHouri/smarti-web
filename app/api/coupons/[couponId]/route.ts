@@ -3,6 +3,7 @@ import { coupons } from "@/db/schemaSmarti"
 import { IsAdmin } from "@/lib/admin"
 import { eq } from "drizzle-orm"
 import { NextResponse } from "next/server"
+import { sanitizeDates } from "@/lib/api/sanitize"
 
 
 export const GET = async (
@@ -29,9 +30,8 @@ export const PUT = async (
     }
     const { couponId } = await params;
     const body = await req.json();
-    const data = await db.update(coupons).set({
-        ...body
-    }).where(
+    const updatePayload = sanitizeDates(body);
+    const data = await db.update(coupons).set(updatePayload).where(
         eq(coupons.id, couponId)
     ).returning()
     return NextResponse.json(data[0]);

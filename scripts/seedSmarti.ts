@@ -161,18 +161,21 @@ const main = async () => {
                 id: lesson3Id,
                 lessonCategoryId: category2Id,
                 lessonOrder: 1,
+                isPremium: true,
                 createdAt: new Date()
             },
             {
                 id: lesson4Id,
                 lessonCategoryId: category3Id,
                 lessonOrder: 1,
+                isPremium: false,
                 createdAt: new Date()
             },
             {
                 id: lesson5Id,
                 lessonCategoryId: category3Id,
                 lessonOrder: 2,
+                isPremium: true,
                 createdAt: new Date()
             }
         ]);
@@ -304,12 +307,14 @@ const main = async () => {
                 id: lessonId,
                 lessonCategoryId: categoryId,
                 lessonOrder: 1,
+                isPremium: false,
                 createdAt: new Date()
             },
             {
                 id: lesson2Id,
                 lessonCategoryId: categoryId,
                 lessonOrder: 2,
+                isPremium: true,
                 createdAt: new Date()
             }
         ]);

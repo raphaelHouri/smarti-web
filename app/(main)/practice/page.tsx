@@ -88,7 +88,7 @@ const PracticePage = async () => {
     };
 
     return (
-        <div className="flex flex-row-reverse gap-[42px] px-6">
+        <div className="flex flex-col-reverse md:flex-row-reverse gap-6 md:gap-[42px] px-4 sm:px-6">
             <StickyWrapper>
                 <UserProgress
                     experience={userProgress.experience}
@@ -103,10 +103,10 @@ const PracticePage = async () => {
             <FeedWrapper>
                 <div className="w-full flex flex-col items-center" dir="rtl">
                     <PracticeAnimation />
-                    <h1 className="text-center font-bold text-neutral-800 dark:text-slate-200 text-2xl my-6">
+                    <h1 className="text-center font-bold text-neutral-800 dark:text-slate-200 text-xl sm:text-2xl my-6">
                         תרגול מביא לשלמות! 🏋️‍♂️
                     </h1>
-                    <p className="text-muted-foreground text-center text-lg mb-4">
+                    <p className="text-muted-foreground text-center text-base sm:text-lg mb-4">
                         חזור על שאלות שטעית בהן ונסה שוב.
                     </p>
                     <Separator className="mb-6 h-0.5 rounded-full" />

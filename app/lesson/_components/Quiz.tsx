@@ -226,9 +226,9 @@ const Quiz = ({
                 )}
             >
                 {questionGroups.map((categoryValue, categoryIndex) => (
-                    <div key={categoryIndex} className="mb-6">
+                    <div key={categoryIndex} className="sm:mb-6 mb-2">
                         <h3 className={cn(
-                            "text-base lg:text-lg font-semibold text-neutral-700 dark:text-neutral-300 mb-2 lg:mb-4"
+                            "text-base lg:text-lg font-semibold text-neutral-700 dark:text-neutral-300 mb-0 sm:mb-2 lg:mb-4"
                         )}>
                             {categoryValue.categoryType}
                         </h3>

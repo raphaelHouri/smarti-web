@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import db from "@/db/drizzle";
 import { coupons } from "@/db/schemaSmarti";
 import { IsAdmin } from "@/lib/admin";
+import { sanitizeDates } from "@/lib/api/sanitize";
 
 export async function GET() {
     if (!IsAdmin()) {
@@ -16,9 +17,8 @@ export async function POST(req: Request) {
         return new NextResponse("UnAuthorized", { status: 401 })
     }
     const body = await req.json();
-    const data = await db.insert(coupons).values({
-        ...body
-    }).returning()
+    const insertPayload = sanitizeDates(body);
+    const data = await db.insert(coupons).values(insertPayload).returning()
 
     return NextResponse.json(data[0]);
 }
