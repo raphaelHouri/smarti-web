@@ -34,6 +34,25 @@ export async function POST(req: NextRequest) {
     let parsedData: any[] = [];
     const fileName = file.name.toLowerCase();
 
+    const standardize = (h: string) => {
+        const key = String(h || '').toLowerCase().replace(/\s+|\.|_/g, '');
+        switch (key) {
+            case 'questionIds':
+                return 'questionIds';
+            case 'categoryType':
+                return 'categoryType';
+            case 'order':
+                return 'order';
+            case 'time':
+            case 'duration':
+                return 'time';
+            case 'premium':
+                return 'premium';
+            default:
+                return String(h || '').trim();
+        }
+    };
+
     try {
         if (fileName.endsWith('.xlsx')) {
             const workbook = XLSX.read(buffer, { type: 'buffer' });
@@ -43,11 +62,13 @@ export async function POST(req: NextRequest) {
             if (parsedData.length === 0) {
                 return NextResponse.json({ message: 'No data found in the XLSX file.' }, { status: 400 });
             }
-            const headers = (parsedData.shift() as string[]).map(h => String(h || '').trim());
+            const headers = (parsedData.shift() as string[]).map(h => standardize(String(h || '')));
             parsedData = parsedData.map(row => {
                 const obj: { [key: string]: string | undefined } = {};
                 (row as (string | number | undefined)[]).forEach((value, index) => {
-                    obj[headers[index]] = value === undefined || value === null ? undefined : String(value);
+                    const k = headers[index];
+                    if (!k) return;
+                    obj[k] = value === undefined || value === null ? undefined : String(value);
                 });
                 return obj;
             });
@@ -57,11 +78,11 @@ export async function POST(req: NextRequest) {
             if (lines.length === 0) {
                 return NextResponse.json({ message: 'No data found in the CSV file.' }, { status: 400 });
             }
-            const headers = lines[0].split(',').map(h => h.trim());
+            const headers = lines[0].split(',').map(h => standardize(h.trim()));
             parsedData = lines.slice(1).map(line => {
                 const values = line.split(',');
                 const obj: Record<string, string> = {};
-                headers.forEach((h, i) => { obj[h] = (values[i] || '').trim(); });
+                headers.forEach((h, i) => { if (h) obj[h] = (values[i] || '').trim(); });
                 return obj;
             });
         } else {
