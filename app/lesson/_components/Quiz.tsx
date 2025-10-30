@@ -144,10 +144,8 @@ const Quiz = ({
         return questionGroups.reduce((total, group) => total + group.time, 0);
     }, [mode, questionGroups]);
 
-    // Reset expanded state when question changes
-    useEffect(() => {
-        setIsExpanded(false);
-    }, [activeIndex]);
+
+
 
     const goTo = (idx: number) => {
         setStatus("none");
