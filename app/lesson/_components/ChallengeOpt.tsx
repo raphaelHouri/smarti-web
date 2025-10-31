@@ -1,5 +1,5 @@
 
-import { cn, fnv1a, seededShuffle } from "@/lib/utils";
+import { cn, fnv1a, renderTextWithLTRFormulas, seededShuffle } from "@/lib/utils";
 import CardLesson from "./CardLesson";
 import { Options } from "./Quiz";
 import { formatEnum, questions } from "@/db/schemaSmarti";
@@ -7,6 +7,7 @@ import { useMemo } from "react";
 
 interface ChallengeProps {
     mode: "quiz" | "review" | "practiceMode";
+    format: "REGULAR" | "SHAPES" | "COMPREHENSION" | "MATH";
     options: Options;
     questionDetails: typeof questions.$inferSelect;
     onSelect: (option: "a" | "b" | "c" | "d") => void;
@@ -17,6 +18,7 @@ interface ChallengeProps {
 
 const Challenge = ({
     mode,
+    format,
     options,
     questionDetails,
     onSelect,
@@ -37,33 +39,33 @@ const Challenge = ({
     return (
         <div>
 
-        <div className=
-            {cn("grid gap-2",
-                questionDetails.format === "COMPREHENSION" && "grid-cols-1",
-                questionDetails.format in ["REGULAR", "MATH"] && "grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(0,1fr))]",
-                questionDetails.format === "SHAPES" && "grid-cols-2 lg:grid-cols-4"
-            )}
-        >
-            {shuffledOptions.map(([key, value], index) => (
-                <CardLesson
-                    mode={mode}
-                    type={questionDetails.format}
-                    key={key}
-                    cardId={key}
-                    id={questionDetails.id + key}
-                    // imageSrc={'/girl.svg'}
-                    audioSrc={'/es_girl.mp3'}
-                    numberIndex={`${index + 1}`}
-                    text={value}
-                    selected={selectedOption ? selectedOption === key : false}
-                    onClick={() => onSelect(key as "a" | "b" | "c" | "d")}
-                    disabled={disabled}
-                    status={status}
-                />
-            ))}
+            <div className=
+                {cn("grid gap-2",
+                    questionDetails.format === "COMPREHENSION" && "grid-cols-1",
+                    questionDetails.format in ["REGULAR", "MATH"] && "grid-cols-2 lg:grid-cols-[repeat(auto-fit,minmax(0,1fr))]",
+                    questionDetails.format === "SHAPES" && "grid-cols-2 lg:grid-cols-4"
+                )}
+            >
+                {shuffledOptions.map(([key, value], index) => (
+                    <CardLesson
+                        mode={mode}
+                        type={questionDetails.format}
+                        key={key}
+                        cardId={key}
+                        id={questionDetails.id + key}
+                        // imageSrc={'/girl.svg'}
+                        audioSrc={'/es_girl.mp3'}
+                        numberIndex={`${index + 1}`}
+                        text={value}
+                        selected={selectedOption ? selectedOption === key : false}
+                        onClick={() => onSelect(key as "a" | "b" | "c" | "d")}
+                        disabled={disabled}
+                        status={status}
+                    />
+                ))}
 
-        </div>
-        {((mode === "review" || (mode === "practiceMode" && selectedOption))) && questionDetails.explanation && (
+            </div>
+            {((mode === "review" || (mode === "practiceMode" && selectedOption))) && questionDetails.explanation && (
                 <div className="col-span-full mt-8 px-8 py-8 flex gap-5 items-start rounded-2xl border-2 border-emerald-200 dark:border-emerald-700 bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/80 dark:to-emerald-950/60 shadow-md">
                     <div className="flex-shrink-0 flex items-center justify-center w-14 h-14 rounded-full bg-emerald-100 dark:bg-emerald-800 border border-emerald-200 dark:border-emerald-700 mr-2 mt-1.5">
                         <svg xmlns="http://www.w3.org/2000/svg" className="lucide lucide-lightbulb w-10 h-10 text-emerald-400 dark:text-emerald-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -83,12 +85,12 @@ const Challenge = ({
                             </svg>
                         </div>
                         <p className="text-emerald-900 dark:text-emerald-100 text-base leading-relaxed">
-                            {questionDetails.explanation}
+                            {format === "MATH" ? renderTextWithLTRFormulas(questionDetails.explanation || "") : questionDetails.explanation || ""}
                         </p>
                     </div>
                 </div>
             )}
-                </div>
+        </div>
     )
 }
 export default Challenge;

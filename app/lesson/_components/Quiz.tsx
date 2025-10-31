@@ -208,9 +208,10 @@ const Quiz = ({
 
     // Responsive: 2-cols on mobile (<640px), 3-cols for tablets (<1024px), 5-cols for desktop
     const getGridCols = () => {
-        if (isReallyMobile) return "grid-cols-5";
-        if (isMobile) return "grid-cols-5";
-        return "grid-cols-5";
+
+
+        if (mode === "summary") return "[@media(min-width:400px)]:grid-cols-10 grid-cols-8";
+        return "grid-cols-8 md:grid-cols-10 xl:grid-cols-5 [@media(min-width:1900px)]:grid-cols-5";
     };
 
     const renderResultGrid = () => {
@@ -220,11 +221,11 @@ const Quiz = ({
             <div
                 className={cn(
                     "w-full p-4 lg:p-6 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/10 shadow-xl",
-                    "sm:max-w-md mx-auto", // center + limit on mobile/tablet
+                    " xl:max-w-md mx-auto", // center + limit on mobile/tablet
                 )}
             >
                 {questionGroups.map((categoryValue, categoryIndex) => (
-                    <div key={categoryIndex} className="sm:mb-6 mb-2">
+                    <div key={categoryIndex} className="sm:mb-2 mb-1">
                         <h3 className={cn(
                             "text-base lg:text-lg font-semibold text-neutral-700 dark:text-neutral-300 mb-0 sm:mb-2 lg:mb-4"
                         )}>
@@ -255,7 +256,7 @@ const Quiz = ({
                                             }
                                         }}
                                         className={cn(
-                                            "relative group flex flex-col items-center justify-center px-2 py-1 rounded-xl transition-all duration-300 hover:scale-105",
+                                            "relative group flex flex-col items-center justify-center px-0.5 py-0.25 rounded-xl transition-all duration-300 hover:scale-105",
                                             isCurrent
                                                 ? "border-2 border-slate-500 shadow-lg z-10"
                                                 : "border border-transparent",
@@ -406,14 +407,19 @@ const Quiz = ({
             )}
             <div className="flex-1">
                 <div className="h-full justify-center flex items-center">
-                    <div className="lg:min-h-[300px] w-full lg:w-[1200px] lg:px-0 px-2 sm:px-6 flex flex-col gap-y-6">
+                    <div className="lg:min-h-[300px] w-full xl:w-[800px]  2xl:w-[1000px] [@media(min-width:1750px)]:w-[1200px] lg:px-0 px-2 sm:px-6 flex flex-col gap-y-6">
 
                         {/* Side result grid – mobile position change */}
-                        <div className="block md:hidden mb-2">
+                        <div className="block xl:hidden mb-2">
                             {/* Mobile: show the grid above the question */}
                             {mode !== "practiceMode" && renderResultGrid()}
                         </div>
-                        <div className="hidden md:block absolute right-2 lg:right-6 top-1/4 transform -translate-y-1/2 w-[150px] sm:w-[220px] lg:w-[300px]">
+                        <div
+                            className={cn(
+                                "hidden xl:block absolute right-2 [@media(min-width:1900px)]:right-6 top-1/4 -translate-y-1/4",
+                                "w-[150px] xl:w-[230px] 2xl:w-[250px] [@media(min-width:1850px)]:w-[300px]",
+                            )}
+                        >
                             <div className="w-full mx-auto">
                                 {mode !== "practiceMode" && renderResultGrid()}
                             </div>
@@ -478,6 +484,7 @@ const Quiz = ({
                             </h1>
 
                             <Challenge
+                                format={question.format}
                                 mode={mode}
                                 options={options}
                                 questionDetails={question}

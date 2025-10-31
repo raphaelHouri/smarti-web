@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import React from "react"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -41,4 +42,20 @@ export function seededShuffle<T>(arr: T[], seed: number) {
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
+}
+
+// Render text while forcing $...$ delimited segments (formulas) to LTR.
+// Example: "שלום $x+y=2$ איך" -> Hebrew RTL text with LTR formula segment
+export function renderTextWithLTRFormulas(text: string): React.ReactNode[] {
+  const parts = String(text ?? "").split(/\$/);
+  return parts.map((part, index) => {
+    if (index % 2 === 1) {
+      return React.createElement(
+        'span',
+        { key: `f-${index}`, dir: 'ltr', className: 'inline-block whitespace-nowrap font-mono' },
+        part
+      );
+    }
+    return React.createElement(React.Fragment, { key: `t-${index}` }, part);
+  });
 }
