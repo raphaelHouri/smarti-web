@@ -6,7 +6,7 @@ import { useAudio, useKey } from "react-use";
 
 interface CardLessonProps {
     mode: "quiz" | "review" | "practiceMode";
-    type: "REGULAR" | "SHAPES" | "COMPREHENSION";
+    type: "REGULAR" | "SHAPES" | "COMPREHENSION" | "MATH";
     id: string;
     cardId: string;
     audioSrc?: string;

@@ -474,7 +474,7 @@ const Quiz = ({
                             )}
 
                             <h1 className="lg:text-3xl text-lg lg:text-start font-bold text-neutral-700 dark:text-neutral-300 mb-3 sm:mb-4">
-                                <QuestionBubble question={question.question} />
+                                <QuestionBubble format={question.format} question={question.question} />
                             </h1>
 
                             <Challenge

@@ -134,7 +134,7 @@ export async function POST(req: NextRequest) {
                     obj.id = String(value);
                 } else if (header === 'format') {
                     const upperCaseValue = String(value).toUpperCase();
-                    if (['REGULAR', 'SHAPES', 'COMPREHENSION'].includes(upperCaseValue)) {
+                    if (['REGULAR', 'SHAPES', 'COMPREHENSION', 'MATH'].includes(upperCaseValue)) {
                         obj.format = upperCaseValue as DrizzleQuestionInsert['format'];
 
                     } else {
