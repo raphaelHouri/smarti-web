@@ -153,6 +153,18 @@ export const feedbacks = pgTable("feedbacks", {
 
 });
 
+// Online lessons
+export const onlineLessons = pgTable("online_lessons", {
+    id: uuid("id").defaultRandom().primaryKey(),
+    categoryId: uuid("category_id").references(() => lessonCategory.id, { onDelete: "cascade" }).notNull(),
+    topicType: text("topic_type"), // group name
+    title: text("title").notNull(),
+    description: text("description"),
+    link: text("link").notNull(),
+    order: integer("order").default(0).notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+});
+
 
 
 // === RELATIONS ===
@@ -206,6 +218,7 @@ export const couponRelations = relations(coupons, ({ one }) => ({
 
 export const lessonCategoryRelations = relations(lessonCategory, ({ many }) => ({
     lessons: many(lessons),
+    onlineLessons: many(onlineLessons),
 }));
 
 export const lessonRelations = relations(lessons, ({ one, many }) => ({
@@ -232,6 +245,13 @@ export const questionRelations = relations(questions, ({ one, many }) => ({
     wrongQuestions: many(userWrongQuestions),
     category: one(lessonCategory, { // 👈 added
         fields: [questions.categoryId],
+        references: [lessonCategory.id],
+    }),
+}));
+
+export const onlineLessonRelations = relations(onlineLessons, ({ one }) => ({
+    category: one(lessonCategory, {
+        fields: [onlineLessons.categoryId],
         references: [lessonCategory.id],
     }),
 }));

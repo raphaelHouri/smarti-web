@@ -2,7 +2,7 @@
 import { cache } from "react";
 import db from "./drizzle";
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { lessonCategory, lessonQuestionGroups, lessons, questions, userLessonResults, users, userSettings, userWrongQuestions } from './schemaSmarti';
+import { lessonCategory, lessonQuestionGroups, lessons, questions, userLessonResults, users, userSettings, userWrongQuestions, onlineLessons } from './schemaSmarti';
 import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -214,6 +214,19 @@ export const getLessonsOfCategoryById = cache(async (categoryId: string) => {
     })
     return data;
 })
+
+export const getOnlineLessonsWithCategory = cache(async () => {
+    const data = await db.query.onlineLessons.findMany({
+        orderBy: (t, { asc }) => [asc(t.order), asc(t.title)],
+        with: {
+            category: true,
+        }
+    });
+    return data.map(item => ({
+        ...item,
+        categoryType: item.category?.categoryType ?? '',
+    }));
+});
 
 export const getLessonCategoryWithLessonsById = cache(async (categoryId: string) => {
     const { userId } = await auth();

@@ -9,7 +9,7 @@ import { FeedbackShow } from "./feedbacks/show";
 import { QuestionEdit } from "./questions/edit";
 import { QuestionShow } from "./questions/show";
 import { QuestionList } from "./questions/list";
-import { MessageSquare, HelpCircle, Layers, BookOpen, ListTree, Ticket, Package, Building, Calendar, Users as UsersIcon, Settings, CreditCard, ClipboardCheck, AlertTriangle } from "lucide-react";
+import { MessageSquare, HelpCircle, Layers, BookOpen, ListTree, Ticket, Package, Building, Calendar, Users as UsersIcon, Settings, CreditCard, ClipboardCheck, AlertTriangle, Link as LinkIcon } from "lucide-react";
 import { LessonCategoryList } from "./lessonCategory/list";
 import { LessonCategoryEdit } from "./lessonCategory/edit";
 import { LessonCategoryShow } from "./lessonCategory/show";
@@ -50,6 +50,10 @@ import { UserLessonResultsShow } from "./userLessonResults/show";
 import { UserWrongQuestionsList } from "./userWrongQuestions/list";
 import { UserWrongQuestionsEdit } from "./userWrongQuestions/edit";
 import { UserWrongQuestionsShow } from "./userWrongQuestions/show";
+import { OnlineLessonList } from "./onlineLessons/list";
+import { OnlineLessonEdit } from "./onlineLessons/edit";
+import { OnlineLessonShow } from "./onlineLessons/show";
+import { OnlineLessonCreate } from "./onlineLessons/create";
 
 const dataProvider = simpleRestProvider("/api");
 
@@ -173,6 +177,15 @@ const App = () => {
                 recordRepresentation="id"
                 icon={AlertTriangle}
                 show={UserWrongQuestionsShow}
+            />
+            <Resource
+                name="onlineLessons"
+                list={OnlineLessonList}
+                edit={OnlineLessonEdit}
+                create={OnlineLessonCreate}
+                recordRepresentation="title"
+                icon={LinkIcon}
+                show={OnlineLessonShow}
             />
             <CustomRoutes>
                 <Route path="/organization-analytics" element={<AnalyticsWrapper />} />
