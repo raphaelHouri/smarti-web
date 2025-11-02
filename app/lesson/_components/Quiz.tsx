@@ -231,7 +231,7 @@ const Quiz = ({
                 {mode in ["quiz", "review"] || true && (
                     <div className="mb-2 flex items-center gap-2">
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
-                            שיעור: {lessonQueryParam ?? "אין שיעור"}
+                            תרגול: {lessonQueryParam ?? "אין תרגול"}
                         </span>
                     </div>
                 )}
