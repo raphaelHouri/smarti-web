@@ -4,7 +4,6 @@ import { Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
-import FeedbackButton from "@/components/feedbackButton";
 // LottieJson is a client component that already lazy-loads lottie-react.
 
 
@@ -12,9 +11,7 @@ export default async function Home() {
   const { userId } = await auth();
   return (
     <div className="max-w-[998px] mx-auto flex-1 w-full flex flex-col lg:flex-row items-center justify-center p-2 gap-2 relative" dir="rtl">
-      <div className="absolute top-20 right-4 z-10">
-        <FeedbackButton screenName="home" />
-      </div>
+
       {/* container to hold image */}
       <div className="relative w-[240px] h-[240px] lg:w-[424px] lg:h-[424px] mb-8 lg:mb-0">
         <Image

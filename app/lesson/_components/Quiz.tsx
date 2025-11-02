@@ -393,7 +393,14 @@ const Quiz = ({
             <Header
                 percentage={progressPct /* UPDATED */}
                 feedback={<div>
-                    <FeedbackButton screenName={mode} identifier={question.id} />
+                    <FeedbackButton
+                        screenName={mode}
+                        identifier={
+                            question.id +
+                            ":מספר שאלה" +
+                            (activeIndex + 1)
+                        }
+                    />
                 </div>}
             />
 

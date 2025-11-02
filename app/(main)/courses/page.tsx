@@ -18,9 +18,6 @@ const LessonCategoryPage = async () => {
     return (
         <div className="mx-auto px-2 max-w-[768px]">
 
-            <h1 className={cn("dark:text-slate-200 text-neutral-600 tracking-wide text-xs font-bold mb-1.5", font.className)}>
-                קטגוריות תרגול
-            </h1>
             <List
                 lessonCategories={lessonCategory}
                 lessonCategoryId={lessonCategoryId}
