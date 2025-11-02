@@ -336,7 +336,7 @@ const Quiz = ({
                             עבודה מצוינת! 🎉
                         </h1>
                         <p className="text-base sm:text-lg text-neutral-600 dark:text-neutral-300">
-                            השלמתם את השיעור בהצלחה
+                            השלמתם את התרגול בהצלחה
                         </p>
                     </div>
                     <div className="flex flex-row items-center  sm:gap-x-6 gap-x-3 w-full max-w-xs sm:max-w-md">

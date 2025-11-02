@@ -33,7 +33,7 @@ const PremiumModal = () => {
                         />
                     </div>
                     <DialogTitle className="text-center font-bold text-2xl">
-                        שיעור פרימיום
+                        תרגול פרימיום
                     </DialogTitle>
                     <DialogDescription className="text-center text-base">
                         תוכן זה זמין למנויים. תרצה לעבור לחנות לרכישה?

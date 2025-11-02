@@ -36,7 +36,7 @@ const ExitModal = () => {
                 font-bold text-2xl">
                         סיים תרגול                    </DialogTitle>
                     <DialogDescription className="text-center text-base">
-                        אתם עומדים לעזוב את השיעור. האם אתם בטוחים?
+                        אתם עומדים לעזוב את התרגול. האם אתם בטוחים?
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>

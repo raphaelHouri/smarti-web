@@ -241,9 +241,9 @@ export function ProfileSettingsForm({
                         render={({ field }) => (
                             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                                 <div className="space-y-0.5">
-                                    <FormLabel className="text-base">שעון בשיעור</FormLabel>
+                                    <FormLabel className="text-base">שעון בתרגול</FormLabel>
                                     <FormDescription>
-                                        הצג טיימר במהלך השיעורים.
+                                        הצג טיימר במהלך התרגולים.
                                     </FormDescription>
                                 </div>
                                 <FormControl>
@@ -308,7 +308,7 @@ export function ProfileSettingsForm({
                                         <SelectItem value="2nd Grade">כיתה ב׳</SelectItem>
                                         <SelectItem value="3rd Grade">כיתה ג׳</SelectItem>
                                         <SelectItem value="4th Grade">כיתה ד׳</SelectItem>
-                                        <SelectItem value="5th Grade">כיתה ה׳</SelectItem>                                        
+                                        <SelectItem value="5th Grade">כיתה ה׳</SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <FormDescription>
