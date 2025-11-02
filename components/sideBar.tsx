@@ -29,14 +29,12 @@ export const SideBar = ({
             <Link href="/">
                 <div className="pt-8 pb-7 pl-4 flex items-center gap-x-3">
                     <Image
-                        src="/mascot.svg"
-                        alt="Mascot"
-                        height={40} width={40}
+                        src="/smartiLogo.png"
+                        alt="Smarti logo"
+                        height={60}
+                        width={180}
+                        priority
                     />
-                    <h1 className="uppercase text-xl font-extrabold text-green-600
-            tracking-wide cursor-pointer">
-                        Linguify
-                    </h1>
                 </div>
             </Link>
             <div className="flex flex-col flex-1 gap-y-4">

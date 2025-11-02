@@ -29,8 +29,8 @@ export default async function Home() {
             <Image
               src="/smarti.png"
               alt="Smarti Logo"
-              width={180}
-              height={170}
+              width={250}
+              height={240}
               className="mx-auto"
               priority
             />
