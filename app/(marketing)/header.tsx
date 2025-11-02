@@ -2,11 +2,10 @@
 import { ClerkLoaded, ClerkLoading, SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 import { Loader } from "lucide-react";
-import { } from "@clerk/nextjs/server";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ModeToggle } from "@/components/mode-toggle";
-import DuoLottie from "./duoLottie";
+import FeedbackButton from "@/components/feedbackButton";
 
 
 const HeaderPage = () => {
@@ -55,6 +54,9 @@ const HeaderPage = () => {
           </ClerkLoaded>
           <div className="hidden lg:flex">
             <ModeToggle />
+          </div>
+          <div className="mt-1">
+            <FeedbackButton screenName="header" />
           </div>
         </div>
       </div>

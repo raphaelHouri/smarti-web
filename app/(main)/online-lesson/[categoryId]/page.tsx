@@ -11,6 +11,7 @@ import { LinkPreview } from "../_components/LinkPreview";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import OnlineLessonAnimation from "../_components/lottie";
+import FeedbackButton from "@/components/feedbackButton";
 
 interface OnlineLessonCategoryPageProps {
     params: Promise<{ categoryId: string }>;
@@ -53,6 +54,9 @@ const OnlineLessonCategoryPage = async ({ params }: OnlineLessonCategoryPageProp
             </StickyWrapper>
             <FeedWrapper>
                 <div className="w-full max-w-5xl flex flex-col items-center" dir="rtl">
+                    <div className="flex flex-row items-start justify-end w-full mb-4">
+                        <FeedbackButton screenName="online-lesson-category" identifier={currentCategory?.categoryType} />
+                    </div>
                     <OnlineLessonAnimation />
                     <h1 className="text-center font-bold text-neutral-800 dark:text-slate-200 text-xl sm:text-2xl my-4 sm:my-6">
                         שיעורים מקוונים

@@ -10,7 +10,7 @@ const PracticeLayout = ({
     return (
         <div className="flex flex-col h-full">
             <div className="flex flex-col h-full w-full">
-                <FeedWrapper>
+                {/* <FeedWrapper>
                     <div className="w-full flex flex-col items-center">
                         <h1 className="text-center font-bold text-neutral-800 dark:text-slate-200 text-2xl my-6">
                             Practice Makes Perfect! 🏋️‍♂️
@@ -19,7 +19,7 @@ const PracticeLayout = ({
                             Review and re-attempt questions you got wrong.
                         </p>
                     </div>
-                </FeedWrapper>
+                </FeedWrapper> */}
                 {children}
             </div>
         </div>

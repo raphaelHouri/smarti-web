@@ -3,17 +3,16 @@ import { Progress } from "@/components/ui/progress";
 import { useExitModal } from "@/store/use-exit-modal";
 import { Infinity, InfinityIcon, X } from "lucide-react";
 import Image from "next/image";
+import { ReactNode } from "react";
 
 interface HeaderProps {
-    hearts: number;
     percentage: number;
-    hasActiveSubscription: boolean
+    feedback?: ReactNode;
 }
 
 const Header = ({
-    hearts,
     percentage,
-    hasActiveSubscription
+    feedback
 }: HeaderProps) => {
     const { open } = useExitModal();
     return (
@@ -24,21 +23,15 @@ const Header = ({
                 className="text-slate-500 hover:opacity-75 transition cursor-pointer"
             />
             <Progress value={percentage} />
-            <div className="text-rose-500 font-bold flex items-center">
-                <Image
-                    src="/heart.svg"
-                    height={28}
-                    width={28}
-                    alt="Heart"
-                    className="mr-2 cursor-pointer"
-                />
-                {hasActiveSubscription
-                    ? <Infinity className="h-6 w-6 shrink-0 stroke-[3]" /> : hearts
-                }
-            </div>
+
             <div className="ml-4">
                 <ModeToggle />
             </div>
+            {feedback && (
+                <div >
+                    {feedback}
+                </div>
+            )}
 
         </div>
     );

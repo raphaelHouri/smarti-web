@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import Image from "next/image";
+import FeedbackButton from "@/components/feedbackButton";
 
 const OnlineLessonPage = async () => {
     const [userProgress, userSubscription, categories] = await Promise.all([
@@ -43,6 +44,9 @@ const OnlineLessonPage = async () => {
             </StickyWrapper>
             <FeedWrapper>
                 <div className="w-full max-w-5xl" dir="rtl">
+                    <div className="flex flex-row items-start justify-end mb-4">
+                        <FeedbackButton screenName="online-lesson" />
+                    </div>
                     <h1 className="text-center font-bold text-neutral-800 dark:text-slate-200 text-xl sm:text-2xl my-4 sm:my-6">
                         שיעורים מקוונים
                     </h1>

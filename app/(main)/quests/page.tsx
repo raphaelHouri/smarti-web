@@ -10,6 +10,7 @@ import Link from "next/link";
 import PromoSection from "../learn/_components/promo";
 import { quests } from "@/constants";
 import QuestsJson from "./_components/lottie";
+import FeedbackButton from "@/components/feedbackButton";
 
 const QuestsPage = async () => {
     const userProgressData = getUserProgress();
@@ -45,6 +46,9 @@ const QuestsPage = async () => {
             <FeedWrapper
             >
                 <div className="w-full flex flex-col items-center" dir="rtl">
+                    <div className="flex flex-row items-start justify-end w-full mb-4">
+                        <FeedbackButton screenName="quests" />
+                    </div>
                     <QuestsJson />
                     <h1 className="text-center font-bold text-neutral-800 dark:text-slate-200 text-2xl my-6">
                         🎯 שלבים

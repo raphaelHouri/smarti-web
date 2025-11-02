@@ -12,6 +12,7 @@ import PromoSection from "../learn/_components/promo";
 import QuestsSection from "../quests/_components/quests";
 import FormatPieChart from "./_components/format-pie-chart";
 import TopicBarChart from "./_components/topic-bar-chart";
+import FeedbackButton from "@/components/feedbackButton";
 
 type GroupedSummaryType = {
     [format: string]: {
@@ -102,6 +103,9 @@ const PracticePage = async () => {
             </StickyWrapper>
             <FeedWrapper>
                 <div className="w-full flex flex-col items-center" dir="rtl">
+                    <div className="flex flex-row items-start justify-end w-full mb-4">
+                        <FeedbackButton screenName="practice" />
+                    </div>
                     <PracticeAnimation />
                     <h1 className="text-center font-bold text-neutral-800 dark:text-slate-200 text-xl sm:text-2xl my-6">
                         תרגול מביא לשלמות! 🏋️‍♂️

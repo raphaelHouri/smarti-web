@@ -10,6 +10,7 @@ import PromoSection from "../learn/_components/promo";
 import QuestsSection from "../quests/_components/quests";
 import { ProfileSettingsForm } from "./_components/ProfileSettingsForm"; // Import the new form component
 import { auth } from "@clerk/nextjs/server";
+import FeedbackButton from "@/components/feedbackButton";
 
 
 const SettingsPage = async () => {
@@ -60,6 +61,9 @@ const SettingsPage = async () => {
             </StickyWrapper>
             <FeedWrapper>
                 <div className="w-full flex flex-col items-center" dir="rtl">
+                    <div className="flex flex-row items-start justify-end w-full mb-4">
+                        <FeedbackButton screenName="settings" />
+                    </div>
                     <SettingsAnimation />
                     <h1 className="text-center font-bold text-neutral-800 dark:text-slate-200 text-2xl my-6">
                         הגדרות ⚙️

@@ -40,7 +40,7 @@ export async function submitFeedback(params: SubmitFeedbacksParams) {
         // revalidatePath("/admin/feedback");
 
         // No explicit return value needed, success is implied by no error
-        return { success: true, message: "Feedback submitted successfully!" };
+        return { success: true, message: "הפידבק נשלח בהצלחה!" };
 
     } catch (error) {
         console.error("[SUBMIT_FEEDBACK_ACTION_ERROR]", error);

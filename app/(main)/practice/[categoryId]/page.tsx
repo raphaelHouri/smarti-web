@@ -1,6 +1,7 @@
 
 import Quiz from "@/app/lesson/_components/Quiz";
 import { getUserWrongQuestionsByCategoryId } from "@/db/queries";
+import FeedbackButton from "@/components/feedbackButton";
 type Props = {
     params: Promise<{ categoryId: string }>
 }

@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import FeedbackButton from "@/components/feedbackButton";
 
 type Category = "preparation" | "books";
 type Period = "weekly" | "monthly" | "6months" | "onetime";
@@ -169,6 +170,9 @@ export default function PurchasePageShop() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-white via-purple-50 via-60% to-blue-50 to-90% rounded-[2.5rem] shadow-xl mx-2 md:mx-0 border border-purple-100">
+            <div className="flex flex-row items-start justify-end p-4">
+                <FeedbackButton screenName="shop" />
+            </div>
             {/* Hero Section */}
             <section className="relative overflow-hidden py-16 md:py-24 px-4">
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">

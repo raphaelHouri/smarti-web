@@ -24,6 +24,7 @@ import { addResultsToUser, getOrCreateUserFromGuest, removeQuestionsWrongByQuest
 import { Button } from "@/components/ui/button";
 import CountdownTimer from "./CountdownTimer";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import FeedbackButton from "@/components/feedbackButton";
 
 const optionsSchema = z.object({
     a: z.string(),
@@ -388,11 +389,14 @@ const Quiz = ({
 
     return (
         <>
+
             <Header
-                hearts={hearts}
                 percentage={progressPct /* UPDATED */}
-                hasActiveSubscription={isPro}
+                feedback={<div>
+                    <FeedbackButton screenName={mode} identifier={question.id} />
+                </div>}
             />
+
             {totalTime && (
                 <div className="w-full flex justify-center">
                     <div className="relative px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500/10 to-pink-500/10 backdrop-blur-sm">
@@ -479,9 +483,11 @@ const Quiz = ({
                                 </div>
                             )}
 
-                            <h1 className="lg:text-3xl text-lg lg:text-start font-bold text-neutral-700 dark:text-neutral-300 mb-3 sm:mb-4">
-                                <QuestionBubble format={question.format} question={question.question} />
-                            </h1>
+                            <div className="flex flex-row items-start justify-between gap-4 mb-3 sm:mb-4">
+                                <h1 className="lg:text-3xl text-lg lg:text-start font-bold text-neutral-700 dark:text-neutral-300 flex-1">
+                                    <QuestionBubble format={question.format} question={question.question} />
+                                </h1>
+                            </div>
 
                             <Challenge
                                 format={question.format}

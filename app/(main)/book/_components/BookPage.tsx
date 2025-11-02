@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import FeedbackButton from "@/components/feedbackButton";
 
 export default function BookPage() {
     const [isPurchasing, setIsPurchasing] = useState(false);
@@ -33,7 +34,7 @@ export default function BookPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
             {/* Back Button */}
-            <div className="p-4">
+            <div className="p-4 flex flex-row items-start justify-between">
                 <Link
                     href="/shop"
                     className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
@@ -41,6 +42,7 @@ export default function BookPage() {
                     <ArrowLeft className="w-4 h-4" />
                     Back to Shop
                 </Link>
+                <FeedbackButton screenName="book" />
             </div>
 
             <div className="max-w-7xl mx-auto px-4 py-8">

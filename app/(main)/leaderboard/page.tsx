@@ -9,6 +9,7 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { AnimatedTooltip } from "@/components/animated-tooltip";
 import PromoSection from "../learn/_components/promo";
 import QuestsSection from "../quests/_components/quests";
+import FeedbackButton from "@/components/feedbackButton";
 
 const LeaderBoardPage = async () => {
     const userProgressData = getUserProgress();
@@ -43,6 +44,9 @@ const LeaderBoardPage = async () => {
             <FeedWrapper
             >
                 <div className="w-full flex flex-col items-center">
+                    <div className="flex flex-row items-start justify-end w-full mb-4">
+                        <FeedbackButton screenName="leaderboard" />
+                    </div>
                     <TrophyJson />
                     <h1 className="text-center font-bold text-neutral-800 dark:text-slate-200 text-2xl my-6">
                         טבלת המובילים 🥇
