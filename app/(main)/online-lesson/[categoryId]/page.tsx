@@ -69,8 +69,8 @@ const OnlineLessonCategoryPage = async ({ params }: OnlineLessonCategoryPageProp
                                             key={cat.id}
                                             href={`/online-lesson/${cat.id}`}
                                             className={`group relative flex items-center gap-3 px-4 py-3 rounded-xl border-2 transition-all duration-300 transform hover:scale-105 hover:shadow-lg ${cat.id === categoryId
-                                                    ? 'bg-gradient-to-r from-indigo-500 to-purple-600 border-indigo-400 dark:border-indigo-500 text-white shadow-lg scale-105'
-                                                    : 'bg-card border-border hover:border-indigo-300 dark:hover:border-indigo-600 text-foreground hover:bg-indigo-50 dark:hover:bg-indigo-950/30'
+                                                ? 'bg-gradient-to-r from-indigo-500 to-purple-600 border-indigo-400 dark:border-indigo-500 text-white shadow-lg scale-105'
+                                                : 'bg-card border-border hover:border-indigo-300 dark:hover:border-indigo-600 text-foreground hover:bg-indigo-50 dark:hover:bg-indigo-950/30'
                                                 }`}
                                         >
                                             <div className={`relative flex-shrink-0 ${cat.id === categoryId ? 'ring-2 ring-white/50' : ''} rounded-lg overflow-hidden`}>
