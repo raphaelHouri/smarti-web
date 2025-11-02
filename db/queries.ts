@@ -216,18 +216,21 @@ export const getLessonsOfCategoryById = cache(async (categoryId: string) => {
 })
 
 export const getOnlineLessonsWithCategory = cache(async (categoryId?: string) => {
-    const queryOptions: any = {
-        orderBy: (t: any, { asc }: any) => [asc(t.order), asc(t.title)],
-        with: {
-            category: true,
-        },
-    };
+    const data = categoryId
+        ? await db.query.onlineLessons.findMany({
+            where: (t, { eq }) => eq(t.categoryId, categoryId),
+            orderBy: (t, { asc }) => [asc(t.order), asc(t.title)],
+            with: {
+                category: true,
+            },
+        })
+        : await db.query.onlineLessons.findMany({
+            orderBy: (t, { asc }) => [asc(t.order), asc(t.title)],
+            with: {
+                category: true,
+            },
+        });
 
-    if (categoryId) {
-        queryOptions.where = (t: any, { eq }: any) => eq(t.categoryId, categoryId);
-    }
-
-    const data = await db.query.onlineLessons.findMany(queryOptions);
     return data.map(item => ({
         ...item,
         categoryType: item.category?.categoryType ?? '',
