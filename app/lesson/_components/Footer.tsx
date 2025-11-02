@@ -104,8 +104,7 @@ const Footer = ({
                             className="w-full lg:w-auto"
                         >
                             <RotateCcwIcon className="h-4 w-4 lg:h-6 lg:w-10 ml-2" />
-                            חזרה לתרגול
-                        </Button>
+                            תרגול מחדש                        </Button>
                         <Button
                             variant="default"
                             size={isMobile ? "sm" : "lg"}
@@ -113,7 +112,7 @@ const Footer = ({
                             className="w-full lg:w-auto flex items-center justify-center"
                         >
                             <EyeIcon className="h-4 w-4 lg:h-6 lg:w-10 mr-2" />
-                            צפייה בתרגול
+                            צפייה בתשובות
                         </Button>
                         <Button
                             className="w-full lg:w-auto"
@@ -121,7 +120,7 @@ const Footer = ({
                             size={isMobile ? "sm" : "lg"}
                             variant="secondary"
                         >
-                            חזור לדף התרגול
+                            חזור לתרגולים
                         </Button>
                     </div>
 

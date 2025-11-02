@@ -53,14 +53,13 @@ export const SideBarItems = ({
             asChild
         >
             <Link href={href} className="dark:text-slate-200">
+                <span className="mr-2 ml-auto">{label}</span>
                 <Image
                     src={iconSrc}
                     alt="label"
-                    className="ml-auto "
                     height={32}
                     width={32}
                 />
-                {label}
             </Link>
         </Button>
     )

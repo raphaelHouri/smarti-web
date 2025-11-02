@@ -9,7 +9,7 @@ import QuestionBubble from "./QuestionBubble";
 import Challenge from "./ChallengeOpt";
 import Footer from "./Footer";
 import { toast } from "sonner";
-import { useAudio, useMedia, useMount } from "react-use";
+import { useMedia, useMount } from "react-use";
 import ResultCard from "./result-card";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useHeartsModal } from "@/store/use-hearts";

@@ -2,14 +2,13 @@
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useCallback } from "react";
-import { useAudio, useKey } from "react-use";
+import { useKey } from "react-use";
 
 interface CardLessonProps {
     mode: "quiz" | "review" | "practiceMode";
     type: "REGULAR" | "SHAPES" | "COMPREHENSION" | "MATH";
     id: string;
     cardId: string;
-    audioSrc?: string;
     numberIndex: string;
     text: string;
     selected?: boolean;
@@ -23,7 +22,6 @@ const CardLesson = ({
     type,
     id,
     cardId,
-    audioSrc,
     numberIndex,
     text,
     selected,
@@ -31,13 +29,10 @@ const CardLesson = ({
     disabled,
     status
 }: CardLessonProps) => {
-    const [audio, _, controls] = useAudio({ src: audioSrc || "" });
-
     const handleClick = useCallback(() => {
         if (disabled) return;
-        controls.play();
         onClick();
-    }, [disabled, onClick, controls]);
+    }, [disabled, onClick]);
 
     useKey(numberIndex, handleClick, {}, [handleClick]);
 
@@ -59,8 +54,6 @@ const CardLesson = ({
                 isShapesType && "flex flex-col items-center justify-center p-2 lg:p-4"
             )}
         >
-            {audio}
-
             {isShapesType && text.startsWith("http") ? (
                 <div className="relative aspect-square mb-4 max-h-[80px] lg:max-h-[150px] w-full">
                     <Image
@@ -72,10 +65,17 @@ const CardLesson = ({
                 </div>
             ) : (
                 <div className={cn(
-                    "flex items-center justify-between",
-                    isComprehensionType && "flex flex-row-reverse"
+                    "flex items-center ",
                 )}>
                     {isComprehensionType && <div />}
+                    <div className={cn(
+                        "lg:w-[30px] flex lg:h-[30px] w-[20px] h-[20px] items-center justify-center rounded-lg border-2 lg:text-[15px] text-xs font-semibold text-black dark:text-neutral-300 ml-2",
+                        selected && "dark:border-sky-400 dark:text-black border-sky-300 text-sky-500",
+                        selected && status === "correct" && "dark:border-green-500 border-green-500 text-green-500",
+                        selected && status === "wrong" && "dark:border-rose-500 border-rose-500 text-rose-500"
+                    )}>
+                        {numberIndex}
+                    </div>
 
                     <p className={cn(
                         "text-neutral-600 dark:text-neutral-300 text-sm lg:text-base",
@@ -86,14 +86,6 @@ const CardLesson = ({
                         {text}
                     </p>
 
-                    <div className={cn(
-                        "lg:w-[30px] flex lg:h-[30px] w-[20px] h-[20px] items-center justify-center rounded-lg border-2 lg:text-[15px] text-xs font-semibold text-black dark:text-neutral-300",
-                        selected && "dark:border-sky-400 dark:text-black border-sky-300 text-sky-500",
-                        selected && status === "correct" && "dark:border-green-500 border-green-500 text-green-500",
-                        selected && status === "wrong" && "dark:border-rose-500 border-rose-500 text-rose-500"
-                    )}>
-                        {numberIndex}
-                    </div>
                 </div>
             )}
         </div>

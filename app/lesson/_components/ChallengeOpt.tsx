@@ -53,8 +53,6 @@ const Challenge = ({
                         key={key}
                         cardId={key}
                         id={questionDetails.id + key}
-                        // imageSrc={'/girl.svg'}
-                        audioSrc={'/es_girl.mp3'}
                         numberIndex={`${index + 1}`}
                         text={value}
                         selected={selectedOption ? selectedOption === key : false}

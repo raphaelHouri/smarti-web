@@ -12,20 +12,7 @@ const MathJax = ({ question }: { question: string }) => {
     return <span>{question}</span>;
 }
 
-function renderWithLTRFormulas(text: string) {
-    const parts = text.split(/\$/);
-    return parts.map((part, index) => {
-        const key = `p-${index}`;
-        if (index % 2 === 1) {
-            return (
-                <span key={key} dir="ltr" className="inline-block whitespace-nowrap font-mono">
-                    {part}
-                </span>
-            );
-        }
-        return <span key={key}>{part}</span>;
-    });
-}
+
 const QuestionBubble = ({
     format,
     question
@@ -46,11 +33,11 @@ const QuestionBubble = ({
                 width={40}
                 className="block lg:hidden"
             />
-            <div className="relative py-2 border-2 px-4 rounded-xl text-sm lg:text-base">
+            <div className="relative py-2 border-2 px-4 rounded-xl text-md   lg:text-lg">
                 {format === "MATH" ? renderTextWithLTRFormulas(question) : question}
                 <div
-                    className="absolute -left-3 top-1/2 w-0 h-0 hover:animate-pulse cursor-pointer
-        border-x-8 border-x-transparent border-t-8 transform -translate-y-1/2 rotate-90"
+                    className="absolute -right-3 top-1/2 w-0 h-0 hover:animate-pulse cursor-pointer
+        border-x-8 border-x-transparent border-t-8 transform -translate-y-1/2 rotate-270"
                 />
             </div>
         </div>
