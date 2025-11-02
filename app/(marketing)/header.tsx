@@ -17,20 +17,17 @@ const HeaderPage = () => {
       <div className="h-full lg:max-w-screen-lg mx-auto items-center
     justify-between flex">
         <div className="pt-8 pb-7 flex items-center gap-x-1">
-          <Image
-            src="/smarti.png"
-            alt="Smarti mascot"
-            width={48}
-            height={48}
-            className="mr-2"
-            priority
-          />
-          <h1 className="uppercase text-xl font-extrabold text-green-600
-    tracking-wide cursor-pointer">
-            <Link href="/">
-              סמרטי
-            </Link>
-          </h1>
+          <Link href="/">
+            <Image
+              src="/smartiLogo.png"
+              alt="Smarti mascot"
+              width={180}
+              height={60}
+              className="mr-2"
+              priority
+            />
+
+          </Link>
         </div>
         <div className="inline-flex gap-x-4 mt-2 ms:ml-0 ml-4">
           <div className="mt-2">
@@ -61,7 +58,7 @@ const HeaderPage = () => {
           </div>
         </div>
       </div>
-    </header>
+    </header >
   );
 }
 

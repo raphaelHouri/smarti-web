@@ -1,5 +1,4 @@
 import Image from "next/image";
-import LottieJson from "./lottie";
 import { ClerkLoaded, ClerkLoading, SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/nextjs";
 import { Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -25,7 +24,17 @@ export default async function Home() {
       <div className="flex flex-col items-center gap-y-6">
 
         <h1 className="font-bold text-xl lg:text-3xl text-neutral-600 max-w-[600px] text-center dark:bg-clip-text dark:text-transparent dark:bg-gradient-to-tr from-slate-500 to-neutral-300/90">
-          <LottieJson />
+          <div className="flex flex-col items-center gap-2 mb-2">
+
+            <Image
+              src="/smarti.png"
+              alt="Smarti Logo"
+              width={180}
+              height={170}
+              className="mx-auto"
+              priority
+            />
+          </div>
           שלוט ושפר את כישורי השפה שלך עם Linguify.
         </h1>
         <div className="flex flex-col items-center justify-center gap-y-3 max-w-[330px] w-full">
