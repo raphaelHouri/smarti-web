@@ -58,7 +58,7 @@ const LessonButton = ({
     const isCompleted = !current && !locked;
 
     const Icon = isCompleted ? Check : isLast ? Crown : Star;
-    const href = `/lesson/${id}`;
+    const href = `/lesson/${id}?lesson=${index + 1}`;
 
 
     return (

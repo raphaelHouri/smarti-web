@@ -11,7 +11,7 @@ import Footer from "./Footer";
 import { toast } from "sonner";
 import { useAudio, useMedia, useMount } from "react-use";
 import ResultCard from "./result-card";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useHeartsModal } from "@/store/use-hearts";
 import { usePracticeModal } from "@/store/use-practice-modal";
 import CelebrateJson from "./lottie";
@@ -73,6 +73,9 @@ const Quiz = ({
     );
 
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const lessonQueryParam = searchParams?.get('lesson');
+
     if (!questionsMap || questionsMap.length === 0) {
         return <p>אין תרגילים להצגה</p>;
     }
@@ -225,6 +228,13 @@ const Quiz = ({
                     " xl:max-w-md mx-auto", // center + limit on mobile/tablet
                 )}
             >
+                {mode in ["quiz", "review"] || true && (
+                    <div className="mb-2 flex items-center gap-2">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                            שיעור: {lessonQueryParam ?? "אין שיעור"}
+                        </span>
+                    </div>
+                )}
                 {questionGroups.map((categoryValue, categoryIndex) => (
                     <div key={categoryIndex} className="sm:mb-2 mb-1">
                         <h3 className={cn(
@@ -280,6 +290,7 @@ const Quiz = ({
                                         }}
                                     >
                                         <span className="text-sm font-medium">
+
                                             {index + 1}
                                         </span>
                                         {mode !== "quiz" && result && (
@@ -432,6 +443,7 @@ const Quiz = ({
                             )}
                         >
                             <div className="w-full mx-auto">
+
                                 {mode !== "practiceMode" && renderResultGrid()}
                             </div>
                         </div>
@@ -491,9 +503,12 @@ const Quiz = ({
                             )}
 
                             <div className="flex flex-row items-start justify-between gap-4 mb-3 sm:mb-4">
-                                <h1 className="lg:text-3xl text-lg lg:text-start font-bold text-neutral-700 dark:text-neutral-300 flex-1">
-                                    <QuestionBubble format={question.format} question={question.question} />
-                                </h1>
+                                <div className="flex-1">
+
+                                    <h1 className="lg:text-3xl text-lg lg:text-start font-bold text-neutral-700 dark:text-neutral-300">
+                                        <QuestionBubble format={question.format} question={question.question} />
+                                    </h1>
+                                </div>
                             </div>
 
                             <Challenge
