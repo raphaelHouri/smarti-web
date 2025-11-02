@@ -184,9 +184,42 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ message: 'No valid questions found in the file after parsing.' }, { status: 400 });
         }
 
-        // Batch inserts to avoid PostgreSQL parameter limit (65535 parameters max)
-        // With 9 columns per row, we use a batch size of 500 rows (4500 parameters)
-        const BATCH_SIZE = 500;
+        // Check for duplicate managerIds in a single pass
+        const managerIdRows: Record<string, number[]> = {};
+        const duplicates: string[] = [];
+
+        questionsToInsert.forEach((question, index) => {
+            const managerId = question.managerId;
+            const rowNumber = index + 2; // +2 because index is 0-based and we skip header row
+
+            if (!managerIdRows[managerId]) {
+                managerIdRows[managerId] = [];
+            } else {
+                // First time we see a duplicate, add it to the duplicates array
+                if (managerIdRows[managerId].length === 1) {
+                    duplicates.push(managerId);
+                }
+            }
+
+            managerIdRows[managerId].push(rowNumber);
+        });
+
+        if (duplicates.length > 0) {
+            const duplicateDetails = duplicates.map(managerId => {
+                const rowNumbers = managerIdRows[managerId];
+                return `managerId "${managerId}" appears ${rowNumbers.length} time(s) in rows: ${rowNumbers.join(', ')}`;
+            });
+
+            return NextResponse.json({
+                message: 'Duplicate managerId values found. Each managerId must be unique.' + duplicateDetails.join('\n'),
+                duplicates: duplicateDetails
+            }, { status: 400 });
+        }
+
+        // Batch inserts to avoid PostgreSQL parameter limit
+        // With 9 columns per row, we use a batch size of 200 rows (1800 parameters)
+        // This is conservative to avoid hitting various PostgreSQL limits
+        const BATCH_SIZE = 200;
         const allInsertedQuestions: any[] = [];
 
         for (let i = 0; i < questionsToInsert.length; i += BATCH_SIZE) {
