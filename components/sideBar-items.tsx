@@ -24,7 +24,7 @@ export const SideBarItems = ({
     //usePathname to manage the routes whether active or not
 
     const pathname = usePathname();
-    const active = pathname === href;
+    const active = pathname === href || (href === '/online-lesson' && pathname?.startsWith('/online-lesson'));
     const { open: OpenRegisterModal } = useRegisterModal();
     const { userId } = useAuth();
 

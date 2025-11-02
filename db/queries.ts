@@ -215,16 +215,40 @@ export const getLessonsOfCategoryById = cache(async (categoryId: string) => {
     return data;
 })
 
-export const getOnlineLessonsWithCategory = cache(async () => {
-    const data = await db.query.onlineLessons.findMany({
-        orderBy: (t, { asc }) => [asc(t.order), asc(t.title)],
+export const getOnlineLessonsWithCategory = cache(async (categoryId?: string) => {
+    const queryOptions: any = {
+        orderBy: (t: any, { asc }: any) => [asc(t.order), asc(t.title)],
+        with: {
+            category: true,
+        },
+    };
+
+    if (categoryId) {
+        queryOptions.where = (t: any, { eq }: any) => eq(t.categoryId, categoryId);
+    }
+
+    const data = await db.query.onlineLessons.findMany(queryOptions);
+    return data.map(item => ({
+        ...item,
+        categoryType: item.category?.categoryType ?? '',
+        categoryImageSrc: item.category?.imageSrc ?? '',
+        categoryId: item.categoryId,
+    }));
+});
+
+export const getCategoriesForOnlineLessons = cache(async () => {
+    const categories = await db.query.lessonCategory.findMany();
+    const onlineLessons = await db.query.onlineLessons.findMany({
         with: {
             category: true,
         }
     });
-    return data.map(item => ({
-        ...item,
-        categoryType: item.category?.categoryType ?? '',
+
+    const categoryIds = new Set(onlineLessons.map(ol => ol.categoryId));
+    return categories.filter(cat => categoryIds.has(cat.id)).map(cat => ({
+        id: cat.id,
+        categoryType: cat.categoryType,
+        imageSrc: cat.imageSrc,
     }));
 });
 
