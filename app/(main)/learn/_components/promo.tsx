@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 
-
 const PromoSection = () => {
     return (
         <div className="border-2 rounded-xl p-4 space-y-4">
@@ -15,10 +14,10 @@ const PromoSection = () => {
                         height={26}
                         width={26}
                     />
-                    <h3 className="font-bold text-lg">Upgrade to Pro</h3>
+                    <h3 className="font-bold text-lg">שדרוג לפרימיום</h3>
                 </div>
                 <p className="text-muted-foreground">
-                    Get Unlimited hearts and more.
+                    קבלת גישה לכל התרגולים והמבחנים
                 </p>
             </div>
             <Button
@@ -28,7 +27,7 @@ const PromoSection = () => {
                 asChild
             >
                 <Link href="/shop" className="cursor-pointer">
-                    Upgrade
+                    רכישה
                 </Link>
             </Button>
         </div>
