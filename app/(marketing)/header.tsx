@@ -17,11 +17,18 @@ const HeaderPage = () => {
       <div className="h-full lg:max-w-screen-lg mx-auto items-center
     justify-between flex">
         <div className="pt-8 pb-7 flex items-center gap-x-1">
-          <DuoLottie />
+          <Image
+            src="/smarti.png"
+            alt="Smarti mascot"
+            width={48}
+            height={48}
+            className="mr-2"
+            priority
+          />
           <h1 className="uppercase text-xl font-extrabold text-green-600
     tracking-wide cursor-pointer">
             <Link href="/">
-              Linguify
+              סמרטי
             </Link>
           </h1>
         </div>

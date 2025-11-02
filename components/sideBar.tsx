@@ -15,7 +15,7 @@ const sidebarItems = [
     { href: '/learn', label: 'למידה', iconSrc: '/learn.svg', registerOnly: false },
     { href: '/leaderboard', label: 'לוח דירוגים', iconSrc: '/leaderboard.svg', registerOnly: true },
     { href: '/quests', label: 'שלבים', iconSrc: '/quests.svg', registerOnly: true },
-    { href: '/online-lesson', label: 'שיעורים מקוונים', iconSrc: '/learn.svg', registerOnly: true },
+    { href: '/online-lesson', label: 'שיעורים מקוונים', iconSrc: '/online-lesson.svg', registerOnly: true },
     { href: '/settings', label: 'הגדרות', iconSrc: '/setting-profile.svg', registerOnly: true },
     { href: '/practice', label: 'תרגול חוזר', iconSrc: '/practice.svg', registerOnly: true },
     { href: '/shop', label: 'חבילות', iconSrc: '/shop.svg', registerOnly: true },
