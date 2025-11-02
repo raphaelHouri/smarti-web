@@ -184,12 +184,21 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ message: 'No valid questions found in the file after parsing.' }, { status: 400 });
         }
 
-        const insertedQuestions = await db.insert(questions).values(questionsToInsert).returning();
+        // Batch inserts to avoid PostgreSQL parameter limit (65535 parameters max)
+        // With 9 columns per row, we use a batch size of 500 rows (4500 parameters)
+        const BATCH_SIZE = 500;
+        const allInsertedQuestions: any[] = [];
+
+        for (let i = 0; i < questionsToInsert.length; i += BATCH_SIZE) {
+            const batch = questionsToInsert.slice(i, i + BATCH_SIZE);
+            const insertedBatch = await db.insert(questions).values(batch).returning();
+            allInsertedQuestions.push(...insertedBatch);
+        }
 
         return NextResponse.json({
-            message: `${insertedQuestions.length} questions imported successfully!`,
-            count: insertedQuestions.length,
-            data: insertedQuestions
+            message: `${allInsertedQuestions.length} questions imported successfully!`,
+            count: allInsertedQuestions.length,
+            data: allInsertedQuestions
         }, { status: 200 });
 
     } catch (error: any) {
