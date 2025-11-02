@@ -16,6 +16,7 @@ export const QuestionEdit = () => (
             </ReferenceInput>
             <TextInput source="topicType" />
             <TextInput source="explanation" />
+            <TextInput source="managerId" required label="Manager ID" />
             <DateInput source="createdAt" disabled />
         </SimpleForm>
     </Edit>

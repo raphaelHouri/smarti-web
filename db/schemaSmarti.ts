@@ -75,6 +75,7 @@ export const questions = pgTable("questions", {
     categoryId: uuid("category_id").references(() => lessonCategory.id, { onDelete: "cascade" }).notNull(),
     topicType: text("topic_type"),
     explanation: text("explanation"),
+    managerId: text("manager_id").notNull().unique(),
     createdAt: timestamp("created_at").defaultNow(),
 });
 

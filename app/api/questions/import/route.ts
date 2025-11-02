@@ -20,6 +20,7 @@ interface ParsedQuestionFromCSV {
     categoryId: string;
     topicType?: string | null;
     explanation?: string | null;
+    managerId: string;
     id: string;
 }
 
@@ -155,6 +156,8 @@ export async function POST(req: NextRequest) {
                     obj.topicType = String(value);
                 } else if (header === 'explanation') {
                     obj.explanation = String(value);
+                } else if (header === 'managerId') {
+                    obj.managerId = String(value);
                 }
             }
 
@@ -168,6 +171,10 @@ export async function POST(req: NextRequest) {
 
             if (!obj.categoryId) {
                 throw new Error(`Row ${i + 2}: Category ID is missing or invalid.`);
+            }
+
+            if (!obj.managerId) {
+                throw new Error(`Row ${i + 2}: Manager ID is missing.`);
             }
 
             questionsToInsert.push(obj as ParsedQuestionFromCSV);

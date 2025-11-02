@@ -14,11 +14,12 @@ const questionsExporter: Exporter = (records) => {
         categoryId: r.categoryId,
         topicType: r.topicType,
         explanation: r.explanation,
+        managerId: r.managerId,
         createdAt: r.createdAt,
     }));
     exportToXlsx('questions', rows, {
         sheetName: 'questions',
-        headersOrder: ['id', 'content', 'question', 'format', 'optionA', 'optionB', 'optionC', 'optionD', 'categoryId', 'topicType', 'explanation', 'createdAt'],
+        headersOrder: ['id', 'content', 'question', 'format', 'optionA', 'optionB', 'optionC', 'optionD', 'categoryId', 'topicType', 'explanation', 'managerId', 'createdAt'],
         headersLabel: {
             id: 'id',
             content: 'content',
@@ -31,6 +32,7 @@ const questionsExporter: Exporter = (records) => {
             categoryId: 'categoryId',
             topicType: 'topicType',
             explanation: 'explanation',
+            managerId: 'managerId',
             createdAt: 'createdAt',
         },
     });
@@ -61,6 +63,7 @@ export const QuestionList = () => (
             </DataTable.Col>
             <DataTable.Col source="topicType" />
             <DataTable.Col source="explanation" />
+            <DataTable.Col source="managerId" label="Manager ID" />
             <DataTable.Col source="createdAt">
                 <DateField source="createdAt" />
             </DataTable.Col>

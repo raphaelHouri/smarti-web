@@ -30,6 +30,7 @@ interface Question extends RaRecord {
     categoryId: string;
     topicType?: string;
     explanation?: string;
+    managerId: string;
     createdAt?: string;
 }
 
@@ -144,6 +145,7 @@ export const QuestionCreate = (props: CreateProps) => {
                 </ReferenceInput>
                 <TextInput source="topicType" />
                 <TextInput source="explanation" />
+                <TextInput source="managerId" required label="Manager ID" />
 
                 <div style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '20px' }}>
                     <p>Or import multiple questions from an Excel file:</p>

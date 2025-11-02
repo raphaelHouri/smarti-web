@@ -16,6 +16,7 @@ export const QuestionShow = () => (
             </ReferenceField>
             <TextField source="topicType" />
             <TextField source="explanation" />
+            <TextField source="managerId" label="Manager ID" />
             <DateField source="createdAt" />
         </SimpleShowLayout>
     </Show>
