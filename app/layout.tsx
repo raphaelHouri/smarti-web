@@ -65,10 +65,8 @@ export default function RootLayout({
     //   baseTheme:neobrutalism
     // }}
     >
-      <html lang="ה" dir="rtl" suppressHydrationWarning>
-        {/* <head>
-				  <script src="https://beamanalytics.b-cdn.net/beam.min.js" data-token="8efceb49-2776-47f5-bb58-33fcc018acc9" async></script>
-				</head> */}
+      <html lang="he" dir="rtl" suppressHydrationWarning>
+
         <body className={font.className}>
           <ThemeProvider
             attribute="class"

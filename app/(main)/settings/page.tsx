@@ -67,8 +67,9 @@ const SettingsPage = async () => {
                 <QuestsSection experience={userProgress.experience} />
             </StickyWrapper>
             <FeedWrapper>
-                <div className="w-full flex flex_col items-center" dir="rtl">
-                    <div className="flex flex-row items-start justify-end ו-full mb-4">
+                <div className="w-full flex flex-col items-center" dir="rtl">
+                    <div className="flex flex-row items-start justify-end w-full mb-4">
+
                         <FeedbackButton screenName="settings" />
                     </div>
                     <SettingsAnimation />
