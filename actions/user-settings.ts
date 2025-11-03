@@ -16,6 +16,20 @@ interface UpdateUserParams {
     avatar?: string | null;
 }
 
+const ALLOWED_AVATARS = [
+    "/smarti_avatar.png",
+    "/boy_avatar.png",
+    "/girl_avatar.png",
+    "/dragon_avatar.png",
+] as const;
+
+type AllowedAvatar = (typeof ALLOWED_AVATARS)[number];
+
+function sanitizeAvatar(input: string | null | undefined): AllowedAvatar | undefined {
+    if (!input) return undefined;
+    return (ALLOWED_AVATARS as readonly string[]).includes(input) ? (input as AllowedAvatar) : undefined;
+}
+
 export async function updateUser(params: UpdateUserParams) {
     const { userId } = await auth();
 
@@ -35,16 +49,15 @@ export async function updateUser(params: UpdateUserParams) {
         where: eq(userSettings.userId, userId),
     });
 
+    const avatarValue = sanitizeAvatar(params.avatar);
+
     if (existingSettings) {
-        const updateData = Object.fromEntries(
-            Object.entries({
-                lessonClock: params.lessonClock,
-                quizClock: params.quizClock,
-                grade_class: params.grade_class,
-                gender: params.gender,
-                avatar: params.avatar,
-            }).filter(([_, value]) => value !== undefined)
-        );
+        const updateData: Partial<typeof userSettings.$inferInsert> = {};
+        if (params.lessonClock !== undefined) updateData.lessonClock = params.lessonClock;
+        if (params.quizClock !== undefined) updateData.quizClock = params.quizClock;
+        if (params.grade_class !== undefined) updateData.grade_class = params.grade_class ?? null;
+        if (params.gender !== undefined) updateData.gender = params.gender ?? null;
+        if (avatarValue !== undefined) updateData.avatar = avatarValue;
 
         if (Object.keys(updateData).length > 0) {
             await db.update(userSettings)
@@ -53,15 +66,17 @@ export async function updateUser(params: UpdateUserParams) {
         }
     } else {
         // If settings don't exist, create them
-        await db.insert(userSettings).values({
-            id: crypto.randomUUID(), // Generate a unique ID for the new record
+        const insertData: typeof userSettings.$inferInsert = {
+            id: crypto.randomUUID(),
             userId: userId,
-            lessonClock: params.lessonClock,
-            quizClock: params.quizClock,
-            grade_class: params.grade_class,
-            gender: params.gender,
-            avatar: params.avatar,
-        });
+        };
+        if (params.lessonClock !== undefined) insertData.lessonClock = params.lessonClock;
+        if (params.quizClock !== undefined) insertData.quizClock = params.quizClock;
+        if (params.grade_class !== undefined) insertData.grade_class = params.grade_class ?? null;
+        if (params.gender !== undefined) insertData.gender = params.gender ?? null;
+        if (avatarValue !== undefined) insertData.avatar = avatarValue;
+
+        await db.insert(userSettings).values(insertData);
     }
 
     revalidatePath("/settings"); // Revalidate the settings page to show updated data
