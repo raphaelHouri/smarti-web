@@ -14,6 +14,7 @@ interface ParsedRow {
     order?: string | number;
     time?: string | number;
     premium?: string | boolean;
+    groupCategoryType?: string;
 }
 
 export async function POST(req: NextRequest) {
@@ -48,6 +49,8 @@ export async function POST(req: NextRequest) {
                 return 'time';
             case 'premium':
                 return 'premium';
+            case 'groupCategoryType':
+                return 'groupCategoryType';
             default:
                 return String(h || '').trim();
         }
@@ -141,6 +144,12 @@ export async function POST(req: NextRequest) {
             errors.push({ row: i + 2, message: `Unknown categoryType: ${categoryType}` });
             continue;
         }
+        const groupCategoryType = (raw.groupCategoryType || '').trim();
+        const groupCategoryId = categoryMap[groupCategoryType];
+        if (!groupCategoryId) {
+            errors.push({ row: i + 2, message: `Unknown groupCategoryType: ${groupCategoryType}` });
+            continue;
+        }
 
         const orderNum = typeof raw.order === 'number' ? raw.order : parseInt(String(raw.order || '').trim(), 10);
         if (!Number.isFinite(orderNum)) {
@@ -190,7 +199,7 @@ export async function POST(req: NextRequest) {
         // Create lesson question group linked to the lesson
         const qgToInsert: DrizzleLessonQGInsert = {
             lessonId: newLesson.id,
-            categoryId: categoryId,
+            categoryId: groupCategoryType,
             questionList: normalizedQuestionList as unknown as string[],
             time: Number(timeSec),
         } as DrizzleLessonQGInsert;

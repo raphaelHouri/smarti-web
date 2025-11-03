@@ -7,6 +7,7 @@ const lessonQuestionGroupsExporter: Exporter = (records) => {
         id: r.id,
         lessonId: r.lessonId,
         categoryId: r.categoryId,
+
         questionIds: Array.isArray(r.questionList) ? r.questionList.join(';') : r.questionList,
         time: r.time,
         createdAt: r.createdAt,
