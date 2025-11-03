@@ -59,7 +59,7 @@ const OnlineLessonCategoryPage = async ({ params }: OnlineLessonCategoryPageProp
                     </div>
                     <OnlineLessonAnimation />
                     <h1 className="text-center font-bold text-neutral-800 dark:text-slate-200 text-xl sm:text-2xl my-4 sm:my-6">
-                        שיעורים מקוונים
+                        שיעורי אונליין
                     </h1>
                     <Separator className="mb-4 sm:mb-6 h-0.5 rounded-full w-full" />
 

@@ -13,8 +13,8 @@ import { buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
     title: "סמארטי | הכנה למבחני מחוננים ומצטיינים",
-    description: "צפו בשיעורים מקוונים לפי קטגוריות, עם תרגול ויישום מידיים.",
-    keywords: ["שיעורים מקוונים", "למידה דיגיטלית", "מחוננים אונליין"],
+    description: "צפו בשיעורי אונליין לפי קטגוריות, עם תרגול ויישום מידיים.",
+    keywords: ["שיעורי אונליין", "למידה דיגיטלית", "מחוננים אונליין"],
 });
 
 const OnlineLessonPage = async () => {
@@ -56,7 +56,7 @@ const OnlineLessonPage = async () => {
                         <FeedbackButton screenName="online-lesson" />
                     </div>
                     <h1 className="text-center font-bold text-neutral-800 dark:text-slate-200 text-xl sm:text-2xl my-4 sm:my-6">
-                        שיעורים מקוונים
+                        שיעורי אונליין
                     </h1>
                     <Separator className="mb-4 sm:mb-6 h-0.5 rounded-full" />
 
