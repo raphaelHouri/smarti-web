@@ -52,7 +52,7 @@ export function renderTextWithLTRFormulas(text: string): React.ReactNode[] {
     if (index % 2 === 1) {
       return React.createElement(
         'span',
-        { key: `f-${index}`, dir: 'ltr', className: 'inline-block whitespace-nowrap font-mono' },
+        { key: `f-${index}`, dir: 'ltr', className: 'inline-block whitespace-nowrap ' },
         part
       );
     }
