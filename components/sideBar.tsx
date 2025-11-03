@@ -31,8 +31,8 @@ export const SideBar = ({
                     <Image
                         src="/smartiLogo.png"
                         alt="Smarti logo"
-                        height={60}
-                        width={200}
+                        height={65}
+                        width={240}
                         priority
                     />
                 </div>

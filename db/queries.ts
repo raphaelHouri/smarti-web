@@ -22,7 +22,8 @@ export const getLessonCategory = cache(async () => {
     const data = await db.query.lessons.findMany({
         with: {
             category: true
-        }
+        },
+        orderBy: (lessons, { asc }) => [asc(lessons.lessonOrder)]
     });
     return data;
 })
