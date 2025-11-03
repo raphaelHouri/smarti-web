@@ -30,13 +30,14 @@ export default async function Home() {
             <Image
               src="/smarti.png"
               alt="Smarti Logo"
-              width={250}
-              height={240}
+              width={300}
+              height={290}
               className="mx-auto"
               priority
             />
           </div>
-          שלוט ושפר את כישורי השפה שלך עם Linguify.
+          שלוט ושפר את כישורי השפה שלך עם{' '}
+          <span className="text-[#00C950]">סמארטי</span>.
         </h1>
         <div className="flex flex-col items-center justify-center gap-y-3 max-w-[330px] w-full">
           <ClerkLoading>

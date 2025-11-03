@@ -83,7 +83,7 @@ const main = async () => {
             userId,
             grade_class: "2nd Grade",
             gender: "female",
-            avatar: "girl.svg"
+            avatar: "/girl_avatar.png"
         });
 
         await db.insert(schema.plans).values({

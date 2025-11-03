@@ -66,6 +66,14 @@ export const lessons = pgTable("lessons", {
 }));
 export const formatEnum = pgEnum("format", ["REGULAR", "SHAPES", "COMPREHENSION", "MATH"])
 
+// Avatar enum options
+export const avatarEnum = pgEnum("avatar", [
+    "/smarti_avatar.png",
+    "/boy_avatar.png",
+    "/girl_avatar.png",
+    "/dragon_avatar.png",
+])
+
 export const questions = pgTable("questions", {
     id: uuid("id").defaultRandom().primaryKey(),
     content: text("content"),
@@ -100,7 +108,7 @@ export const userSettings = pgTable("user_settings", {
     immediateResult: boolean("immediate_result").default(false),
     grade_class: text("grade_class"),
     gender: text("gender"),
-    avatar: text("avatar").default("/zombie.svg"),
+    avatar: avatarEnum("avatar").default("/smarti_avatar.png"),
 });
 
 export const subscriptions = pgTable("subscriptions", {

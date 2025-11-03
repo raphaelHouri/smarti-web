@@ -35,12 +35,12 @@ const debounce = (func: Function, delay: number) => {
 };
 
 
-// Define the available avatars
+// Define the available avatars (must match DB enum)
 const AVAILABLE_AVATARS = [
-    { src: "/man.svg", alt: "אוואטר גבר" },
-    { src: "/woman.svg", alt: "אוואטר אישה" },
-    { src: "/zombie.svg", alt: "אוואטר זומבי" },
-    { src: "/girl.svg", alt: "אוואטר ילדה" },
+    { src: "/smarti_avatar.png", alt: "סמארטי" },
+    { src: "/boy_avatar.png", alt: "ילד" },
+    { src: "/girl_avatar.png", alt: "ילדה" },
+    { src: "/dragon_avatar.png", alt: "דרגון" },
 ];
 
 // Define schema for profile form

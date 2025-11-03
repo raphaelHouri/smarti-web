@@ -20,7 +20,7 @@ const HeaderPage = () => {
             <Image
               src="/smartiLogo.png"
               alt="Smarti mascot"
-              width={180}
+              width={240}
               height={60}
               className="mr-2"
               priority
