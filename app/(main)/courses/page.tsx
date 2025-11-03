@@ -3,6 +3,11 @@ import { cn } from "@/lib/utils";
 import { Poppins } from "next/font/google"
 import { List } from "./_components/List";
 
+export const metadata: Metadata = buildMetadata({
+    title: "סמארטי | הכנה למבחני מחוננים ומצטיינים",
+    description: "קורסים דיגיטליים עם תרגולים חכמים והכנה ממוקדת למבחני מחוננים.",
+    keywords: ["קורס מחוננים", "קורסים אונליין", "הכנה למבחן מחוננים"],
+});
 
 const font = Poppins({ subsets: ["latin"], weight: ["600"] })
 

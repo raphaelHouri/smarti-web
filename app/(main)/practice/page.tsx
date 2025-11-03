@@ -13,6 +13,14 @@ import QuestsSection from "../quests/_components/quests";
 import FormatPieChart from "./_components/format-pie-chart";
 import TopicBarChart from "./_components/topic-bar-chart";
 import FeedbackButton from "@/components/feedbackButton";
+import type { Metadata } from "next";
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildMetadata({
+    title: "סמארטי | הכנה למבחני מחוננים ומצטיינים",
+    description: "תרגלו שאלות שחזרו ונעשו טעויות, קבלו ניתוח אישי ושפרו ביצועים.",
+    keywords: ["תרגול שאלות", "שיפור ביצועים", "מחוננים תרגול"],
+});
 
 type GroupedSummaryType = {
     [format: string]: {

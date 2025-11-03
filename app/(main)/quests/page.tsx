@@ -11,6 +11,14 @@ import PromoSection from "../learn/_components/promo";
 import { quests } from "@/constants";
 import QuestsJson from "./_components/lottie";
 import FeedbackButton from "@/components/feedbackButton";
+import type { Metadata } from "next";
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildMetadata({
+    title: "סמארטי | הכנה למבחני מחוננים ומצטיינים",
+    description: "השלימו משימות, צברו נקודות ופתחו שלבים כדי לשמור על מוטיבציה.",
+    keywords: ["גיימיפיקציה", "משימות למידה", "נקודות ופרסים"],
+});
 
 const QuestsPage = async () => {
     const userProgressData = getUserProgress();

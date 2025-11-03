@@ -10,6 +10,14 @@ import { AnimatedTooltip } from "@/components/animated-tooltip";
 import PromoSection from "../learn/_components/promo";
 import QuestsSection from "../quests/_components/quests";
 import FeedbackButton from "@/components/feedbackButton";
+import type { Metadata } from "next";
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildMetadata({
+    title: "סמארטי | הכנה למבחני מחוננים ומצטיינים",
+    description: "גלו את המצטיינים וצפו בדירוג הלומדים לפי נקודות וניסיון.",
+    keywords: ["טבלת מובילים", "דירוג לומדים", "XP"],
+});
 
 const LeaderBoardPage = async () => {
     const userProgressData = getUserProgress();

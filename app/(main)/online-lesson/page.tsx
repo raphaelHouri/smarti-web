@@ -8,6 +8,14 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import Image from "next/image";
 import FeedbackButton from "@/components/feedbackButton";
+import type { Metadata } from "next";
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildMetadata({
+    title: "סמארטי | הכנה למבחני מחוננים ומצטיינים",
+    description: "צפו בשיעורים מקוונים לפי קטגוריות, עם תרגול ויישום מידיים.",
+    keywords: ["שיעורים מקוונים", "למידה דיגיטלית", "מחוננים אונליין"],
+});
 
 const OnlineLessonPage = async () => {
     const [userProgress, userSubscription, categories] = await Promise.all([

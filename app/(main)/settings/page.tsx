@@ -11,7 +11,14 @@ import QuestsSection from "../quests/_components/quests";
 import { ProfileSettingsForm } from "./_components/ProfileSettingsForm"; // Import the new form component
 import { auth } from "@clerk/nextjs/server";
 import FeedbackButton from "@/components/feedbackButton";
+import type { Metadata } from "next";
+import { buildMetadata } from "@/lib/seo";
 
+export const metadata: Metadata = buildMetadata({
+    title: "סמארטי | הכנה למבחני מחוננים ומצטיינים",
+    description: "נהלו פרופיל, בחירת כיתה ומדדים אישיים כדי לדייק את הלמידה.",
+    keywords: ["הגדרות משתמש", "העדפות למידה", "פרופיל לומד"],
+});
 
 const SettingsPage = async () => {
     const { userId } = await auth(); // Get userId from Clerk
@@ -60,8 +67,8 @@ const SettingsPage = async () => {
                 <QuestsSection experience={userProgress.experience} />
             </StickyWrapper>
             <FeedWrapper>
-                <div className="w-full flex flex-col items-center" dir="rtl">
-                    <div className="flex flex-row items-start justify-end w-full mb-4">
+                <div className="w-full flex flex_col items-center" dir="rtl">
+                    <div className="flex flex-row items-start justify-end ו-full mb-4">
                         <FeedbackButton screenName="settings" />
                     </div>
                     <SettingsAnimation />

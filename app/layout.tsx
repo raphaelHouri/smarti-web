@@ -17,11 +17,37 @@ import FeedbackModal from "@/components/modals/useFeedbacksModal";
 const font = Poppins({ subsets: ["latin"], weight: ["500"] })
 
 export const metadata: Metadata = {
-  title: "Linguify",
-  description: "AI based Language Learning App",
+  title: "סמארטי | הכנה למבחני מחוננים ומצטיינים",
+  description:
+    "סמרטי - פלטפורמה להכנה למבחני מחוננים בעיקר לכיתות ב–ג: תרגולים אונליין, חוברות וסימולציות מודפסות, פעילויות פרונטליות והדרכת הורים מותאמת בכל הארץ.",
   icons: {
-    icon: '/mascot.svg'
-  }
+    icon: '/favicon-32x32.png'
+  },
+  keywords: [
+    "מחוננים",
+    "מצטיינים",
+    "מבחני מחוננים",
+    "תרגול אונליין",
+    "סימולציות",
+    "חוברות",
+    "כיתה ב",
+    "כיתה ג",
+    "הדרכת הורים",
+  ],
+  openGraph: {
+    title: "סמארטי | הכנה למבחני מחוננים ומצטיינים",
+    description:
+      "סמרטי - פלטפורמה להכנה למבחני מחוננים בעיקר לכיתות ב–ג: תרגולים אונליין, חוברות וסימולציות מודפסות, פעילויות פרונטליות והדרכת הורים מותאמת בכל הארץ.",
+    type: 'website',
+    locale: 'he_IL',
+    siteName: 'סמרטי',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: "סמארטי | הכנה למבחני מחוננים ומצטיינים",
+    description:
+      "סמרטי - פלטפורמה להכנה למבחני מחוננים בעיקר לכיתות ב–ג: תרגולים אונליין, חוברות וסימולציות מודפסות, פעילויות פרונטליות והדרכת הורים מותאמת בכל הארץ.",
+  },
 };
 
 export default function RootLayout({
@@ -39,10 +65,10 @@ export default function RootLayout({
     //   baseTheme:neobrutalism
     // }}
     >
-      <html lang="he" dir="rtl" suppressHydrationWarning>
+      <html lang="ה" dir="rtl" suppressHydrationWarning>
         {/* <head>
-          <script src="https://beamanalytics.b-cdn.net/beam.min.js" data-token="8efceb49-2776-47f5-bb58-33fcc018acc9" async></script>
-        </head> */}
+				  <script src="https://beamanalytics.b-cdn.net/beam.min.js" data-token="8efceb49-2776-47f5-bb58-33fcc018acc9" async></script>
+				</head> */}
         <body className={font.className}>
           <ThemeProvider
             attribute="class"

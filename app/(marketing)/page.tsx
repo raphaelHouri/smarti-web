@@ -5,7 +5,15 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 // LottieJson is a client component that already lazy-loads lottie-react.
+import type { Metadata } from "next";
+import { buildMetadata } from "@/lib/seo";
 
+export const metadata: Metadata = buildMetadata({
+  title: "סמארטי | הכנה למבחני מחוננים ומצטיינים",
+  description:
+    "סמרטי - פלטפורמה להכנה למבחני מחוננים בעיקר לכיתות ב–ג: תרגולים אונליין, חוברות וסימולציות מודפסות, פעילויות פרונטליות והדרכת הורים מותאמת בכל הארץ.",
+  keywords: ["מבחני מחוננים", "סימולציות מחוננים", "הורי מחוננים"],
+});
 
 export default async function Home() {
   const { userId } = await auth();
