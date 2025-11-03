@@ -119,7 +119,7 @@ const PracticePage = async () => {
                         תרגול מביא לשלמות! 🏋️‍♂️
                     </h1>
                     <p className="text-muted-foreground text-center text-base sm:text-lg mb-4">
-                        חזור על שאלות שטעית בהן ונסה שוב.
+                        חזרה על שאלות שטעית בהן ונסה שוב.
                     </p>
                     <Separator className="mb-6 h-0.5 rounded-full" />
 
@@ -175,7 +175,7 @@ const PracticePage = async () => {
                                     <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-950 rounded-t-lg p-4">
 
                                         <CardTitle className="text-blue-800 dark:text-blue-200 text-lg font-regular flex items-center gap-2">
-                                            <strong className="font-bold text-lg">{data.categoryType} - </strong> נושאים שכדאי לחזור עליהן.
+                                            <strong className="font-bold text-lg">{data.categoryType} - </strong> נושאים שכדאי לחזרה עליהן.
                                             <span className="text-sm font-normal text-blue-600 dark:text-blue-400">
                                                 ({data.totalWrong} טעויות)
                                             </span>

@@ -65,7 +65,7 @@ const Footer = ({
             : status === "wrong"
                 ? "נסה שוב"
                 : mode === "review"
-                    ? activeIndex !== undefined && total !== undefined && activeIndex === total - 1 ? "חזור לדף הסיכום" : "המשך"
+                    ? activeIndex !== undefined && total !== undefined && activeIndex === total - 1 ? "חזרה לדף הסיכום" : "המשך"
                     : activeIndex !== undefined && total !== undefined && activeIndex === total - 1
                         ? "סיום"
                         : "הבא";
@@ -120,7 +120,7 @@ const Footer = ({
                             size={isMobile ? "sm" : "lg"}
                             variant="secondary"
                         >
-                            חזור לתרגולים
+                            חזרה לתרגולים
                         </Button>
                     </div>
 

@@ -351,7 +351,7 @@ const Quiz = ({
                                     size={isMobile ? "sm" : "lg"}
                                     variant="secondary"
                                 >
-                                    חזור לדף התרגול
+                                    חזרה לדף התרגול
                                 </Button>
                             </div>
                         ) : null}
