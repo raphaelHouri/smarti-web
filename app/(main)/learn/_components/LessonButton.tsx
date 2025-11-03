@@ -67,7 +67,7 @@ const LessonButton = ({
                 pointerEvents: locked ? "none" : "auto"
             }}
             onClick={(e) => {
-                if (!isPremium) {
+                if (isPremium) {
                     e.preventDefault();
                     open();
                 }
