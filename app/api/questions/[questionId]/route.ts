@@ -64,8 +64,8 @@ export const POST = async (
         const body = await req.json();
 
         // Basic validation (you might want more comprehensive validation with a library like Zod)
-        if (!body.question || !body.categoryId) {
-            return new NextResponse("Missing required fields: question and categoryId are required.", { status: 400 });
+        if (!body.question || !body.categoryId || !body.managerId) {
+            return new NextResponse("Missing required fields: question, categoryId, and managerId are required.", { status: 400 });
         }
 
         const newQuestion = await db.insert(questions).values({
@@ -73,11 +73,11 @@ export const POST = async (
             id: body.id || crypto.randomUUID(), // Generate an ID if not provided
             question: body.question,
             format: body.format,
-            options: body.options, // Assuming options is a JSONB type or similar in Drizzle
+            options: body.options,
             categoryId: body.categoryId,
             topicType: body.topicType,
             explanation: body.explanation,
-            // createdAt is typically handled by the database or Drizzle defaults
+            managerId: body.managerId,
         }).returning(); // .returning() is crucial to get the created record back
 
         if (!newQuestion || newQuestion.length === 0) {
