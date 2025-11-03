@@ -145,10 +145,10 @@ const Footer = ({
 
                         <div className="px-2 text-sm sm:text-base text-neutral-700 dark:text-neutral-300 select-none text-center mx-auto md:justify-self-center md:col-start-2">
                             <span className="hidden sm:inline">שאלה{" "}</span>
+                            {total}  /
                             <span className="font-semibold">
                                 {(activeIndex as number) + 1}
                             </span>{" "}
-                            / {total}
                         </div>
                         {(typeof total === "number" && activeIndex == total - 1) ? (
                             <Button
