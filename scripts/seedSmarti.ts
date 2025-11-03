@@ -202,7 +202,8 @@ const main = async () => {
                 topicType: "Geography",
                 categoryId: category2Id,
                 explanation: "Paris is the capital of France.",
-                createdAt: new Date()
+                createdAt: new Date(),
+                managerId: uuidv4()
             },
             {
                 id: question12Id,
@@ -218,7 +219,8 @@ const main = async () => {
                 topicType: "Mathematics",
                 categoryId: category3Id,
                 explanation: "5 + 7 equals 12.",
-                createdAt: new Date()
+                createdAt: new Date(),
+                managerId: uuidv4()
             },
             {
                 id: question13Id,
@@ -234,7 +236,8 @@ const main = async () => {
                 topicType: "Astronomy",
                 categoryId: category2Id,
                 explanation: "Jupiter is the largest planet in our solar system.",
-                createdAt: new Date()
+                createdAt: new Date(),
+                managerId: uuidv4()
             },
             {
                 id: question14Id,
@@ -250,7 +253,9 @@ const main = async () => {
                 topicType: "Mathematics",
                 categoryId: category3Id,
                 explanation: "9 x 6 equals 54.",
-                createdAt: new Date()
+                createdAt: new Date(),
+                managerId: uuidv4()
+
             },
             {
                 id: question15Id,
@@ -266,7 +271,8 @@ const main = async () => {
                 topicType: "English",
                 categoryId: category2Id,
                 explanation: "'Joyful' is a synonym of 'happy'.",
-                createdAt: new Date()
+                createdAt: new Date(),
+                managerId: uuidv4()
             }
         ]);
 
@@ -355,7 +361,8 @@ const main = async () => {
                 topicType: "ארץ ישראל",
                 categoryId: categoryId,
                 explanation: "ירושלים היא עיר הבירה של מדינת ישראל.",
-                createdAt: new Date()
+                createdAt: new Date(),
+                managerId: uuidv4()
             },
             {
                 id: question2Id,
@@ -371,7 +378,8 @@ const main = async () => {
                 topicType: "היסטוריה",
                 categoryId: categoryId,
                 explanation: "מדינת ישראל הוקמה ב־14 במאי 1948.",
-                createdAt: new Date()
+                createdAt: new Date(),
+                managerId: uuidv4()
             },
             {
                 id: question3Id,
@@ -387,7 +395,8 @@ const main = async () => {
                 topicType: "שפה",
                 categoryId: categoryId,
                 explanation: "עברית היא השפה הרשמית של ישראל.",
-                createdAt: new Date()
+                createdAt: new Date(),
+                managerId: uuidv4()
             },
             {
                 id: question4Id,
@@ -403,7 +412,8 @@ const main = async () => {
                 topicType: "גיאוגרפיה",
                 categoryId: categoryId,
                 explanation: "ים המלח נמצא במזרח ישראל.",
-                createdAt: new Date()
+                createdAt: new Date(),
+                managerId: uuidv4()
             },
             {
                 id: question5Id,
@@ -419,7 +429,8 @@ const main = async () => {
                 topicType: "גיאוגרפיה",
                 categoryId: categoryId,
                 explanation: "הר חרמון הוא ההר הגבוה ביותר בישראל.",
-                createdAt: new Date()
+                createdAt: new Date(),
+                managerId: uuidv4()
             },
             {
                 id: question6Id,
@@ -435,7 +446,8 @@ const main = async () => {
                 topicType: "היסטוריה",
                 categoryId: categoryId,
                 explanation: "דוד בן גוריון היה ראש הממשלה הראשון של ישראל.",
-                createdAt: new Date()
+                createdAt: new Date(),
+                managerId: uuidv4()
             },
             {
                 id: question7Id,
@@ -451,7 +463,8 @@ const main = async () => {
                 topicType: "גיאוגרפיה",
                 categoryId: categoryId,
                 explanation: "חיפה היא עיר הנמל המרכזית של ישראל.",
-                createdAt: new Date()
+                createdAt: new Date(),
+                managerId: uuidv4()
             },
             {
                 id: question8Id,
@@ -467,7 +480,8 @@ const main = async () => {
                 topicType: "היסטוריה",
                 categoryId: categoryId,
                 explanation: "ירושלים נכבשה מחדש במלחמת ששת הימים בשנת 1967.",
-                createdAt: new Date()
+                createdAt: new Date(),
+                managerId: uuidv4()
             },
             {
                 id: question9Id,
@@ -483,7 +497,8 @@ const main = async () => {
                 topicType: "גיאוגרפיה",
                 categoryId: categoryId,
                 explanation: "הירדן הוא הנהר הארוך ביותר בישראל.",
-                createdAt: new Date()
+                createdAt: new Date(),
+                managerId: uuidv4()
             },
             {
                 id: question10Id,
@@ -499,7 +514,8 @@ const main = async () => {
                 topicType: "כלכלה",
                 categoryId: categoryId,
                 explanation: "תל אביב נחשבת לעיר הבירה הכלכלית של ישראל.",
-                createdAt: new Date()
+                createdAt: new Date(),
+                managerId: uuidv4()
             }
         ]);
 
