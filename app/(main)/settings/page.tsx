@@ -49,7 +49,7 @@ const SettingsPage = async () => {
             <StickyWrapper>
                 <UserProgress
                     imageSrc={userProgress.settings?.avatar || "/fr.svg"} // Make sure activeCourse is defined or fetched
-                    title={userProgress.lessonCategory?.categoryType || "Math"} // Make sure activeCourse is defined or fetched
+                    title={userProgress.settings?.avatar || "Math"} // Make sure activeCourse is defined or fetched
                     experience={userProgress.experience}
                     geniusScore={userProgress.geniusScore}
                     hasActiveSubscription={isPro}
