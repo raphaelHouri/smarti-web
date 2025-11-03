@@ -59,6 +59,7 @@ const Quiz = ({
     const [activeIndex, setActiveIndex] = useState(0)
     const [mode, setMode] = useState<"quiz" | "review" | "summary" | "practiceMode">("quiz")
     const [isExpanded, setIsExpanded] = useState(true)
+    const [isGridExpanded, setIsGridExpanded] = useState(false)
     const { userId } = useAuth();
     const [startAt, setStartAt] = useState<Date | null>(null);
     const isMobile = useMedia("(max-width:1024px)");
@@ -137,6 +138,14 @@ const Quiz = ({
         };
         handleUserEffect();
     }, [userId]);
+    useEffect(() => {
+        // Set grid expansion state based on mode: closed for quiz, open for review
+        if (mode === "quiz") {
+            setIsGridExpanded(false);
+        } else if (mode === "review") {
+            setIsGridExpanded(true);
+        }
+    }, [mode]);
     const progressPct = useMemo(
         () => {
             return ((activeIndex + (!!selectedOption ? 1 : 0)) / total) * 100
@@ -229,101 +238,125 @@ const Quiz = ({
                 )}
             >
                 {mode in ["quiz", "review"] || true && (
-                    <div className="mb-2 flex items-center gap-2">
+                    <div className="mb-2 flex items-center gap-2 justify-between">
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
                             תרגול: {lessonQueryParam ?? "אין תרגול"}
                         </span>
+                        {(mode === "quiz" || mode === "review") && (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setIsGridExpanded(!isGridExpanded)}
+                                className="text-xs sm:text-sm text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 xl:hidden"
+                            >
+                                {isGridExpanded ? (
+                                    <>
+                                        הסתר תרגילים
+                                        <ChevronUp className="inline ml-1 align-middle w-4 h-4" />
+                                    </>
+                                ) : (
+                                    <>
+                                        הצג תרגילים
+                                        <ChevronDown className="inline ml-1 align-middle w-4 h-4" />
+                                    </>
+                                )}
+                            </Button>
+                        )}
                     </div>
                 )}
-                {questionGroups.map((categoryValue, categoryIndex) => (
-                    <div key={categoryIndex} className="sm:mb-2 mb-1">
-                        <h3 className={cn(
-                            "text-base lg:text-lg font-semibold text-neutral-700 dark:text-neutral-300 mb-0 sm:mb-2 lg:mb-4"
-                        )}>
-                            {categoryValue.categoryType}
-                        </h3>
-                        <div className={`grid gap-2 lg:gap-4 ${getGridCols()}`}>
-                            {categoryValue.questionList.map((_, questionIndex) => {
-                                const index = categoryValue.questionList
-                                    .slice(0, questionIndex + 1)
-                                    .reduce((acc, _, i) => acc + (i === 0 ? 0 : 1), 0) +
-                                    questionGroups
-                                        .slice(0, categoryIndex)
-                                        .reduce((acc, group) => acc + group.questionList.length, 0);
-                                const result = resultList[index];
-                                const isAnswered = result !== null;
-                                const isCurrent = index === activeIndex;
-                                return (
-                                    <button
-                                        key={index}
-                                        onClick={() => {
-                                            if (mode === "quiz") {
-                                                goTo(index);
-                                            } else if (!userId) {
-                                                OpenRegisterModal();
-                                            } else {
-                                                setMode("review");
-                                                goTo(index);
-                                            }
-                                        }}
-                                        className={cn(
-                                            "relative group flex flex-col items-center justify-center px-0.5 py-0.25 rounded-xl transition-all duration-300 hover:scale-105",
-                                            isCurrent
-                                                ? "border-2 border-slate-500 shadow-lg z-10"
-                                                : "border border-transparent",
-                                            mode === "quiz"
-                                                ? isAnswered
-                                                    ? 'bg-sky-500/20 hover:bg-sky-500/40'
-                                                    : 'bg-gray-500/10 hover:bg-gray-500/20'
-                                                : result
-                                                    ? result === "a"
-                                                        ? 'bg-green-500/10 hover:bg-green-500/20'
-                                                        : 'bg-red-500/10 hover:bg-red-500/20'
-                                                    : 'bg-red-500/10 hover:bg-red-500/20',
-                                            "min-h-[38px] sm:min-h-[38px] min-w-[38px] sm:min-w-[38px] text-base sm:text-base"
-                                        )}
-                                        style={{
-                                            fontSize: isReallyMobile ? "0.95rem" : undefined,
-                                            minWidth: isReallyMobile ? 34 : 38,
-                                            minHeight: isReallyMobile ? 34 : 38,
-                                            padding: isReallyMobile ? "0.15rem 0.25rem" : undefined,
-                                        }}
-                                    >
-                                        <span className="text-sm font-medium">
-
-                                            {index + 1}
-                                        </span>
-                                        {mode !== "quiz" && result && (
-                                            <span
+                {(isGridExpanded || !isMobile) && (
+                    <>
+                        {questionGroups.map((categoryValue, categoryIndex) => (
+                            <div key={categoryIndex} className="sm:mb-2 mb-1">
+                                <h3 className={cn(
+                                    "text-base lg:text-lg font-semibold text-neutral-700 dark:text-neutral-300 mb-0 sm:mb-2 lg:mb-4"
+                                )}>
+                                    {categoryValue.categoryType}
+                                </h3>
+                                <div className={`grid gap-2 lg:gap-4 ${getGridCols()}`}>
+                                    {categoryValue.questionList.map((_, questionIndex) => {
+                                        const index = categoryValue.questionList
+                                            .slice(0, questionIndex + 1)
+                                            .reduce((acc, _, i) => acc + (i === 0 ? 0 : 1), 0) +
+                                            questionGroups
+                                                .slice(0, categoryIndex)
+                                                .reduce((acc, group) => acc + group.questionList.length, 0);
+                                        const result = resultList[index];
+                                        const isAnswered = result !== null;
+                                        const isCurrent = index === activeIndex;
+                                        return (
+                                            <button
+                                                key={index}
+                                                onClick={() => {
+                                                    if (mode === "quiz") {
+                                                        goTo(index);
+                                                    } else if (!userId) {
+                                                        OpenRegisterModal();
+                                                    } else {
+                                                        setMode("review");
+                                                        goTo(index);
+                                                    }
+                                                }}
                                                 className={cn(
-                                                    "text-xl",
-                                                    result === "a" ? "text-green-400" : "text-red-400"
+                                                    "relative group flex flex-col items-center justify-center px-0.5 py-0.25 rounded-xl transition-all duration-300 hover:scale-105",
+                                                    isCurrent
+                                                        ? "border-2 border-slate-500 shadow-lg z-10"
+                                                        : "border border-transparent",
+                                                    mode === "quiz"
+                                                        ? isAnswered
+                                                            ? 'bg-sky-500/20 hover:bg-sky-500/40'
+                                                            : 'bg-gray-500/10 hover:bg-gray-500/20'
+                                                        : result
+                                                            ? result === "a"
+                                                                ? 'bg-green-500/10 hover:bg-green-500/20'
+                                                                : 'bg-red-500/10 hover:bg-red-500/20'
+                                                            : 'bg-red-500/10 hover:bg-red-500/20',
+                                                    "min-h-[38px] sm:min-h-[38px] min-w-[38px] sm:min-w-[38px] text-base sm:text-base"
                                                 )}
+                                                style={{
+                                                    fontSize: isReallyMobile ? "0.95rem" : undefined,
+                                                    minWidth: isReallyMobile ? 34 : 38,
+                                                    minHeight: isReallyMobile ? 34 : 38,
+                                                    padding: isReallyMobile ? "0.15rem 0.25rem" : undefined,
+                                                }}
                                             >
-                                                {result === "a" ? '✓' : '✗'}
-                                            </span>
-                                        )}
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
-                ))}
-                <p className="text-center text-xs lg:text-sm text-neutral-400 dark:text-neutral-500 mt-2">
-                    הקישו על מספר שאלה כדי {mode === "quiz" ? "לנווט" : "לסקור את תשובתכם"}
-                </p>
-                {mode === "review" ? (
-                    <div className="flex justify-center pt-2">
-                        <Button
-                            className="w-full lg:w-auto text-xs sm:text-sm"
-                            onClick={() => router.back()}
-                            size={isMobile ? "sm" : "lg"}
-                            variant="secondary"
-                        >
-                            חזור לדף התרגול
-                        </Button>
-                    </div>
-                ) : null}
+                                                <span className="text-sm font-medium">
+
+                                                    {index + 1}
+                                                </span>
+                                                {mode !== "quiz" && result && (
+                                                    <span
+                                                        className={cn(
+                                                            "text-xl",
+                                                            result === "a" ? "text-green-400" : "text-red-400"
+                                                        )}
+                                                    >
+                                                        {result === "a" ? '✓' : '✗'}
+                                                    </span>
+                                                )}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        ))}
+                        <p className="text-center text-xs lg:text-sm text-neutral-400 dark:text-neutral-500 mt-2">
+                            הקישו על מספר שאלה כדי {mode === "quiz" ? "לנווט" : "לסקור את תשובתכם"}
+                        </p>
+                        {mode === "review" ? (
+                            <div className="flex justify-center pt-2">
+                                <Button
+                                    className="w-full lg:w-auto text-xs sm:text-sm"
+                                    onClick={() => router.back()}
+                                    size={isMobile ? "sm" : "lg"}
+                                    variant="secondary"
+                                >
+                                    חזור לדף התרגול
+                                </Button>
+                            </div>
+                        ) : null}
+                    </>
+                )}
             </div>
         );
     };
@@ -431,9 +464,9 @@ const Quiz = ({
                 <div className="h-full justify-center flex items-center">
                     <div className="lg:min-h-[300px] w-full xl:w-[800px]  2xl:w-[1000px] [@media(min-width:1750px)]:w-[1200px] lg:px-0 px-2 sm:px-6 flex flex-col gap-y-6">
 
-                        {/* Side result grid – mobile position change */}
+                        {/* Side result grid – mobile position change */}
                         <div className="block xl:hidden mb-2">
-                            {/* Mobile: show the grid above the question */}
+                            {/* Mobile: show the grid above the question with expand/collapse */}
                             {mode !== "practiceMode" && renderResultGrid()}
                         </div>
                         <div
