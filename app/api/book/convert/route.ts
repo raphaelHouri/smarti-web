@@ -1,5 +1,8 @@
-import { NextResponse } from 'next/server';
+// app/api/book/convert/route.ts
+// export const runtime = "nodejs";
+import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
+
 import fs from "fs";
 import path from "path";
 import PizZip from "pizzip";
@@ -8,16 +11,18 @@ import ImageModule from "docxtemplater-image-module-free";
 import QRCode from "qrcode";
 import { createFileName } from '@/lib/book_utils';
 
-export const runtime = 'nodejs';
-
+// const templatePath = path.resolve(path.join("public", "template.docx"));
 const templatePath = path.resolve(path.join(process.cwd(), "public", "template.docx"));
+const outputPdfPath = path.resolve("public", "output.docx");
 const zipCachePath = path.resolve("public", "template.zip");
 
-const readTemplate = async (templatePathLocal: string): Promise<Buffer> => {
+const readTemplate = async (templatePath: string): Promise<Buffer> => {
     if (fs.existsSync(zipCachePath)) {
+        console.log("Using cached ZIP file...");
         return fs.readFileSync(zipCachePath);
     }
-    const content = fs.readFileSync(templatePathLocal, "binary");
+    console.log("Reading and zipping the DOCX template...");
+    const content = fs.readFileSync(templatePath, "binary");
     const zip = new PizZip(content);
     const buf = zip.generate({ type: "nodebuffer" });
     fs.writeFileSync(zipCachePath, buf);
@@ -25,31 +30,22 @@ const readTemplate = async (templatePathLocal: string): Promise<Buffer> => {
 };
 
 const generateQRCodeBuffer = async (data: string): Promise<Buffer> => {
+    console.log("Generating QR Code...");
     return QRCode.toBuffer(data);
 };
 
 async function generate(StudentName?: string, vat_id?: string): Promise<Buffer | void> {
     const imageModule = new ImageModule({
         centered: false,
-        getImage: (tagValue: Buffer | string) => {
-            if (typeof tagValue === 'string') {
-                // Treat as base64 or utf8 string
-                try {
-                    // If data URL, strip prefix
-                    const base64 = tagValue.startsWith('data:') ? tagValue.split(',')[1] ?? '' : tagValue;
-                    return Buffer.from(base64, 'base64');
-                } catch {
-                    return Buffer.from(tagValue, 'utf8');
-                }
-            }
-            return tagValue;
-        },
+        getImage: (tagValue: Buffer) => tagValue,
         getSize: () => [150, 150],
     });
     try {
+        console.log("Starting document generation...");
         const zipContent = await readTemplate(templatePath);
         const zip = new PizZip(zipContent);
         const qrCodeBuffer = await generateQRCodeBuffer(`https://chat.whatsapp.com/DysJXGAm6OJIBV1KvwVcDw?id=kdskl?vat_id=${vat_id}`);
+
         const doc = new Docxtemplater(zip, { modules: [imageModule] });
 
         const now = new Date();
@@ -60,33 +56,47 @@ async function generate(StudentName?: string, vat_id?: string): Promise<Buffer |
             yearString = `${now.getFullYear()} - ${now.getFullYear() + 1}`;
         }
 
+        console.log("Rendering document with data...");
         await doc.renderAsync({
-            UserFullNameXXXX: StudentName || "",
+            UserFullNameXXXX: StudentName || "רפאל חורי",
             YEARXXXX: yearString,
             URLXXXX: "https://supergifted.co.il/book",
             image: qrCodeBuffer
         });
 
+        console.log("Building DOCX buffer...");
         const docxBuf = doc.getZip().generate({ type: "nodebuffer" });
+        console.log("Document generation completed.");
         return docxBuf;
     } catch (error: any) {
-        console.error("Error occurred while generating document:", error.message);
+        console.error("❌ Error occurred while generating document:", error.message);
     }
 }
 
+// Helper to wait for a specific duration
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export async function POST(req: Request) {
+    // Read the request body as text
     const bodyText = await req.text();
+
+    // Parse the URL-encoded string
     const params = new URLSearchParams(bodyText);
+
+    // Get the individual data fields
     const vat_id = params.get("vat_id");
     const email = params.get("email");
     const StudentName = params.get("StudentName");
 
     if (!vat_id || !email || !StudentName) {
-        return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+        console.warn("Missing required fields in the request.");
+        return NextResponse.json(
+            { error: "Missing required fields" },
+            { status: 400 }
+        );
     }
 
+    console.log("Validating server configuration...");
     const apiKey = process.env.CLOUDCONVERT_API_KEY;
     const gcsProjectId = process.env.GCS_PROJECT_ID;
     const gcsBucket = process.env.GCS_BUCKET_NAME;
@@ -94,44 +104,78 @@ export async function POST(req: Request) {
     const gcsPrivateKey = process.env.GCS_PRIVATE_KEY?.replace(/\\n/g, '\n');
 
     if (!apiKey || !gcsProjectId || !gcsBucket || !gcsClientEmail || !gcsPrivateKey) {
-        return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
+        console.error("Server configuration error: One or more required environment variables are missing.");
+        return NextResponse.json(
+            { error: "Server configuration error. Please check environment variables." },
+            { status: 500 }
+        );
     }
 
     try {
+        console.log("Generating document...");
         const generatedBuffer = await generate(StudentName, vat_id);
 
         if (process.env.NEXT_ENV === "development") {
-            return NextResponse.json({ message: 'File generated successfully in development mode' });
+            console.log("Development mode: Skipping CloudConvert and saving file locally.");
+            return NextResponse.json({
+                message: 'File generated successfully in development mode',
+            });
         }
 
         if (!generatedBuffer) {
             throw new Error("Failed to generate document buffer.");
         }
 
+        console.log("Preparing CloudConvert job payload...");
         const jobPayload = {
             tasks: {
-                'import-file': { operation: 'import/upload' },
-                'convert-to-pdf': { operation: 'convert', input: 'import-file', output_format: 'pdf', engine: 'office' },
+                'import-file': {
+                    operation: 'import/upload',
+                },
+                'convert-to-pdf': {
+                    operation: 'convert',
+                    input: 'import-file',
+                    output_format: 'pdf',
+                    engine: 'office',
+                },
                 'encrypt-pdf': {
-                    operation: 'pdf/encrypt', input: 'convert-to-pdf', set_password: vat_id || 'password123',
-                    set_owner_password: 'super-secret-owner-password', allow_print: 'full', allow_modify: 'none', allow_extract: false, allow_accessibility: true,
+                    operation: 'pdf/encrypt',
+                    input: 'convert-to-pdf',
+                    set_password: vat_id || 'password123',
+                    set_owner_password: 'super-secret-owner-password',
+                    allow_print: 'full',
+                    allow_modify: 'none',
+                    allow_extract: false,
+                    allow_accessibility: true,
                 },
                 'export-to-gcs': {
-                    operation: 'export/google-cloud-storage', input: 'encrypt-pdf', project_id: gcsProjectId, bucket: gcsBucket,
-                    client_email: gcsClientEmail, private_key: gcsPrivateKey,
+                    operation: 'export/google-cloud-storage',
+                    input: 'encrypt-pdf',
+                    project_id: gcsProjectId,
+                    bucket: gcsBucket,
+                    client_email: gcsClientEmail,
+                    private_key: gcsPrivateKey,
                 },
             },
             tag: 'pdf-encryption-gcs-job',
-        } as const;
+        };
 
+        console.log("Creating CloudConvert job...");
         const jobResponse = await axios.post('https://api.cloudconvert.com/v2/jobs', jobPayload, {
-            headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json',
+            },
         });
+
         const job = jobResponse.data.data;
+        console.log("Job created successfully:", job.id);
+
         const uploadTask = job.tasks.find((task: any) => task.name === 'import-file');
         const uploadUrl = uploadTask.result.form.url;
         const formParams = uploadTask.result.form.parameters;
 
+        console.log("Uploading file to CloudConvert...");
         const uploadFormData = new FormData();
         for (const key in formParams) {
             uploadFormData.append(key, formParams[key]);
@@ -141,17 +185,25 @@ export async function POST(req: Request) {
         const fileName = createFileName(vat_id || "unknown");
         uploadFormData.append('file', fileBlob, `${fileName}.docx`);
 
-        await axios.post(uploadUrl, uploadFormData, { headers: { 'Content-Type': 'multipart/form-data' } });
+        await axios.post(uploadUrl, uploadFormData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
 
+        console.log("Polling for job completion...");
         let currentJobStatus;
         const maxAttempts = 40;
         for (let attempt = 0; attempt < maxAttempts; attempt++) {
             await wait(1500);
-            const statusResponse = await axios.get(`https://api.cloudconvert.com/v2/jobs/${job.id}`, { headers: { Authorization: `Bearer ${apiKey}` } });
+            const statusResponse = await axios.get(`https://api.cloudconvert.com/v2/jobs/${job.id}`, {
+                headers: { Authorization: `Bearer ${apiKey}` },
+            });
             currentJobStatus = statusResponse.data.data;
+            console.log(`Job status: ${currentJobStatus.status}`);
             if (currentJobStatus.status === 'finished') break;
             if (currentJobStatus.status === 'error') {
-                throw new Error(`Job failed with status: error.`);
+                throw new Error(`Job failed with status: error. Reason: ${currentJobStatus.tasks.find((t: any) => t.status === 'error')?.message}`);
             }
         }
 
@@ -159,21 +211,27 @@ export async function POST(req: Request) {
             throw new Error(`Job failed or timed out. Final status: ${currentJobStatus.status}`);
         }
 
+        console.log("Job completed successfully.");
         const exportTask = currentJobStatus.tasks.find((task: any) => task.name === 'export-to-gcs');
         const uploadedFile = exportTask?.result?.files[0];
+
         if (!uploadedFile) {
             throw new Error('Could not retrieve uploaded file details from the GCS export task.');
         }
 
+        console.log("File successfully uploaded to Google Cloud Storage.");
         return NextResponse.json({
             message: 'File successfully converted, encrypted, and uploaded to Google Cloud Storage.',
             bucket: gcsBucket,
             filename: uploadedFile.filename,
             size: uploadedFile.size,
         });
+
     } catch (error: any) {
-        return NextResponse.json({ error: 'An error occurred during the file conversion process.' }, { status: 500 });
+        console.error('Error during file processing:', error.response ? error.response.data : error.message);
+        return NextResponse.json(
+            { error: 'An error occurred during the file conversion process.' },
+            { status: 500 }
+        );
     }
 }
-
-
