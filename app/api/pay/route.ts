@@ -50,7 +50,7 @@ export async function GET(request: Request) {
         email,
         SendHesh: "True",
         MoreData: "True",
-        PassP: "Gifted",
+        PassP: "Gifted90",
         tmp: "3",
     };
 
