@@ -1,5 +1,53 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Book/Payments integration (ported from my-app)
+
+Required environment variables:
+
+```
+# Firebase Admin (GCP Service Account)
+GCS_PROJECT_ID=
+GCS_CLIENT_EMAIL=
+GCS_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+
+# Google Cloud Storage
+GCS_BUCKET_NAME=
+
+# CloudConvert
+CLOUDCONVERT_API_KEY=
+
+# Public base URL of this app (no trailing slash)
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
+
+# Payments (Yaad)
+YAAD_TOKEN=
+
+# iCount invoicing (optional)
+ICOUNT_CID=
+ICOUNT_USER=
+ICOUNT_PASS=
+
+# Mailgun
+MAILGUM_TOKEN=api:key-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# Node envs
+NEXT_ENV=development
+```
+
+Assets required in `public/`:
+
+- `template.docx` (DOCX template used by the converter)
+- `template.zip` (optional cache; will be created if missing)
+
+APIs added under `app/api/`:
+
+- `book/convert` – generate DOCX, convert to PDF, upload to GCS
+- `book/generate` – orchestration endpoint to trigger convert and update Firestore
+- `pay` – build Yaad checkout URL and redirect
+- `pay/success` – Yaad callback handler; stores doc, calls iCount, emails link
+- `email` – test email endpoint
+- `html` – success page HTML
+
 ## Getting Started Linguify
 
 First, run the development server:
