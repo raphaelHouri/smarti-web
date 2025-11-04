@@ -8,6 +8,8 @@ import ImageModule from "docxtemplater-image-module-free";
 import QRCode from "qrcode";
 import { createFileName } from '@/lib/book_utils';
 
+export const runtime = 'nodejs';
+
 const templatePath = path.resolve(path.join(process.cwd(), "public", "template.docx"));
 const zipCachePath = path.resolve("public", "template.zip");
 
@@ -29,7 +31,19 @@ const generateQRCodeBuffer = async (data: string): Promise<Buffer> => {
 async function generate(StudentName?: string, vat_id?: string): Promise<Buffer | void> {
     const imageModule = new ImageModule({
         centered: false,
-        getImage: (tagValue: Buffer) => tagValue,
+        getImage: (tagValue: Buffer | string) => {
+            if (typeof tagValue === 'string') {
+                // Treat as base64 or utf8 string
+                try {
+                    // If data URL, strip prefix
+                    const base64 = tagValue.startsWith('data:') ? tagValue.split(',')[1] ?? '' : tagValue;
+                    return Buffer.from(base64, 'base64');
+                } catch {
+                    return Buffer.from(tagValue, 'utf8');
+                }
+            }
+            return tagValue;
+        },
         getSize: () => [150, 150],
     });
     try {
