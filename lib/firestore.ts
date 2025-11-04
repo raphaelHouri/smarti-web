@@ -1,9 +1,11 @@
 import 'server-only';
-import { adminDb } from '@/firebase/firebase';
+import { getAdminDb } from '@/firebase/firebase';
+
+const getDb = () => getAdminDb();
 
 export const getDocument = async (docPath: string) => {
     assertEvenDocPath(docPath);
-    const snap = await adminDb.doc(docPath).get();
+    const snap = await getDb().doc(docPath).get();
     return snap.exists ? snap.data() : null;
 };
 
@@ -23,7 +25,7 @@ export const setDocument = async (
         ...data,
         updatedAt: new Date().toISOString(),
     };
-    await adminDb.doc(docPath).set(docData, { merge: true });
+    await getDb().doc(docPath).set(docData, { merge: true });
 };
 
 export const updateDocumentFields = async (
@@ -31,7 +33,7 @@ export const updateDocumentFields = async (
     updates: Record<string, unknown>
 ) => {
     assertEvenDocPath(docPath);
-    await adminDb.doc(docPath).update({
+    await getDb().doc(docPath).update({
         ...updates,
         updatedAt: new Date().toISOString(),
     });
@@ -39,7 +41,7 @@ export const updateDocumentFields = async (
 
 export const documentExists = async (docPath: string): Promise<boolean> => {
     assertEvenDocPath(docPath);
-    const snap = await adminDb.doc(docPath).get();
+    const snap = await getDb().doc(docPath).get();
     return snap.exists;
 };
 
