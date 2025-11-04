@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import db from "@/db/drizzle";
 import { lessons, lessonQuestionGroups } from "@/db/schemaSmarti";
 import { IsAdmin } from "@/lib/admin";
-import { InferInsertModel, eq, inArray } from 'drizzle-orm';
+import { InferInsertModel, and, eq, inArray } from 'drizzle-orm';
 import * as XLSX from 'xlsx';
 
 type DrizzleLessonInsert = InferInsertModel<typeof lessons>;
@@ -182,30 +182,44 @@ export async function POST(req: NextRequest) {
             continue;
         }
 
-        // Create lesson
-        const lessonToInsert: DrizzleLessonInsert = {
-            lessonCategoryId: categoryId,
-            lessonOrder: orderNum,
-            isPremium,
-        } as DrizzleLessonInsert;
+        // Check if lesson already exists with same lessonCategoryId and lessonOrder
+        const existingLesson = await db.query.lessons.findFirst({
+            where: and(
+                eq(lessons.lessonCategoryId, categoryId),
+                eq(lessons.lessonOrder, orderNum)
+            )
+        });
 
-        const inserted = await db.insert(lessons).values(lessonToInsert).returning();
-        const newLesson = inserted[0];
-        if (!newLesson) {
-            errors.push({ row: i + 2, message: 'Failed to create lesson' });
-            continue;
+        let lessonId: string;
+        if (!existingLesson) {
+            // Create lesson
+            const lessonToInsert: DrizzleLessonInsert = {
+                lessonCategoryId: categoryId,
+                lessonOrder: orderNum,
+                isPremium,
+            } as DrizzleLessonInsert;
+
+            const inserted = await db.insert(lessons).values(lessonToInsert).returning();
+            const newLesson = inserted[0];
+            if (!newLesson) {
+                errors.push({ row: i + 2, message: 'Failed to create lesson' });
+                continue;
+            }
+            lessonId = newLesson.id;
+        } else {
+            lessonId = existingLesson.id;
         }
 
         // Create lesson question group linked to the lesson
         const qgToInsert: DrizzleLessonQGInsert = {
-            lessonId: newLesson.id,
-            categoryId: groupCategoryType,
+            lessonId: lessonId,
+            categoryId: groupCategoryId,
             questionList: normalizedQuestionList as unknown as string[],
             time: Number(timeSec),
         } as DrizzleLessonQGInsert;
 
         await db.insert(lessonQuestionGroups).values(qgToInsert);
-        created.push({ lessonId: newLesson.id, order: orderNum });
+        created.push({ lessonId: lessonId, order: orderNum });
     }
 
     return NextResponse.json({

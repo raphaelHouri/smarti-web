@@ -20,13 +20,34 @@ export const organizationYears = pgTable("organization_years", {
     createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const productTypeEnum = pgEnum("productType", ["system", "bookStep1"])
+
+export const products = pgTable("products", {
+    id: uuid("id").primaryKey(),
+    productType: productTypeEnum("productType").notNull(),
+    name: text("name").notNull(),
+    description: text("description"),
+    createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const plans = pgTable("plans", {
     id: uuid("id").primaryKey(),
+    productsIds: uuid("products_ids").array().references(() => products.id, { onDelete: "cascade" }).notNull(),
     name: text("name").notNull(),
     description: text("description"),
     days: integer("days").notNull(),
     price: integer("price").notNull(),
     createdAt: timestamp("created_at").defaultNow(),
+});
+export const subscriptions = pgTable("subscriptions", {
+    id: uuid("id").primaryKey(),
+    userId: text("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+    systemUntil: timestamp("system_until"),
+    price: integer("price"),
+    receiptId: text("receipt_id"),
+    couponId: uuid("coupon_id").references(() => coupons.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at"),
+    planId: uuid("plan_id").references(() => plans.id, { onDelete: "cascade" }).notNull(),
 });
 
 export const coupons = pgTable("coupons", {
@@ -91,7 +112,7 @@ export const users = pgTable("users", {
     id: text("id").primaryKey(),
     name: text("name").notNull(),
     email: text("email").notNull(),
-    managedOrganization: uuid("managed_organization").array(), // You can manually reference in relations if needed
+    managedOrganization: uuid("managed_organization").array().references(() => organizationInfo.id, { onDelete: "cascade" }), // You can manually reference in relations if needed
     createdAt: timestamp("created_at").defaultNow(),
     organizationYearId: uuid("organization_year_id").references(() => organizationYears.id, { onDelete: "cascade" }),
     // userSettingsId: uuid("user_settings_id"),
@@ -111,22 +132,13 @@ export const userSettings = pgTable("user_settings", {
     avatar: avatarEnum("avatar").default("/smarti_avatar.png"),
 });
 
-export const subscriptions = pgTable("subscriptions", {
-    id: uuid("id").primaryKey(),
-    userId: text("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
-    systemUntil: timestamp("system_until"),
-    price: integer("price"),
-    receiptId: text("receipt_id"),
-    couponId: uuid("coupon_id").references(() => coupons.id, { onDelete: "cascade" }).notNull(),
-    createdAt: timestamp("created_at"),
-    planId: uuid("plan_id").references(() => plans.id, { onDelete: "cascade" }).notNull(),
-});
+
 
 export const lessonQuestionGroups = pgTable("lesson_question_groups", {
     id: uuid("id").defaultRandom().primaryKey().notNull(),
     lessonId: uuid("lesson_id").references(() => lessons.id, { onDelete: "cascade" }).notNull(),
     categoryId: uuid("category_id").references(() => lessonCategory.id, { onDelete: "cascade" }).notNull(),
-    questionList: uuid("question_list").array().notNull(), // No array foreign key support
+    questionList: uuid("question_list").array().references(() => questions.id, { onDelete: "cascade" }).notNull(), // No array foreign key support
     time: integer("time").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
 });
@@ -223,6 +235,11 @@ export const couponRelations = relations(coupons, ({ one }) => ({
         fields: [coupons.organizationYearId],
         references: [organizationYears.id],
     })
+}));
+
+export const planRelations = relations(plans, ({ many }) => ({
+    subscriptions: many(subscriptions),
+    coupons: many(coupons),
 }));
 
 export const lessonCategoryRelations = relations(lessonCategory, ({ many }) => ({

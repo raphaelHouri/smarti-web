@@ -31,6 +31,8 @@ const main = async () => {
         const orgYearId = uuidv4();
         const settingsId = uuidv4();
         const planId = uuidv4();
+        const product1Id = uuidv4();
+        const product2Id = uuidv4();
         const couponId = uuidv4();
         const categoryId = "61758a59-2c5e-4865-9c09-002cc0665881";
         const lessonId = uuidv4();
@@ -86,8 +88,27 @@ const main = async () => {
             avatar: "/girl_avatar.png"
         });
 
+        // Seed products
+        await db.insert(schema.products).values([
+            {
+                id: product1Id,
+                productType: "system",
+                name: "System Access",
+                description: "Full system features",
+                createdAt: new Date()
+            },
+            {
+                id: product2Id,
+                productType: "bookStep1",
+                name: "Book Step 1",
+                description: "First step book content",
+                createdAt: new Date()
+            }
+        ]);
+
         await db.insert(schema.plans).values({
             id: planId,
+            productsIds: [product1Id, product2Id],
             name: "Basic Plan",
             description: "Access to all lessons",
             days: 90,
