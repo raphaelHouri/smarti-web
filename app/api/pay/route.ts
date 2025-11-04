@@ -33,7 +33,7 @@ export async function GET(request: Request) {
     const data = { email, planId, amount, type: "pay", StudentName };
     const params: Record<string, string> = {
         action: "pay",
-        Masof: "4502073836",
+        Masof: "4502106222",
         Info: `רכישת חוברת להדפסה שלב א'`,
         UTF8: "True",
         UTF8out: "True",
