@@ -1,6 +1,7 @@
 import SystemPage from "../_components/SystemPage";
 
-export default function SystemById(_props: { params: { productId: string } }) {
+export default async function SystemById({ params }: { params: Promise<{ productId: string }> }) {
+    await params; // Await params even though we don't use it yet
     return <SystemPage />;
 }
 
