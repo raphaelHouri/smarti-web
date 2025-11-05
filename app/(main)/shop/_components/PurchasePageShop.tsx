@@ -317,6 +317,19 @@ export default function PurchasePageShop() {
                                         ))}
                                     </ul>
 
+                                    {/* System Details Link for preparation plans */}
+                                    {plan.category === "preparation" && (
+                                        <div className="mb-4 -mt-2">
+                                            <Link
+                                                href="/products/system/monthly"
+                                                className="inline-flex items-center gap-1 text-xs text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 font-medium transition-colors"
+                                            >
+                                                <Rocket className="w-3 h-3" />
+                                                View System Details
+                                            </Link>
+                                        </div>
+                                    )}
+
                                     {/* Add Book Option */}
                                     {plan.addBookOption && (
                                         <div className="mb-6">
@@ -364,7 +377,7 @@ export default function PurchasePageShop() {
                                                         Includes digital + physical book
                                                     </p>
                                                     <Link
-                                                        href="/book"
+                                                        href="/products/book/step1"
                                                         className="inline-flex items-center gap-1 text-xs text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 font-medium transition-colors"
                                                     >
                                                         <BookOpen className="w-3 h-3" />
@@ -390,7 +403,7 @@ export default function PurchasePageShop() {
                                     {/* Button */}
                                     {plan.category === "books" ? (
                                         <Link
-                                            href="/book"
+                                            href="/products/book/step1"
                                             className={cn(
                                                 "w-full py-3 rounded-lg font-medium transition-all duration-200 mt-auto flex items-center justify-center",
                                                 "bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 shadow-md"

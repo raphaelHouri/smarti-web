@@ -20,23 +20,31 @@ export const organizationYears = pgTable("organization_years", {
     createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const serviceTypeEnum = pgEnum("serviceType", ["system", "book"])
 export const productTypeEnum = pgEnum("productType", ["system", "bookStep1"])
 
 export const products = pgTable("products", {
     id: uuid("id").primaryKey(),
-    productType: productTypeEnum("productType").notNull(),
+    serviceType: productTypeEnum("serviceType").default("system").notNull(),
+    productType: productTypeEnum("productType").default("system").notNull(),
     name: text("name").notNull(),
     description: text("description"),
     createdAt: timestamp("created_at").defaultNow(),
+    displayData: jsonb("display_data"),
 });
 
 export const plans = pgTable("plans", {
     id: uuid("id").primaryKey(),
-    productsIds: uuid("products_ids").array().references(() => products.id, { onDelete: "cascade" }).notNull(),
+    productsIds: uuid("products_ids").array().references(() => products.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
     description: text("description"),
     days: integer("days").notNull(),
     price: integer("price").notNull(),
+    displayData: jsonb("display_data"),
+    // icon: text("icon"), // Store icon name/key
+    // color: text("color"),
+    // badge: text("badge"),
+    // badgeColor: text("badge_color"),
     createdAt: timestamp("created_at").defaultNow(),
 });
 export const subscriptions = pgTable("subscriptions", {

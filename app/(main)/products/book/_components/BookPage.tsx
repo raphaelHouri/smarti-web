@@ -24,16 +24,13 @@ export default function BookPage() {
 
     const handlePurchase = () => {
         setIsPurchasing(true);
-        // Simulate purchase process
         setTimeout(() => {
             setIsPurchasing(false);
-            // Handle actual purchase logic here
         }, 2000);
     };
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-            {/* Back Button */}
             <div className="p-4 flex flex-row items-start justify-between">
                 <Link
                     href="/shop"
@@ -47,16 +44,11 @@ export default function BookPage() {
 
             <div className="max-w-7xl mx-auto px-4 py-8">
                 <div className="grid lg:grid-cols-5 gap-8">
-                    {/* Left Section - Product Display (60%) */}
                     <div className="lg:col-span-3">
-                        {/* Main Product Card */}
                         <div className="relative bg-gray-800 rounded-2xl p-8 mb-6 shadow-2xl">
-                            {/* Product Visual Container */}
                             <div className="relative h-96 bg-gradient-to-br from-blue-900 to-purple-900 rounded-xl overflow-hidden">
-                                {/* 3D Book Visualization */}
                                 <div className="absolute inset-0 flex items-center justify-center">
                                     <div className="relative">
-                                        {/* Book Cover */}
                                         <div className="w-48 h-64 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg shadow-lg transform rotate-3">
                                             <div className="p-6 text-white">
                                                 <div className="text-center">
@@ -76,7 +68,6 @@ export default function BookPage() {
                                             </div>
                                         </div>
 
-                                        {/* Open Pages */}
                                         <div className="absolute top-0 left-0 w-48 h-64 bg-white rounded-lg shadow-lg transform -rotate-2">
                                             <div className="p-4">
                                                 <div className="h-full bg-gray-50 rounded">
@@ -96,7 +87,6 @@ export default function BookPage() {
                                     </div>
                                 </div>
 
-                                {/* Gifted Banner */}
                                 <div className="absolute top-4 left-4">
                                     <div className="bg-white px-3 py-1 rounded-full shadow-md">
                                         <span className="text-sm font-bold bg-gradient-to-r from-purple-600 to-blue-600 text-transparent bg-clip-text">
@@ -105,33 +95,15 @@ export default function BookPage() {
                                     </div>
                                 </div>
                             </div>
-
-                            {/* Product Info Overlays */}
-                            <div className="absolute top-8 left-8 flex items-center gap-3 text-white">
-                                <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                                    <FileText className="w-4 h-4" />
-                                </div>
-                                <div>
-                                    <div className="font-semibold">Preparation Booklet</div>
-                                    <div className="text-sm opacity-90">Grade B - Stage A</div>
-                                </div>
-                            </div>
-
-                            <div className="absolute bottom-8 right-8 text-white text-2xl font-bold">
-                                2025
-                            </div>
                         </div>
 
-                        {/* Page Count */}
                         <div className="flex items-center gap-3 text-gray-600">
                             <FileText className="w-5 h-5" />
                             <span className="font-medium">+115 pages</span>
                         </div>
                     </div>
 
-                    {/* Right Section - Product Details & Purchase (40%) */}
                     <div className="lg:col-span-2">
-                        {/* Header */}
                         <div className="mb-6">
                             <div className="flex items-center gap-2 mb-4">
                                 <div className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
@@ -141,12 +113,10 @@ export default function BookPage() {
                             </div>
 
                             <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                                Preparation Booklet for{" "}
-                                <span className="text-blue-600">Grade B Stage A</span>
+                                Preparation Booklet for <span className="text-blue-600">Grade B Stage A</span>
                             </h1>
                         </div>
 
-                        {/* Description */}
                         <div className="mb-6">
                             <p className="text-gray-600 leading-relaxed">
                                 Interested in a printed preparation booklet that simulates exam conditions?
@@ -157,7 +127,6 @@ export default function BookPage() {
                             </p>
                         </div>
 
-                        {/* Product Attributes */}
                         <div className="grid grid-cols-2 gap-4 mb-6">
                             <div className="bg-white rounded-lg p-4 shadow-sm border">
                                 <div className="flex items-center gap-2 mb-2">
@@ -175,17 +144,14 @@ export default function BookPage() {
                             </div>
                         </div>
 
-                        {/* What's Included */}
                         <div className="mb-8">
-                            <h3 className="text-lg font-bold text-gray-900 mb-4">
-                                What's included in the booklet:
-                            </h3>
+                            <h3 className="text-lg font-bold text-gray-900 mb-4">What's included in the booklet:</h3>
                             <ul className="space-y-3">
                                 {[
                                     "Comprehensive Reading Comprehension Chapter",
                                     "Arithmetic Chapter with Diverse Exercises",
                                     "Exams Chapter for Practice",
-                                    "Useful Tips for Parents and Children"
+                                    "Useful Tips for Parents and Children",
                                 ].map((feature, index) => (
                                     <li key={index} className="flex items-start gap-3">
                                         <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
@@ -195,16 +161,11 @@ export default function BookPage() {
                             </ul>
                         </div>
 
-                        {/* Purchase Section */}
                         <div className="bg-white rounded-xl p-6 shadow-lg border">
                             <div className="mb-4">
                                 <span className="text-sm text-gray-500">Special Price</span>
                             </div>
-
-                            <div className="text-3xl font-bold text-gray-900 mb-6">
-                                $35
-                            </div>
-
+                            <div className="text-3xl font-bold text-gray-900 mb-6">$35</div>
                             <button
                                 onClick={handlePurchase}
                                 disabled={isPurchasing}
@@ -228,7 +189,6 @@ export default function BookPage() {
                                 )}
                             </button>
 
-                            {/* Trust Indicators */}
                             <div className="mt-4 text-center">
                                 <div className="flex items-center justify-center gap-4 text-xs text-gray-500">
                                     <div className="flex items-center gap-1">
@@ -247,26 +207,29 @@ export default function BookPage() {
                             </div>
                         </div>
 
-                        {/* Additional Trust Indicators */}
                         <div className="mt-6 grid grid-cols-3 gap-4">
                             {[
                                 { icon: Award, text: "Expert Created", color: "purple" },
                                 { icon: Shield, text: "100% Secure", color: "green" },
-                                { icon: Download, text: "Instant Access", color: "blue" }
+                                { icon: Download, text: "Instant Access", color: "blue" },
                             ].map((item, index) => (
                                 <div key={index} className="text-center">
-                                    <div className={cn(
-                                        "w-10 h-10 mx-auto mb-2 rounded-lg flex items-center justify-center",
-                                        item.color === "purple" && "bg-purple-100",
-                                        item.color === "green" && "bg-green-100",
-                                        item.color === "blue" && "bg-blue-100"
-                                    )}>
-                                        <item.icon className={cn(
-                                            "w-5 h-5",
-                                            item.color === "purple" && "text-purple-600",
-                                            item.color === "green" && "text-green-600",
-                                            item.color === "blue" && "text-blue-600"
-                                        )} />
+                                    <div
+                                        className={cn(
+                                            "w-10 h-10 mx-auto mb-2 rounded-lg flex items-center justify-center",
+                                            item.color === "purple" && "bg-purple-100",
+                                            item.color === "green" && "bg-green-100",
+                                            item.color === "blue" && "bg-blue-100"
+                                        )}
+                                    >
+                                        <item.icon
+                                            className={cn(
+                                                "w-5 h-5",
+                                                item.color === "purple" && "text-purple-600",
+                                                item.color === "green" && "text-green-600",
+                                                item.color === "blue" && "text-blue-600"
+                                            )}
+                                        />
                                     </div>
                                     <div className="text-xs font-medium text-gray-700">{item.text}</div>
                                 </div>
@@ -278,3 +241,5 @@ export default function BookPage() {
         </div>
     );
 }
+
+
