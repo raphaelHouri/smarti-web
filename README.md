@@ -17,7 +17,7 @@ GCS_BUCKET_NAME=
 CLOUDCONVERT_API_KEY=
 
 # Public base URL of this app (no trailing slash)
-NEXT_PUBLIC_BASE_URL=http://localhost:3000
+NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 # Payments (Yaad)
 YAAD_TOKEN=

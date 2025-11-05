@@ -208,7 +208,7 @@ export async function GET(req: NextRequest) {
         var interval = setInterval(function () { remaining -= 1; if (el) el.textContent = Math.max(0, remaining); if (remaining <= 0) { clearInterval(interval); revealButton(); } }, 1000);
       }
       if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', function () { dispatchSuccess(); startCountdown(50); }, false); } else { dispatchSuccess(); startCountdown(50); }
-      fetch("${process.env.NEXT_PUBLIC_BASE_URL}/api/book/generate?email=${email}")
+      fetch("${process.env.NEXT_PUBLIC_APP_URL}/api/book/generate?email=${email}")
         .then(function (response) { return response.json(); })
         .catch(function (error) { console.error("Error:", error); });
     })();

@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
             formData.append("email", email);
             formData.append("StudentName", StudentName);
 
-            const convertResp = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/book/convert`, {
+            const convertResp = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/book/convert`, {
                 method: "POST",
                 headers: { "content-type": "application/x-www-form-urlencoded" },
                 body: formData.toString(),

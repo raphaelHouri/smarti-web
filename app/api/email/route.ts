@@ -18,7 +18,7 @@ export async function GET() {
 
         return NextResponse.json({
             message: 'Email created successfully',
-            env: process.env.NEXT_PUBLIC_BASE_URL,
+            env: process.env.NEXT_PUBLIC_APP_URL,
         });
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
