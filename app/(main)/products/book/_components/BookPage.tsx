@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import type { FC } from "react";
 import {
     BookOpen,
     Check,
@@ -19,8 +20,22 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import FeedbackButton from "@/components/feedbackButton";
 
-export default function BookPage() {
+type BookPageProps = { product: any | null };
+const BookPage: FC<BookPageProps> = ({ product }) => {
     const [isPurchasing, setIsPurchasing] = useState(false);
+    const dd = (product?.displayData ?? {}) as any;
+    const title: string = dd.title ?? product?.name ?? "Preparation Booklet";
+    const year: string = dd.year ?? "2025";
+    const stage: string = dd.stage ?? "Stage A";
+    const grade: string = dd.grade ?? "Grade B";
+    const productTypeLabel: string = dd.productTypeLabel ?? "Home Printing";
+    const price: string = dd.price ?? "$35";
+    const features: string[] = Array.isArray(dd.features) ? dd.features : [
+        "Comprehensive Reading Comprehension Chapter",
+        "Arithmetic Chapter with Diverse Exercises",
+        "Exams Chapter for Practice",
+        "Useful Tips for Parents and Children",
+    ];
 
     const handlePurchase = () => {
         setIsPurchasing(true);
@@ -52,18 +67,14 @@ export default function BookPage() {
                                         <div className="w-48 h-64 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg shadow-lg transform rotate-3">
                                             <div className="p-6 text-white">
                                                 <div className="text-center">
-                                                    <h3 className="text-lg font-bold mb-2">Preparation Booklet</h3>
-                                                    <div className="text-sm opacity-90">2025</div>
+                                                    <h3 className="text-lg font-bold mb-2">{title}</h3>
+                                                    <div className="text-sm opacity-90">{year}</div>
                                                 </div>
                                                 <div className="absolute top-4 right-4">
-                                                    <div className="bg-white text-blue-600 px-2 py-1 rounded text-xs font-bold">
-                                                        Stage A
-                                                    </div>
+                                                    <div className="bg-white text-blue-600 px-2 py-1 rounded text-xs font-bold">{stage}</div>
                                                 </div>
                                                 <div className="absolute bottom-4 left-4">
-                                                    <div className="bg-white text-blue-600 px-2 py-1 rounded text-xs font-bold">
-                                                        Grade B
-                                                    </div>
+                                                    <div className="bg-white text-blue-600 px-2 py-1 rounded text-xs font-bold">{grade}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -113,7 +124,9 @@ export default function BookPage() {
                             </div>
 
                             <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                                Preparation Booklet for <span className="text-blue-600">Grade B Stage A</span>
+                                {product?.description ?? (
+                                    <>Preparation Booklet for <span className="text-blue-600">Grade B Stage A</span></>
+                                )}
                             </h1>
                         </div>
 
@@ -133,26 +146,21 @@ export default function BookPage() {
                                     <Printer className="w-4 h-4 text-gray-500" />
                                     <span className="text-sm text-gray-500">Product Type</span>
                                 </div>
-                                <div className="font-semibold text-gray-900">Home Printing</div>
+                                <div className="font-semibold text-gray-900">{productTypeLabel}</div>
                             </div>
                             <div className="bg-white rounded-lg p-4 shadow-sm border">
                                 <div className="flex items-center gap-2 mb-2">
                                     <Calendar className="w-4 h-4 text-gray-500" />
                                     <span className="text-sm text-gray-500">Year</span>
                                 </div>
-                                <div className="font-semibold text-gray-900">2025</div>
+                                <div className="font-semibold text-gray-900">{year}</div>
                             </div>
                         </div>
 
                         <div className="mb-8">
-                            <h3 className="text-lg font-bold text-gray-900 mb-4">What's included in the booklet:</h3>
+                            <h3 className="text-lg font-bold text-gray-900 mb-4">{dd.featuresTitle ?? "What's included in the booklet:"}</h3>
                             <ul className="space-y-3">
-                                {[
-                                    "Comprehensive Reading Comprehension Chapter",
-                                    "Arithmetic Chapter with Diverse Exercises",
-                                    "Exams Chapter for Practice",
-                                    "Useful Tips for Parents and Children",
-                                ].map((feature, index) => (
+                                {features.map((feature: string, index: number) => (
                                     <li key={index} className="flex items-start gap-3">
                                         <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
                                         <span className="text-gray-700">{feature}</span>
@@ -165,7 +173,7 @@ export default function BookPage() {
                             <div className="mb-4">
                                 <span className="text-sm text-gray-500">Special Price</span>
                             </div>
-                            <div className="text-3xl font-bold text-gray-900 mb-6">$35</div>
+                            <div className="text-3xl font-bold text-gray-900 mb-6">{price}</div>
                             <button
                                 onClick={handlePurchase}
                                 disabled={isPurchasing}
@@ -240,6 +248,8 @@ export default function BookPage() {
             </div>
         </div>
     );
-}
+};
+
+export default BookPage;
 
 

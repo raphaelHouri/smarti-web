@@ -212,6 +212,7 @@ export type ShopPlanRecord = {
     price: number;
     days: number;
     displayData: any | null;
+    productsIds?: string[];
 };
 
 export type PackageType = "system" | "book";
@@ -228,11 +229,19 @@ export const getPlansForShop = cache(async (): Promise<ShopPlansByType> => {
             price: p.price,
             days: p.days,
             displayData: (p as any).displayData ?? null,
+            productsIds: (p as any).productsIds ?? [],
         };
         const key = (p.packageType as PackageType) ?? "system";
         grouped[key].push(rec);
     });
     return grouped;
+});
+
+export const getProductById = cache(async (productId: string) => {
+    const product = await db.query.products.findFirst({
+        where: (t, { eq }) => eq(t.id, productId),
+    });
+    return product ?? null;
 });
 
 

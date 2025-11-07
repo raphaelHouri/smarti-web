@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import FeedbackButton from "@/components/feedbackButton";
 import type { ShopPlanRecord, ShopPlansByType, PackageType } from "@/db/queries";
+import { useAuth, SignInButton } from "@clerk/nextjs";
 
 type Category = "system" | "books";
 
@@ -25,6 +26,7 @@ type Plan = {
     badgeColor?: string;
     planType: string; // use id
     category: Category;
+    productId?: string;
     addBookOption?: {
         price: string;
         originalPrice: string;
@@ -77,12 +79,14 @@ function adaptPlans(records: ShopPlanRecord[], pkgType: PackageType): Plan[] {
             badgeColor,
             planType: r.id,
             category: pkgType === "book" ? "books" : "system",
+            productId: Array.isArray((r as any).productsIds) && (r as any).productsIds.length > 0 ? (r as any).productsIds[0] : undefined,
             addBookOption,
         } as Plan;
     });
 }
 
 export default function PurchasePageShop({ plansByType }: { plansByType: ShopPlansByType }) {
+    const { userId } = useAuth();
     const [selectedCategory, setSelectedCategory] = useState<Category>("system");
     const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -304,7 +308,7 @@ export default function PurchasePageShop({ plansByType }: { plansByType: ShopPla
                                     {plan.category === "system" && (
                                         <div className="mb-4 -mt-2">
                                             <Link
-                                                href="/products/system/monthly"
+                                                href={plan.productId ? `/products/system/${plan.productId}` : "/products/system"}
                                                 className="inline-flex items-center gap-1 text-xs text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 font-medium transition-colors"
                                             >
                                                 <Rocket className="w-3 h-3" />
@@ -360,7 +364,7 @@ export default function PurchasePageShop({ plansByType }: { plansByType: ShopPla
                                                         Includes digital + physical book
                                                     </p>
                                                     <Link
-                                                        href="/products/book/step1"
+                                                        href={plan.productId ? `/products/book/${plan.productId}` : "/products/book"}
                                                         className="inline-flex items-center gap-1 text-xs text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 font-medium transition-colors"
                                                     >
                                                         <BookOpen className="w-3 h-3" />
@@ -386,7 +390,7 @@ export default function PurchasePageShop({ plansByType }: { plansByType: ShopPla
                                     {/* Button */}
                                     {plan.category === "books" ? (
                                         <Link
-                                            href="/products/book/step1"
+                                            href={plan.productId ? `/products/book/${plan.productId}` : "/products/book"}
                                             className={cn(
                                                 "w-full py-3 rounded-lg font-medium transition-all duration-200 mt-auto flex items-center justify-center",
                                                 "bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 shadow-md"
@@ -394,6 +398,23 @@ export default function PurchasePageShop({ plansByType }: { plansByType: ShopPla
                                         >
                                             View Book Details
                                         </Link>
+                                    ) : !userId ? (
+                                        <SignInButton
+                                            mode="modal"
+                                            forceRedirectUrl="/shop"
+                                            signUpForceRedirectUrl="/shop"
+                                        >
+                                            <button
+                                                className={cn(
+                                                    "w-full py-3 rounded-lg font-medium transition-all duration-200 mt-auto",
+                                                    plan.badge === "Most Popular"
+                                                        ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600 shadow-md"
+                                                        : "bg-gray-900 dark:bg-gray-700 text-white hover:bg-gray-800 dark:hover:bg-gray-600"
+                                                )}
+                                            >
+                                                Get Started
+                                            </button>
+                                        </SignInButton>
                                     ) : (
                                         <button
                                             onClick={() => handlePlanSelect(plan)}

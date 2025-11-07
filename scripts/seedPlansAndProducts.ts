@@ -16,9 +16,21 @@ async function upsertProducts() {
     const systemProductData = {
         serviceType: "system" as any,
         productType: "system" as any,
-        name: "System Access",
-        description: "Full system features",
+        name: "Preparation System",
+        description: "Monthly Preparation Program",
         createdAt: new Date(),
+        displayData: {
+            title: "Preparation System",
+            subtitle: "Monthly Preparation Program",
+            periodLabel: "Monthly",
+            monthlyPrice: "$40",
+            features: [
+                "All lessons unlocked",
+                "Practice tests & exams",
+                "Personalized analytics",
+                "Email support",
+            ],
+        },
     };
     let systemProductId = systemProduct?.id;
     if (systemProduct) {
@@ -39,9 +51,25 @@ async function upsertProducts() {
     const bookProductData = {
         serviceType: "system" as any,
         productType: "bookStep1" as any,
-        name: "Book Step 1",
-        description: "First step book content",
+        name: "Preparation Booklet",
+        description: "Preparation Booklet for Grade B Stage A",
         createdAt: new Date(),
+        displayData: {
+            title: "Preparation Booklet",
+            subtitle: "Preparation Booklet for Grade B Stage A",
+            year: "2025",
+            stage: "Stage A",
+            grade: "Grade B",
+            productTypeLabel: "Home Printing",
+            price: "$35",
+            featuresTitle: "What's included in the booklet:",
+            features: [
+                "Comprehensive Reading Comprehension Chapter",
+                "Arithmetic Chapter with Diverse Exercises",
+                "Exams Chapter for Practice",
+                "Useful Tips for Parents and Children",
+            ],
+        },
     };
     let bookProductId = bookProduct?.id;
     if (bookProduct) {

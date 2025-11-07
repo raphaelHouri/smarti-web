@@ -1,7 +1,10 @@
 import SystemPage from "../_components/SystemPage";
+import { getProductById } from "@/db/queries";
 
-export default function SystemById(_props: { params: { productId: string } }) {
-    return <SystemPage />;
+export default async function SystemById({ params }: { params: { productId: string } }) {
+    const { productId } = params;
+    const product = await getProductById(productId);
+    return <SystemPage product={product} />;
 }
 
 

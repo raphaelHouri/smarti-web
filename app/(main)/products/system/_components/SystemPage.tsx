@@ -1,14 +1,26 @@
 "use client";
 
 import { useState } from "react";
+import type { FC } from "react";
 import { ArrowLeft, Award, Check, Rocket, Shield, Star, MonitorSmartphone, BarChart3 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import FeedbackButton from "@/components/feedbackButton";
 
-export default function SystemPage() {
+type SystemPageProps = { product: any | null };
+const SystemPage: FC<SystemPageProps> = ({ product }) => {
     const [isLoading] = useState(false);
-    const [monthlyPrice] = useState<string>("$40");
+    const dd = (product?.displayData ?? {}) as any;
+    const title: string = dd.title ?? product?.name ?? "Preparation System";
+    const subtitle: string = product?.description ?? dd.subtitle ?? "Monthly Preparation Program";
+    const periodLabel: string = dd.periodLabel ?? "Monthly";
+    const monthlyPrice: string = dd.monthlyPrice ?? "$40";
+    const features: string[] = Array.isArray(dd.features) ? dd.features : [
+        "mock lessons unlocked",
+        "Practice tests & exams",
+        "Personalized analytics",
+        "Email support",
+    ];
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -35,8 +47,8 @@ export default function SystemPage() {
                                         <div className="w-48 h-64 bg-gradient-to-br from-purple-600 to-blue-700 rounded-lg shadow-lg transform rotate-3">
                                             <div className="p-6 text-white">
                                                 <div className="text-center">
-                                                    <h3 className="text-lg font-bold mb-2">Preparation System</h3>
-                                                    <div className="text-sm opacity-90">Monthly</div>
+                                                    <h3 className="text-lg font-bold mb-2">{title}</h3>
+                                                    <div className="text-sm opacity-90">{periodLabel}</div>
                                                 </div>
                                                 <div className="absolute top-4 right-4">
                                                     <div className="bg-white text-purple-600 px-2 py-1 rounded text-xs font-bold">
@@ -91,9 +103,7 @@ export default function SystemPage() {
                                     Expert Designed
                                 </div>
                             </div>
-                            <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                                Monthly Preparation Program
-                            </h1>
+                            <h1 className="text-3xl font-bold text-gray-900 mb-4">{subtitle}</h1>
                         </div>
 
                         {/* Description */}
@@ -126,7 +136,7 @@ export default function SystemPage() {
                         <div className="mb-8">
                             <h3 className="text-lg font-bold text-gray-900 mb-4">What's included in the system:</h3>
                             <ul className="space-y-3">
-                                {["All lessons unlocked", "Practice tests & exams", "Personalized analytics", "Email support"].map((feature, index) => (
+                                {features.map((feature, index) => (
                                     <li key={index} className="flex items-start gap-3">
                                         <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
                                         <span className="text-gray-700">{feature}</span>
@@ -195,6 +205,8 @@ export default function SystemPage() {
             </div>
         </div>
     );
-}
+};
+
+export default SystemPage;
 
 

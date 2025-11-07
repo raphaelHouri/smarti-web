@@ -1,8 +1,10 @@
 import BookPage from "../_components/BookPage";
+import { getProductById } from "@/db/queries";
 
-export default async function BookById({ params }: { params: Promise<{ productId: string }> }) {
-    await params; // Await params even though we don't use it yet
-    return <BookPage />;
+export default async function BookById({ params }: { params: { productId: string } }) {
+    const { productId } = params;
+    const product = await getProductById(productId);
+    return <BookPage product={product} />;
 }
 
 
