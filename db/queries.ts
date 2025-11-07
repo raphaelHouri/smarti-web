@@ -204,6 +204,38 @@ export const getFirstCategory = cache(async () => {
 });
 
 
+// Public: fetch plans for shop page
+export type ShopPlanRecord = {
+    id: string;
+    name: string;
+    description: string | null;
+    price: number;
+    days: number;
+    displayData: any | null;
+};
+
+export type PackageType = "system" | "book";
+export type ShopPlansByType = Record<PackageType, ShopPlanRecord[]>;
+
+export const getPlansForShop = cache(async (): Promise<ShopPlansByType> => {
+    const data = await db.query.plans.findMany({});
+    const grouped: ShopPlansByType = { system: [], book: [] };
+    data.forEach((p) => {
+        const rec: ShopPlanRecord = {
+            id: p.id,
+            name: p.name,
+            description: p.description ?? null,
+            price: p.price,
+            days: p.days,
+            displayData: (p as any).displayData ?? null,
+        };
+        const key = (p.packageType as PackageType) ?? "system";
+        grouped[key].push(rec);
+    });
+    return grouped;
+});
+
+
 export const getLessonsOfCategoryById = cache(async (categoryId: string) => {
     const data = await db.query.lessonCategory.findMany({
         where: eq(lessonCategory.id, String(categoryId)),

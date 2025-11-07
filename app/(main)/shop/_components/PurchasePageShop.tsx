@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
     Package, Rocket, BookOpen, Video, Check, Star,
     Shield, Users, Award, Clock, HelpCircle, ArrowUp
@@ -8,13 +8,14 @@ import {
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import FeedbackButton from "@/components/feedbackButton";
+import type { ShopPlanRecord, ShopPlansByType, PackageType } from "@/db/queries";
 
-type Category = "preparation" | "books";
-type Period = "weekly" | "monthly" | "6months" | "onetime";
+type Category = "system" | "books";
 
-interface Plan {
+type Plan = {
+    id: string;
     name: string;
-    price: string;
+    price: string; // formatted
     period?: string;
     description: string;
     features: string[];
@@ -22,104 +23,86 @@ interface Plan {
     color: string;
     badge?: string;
     badgeColor?: string;
-    planType: string;
+    planType: string; // use id
     category: Category;
-    availablePeriods: Period[];
     addBookOption?: {
         price: string;
         originalPrice: string;
         savings: string;
     };
-}
-
-const categories = [
-    { id: "preparation" as Category, name: "Preparation", icon: Rocket, color: "blue" },
-    { id: "books" as Category, name: "Books", icon: BookOpen, color: "green" },
-];
-
-const periods = [
-    { id: "weekly" as Period, name: "Weekly", description: "Short-term access" },
-    { id: "monthly" as Period, name: "Monthly", description: "Most Popular", badge: "Popular" },
-    { id: "6months" as Period, name: "6 Months", description: "Best Value", badge: "Best Value" },
-    { id: "onetime" as Period, name: "One-Time", description: "Single purchase" },
-];
-
-const allPlans: Record<Category, Partial<Record<Period, Plan>>> = {
-    preparation: {
-        weekly: {
-            name: "Trial Period",
-            price: "$12",
-            period: "week",
-            description: "Test our preparation program",
-            features: ["1 week access", "Basic lessons", "Progress tracking", "Community support"],
-            icon: Rocket,
-            color: "blue",
-            planType: "prep_weekly",
-            category: "preparation",
-            availablePeriods: ["weekly"]
-        },
-        monthly: {
-            name: "Standard Prep",
-            price: "$40",
-            period: "month",
-            description: "Comprehensive monthly preparation program",
-            features: ["Full month access", "All lessons unlocked", "Practice tests", "Analytics dashboard", "Email support"],
-            icon: Rocket,
-            color: "blue",
-            planType: "prep_monthly",
-            category: "preparation",
-            availablePeriods: ["monthly"],
-            addBookOption: {
-                price: "$60",
-                originalPrice: "$75",
-                savings: "Save $15"
-            }
-        },
-        "6months": {
-            name: "Extended Prep",
-            price: "$199",
-            period: "6 months",
-            description: "Long-term preparation with priority support",
-            features: ["6 months full access", "All content unlocked", "Priority support", "Mock exams", "Progress reports", "Study schedule"],
-            icon: Rocket,
-            color: "blue",
-            badge: "Save $41",
-            badgeColor: "green",
-            planType: "prep_6months",
-            category: "preparation",
-            availablePeriods: ["6months"],
-            addBookOption: {
-                price: "$215",
-                originalPrice: "$234",
-                savings: "Save $19"
-            }
-        },
-    },
-    books: {
-        onetime: {
-            name: "Study Books Collection",
-            price: "$35",
-            description: "Complete study materials in digital and physical format",
-            features: ["Digital PDF (instant)", "Physical book (shipped)", "400+ practice questions", "Detailed solutions", "Study guides"],
-            icon: BookOpen,
-            color: "green",
-            badge: "Save $5",
-            badgeColor: "green",
-            planType: "books_onetime",
-            category: "books",
-            availablePeriods: ["onetime"]
-        },
-    },
 };
 
-export default function PurchasePageShop() {
-    const [selectedCategory, setSelectedCategory] = useState<Category>("preparation");
+// Derived categories from plansByType keys
+
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+    Package,
+    Rocket,
+    BookOpen,
+    Video,
+    Check,
+    Star,
+};
+
+function formatCurrency(amount: number): string {
+    return new Intl.NumberFormat(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(amount);
+}
+
+function adaptPlans(records: ShopPlanRecord[], pkgType: PackageType): Plan[] {
+    return records.map((r) => {
+        const dd = r.displayData ?? {};
+        const iconName: string = dd.icon ?? (pkgType === "book" ? "BookOpen" : "Rocket");
+        const Icon = iconMap[iconName] ?? Rocket;
+        const color: string = dd.color ?? (pkgType === "book" ? "green" : "blue");
+        const features: string[] = Array.isArray(dd.features) ? dd.features : [];
+        const badge: string | undefined = dd.badge ?? undefined;
+        const badgeColor: string | undefined = dd.badgeColor ?? undefined;
+        const period = pkgType === "book" ? undefined : (r.days >= 180 ? "6 months" : r.days >= 30 ? "month" : r.days >= 7 ? "week" : undefined);
+
+        const addBookOption = dd.addBookOption ? {
+            price: String(dd.addBookOption.price ?? ""),
+            originalPrice: String(dd.addBookOption.originalPrice ?? ""),
+            savings: String(dd.addBookOption.savings ?? ""),
+        } : undefined;
+
+        return {
+            id: r.id,
+            name: r.name,
+            price: formatCurrency(r.price),
+            period,
+            description: r.description ?? "",
+            features,
+            icon: Icon,
+            color,
+            badge,
+            badgeColor,
+            planType: r.id,
+            category: pkgType === "book" ? "books" : "system",
+            addBookOption,
+        } as Plan;
+    });
+}
+
+export default function PurchasePageShop({ plansByType }: { plansByType: ShopPlansByType }) {
+    const [selectedCategory, setSelectedCategory] = useState<Category>("system");
     const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [planBookOptions, setPlanBookOptions] = useState<Record<string, boolean>>({});
 
-    // Get all plans for the selected category (all time periods)
-    const filteredPlans = Object.values(allPlans[selectedCategory]).filter(Boolean) as Plan[];
+    // Build categories from keys of plansByType
+    const categories = useMemo(() => {
+        const keys = Object.keys(plansByType) as PackageType[];
+        return keys.map((k) => ({
+            id: (k === "book" ? "books" : "system") as Category,
+            name: k === "book" ? "Books" : "system",
+            icon: k === "book" ? BookOpen : Rocket,
+            color: k === "book" ? "green" : "blue",
+        }));
+    }, [plansByType]);
+
+    const adaptedSystem = adaptPlans(plansByType.system, "system");
+    const adaptedBook = adaptPlans(plansByType.book, "book");
+    const adapted = [...adaptedSystem, ...adaptedBook];
+    const filteredPlans = adapted.filter((p) => p.category === selectedCategory);
 
     // Initialize book options as true by default for plans that have addBookOption
     useEffect(() => {
@@ -144,7 +127,7 @@ export default function PurchasePageShop() {
     const getTotalPrice = (plan: Plan): string => {
         if (plan.category === "books") return plan.price;
 
-        // For preparation plans with book option enabled
+        // For system plans with book option enabled
         if (plan.addBookOption && planBookOptions[plan.planType]) {
             return plan.addBookOption.price;
         }
@@ -162,7 +145,7 @@ export default function PurchasePageShop() {
     };
 
     const handleRecommendation = () => {
-        setSelectedCategory("preparation");
+        setSelectedCategory("system");
         setTimeout(() => {
             document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" });
         }, 100);
@@ -317,8 +300,8 @@ export default function PurchasePageShop() {
                                         ))}
                                     </ul>
 
-                                    {/* System Details Link for preparation plans */}
-                                    {plan.category === "preparation" && (
+                                    {/* System Details Link for system plans */}
+                                    {plan.category === "system" && (
                                         <div className="mb-4 -mt-2">
                                             <Link
                                                 href="/products/system/monthly"

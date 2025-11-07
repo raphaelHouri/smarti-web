@@ -22,6 +22,7 @@ export const organizationYears = pgTable("organization_years", {
 
 export const serviceTypeEnum = pgEnum("serviceType", ["system", "book"])
 export const productTypeEnum = pgEnum("productType", ["system", "bookStep1"])
+export const packageTypeEnum = pgEnum("packageType", ["system", "book"])
 
 export const products = pgTable("products", {
     id: uuid("id").primaryKey(),
@@ -35,7 +36,9 @@ export const products = pgTable("products", {
 
 export const plans = pgTable("plans", {
     id: uuid("id").primaryKey(),
-    productsIds: uuid("products_ids").array().references(() => products.id, { onDelete: "cascade" }),
+    packageType: packageTypeEnum("packageType").default("system").notNull(),
+    // Arrays cannot have FK constraints in Postgres; enforce in application code
+    productsIds: uuid("products_ids").array(),
     name: text("name").notNull(),
     description: text("description"),
     days: integer("days").notNull(),
@@ -120,7 +123,8 @@ export const users = pgTable("users", {
     id: text("id").primaryKey(),
     name: text("name").notNull(),
     email: text("email").notNull(),
-    managedOrganization: uuid("managed_organization").array().references(() => organizationInfo.id, { onDelete: "cascade" }), // You can manually reference in relations if needed
+    // Arrays cannot have FK constraints in Postgres; enforce in application code
+    managedOrganization: uuid("managed_organization").array(), // You can manually reference in relations if needed
     createdAt: timestamp("created_at").defaultNow(),
     organizationYearId: uuid("organization_year_id").references(() => organizationYears.id, { onDelete: "cascade" }),
     // userSettingsId: uuid("user_settings_id"),
@@ -146,7 +150,8 @@ export const lessonQuestionGroups = pgTable("lesson_question_groups", {
     id: uuid("id").defaultRandom().primaryKey().notNull(),
     lessonId: uuid("lesson_id").references(() => lessons.id, { onDelete: "cascade" }).notNull(),
     categoryId: uuid("category_id").references(() => lessonCategory.id, { onDelete: "cascade" }).notNull(),
-    questionList: uuid("question_list").array().references(() => questions.id, { onDelete: "cascade" }).notNull(), // No array foreign key support
+    // Arrays cannot have FK constraints in Postgres; enforce in application code
+    questionList: uuid("question_list").array().notNull(), // No array foreign key support
     time: integer("time").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
 });

@@ -30,7 +30,10 @@ const main = async () => {
         const orgId = uuidv4();
         const orgYearId = uuidv4();
         const settingsId = uuidv4();
-        const planId = uuidv4();
+        const planWeeklyId = uuidv4();
+        const planId = uuidv4(); // monthly (kept for existing references)
+        const plan6mId = uuidv4();
+        const planBookId = uuidv4();
         const product1Id = uuidv4();
         const product2Id = uuidv4();
         const couponId = uuidv4();
@@ -106,15 +109,106 @@ const main = async () => {
             }
         ]);
 
-        await db.insert(schema.plans).values({
-            id: planId,
-            productsIds: [product1Id, product2Id],
-            name: "Basic Plan",
-            description: "Access to all lessons",
-            days: 90,
-            price: 99,
-            createdAt: new Date()
-        });
+        await db.insert(schema.plans).values([
+            {
+                id: planWeeklyId,
+                packageType: "system",
+                productsIds: [product1Id],
+                name: "Trial Period",
+                description: "Test our preparation program",
+                days: 7,
+                price: 12,
+                displayData: {
+                    icon: "Rocket",
+                    color: "blue",
+                    features: [
+                        "1 week access",
+                        "Basic lessons",
+                        "Progress tracking",
+                        "Community support"
+                    ]
+                },
+                createdAt: new Date()
+            },
+            {
+                id: planId, // monthly
+                packageType: "system",
+                productsIds: [product1Id],
+                name: "Standard Prep",
+                description: "Comprehensive monthly preparation program",
+                days: 30,
+                price: 40,
+                displayData: {
+                    icon: "Rocket",
+                    color: "blue",
+                    features: [
+                        "All lessons unlocked",
+                        "Practice tests",
+                        "Analytics dashboard",
+                        "Email support"
+                    ],
+                    badge: "Popular",
+                    badgeColor: "yellow",
+                    addBookOption: {
+                        price: "$60",
+                        originalPrice: "$75",
+                        savings: "Save $15"
+                    }
+                },
+                createdAt: new Date()
+            },
+            {
+                id: plan6mId,
+                packageType: "system",
+                productsIds: [product1Id],
+                name: "Extended Prep",
+                description: "Long-term preparation with priority support",
+                days: 180,
+                price: 199,
+                displayData: {
+                    icon: "Rocket",
+                    color: "blue",
+                    features: [
+                        "All content unlocked",
+                        "Priority support",
+                        "Mock exams",
+                        "Progress reports",
+                        "Study schedule"
+                    ],
+                    badge: "Save $41",
+                    badgeColor: "green",
+                    addBookOption: {
+                        price: "$215",
+                        originalPrice: "$234",
+                        savings: "Save $19"
+                    }
+                },
+                createdAt: new Date()
+            },
+            {
+                id: planBookId,
+                packageType: "book",
+                productsIds: [product2Id],
+                name: "Study Books Collection",
+                description: "Complete study materials in digital and physical format",
+                days: 0,
+                price: 35,
+                displayData: {
+                    icon: "BookOpen",
+                    color: "green",
+                    features: [
+                        "Digital PDF (instant)",
+                        "Physical book (shipped)",
+                        "400+ practice questions",
+                        "Detailed solutions",
+                        "Study guides"
+                    ],
+                    badge: "Save $5",
+                    badgeColor: "green"
+                },
+                createdAt: new Date()
+            }
+        ]);
 
         await db.insert(schema.coupons).values({
             id: couponId,
@@ -125,7 +219,7 @@ const main = async () => {
             validUntil: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
             isActive: true,
             maxUses: 100,
-            planId,
+            planId, // applies to monthly plan
             organizationYearId: orgYearId,
             createdAt: new Date()
         });
