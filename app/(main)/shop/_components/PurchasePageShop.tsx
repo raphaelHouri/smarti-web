@@ -31,6 +31,7 @@ type Plan = {
         price: string;
         originalPrice: string;
         savings: string;
+        productId: string;
     };
 };
 
@@ -64,6 +65,7 @@ function adaptPlans(records: ShopPlanRecord[], pkgType: PackageType): Plan[] {
             price: String(dd.addBookOption.price ?? ""),
             originalPrice: String(dd.addBookOption.originalPrice ?? ""),
             savings: String(dd.addBookOption.savings ?? ""),
+            productId: String(dd.addBookOption.productId ?? ""),
         } : undefined;
 
         return {
@@ -338,7 +340,7 @@ export default function PurchasePageShop({ plansByType }: { plansByType: ShopPla
                                                     <span
                                                         className={cn(
                                                             "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
-                                                            (planBookOptions[plan.planType] ?? true) ? "translate-x-6" : "translate-x-1"
+                                                            (planBookOptions[plan.planType] ?? true) ? "-translate-x-1" : "-translate-x-6"
                                                         )}
                                                     />
                                                 </button>

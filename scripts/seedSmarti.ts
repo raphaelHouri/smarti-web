@@ -152,7 +152,8 @@ const main = async () => {
                     addBookOption: {
                         price: "$60",
                         originalPrice: "$75",
-                        savings: "Save $15"
+                        savings: "Save $15",
+                        productId: product2Id
                     }
                 },
                 createdAt: new Date()
@@ -180,7 +181,8 @@ const main = async () => {
                     addBookOption: {
                         price: "$215",
                         originalPrice: "$234",
-                        savings: "Save $19"
+                        savings: "Save $19",
+                        productId: product2Id
                     }
                 },
                 createdAt: new Date()

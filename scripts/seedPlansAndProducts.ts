@@ -95,8 +95,67 @@ async function upsertPlans(systemProductId: string, bookProductId: string) {
         packageType: "system" | "book";
         productsIds: string[];
         displayData?: any;
+        needsBookPlanId?: boolean;
     };
 
+    // First pass: Create/update book plan to get its ID
+    const bookPlanSeed: PlanSeed = {
+        name: "Study Books Collection",
+        description: "Complete study materials in digital and physical format",
+        days: 0,
+        price: 35,
+        packageType: "book",
+        productsIds: [bookProductId],
+        displayData: {
+            icon: "BookOpen",
+            color: "green",
+            features: [
+                "Digital PDF (instant)",
+                "Physical book (shipped)",
+                "400+ practice questions",
+                "Detailed solutions",
+                "Study guides",
+            ],
+            badge: "Save $5",
+            badgeColor: "green",
+        },
+    };
+
+    let bookPlanId: string;
+    const existingBookPlan = await db.query.plans.findFirst({
+        where: (t, { eq }) => eq(t.name, bookPlanSeed.name),
+    });
+    if (existingBookPlan) {
+        await db
+            .update(schema.plans)
+            .set({
+                packageType: bookPlanSeed.packageType as any,
+                productsIds: bookPlanSeed.productsIds as any,
+                name: bookPlanSeed.name,
+                description: bookPlanSeed.description,
+                days: bookPlanSeed.days,
+                price: bookPlanSeed.price,
+                displayData: bookPlanSeed.displayData,
+                createdAt: new Date(),
+            })
+            .where(eq(schema.plans.id, existingBookPlan.id));
+        bookPlanId = existingBookPlan.id;
+    } else {
+        const inserted = await db.insert(schema.plans).values({
+            id: crypto.randomUUID(),
+            packageType: bookPlanSeed.packageType as any,
+            productsIds: bookPlanSeed.productsIds as any,
+            name: bookPlanSeed.name,
+            description: bookPlanSeed.description,
+            days: bookPlanSeed.days,
+            price: bookPlanSeed.price,
+            displayData: bookPlanSeed.displayData,
+            createdAt: new Date(),
+        }).returning();
+        bookPlanId = inserted[0].id;
+    }
+
+    // Second pass: Create/update system plans with book plan reference
     const seeds: PlanSeed[] = [
         {
             name: "Trial Period",
@@ -138,6 +197,7 @@ async function upsertPlans(systemProductId: string, bookProductId: string) {
                     price: "$60",
                     originalPrice: "$75",
                     savings: "Save $15",
+                    productId: bookProductId,
                 },
             },
         },
@@ -164,28 +224,8 @@ async function upsertPlans(systemProductId: string, bookProductId: string) {
                     price: "$215",
                     originalPrice: "$234",
                     savings: "Save $19",
+                    productId: bookProductId,
                 },
-            },
-        },
-        {
-            name: "Study Books Collection",
-            description: "Complete study materials in digital and physical format",
-            days: 0,
-            price: 35,
-            packageType: "book",
-            productsIds: [bookProductId],
-            displayData: {
-                icon: "BookOpen",
-                color: "green",
-                features: [
-                    "Digital PDF (instant)",
-                    "Physical book (shipped)",
-                    "400+ practice questions",
-                    "Detailed solutions",
-                    "Study guides",
-                ],
-                badge: "Save $5",
-                badgeColor: "green",
             },
         },
     ];
