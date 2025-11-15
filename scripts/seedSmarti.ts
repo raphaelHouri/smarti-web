@@ -219,7 +219,7 @@ const main = async () => {
         await db.insert(schema.coupons).values({
             id: couponId,
             code: "WELCOME25",
-            couponType: "percentage",
+            type: "percentage",
             value: 25,
             validFrom: new Date(),
             validUntil: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
@@ -233,12 +233,10 @@ const main = async () => {
         await db.insert(schema.subscriptions).values({
             id: uuidv4(),
             userId,
+            productId: product1Id,
             systemUntil: new Date(Date.now() + 1000 * 60 * 60 * 24 * 90),
-            price: 99,
-            receiptId: "stripe-user-123",
             couponId,
             createdAt: new Date(),
-            planId
         });
 
         await db.insert(schema.lessonCategory).values({
