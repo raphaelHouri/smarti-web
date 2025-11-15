@@ -2,7 +2,7 @@
 import { cache } from "react";
 import db from "./drizzle";
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { lessonCategory, lessonQuestionGroups, lessons, questions, userLessonResults, users, userSettings, userWrongQuestions, onlineLessons } from './schemaSmarti';
+import { lessonCategory, lessonQuestionGroups, lessons, questions, userLessonResults, users, userSettings, userWrongQuestions, onlineLessons, coupons, paymentTransactions, bookPurchases } from './schemaSmarti';
 import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -242,6 +242,52 @@ export const getProductById = cache(async (productId: string) => {
         where: (t, { eq }) => eq(t.id, productId),
     });
     return product ?? null;
+});
+
+export const getPlan = cache(async (planId: string) => {
+    return db.query.plans.findFirst({
+        where: (plan, { eq }) => eq(plan.id, planId),
+    });
+});
+
+type CouponLookup = { id: string } | { code: string };
+type CouponRecord = typeof coupons.$inferSelect;
+
+export const getCoupon = cache(async (lookup: CouponLookup): Promise<CouponRecord | null> => {
+    const coupon = await db.query.coupons.findFirst({
+        where: (coupon, { eq }) =>
+            "id" in lookup ? eq(coupon.id, lookup.id) : eq(coupon.code, lookup.code),
+    });
+    return coupon ?? null;
+});
+
+export const findBookPurchase = cache(async (productId: string, userId: string) => {
+    const now = new Date();
+    return db.query.bookPurchases.findFirst({
+        where: (bp, { eq, gt, and }) =>
+            and(
+                eq(bp.productId, productId),
+                eq(bp.userId, userId),
+                gt(bp.validUntil, now)
+            ),
+    });
+});
+
+export async function createBookPurchase(
+    purchase: typeof bookPurchases.$inferInsert
+): Promise<typeof bookPurchases.$inferSelect> {
+    const [inserted] = await db.insert(bookPurchases).values(purchase).returning();
+    return inserted;
+}
+
+export const getTransactionDataById = cache(async (transactionId: string) => {
+    return db.query.paymentTransactions.findFirst({
+        where: (transaction, { eq }) => eq(transaction.id, transactionId),
+        with: {
+            plan: true,
+            coupon: true,
+        },
+    });
 });
 
 

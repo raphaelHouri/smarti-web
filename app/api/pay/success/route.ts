@@ -114,7 +114,7 @@ export async function GET(req: NextRequest) {
     }
 
     const vat_id = req.nextUrl.searchParams.get("UserId") ?? "";
-    const filename = getFileName(vat_id);
+    const filename = getFileName(vat_id,"");
     const phone = params.cell;
 
     const OrderPayloadSchema = z.object({

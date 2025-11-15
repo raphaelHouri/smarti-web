@@ -1,5 +1,5 @@
 import { uuid, text, timestamp, integer, boolean, jsonb, pgTable, pgEnum } from "drizzle-orm/pg-core";
-import { desc, relations } from "drizzle-orm";
+import { desc, relations, sql } from "drizzle-orm";
 
 // Declare tables used in references FIRST
 export const organizationInfo = pgTable("organization_info", {
@@ -23,6 +23,7 @@ export const organizationYears = pgTable("organization_years", {
 export const serviceTypeEnum = pgEnum("serviceType", ["system", "book"])
 export const productTypeEnum = pgEnum("productType", ["system", "bookStep1"])
 export const packageTypeEnum = pgEnum("packageType", ["system", "book"])
+export const couponTypeEnum = pgEnum("couponType", ["percentage", "fixed"])
 
 export const products = pgTable("products", {
     id: uuid("id").primaryKey(),
@@ -37,34 +38,34 @@ export const products = pgTable("products", {
 export const plans = pgTable("plans", {
     id: uuid("id").primaryKey(),
     packageType: packageTypeEnum("packageType").default("system").notNull(),
-    // Arrays cannot have FK constraints in Postgres; enforce in application code
-    productsIds: uuid("products_ids").array(),
+    productsIds: uuid("products_ids").array().default([]),
     name: text("name").notNull(),
     description: text("description"),
     days: integer("days").notNull(),
     price: integer("price").notNull(),
     displayData: jsonb("display_data"),
+    internalDescription: text("internal_description").notNull(),
     // icon: text("icon"), // Store icon name/key
     // color: text("color"),
     // badge: text("badge"),
     // badgeColor: text("badge_color"),
     createdAt: timestamp("created_at").defaultNow(),
 });
+
 export const subscriptions = pgTable("subscriptions", {
     id: uuid("id").primaryKey(),
     userId: text("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
-    systemUntil: timestamp("system_until"),
-    price: integer("price"),
-    receiptId: text("receipt_id"),
+    productId: uuid("product_id").references(() => products.id, { onDelete: "cascade" }).notNull(),
     couponId: uuid("coupon_id").references(() => coupons.id, { onDelete: "cascade" }),
+    paymentTransactionId: uuid("payment_transaction_id").references(() => paymentTransactions.id, { onDelete: "cascade" }),
+    systemUntil: timestamp("system_until"),
     createdAt: timestamp("created_at"),
-    planId: uuid("plan_id").references(() => plans.id, { onDelete: "cascade" }).notNull(),
 });
 
 export const coupons = pgTable("coupons", {
     id: uuid("id").primaryKey(),
     code: text("code").notNull(),
-    couponType: text("coupon_type").notNull(),
+    type: couponTypeEnum("type").default("percentage").notNull(),
     value: integer("value").notNull(),
     validFrom: timestamp("valid_from").notNull(),
     validUntil: timestamp("valid_until").notNull(),
@@ -132,6 +133,71 @@ export const users = pgTable("users", {
     experience: integer("experience").default(0).notNull(),
     geniusScore: integer("genius_score").default(0).notNull(),
 });
+
+export const bookPurchases = pgTable("book_purchases", {
+    id: uuid("id").defaultRandom().primaryKey(),
+    paymentTransactionId: uuid("paymentTransactionsId").references(() => paymentTransactions.id, { onDelete: "cascade" }).notNull(),
+    userId: text("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+    productId: uuid("product_id").references(() => products.id, { onDelete: "cascade" }).notNull(),
+    studentName: text("student_name").notNull(),
+    email: text("email").notNull(),
+    phone: text("phone").notNull(),
+    filename: text("filename").notNull(),
+    gcsBucket: text("gcs_bucket").notNull(),
+    generated: boolean("generated").default(false).notNull(),
+    vatId: text("vat_id").notNull(),
+    validUntil: timestamp("valid_until").notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+
+export const paymentStatusEnum = pgEnum("payment_status", [
+    "created",
+    "paid",
+    "fulfilled",
+    "failed",
+    "cancelled",
+]);
+
+export const paymentTransactions = pgTable("payment_transactions", {
+    id: uuid("id").defaultRandom().primaryKey(),
+
+    userId: text("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+    planId: uuid("plan_id").references(() => plans.id, { onDelete: "set null" }).notNull(),
+    status: paymentStatusEnum("status").default("created").notNull(),
+    studentName: text("studentName"),
+    email: text("email"),
+    phone: text("phone"),
+    vatId: text("vat_id"),
+    receiptId: text("receipt_id"),
+    totalPrice: integer("total_price").notNull(),
+    couponId: uuid("coupon_id").references(() => coupons.id, { onDelete: "set null" }),
+    bookIncluded: boolean("book_included").default(false).notNull(),
+
+    metadata: jsonb("metadata"),
+
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+
+export const paymentTransactionRelations = relations(paymentTransactions, ({ one, many }) => ({
+    user: one(users, {
+        fields: [paymentTransactions.userId],
+        references: [users.id],
+    }),
+    plan: one(plans, {
+        fields: [paymentTransactions.planId],
+        references: [plans.id],
+    }),
+    coupon: one(coupons, {
+        fields: [paymentTransactions.couponId],
+        references: [coupons.id],
+    }),
+    bookPurchases: many(bookPurchases),
+}));
+
 
 export const userSettings = pgTable("user_settings", {
     id: uuid("id").primaryKey(),
@@ -233,9 +299,9 @@ export const subscriptionRelations = relations(subscriptions, ({ one }) => ({
         fields: [subscriptions.couponId],
         references: [coupons.id],
     }),
-    plan: one(plans, {
-        fields: [subscriptions.planId],
-        references: [plans.id],
+    product: one(products, {
+        fields: [subscriptions.productId],
+        references: [products.id],
     }),
 }));
 

@@ -1,6 +1,8 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import React from "react"
+import { plans } from "@/db/schemaSmarti";
+import { getCoupon } from "@/db/queries";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -58,4 +60,33 @@ export function renderTextWithLTRFormulas(text: string): React.ReactNode[] {
     }
     return React.createElement(React.Fragment, { key: `t-${index}` }, part);
   });
+}
+
+export async function calculateAmount(
+  plan: typeof plans.$inferSelect,
+  couponId: string | null,
+  bookIncluded: boolean
+) {
+  let price = plan.price;
+  if (bookIncluded) {
+    price += (plan.displayData as { bookPrice?: number } | null)?.bookPrice ?? 0;
+  }
+
+  if (couponId) {
+    const coupon = await getCoupon({ id: couponId });
+    if (coupon) {
+      switch (coupon.type) {
+        case "percentage":
+          price -= Math.round((price * coupon.value) / 100);
+          break;
+        case "fixed":
+          price = coupon.value;
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
+  return Math.max(price, 0);
 }
