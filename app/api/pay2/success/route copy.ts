@@ -5,7 +5,7 @@ import { z } from "zod";
 import { sendEmail } from "@/lib/sendMail";
 import { downloadReadyHtml } from "@/emails/downloadReady";
 import { getFileName } from "@/lib/book_utils";
-import { createBookPurchase, findBookPurchase, getProductById, getTransactionDataById } from "@/db/queries";
+import { createBookPurchase, getProductById, getTransactionDataById } from "@/db/queries";
 import { calculateAmount } from "@/lib/utils";
 
 export const runtime = "nodejs";
