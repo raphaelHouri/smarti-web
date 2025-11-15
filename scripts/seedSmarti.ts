@@ -116,6 +116,7 @@ const main = async () => {
                 productsIds: [product1Id],
                 name: "Trial Period",
                 description: "Test our preparation program",
+                internalDescription: "Trial access",
                 days: 7,
                 price: 12,
                 displayData: {
@@ -136,6 +137,7 @@ const main = async () => {
                 productsIds: [product1Id],
                 name: "Standard Prep",
                 description: "Comprehensive monthly preparation program",
+                internalDescription: "Monthly subscription",
                 days: 30,
                 price: 40,
                 displayData: {
@@ -164,6 +166,7 @@ const main = async () => {
                 productsIds: [product1Id],
                 name: "Extended Prep",
                 description: "Long-term preparation with priority support",
+                internalDescription: "6 months bundle",
                 days: 180,
                 price: 199,
                 displayData: {
@@ -193,6 +196,7 @@ const main = async () => {
                 productsIds: [product2Id],
                 name: "Study Books Collection",
                 description: "Complete study materials in digital and physical format",
+                internalDescription: "Books bundle",
                 days: 0,
                 price: 35,
                 displayData: {
