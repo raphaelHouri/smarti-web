@@ -9,6 +9,9 @@ export const metadata: Metadata = buildMetadata({
     keywords: ["חוברות מחוננים", "סימולציות מודפסות", "תרגול בבית"],
 });
 
+// Force this route to render dynamically so we can safely call the database at request-time
+export const dynamic = "force-dynamic";
+
 export default async function ShopPage() {
     const plansByType = await getPlansForShop();
     return <PurchasePageShop plansByType={plansByType} />;
