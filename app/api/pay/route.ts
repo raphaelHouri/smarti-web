@@ -65,9 +65,9 @@ async function handleLegacyPay(url: URL) {
 
 export async function GET(request: Request) {
     const url = new URL(request.url);
-    const hasTypeParam = Boolean(url.searchParams.get("type"));
+    const hasPlanIdParam = url.searchParams.get("PlanId");
 
-    if (!hasTypeParam) {
+    if (hasPlanIdParam && hasPlanIdParam != "book") {
         return handlePlanPayment(request);
     }
 

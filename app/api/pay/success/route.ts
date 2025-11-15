@@ -281,8 +281,8 @@ async function handleLegacySuccess(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  const hasTypeParam = Boolean(req.nextUrl.searchParams.get("type"));
-  if (!hasTypeParam) {
+  const hasPlanIdParam = req.nextUrl.searchParams.get("PlanId");
+  if (hasPlanIdParam && hasPlanIdParam == "book") {
     return handleModernSuccess(req);
   }
   return handleLegacySuccess(req);
