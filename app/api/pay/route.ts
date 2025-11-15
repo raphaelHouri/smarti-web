@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
 import { getDocument } from "@/lib/firestore";
+import { GET as handlePlanPayment } from "../pay2/route";
 
 export const runtime = "nodejs";
 
@@ -9,6 +10,7 @@ function orderHexFromData(data: unknown): string {
     const iso = Buffer.from(json, "utf8").toString("latin1");
     return Buffer.from(iso, "latin1").toString("hex");
 }
+
 function buildQueryRFC3986(params: Record<string, string>): string {
     const keys = Object.keys(params).sort();
     const enc = (v: string) =>
@@ -16,13 +18,12 @@ function buildQueryRFC3986(params: Record<string, string>): string {
     return keys.map((k) => `${enc(k)}=${enc(params[k] ?? "")}`).join("&");
 }
 
-export async function GET(request: Request) {
-    const u = new URL(request.url);
-    const email = u.searchParams.get("Email");
-    const StudentName = u.searchParams.get("StudentName");
-    const planId = u.searchParams.get("PlanId");
+async function handleLegacyPay(url: URL) {
+    const email = url.searchParams.get("Email");
+    const studentName = url.searchParams.get("StudentName");
+    const planId = url.searchParams.get("PlanId");
 
-    if (!StudentName) return NextResponse.json({ error: "invalid Student Name" }, { status: 400 });
+    if (!studentName) return NextResponse.json({ error: "invalid Student Name" }, { status: 400 });
     if (!email) return NextResponse.json({ error: "invalid email" }, { status: 400 });
     if (!planId) return NextResponse.json({ error: "invalid plan" }, { status: 400 });
 
@@ -30,7 +31,7 @@ export async function GET(request: Request) {
     if (!book?.[planId] && !book?.[planId]?.printPrice) return NextResponse.json({ error: "invalid plan" }, { status: 400 });
 
     const amount = book?.[planId]?.printPrice || 79;
-    const data = { email, planId, amount, type: "pay", StudentName };
+    const data = { email, planId, amount, type: "pay", StudentName: studentName };
     const params: Record<string, string> = {
         action: "pay",
         Masof: "4502106222",
@@ -60,6 +61,17 @@ export async function GET(request: Request) {
     const redirectUrl = `https://icom.yaad.net/p/?${qs}&signature=${signature}`;
 
     return NextResponse.redirect(redirectUrl, { status: 302 });
+}
+
+export async function GET(request: Request) {
+    const url = new URL(request.url);
+    const hasTypeParam = Boolean(url.searchParams.get("type"));
+
+    if (!hasTypeParam) {
+        return handlePlanPayment(request);
+    }
+
+    return handleLegacyPay(url);
 }
 
 

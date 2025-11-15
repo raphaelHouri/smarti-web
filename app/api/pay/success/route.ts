@@ -6,82 +6,83 @@ import { documentExists, setDocument } from "@/lib/firestore";
 import { sendEmail } from "@/lib/sendMail";
 import { downloadReadyHtml } from "@/emails/downloadReady";
 import { getFileName } from "@/lib/book_utils";
+import { GET as handleModernSuccess } from "@/app/api/pay2/success/route";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 type YaadParams = {
-    Id: string;
-    CCode: string;
-    Amount: string;
-    ACode: string;
-    Order: string;
-    Fild1: string;
-    Fild2: string;
-    Fild3: string;
-    cell: string;
+  Id: string;
+  CCode: string;
+  Amount: string;
+  ACode: string;
+  Order: string;
+  Fild1: string;
+  Fild2: string;
+  Fild3: string;
+  cell: string;
 };
 
 const SIGN_KEYS: (keyof YaadParams)[] = [
-    "Id",
-    "CCode",
-    "Amount",
-    "ACode",
-    "Order",
-    "Fild1",
-    "Fild2",
-    "Fild3",
+  "Id",
+  "CCode",
+  "Amount",
+  "ACode",
+  "Order",
+  "Fild1",
+  "Fild2",
+  "Fild3",
 ];
 
 function buildQueryRFC3986(params: YaadParams): string {
-    const enc = (v: string) => encodeURIComponent(v);
-    return SIGN_KEYS.map((k) => `${enc(k)}=${enc(params[k] ?? "")}`).join("&");
+  const enc = (v: string) => encodeURIComponent(v);
+  return SIGN_KEYS.map((k) => `${enc(k)}=${enc(params[k] ?? "")}`).join("&");
 }
 
 function hexToUtf8Json<T = unknown>(hex: string): T {
-    const s = Buffer.from(hex, "hex").toString("utf8");
-    return JSON.parse(s) as T;
+  const s = Buffer.from(hex, "hex").toString("utf8");
+  return JSON.parse(s) as T;
 }
 
 function toFormUrlEncoded(
-    obj: any,
-    prefix?: string,
-    out: URLSearchParams = new URLSearchParams()
+  obj: any,
+  prefix?: string,
+  out: URLSearchParams = new URLSearchParams()
 ): URLSearchParams {
-    if (obj === null || obj === undefined) return out;
-    if (Array.isArray(obj)) {
-        obj.forEach((v, i) => toFormUrlEncoded(v, `${prefix}[${i}]`, out));
-        return out;
-    }
-    if (typeof obj === "object") {
-        for (const [k, v] of Object.entries(obj)) {
-            const key = prefix ? `${prefix}[${k}]` : k;
-            toFormUrlEncoded(v, key, out);
-        }
-        return out;
-    }
-    out.append(prefix ?? "", String(obj));
+  if (obj === null || obj === undefined) return out;
+  if (Array.isArray(obj)) {
+    obj.forEach((v, i) => toFormUrlEncoded(v, `${prefix}[${i}]`, out));
     return out;
+  }
+  if (typeof obj === "object") {
+    for (const [k, v] of Object.entries(obj)) {
+      const key = prefix ? `${prefix}[${k}]` : k;
+      toFormUrlEncoded(v, key, out);
+    }
+    return out;
+  }
+  out.append(prefix ?? "", String(obj));
+  return out;
 }
 
-export async function GET(req: NextRequest) {
-    const params: YaadParams = {
-        Id: req.nextUrl.searchParams.get("Id") ?? "",
-        CCode: req.nextUrl.searchParams.get("CCode") ?? "",
-        Amount: req.nextUrl.searchParams.get("Amount") ?? "",
-        ACode: req.nextUrl.searchParams.get("ACode") ?? "",
-        Order: req.nextUrl.searchParams.get("Order") ?? "",
-        Fild1: req.nextUrl.searchParams.get("Fild1") ?? "",
-        Fild2: req.nextUrl.searchParams.get("Fild2") ?? "",
-        Fild3: req.nextUrl.searchParams.get("Fild3") ?? "",
-        cell: req.nextUrl.searchParams.get("cell") ?? "",
-    };
+async function handleLegacySuccess(req: NextRequest) {
+  const params: YaadParams = {
+    Id: req.nextUrl.searchParams.get("Id") ?? "",
+    CCode: req.nextUrl.searchParams.get("CCode") ?? "",
+    Amount: req.nextUrl.searchParams.get("Amount") ?? "",
+    ACode: req.nextUrl.searchParams.get("ACode") ?? "",
+    Order: req.nextUrl.searchParams.get("Order") ?? "",
+    Fild1: req.nextUrl.searchParams.get("Fild1") ?? "",
+    Fild2: req.nextUrl.searchParams.get("Fild2") ?? "",
+    Fild3: req.nextUrl.searchParams.get("Fild3") ?? "",
+    cell: req.nextUrl.searchParams.get("cell") ?? "",
+  };
 
-    const isApproved = params.CCode === "000" || params.CCode === "0";
-    const contentType = { headers: { "content-type": "text/html; charset=utf-8" } };
-    if (!isApproved) {
-        const code = params.CCode || "—";
-        const failHtml = `
+  const isApproved = params.CCode === "000" || params.CCode === "0";
+  const contentType = { headers: { "content-type": "text/html; charset=utf-8" } };
+  if (!isApproved) {
+    const code = params.CCode || "—";
+    const failHtml = `
 <body dir="rtl">
   <script>
     function dispatchFail(){
@@ -92,53 +93,53 @@ export async function GET(req: NextRequest) {
   <h1 style="text-align:center;">תקלה ברכישה. שגיאה מספר: ${code}.</h1>
   <div style="text-align:center"><button onClick="dispatchFail();" class="btn btn-primary">נסה שנית</button></div>
 </body>`;
-        return new NextResponse(failHtml, contentType);
-    }
+    return new NextResponse(failHtml, contentType);
+  }
 
-    const token = process.env.YAAD_TOKEN ?? "";
-    if (!token) return new NextResponse("Server misconfigured", { status: 500 });
+  const token = process.env.YAAD_TOKEN ?? "";
+  if (!token) return new NextResponse("Server misconfigured", { status: 500 });
 
-    const toSign = buildQueryRFC3986(params);
-    const expected = crypto.createHmac("sha256", token).update(toSign).digest("hex");
-    const provided = req.nextUrl.searchParams.get("Sign") ?? "";
-    if (expected !== provided) {
-        return new NextResponse("Validation error.", { status: 400, headers: { "content-type": "text/plain; charset=utf-8" } });
-    }
+  const toSign = buildQueryRFC3986(params);
+  const expected = crypto.createHmac("sha256", token).update(toSign).digest("hex");
+  const provided = req.nextUrl.searchParams.get("Sign") ?? "";
+  if (expected !== provided) {
+    return new NextResponse("Validation error.", { status: 400, headers: { "content-type": "text/plain; charset=utf-8" } });
+  }
 
-    type OrderPayload = { email: string; planId?: string; amount?: number | string; type?: string; StudentName: string };
-    let order: OrderPayload;
-    try {
-        order = hexToUtf8Json<OrderPayload>(params.Order);
-    } catch (e) {
-        return new NextResponse("Bad Order payload", { status: 400 });
-    }
+  type OrderPayload = { email: string; planId?: string; amount?: number | string; type?: string; StudentName: string };
+  let order: OrderPayload;
+  try {
+    order = hexToUtf8Json<OrderPayload>(params.Order);
+  } catch (e) {
+    return new NextResponse("Bad Order payload", { status: 400 });
+  }
 
-    const vat_id = req.nextUrl.searchParams.get("UserId") ?? "";
-    const filename = getFileName(vat_id,"");
-    const phone = params.cell;
+  const vat_id = req.nextUrl.searchParams.get("UserId") ?? "";
+  const filename = getFileName(vat_id, "");
+  const phone = params.cell;
 
-    const OrderPayloadSchema = z.object({
-        email: z.string().email(),
-        planId: z.string().optional(),
-        amount: z.union([z.string(), z.number()]).optional(),
-        type: z.string().optional(),
-        StudentName: z.string(),
-    });
-    const parsedOrder = OrderPayloadSchema.safeParse(order);
-    if (!parsedOrder.success) {
-        return new NextResponse("Invalid Order payload", { status: 400 });
-    }
+  const OrderPayloadSchema = z.object({
+    email: z.string().email(),
+    planId: z.string().optional(),
+    amount: z.union([z.string(), z.number()]).optional(),
+    type: z.string().optional(),
+    StudentName: z.string(),
+  });
+  const parsedOrder = OrderPayloadSchema.safeParse(order);
+  if (!parsedOrder.success) {
+    return new NextResponse("Invalid Order payload", { status: 400 });
+  }
 
-    const { email, planId, amount, StudentName } = parsedOrder.data;
-    const gcsBucket = process.env.GCS_BUCKET_NAME;
-    const existingDoc = await documentExists(`books/${email}`);
-    if (existingDoc) {
-        return new NextResponse("The process is already running in the background.", { status: 200, headers: { "content-type": "text/html; charset=utf-8" } });
-    }
+  const { email, planId, amount, StudentName } = parsedOrder.data;
+  const gcsBucket = process.env.GCS_BUCKET_NAME;
+  const existingDoc = await documentExists(`books/${email}`);
+  if (existingDoc) {
+    return new NextResponse("The process is already running in the background.", { status: 200, headers: { "content-type": "text/html; charset=utf-8" } });
+  }
 
-    await setDocument(`books/${email}`, { StudentName, amount, email, planId, vat_id, phone, gcsBucket, filename, generated: false });
+  await setDocument(`books/${email}`, { StudentName, amount, email, planId, vat_id, phone, gcsBucket, filename, generated: false });
 
-    const successHtml = `
+  const successHtml = `
     <!doctype html>
 <html lang="he" dir="rtl">
 <head>
@@ -173,13 +174,15 @@ export async function GET(req: NextRequest) {
         </div>
       </div>
 
-      <div id="buttonWrapper" class="hidden flex justify-center my-4">
-        <a id="viewButton"
-           href="https://storage.cloud.google.com/${gcsBucket}/${filename}?authuser=3"
-           class="inline-flex items-center justify-center py-3 px-6 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200 min-w-[220px] text-center"
-           rel="noopener noreferrer">
-          לצפייה בחוברת
-        </a>
+      <div id="buttonWrapper" class="hidden my-4">
+        <div class="flex justify-center">
+          <a id="viewButton"
+             href="https://storage.cloud.google.com/${gcsBucket}/${filename}?authuser=3"
+             class="inline-flex items-center justify-center py-3 px-6 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200 min-w-[220px] text-center"
+             rel="noopener noreferrer">
+            לצפייה בחוברת
+          </a>
+        </div>
       </div>
 
       <p class="text-center text-gray-600 text-md">
@@ -217,64 +220,72 @@ export async function GET(req: NextRequest) {
 </html>
   `;
 
-    const response = new NextResponse(successHtml, contentType);
+  const response = new NextResponse(successHtml, contentType);
 
-    try {
-        if (planId === "book") {
-            const companies = ["לא ידוע", "ישראכרט", "ויזה כאל", "דיינרס", "אמריקן אקספרס", "JCP", "ויזה לאומי"] as const;
-            const issuerIndex = Number(req.nextUrl.searchParams.get("Issuer") ?? "0");
-            const cardType = companies[isFinite(issuerIndex) ? issuerIndex : 0] ?? companies[0];
-            const icountVars = {
-                cid: process.env.ICOUNT_CID ?? "",
-                user: process.env.ICOUNT_USER ?? "",
-                pass: process.env.ICOUNT_PASS ?? "",
-                doctype: "receipt",
-                vat_id: vat_id,
-                phone: phone,
-                client_name: req.nextUrl.searchParams.get("Fild1") ?? "",
-                email: String(order.email ?? ""),
-                items: [{ description: req.nextUrl.searchParams.get("Info") ?? "תשלום", unitprice_incvat: params.Amount, quantity: 1 }],
-                cc: {
-                    sum: params.Amount,
-                    card_type: cardType,
-                    card_number: req.nextUrl.searchParams.get("L4digit") ?? "",
-                    holder_id: req.nextUrl.searchParams.get("UserId") ?? "",
-                    holder_name: req.nextUrl.searchParams.get("Fild1") ?? "",
-                    confirmation_code: params.ACode,
-                },
-                income_type_id: 7,
-                send_email: 1,
-                email_to_client: 1,
-            };
+  try {
+    if (planId === "book") {
+      const companies = ["לא ידוע", "ישראכרט", "ויזה כאל", "דיינרס", "אמריקן אקספרס", "JCP", "ויזה לאומי"] as const;
+      const issuerIndex = Number(req.nextUrl.searchParams.get("Issuer") ?? "0");
+      const cardType = companies[isFinite(issuerIndex) ? issuerIndex : 0] ?? companies[0];
+      const icountVars = {
+        cid: process.env.ICOUNT_CID ?? "",
+        user: process.env.ICOUNT_USER ?? "",
+        pass: process.env.ICOUNT_PASS ?? "",
+        doctype: "receipt",
+        vat_id: vat_id,
+        phone: phone,
+        client_name: req.nextUrl.searchParams.get("Fild1") ?? "",
+        email: String(order.email ?? ""),
+        items: [{ description: req.nextUrl.searchParams.get("Info") ?? "תשלום", unitprice_incvat: params.Amount, quantity: 1 }],
+        cc: {
+          sum: params.Amount,
+          card_type: cardType,
+          card_number: req.nextUrl.searchParams.get("L4digit") ?? "",
+          holder_id: req.nextUrl.searchParams.get("UserId") ?? "",
+          holder_name: req.nextUrl.searchParams.get("Fild1") ?? "",
+          confirmation_code: params.ACode,
+        },
+        income_type_id: 7,
+        send_email: 1,
+        email_to_client: 1,
+      };
 
-            if (icountVars.cid && icountVars.user && icountVars.pass) {
-                const body = toFormUrlEncoded(icountVars).toString();
-                const resp = await fetch("https://api.icount.co.il/api/v3.php/doc/create", {
-                    method: "POST",
-                    headers: { "content-type": "application/x-www-form-urlencoded" },
-                    body,
-                    cache: "no-store",
-                });
-                await resp.text();
-            }
+      if (icountVars.cid && icountVars.user && icountVars.pass) {
+        const body = toFormUrlEncoded(icountVars).toString();
+        const resp = await fetch("https://api.icount.co.il/api/v3.php/doc/create", {
+          method: "POST",
+          headers: { "content-type": "application/x-www-form-urlencoded" },
+          body,
+          cache: "no-store",
+        });
+        await resp.text();
+      }
 
-            await sendEmail(
-                email,
-                downloadReadyHtml({
-                    recipient: StudentName,
-                    downloadLink: `https://storage.cloud.google.com/${process.env.GCS_BUCKET_NAME}/${filename}?authuser=3`,
-                    filename,
-                    password: vat_id,
-                    expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-                }),
-                "הקובץ שלך מוכן להורדה"
-            );
-        }
-    } catch (e) {
-        console.error("Background task failed:", e);
+      await sendEmail(
+        email,
+        downloadReadyHtml({
+          recipient: StudentName,
+          downloadLink: `https://storage.cloud.google.com/${process.env.GCS_BUCKET_NAME}/${filename}?authuser=3`,
+          filename,
+          password: vat_id,
+          expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+        }),
+        "הקובץ שלך מוכן להורדה"
+      );
     }
+  } catch (e) {
+    console.error("Background task failed:", e);
+  }
 
-    return response;
+  return response;
+}
+
+export async function GET(req: NextRequest) {
+  const hasTypeParam = Boolean(req.nextUrl.searchParams.get("type"));
+  if (!hasTypeParam) {
+    return handleModernSuccess(req);
+  }
+  return handleLegacySuccess(req);
 }
 
 
