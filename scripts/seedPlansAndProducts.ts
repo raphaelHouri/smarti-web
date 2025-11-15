@@ -90,6 +90,7 @@ async function upsertPlans(systemProductId: string, bookProductId: string) {
     type PlanSeed = {
         name: string;
         description: string;
+        internalDescription?: string;
         days: number;
         price: number;
         packageType: "system" | "book";
@@ -106,6 +107,7 @@ async function upsertPlans(systemProductId: string, bookProductId: string) {
         price: 35,
         packageType: "book",
         productsIds: [bookProductId],
+        internalDescription: "Books bundle",
         displayData: {
             icon: "BookOpen",
             color: "green",
@@ -136,6 +138,7 @@ async function upsertPlans(systemProductId: string, bookProductId: string) {
                 days: bookPlanSeed.days,
                 price: bookPlanSeed.price,
                 displayData: bookPlanSeed.displayData,
+                internalDescription: bookPlanSeed.internalDescription ?? bookPlanSeed.description,
                 createdAt: new Date(),
             })
             .where(eq(schema.plans.id, existingBookPlan.id));
@@ -150,6 +153,7 @@ async function upsertPlans(systemProductId: string, bookProductId: string) {
             days: bookPlanSeed.days,
             price: bookPlanSeed.price,
             displayData: bookPlanSeed.displayData,
+            internalDescription: bookPlanSeed.internalDescription ?? bookPlanSeed.description,
             createdAt: new Date(),
         }).returning();
         bookPlanId = inserted[0].id;
@@ -160,6 +164,7 @@ async function upsertPlans(systemProductId: string, bookProductId: string) {
         {
             name: "Trial Period",
             description: "Test our preparation program",
+            internalDescription: "Trial access",
             days: 7,
             price: 12,
             packageType: "system",
@@ -178,6 +183,7 @@ async function upsertPlans(systemProductId: string, bookProductId: string) {
         {
             name: "Standard Prep",
             description: "Comprehensive monthly preparation program",
+            internalDescription: "Monthly subscription",
             days: 30,
             price: 40,
             packageType: "system",
@@ -204,6 +210,7 @@ async function upsertPlans(systemProductId: string, bookProductId: string) {
         {
             name: "Extended Prep",
             description: "Long-term preparation with priority support",
+            internalDescription: "6 months bundle",
             days: 180,
             price: 199,
             packageType: "system",
@@ -245,6 +252,7 @@ async function upsertPlans(systemProductId: string, bookProductId: string) {
                     days: seed.days,
                     price: seed.price,
                     displayData: seed.displayData,
+                    internalDescription: seed.internalDescription ?? seed.description,
                     createdAt: new Date(),
                 })
                 .where(eq(schema.plans.id, existing.id));
@@ -258,6 +266,7 @@ async function upsertPlans(systemProductId: string, bookProductId: string) {
                 days: seed.days,
                 price: seed.price,
                 displayData: seed.displayData,
+                internalDescription: seed.internalDescription ?? seed.description,
                 createdAt: new Date(),
             });
         }
