@@ -116,7 +116,7 @@ async function handleLegacySuccess(req: NextRequest) {
   }
 
   const vat_id = req.nextUrl.searchParams.get("UserId") ?? "";
-  const filename = getFileName(vat_id, "");
+  const filename = `${getFileName(vat_id, "")}.pdf`;
   const phone = params.cell;
 
   const OrderPayloadSchema = z.object({

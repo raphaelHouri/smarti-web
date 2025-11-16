@@ -187,7 +187,7 @@ export async function POST(req: Request) {
         }
 
         const fileBlob = new Blob([generatedBuffer as BlobPart], { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
-        const fileName = getFileName(productType? userId || "" :vat_id ,productType ?? "");
+        const fileName = getFileName(productType ? (userId || "") : vat_id, productType ?? "");
         uploadFormData.append('file', fileBlob, `${fileName}.docx`);
 
         await axios.post(uploadUrl, uploadFormData, {
