@@ -429,7 +429,7 @@ export async function GET(req: NextRequest) {
   if (!parsedOrder.success) {
     return new NextResponse(
       `Invalid Order payload. Value of 'order': ${JSON.stringify(order)}`,
-      { status: 400 }
+      { status: 400 })
   }
   const { transactionId, amount } = parsedOrder.data;
   const paymentTransaction = await getTransactionDataById(transactionId);
