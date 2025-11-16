@@ -90,12 +90,12 @@ function adaptPlans(records: ShopPlanRecord[], pkgType: PackageType): Plan[] {
     });
 }
 
-export default function PurchasePageShop({
+export default function PurchasePageShop({ 
     plansByType,
-    packageType
-}: {
+    packageType = "system"
+}: { 
     plansByType: ShopPlansByType;
-    packageType: PackageType;
+    packageType?: PackageType;
 }) {
     const { userId } = useAuth();
     const bookPurchaseModal = useBookPurchaseModal();
