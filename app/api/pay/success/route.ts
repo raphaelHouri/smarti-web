@@ -11,6 +11,8 @@ import { GET as handleModernSuccess } from "@/app/api/pay2/success/route";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+type OrderPayload = { email: string; planId?: string; amount?: number | string; type?: string; StudentName: string };
+
 type YaadParams = {
   Id: string;
   CCode: string;
@@ -106,7 +108,6 @@ async function handleLegacySuccess(req: NextRequest) {
     return new NextResponse("Validation error.", { status: 400, headers: { "content-type": "text/plain; charset=utf-8" } });
   }
 
-  type OrderPayload = { email: string; planId?: string; amount?: number | string; type?: string; StudentName: string };
   let order: OrderPayload;
   try {
     order = hexToUtf8Json<OrderPayload>(params.Order);
@@ -286,8 +287,12 @@ async function handleLegacySuccess(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  const hasPlanIdParam = req.nextUrl.searchParams.get("PlanId");
-  if (hasPlanIdParam && hasPlanIdParam == "book") {
+  const order = hexToUtf8Json<OrderPayload>(req.nextUrl.searchParams.get("Order") ?? "");
+  if (!order) {
+    return new NextResponse("Invalid Order payload", { status: 400 });
+  }
+  const { planId } = order;
+  if (planId === "book") {
     return handleLegacySuccess(req);
   }
   return handleModernSuccess(req);
