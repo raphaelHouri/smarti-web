@@ -128,7 +128,11 @@ async function handleLegacySuccess(req: NextRequest) {
   console.error("order", order);
   const parsedOrder = OrderPayloadSchema.safeParse(order);
   if (!parsedOrder.success) {
-    return new NextResponse("Invalid Order payload", { status: 400 });
+    console.error("Invalid Order payload. Value of 'order':", order);
+    return new NextResponse(
+      `Invalid Order payload. Value of 'order': ${JSON.stringify(order)}`,
+      { status: 400 }
+    );
   }
 
   const { email, planId, amount, StudentName } = parsedOrder.data;
