@@ -79,7 +79,8 @@ async function generate(StudentName?: string, vat_id?: string): Promise<Buffer |
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export async function POST(req: Request) {
-    const { userId } = await auth();
+
+
     // Read the request body as text
     const bodyText = await req.text();
 
@@ -91,7 +92,7 @@ export async function POST(req: Request) {
     const email = params.get("email");
     const StudentName = params.get("StudentName");
     const productType = params.get("productType");
-
+    const userId = params.get("userId");
     if (!vat_id || !email || !StudentName) {
         console.warn("Missing required fields in the request.");
         return NextResponse.json(

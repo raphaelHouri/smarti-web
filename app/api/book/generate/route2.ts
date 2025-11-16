@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
             formData.append("email", email);
             formData.append("StudentName", studentName);
             formData.append("productType", product.productType);
-
+            formData.append("userId", userId);
             const convertResp = await fetch(`${appUrl}/api/book/convert`, {
                 method: "POST",
                 headers: { "content-type": "application/x-www-form-urlencoded" },
