@@ -43,17 +43,44 @@ async function upsertProducts() {
         systemProductId = inserted[0].id;
     }
 
+    // Helper function to upsert a book product
+    const upsertBookProduct = async (productType: "bookStep1" | "bookStep2" | "bookStep3", name: string, description: string, displayData: any) => {
+        const existingProduct = await db.query.products.findFirst({
+            where: (t, { eq }) => eq(t.productType, productType),
+        });
+        const productData: {
+            productType: "bookStep1" | "bookStep2" | "bookStep3";
+            name: string;
+            description: string;
+            createdAt: Date;
+            displayData: any;
+        } = {
+            productType,
+            name,
+            description,
+            createdAt: new Date(),
+            displayData,
+        };
+        if (existingProduct) {
+            await db.update(schema.products)
+                .set(productData)
+                .where(eq(schema.products.id, existingProduct.id));
+            return existingProduct.id;
+        } else {
+            const inserted = await db.insert(schema.products)
+                .values({ id: crypto.randomUUID(), ...productData })
+                .returning();
+            return inserted[0].id;
+        }
+    };
+
     // book product (bookStep1)
-    const bookProduct = await db.query.products.findFirst({
-        where: (t, { eq }) => eq(t.productType, "bookStep1"),
-    });
-    const bookProductData = {
-        productType: "bookStep1" as const,
-        name: "Preparation Booklet",
-        description: "Preparation Booklet for Grade B Stage A",
-        createdAt: new Date(),
-        displayData: {
-            title: "Preparation Booklet",
+    const bookStep1ProductId = await upsertBookProduct(
+        "bookStep1",
+        "Preparation Booklet Step 1",
+        "Preparation Booklet for Grade B Stage A",
+        {
+            title: "Preparation Booklet Step 1",
             subtitle: "Preparation Booklet for Grade B Stage A",
             year: "2025",
             stage: "Stage A",
@@ -67,24 +94,64 @@ async function upsertProducts() {
                 "Exams Chapter for Practice",
                 "Useful Tips for Parents and Children",
             ],
-        },
-    };
-    let bookProductId = bookProduct?.id;
-    if (bookProduct) {
-        await db.update(schema.products)
-            .set(bookProductData)
-            .where(eq(schema.products.id, bookProduct.id));
-    } else {
-        const inserted = await db.insert(schema.products)
-            .values({ id: crypto.randomUUID(), ...bookProductData })
-            .returning();
-        bookProductId = inserted[0].id;
-    }
+        }
+    );
 
-    return { systemProductId: systemProductId!, bookProductId: bookProductId! };
+    // book product (bookStep2)
+    const bookStep2ProductId = await upsertBookProduct(
+        "bookStep2",
+        "Preparation Booklet Step 2",
+        "Preparation Booklet for Grade B Stage B",
+        {
+            title: "Preparation Booklet Step 2",
+            subtitle: "Preparation Booklet for Grade B Stage B",
+            year: "2025",
+            stage: "Stage B",
+            grade: "Grade B",
+            productTypeLabel: "Home Printing",
+            price: "$35",
+            featuresTitle: "What's included in the booklet:",
+            features: [
+                "Comprehensive Reading Comprehension Chapter",
+                "Arithmetic Chapter with Diverse Exercises",
+                "Exams Chapter for Practice",
+                "Useful Tips for Parents and Children",
+            ],
+        }
+    );
+
+    // book product (bookStep3)
+    const bookStep3ProductId = await upsertBookProduct(
+        "bookStep3",
+        "Preparation Booklet Step 3",
+        "Preparation Booklet for Grade B Stage C",
+        {
+            title: "Preparation Booklet Step 3",
+            subtitle: "Preparation Booklet for Grade B Stage C",
+            year: "2025",
+            stage: "Stage C",
+            grade: "Grade B",
+            productTypeLabel: "Home Printing",
+            price: "$35",
+            featuresTitle: "What's included in the booklet:",
+            features: [
+                "Comprehensive Reading Comprehension Chapter",
+                "Arithmetic Chapter with Diverse Exercises",
+                "Exams Chapter for Practice",
+                "Useful Tips for Parents and Children",
+            ],
+        }
+    );
+
+    return {
+        systemProductId: systemProductId!,
+        bookStep1ProductId,
+        bookStep2ProductId,
+        bookStep3ProductId,
+    };
 }
 
-async function upsertPlans(systemProductId: string, bookProductId: string) {
+async function upsertPlans(systemProductId: string, bookStep1ProductId: string, bookStep2ProductId: string, bookStep3ProductId: string) {
     type PlanSeed = {
         name: string;
         description: string;
@@ -104,7 +171,7 @@ async function upsertPlans(systemProductId: string, bookProductId: string) {
         days: 0,
         price: 1,
         packageType: "book",
-        productsIds: [bookProductId],
+        productsIds: [bookStep1ProductId, bookStep2ProductId, bookStep3ProductId],
         internalDescription: "Books bundle",
         displayData: {
             icon: "BookOpen",
@@ -201,7 +268,7 @@ async function upsertPlans(systemProductId: string, bookProductId: string) {
                     price: "$60",
                     originalPrice: "$75",
                     savings: "Save $15",
-                    productId: bookProductId,
+                    productId: bookStep1ProductId,
                 },
             },
         },
@@ -229,7 +296,7 @@ async function upsertPlans(systemProductId: string, bookProductId: string) {
                     price: "$215",
                     originalPrice: "$234",
                     savings: "Save $19",
-                    productId: bookProductId,
+                    productId: bookStep1ProductId,
                 },
             },
         },
@@ -274,8 +341,8 @@ async function upsertPlans(systemProductId: string, bookProductId: string) {
 async function main() {
     try {
         console.log("Seeding products and plans started");
-        const { systemProductId, bookProductId } = await upsertProducts();
-        await upsertPlans(systemProductId, bookProductId);
+        const { systemProductId, bookStep1ProductId, bookStep2ProductId, bookStep3ProductId } = await upsertProducts();
+        await upsertPlans(systemProductId, bookStep1ProductId, bookStep2ProductId, bookStep3ProductId);
         console.log("✅ Seeding products and plans finished");
     } catch (err) {
         console.error(err);

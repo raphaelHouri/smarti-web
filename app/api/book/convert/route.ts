@@ -12,12 +12,32 @@ import QRCode from "qrcode";
 import { getFileName } from '@/lib/book_utils';
 import { auth } from '@clerk/nextjs/server';
 
-// const templatePath = path.resolve(path.join("public", "template.docx"));
-const templatePath = path.resolve(path.join(process.cwd(), "public", "template.docx"));
-const outputPdfPath = path.resolve("public", "output.docx");
-const zipCachePath = path.resolve("public", "template.zip");
+// Get template path based on productType, default to template.docx if productType is null/undefined
+const getTemplatePath = (productType: string | null | undefined): string => {
+    if (!productType) {
+        return path.resolve(path.join(process.cwd(), "public", "template.docx"));
+    }
+    const validProductTypes = ["bookStep1", "bookStep2", "bookStep3"];
+    if (validProductTypes.includes(productType)) {
+        return path.resolve(path.join(process.cwd(), "public", `template_${productType}.docx`));
+    }
+    // Fallback to default template if productType is invalid
+    return path.resolve(path.join(process.cwd(), "public", "template.docx"));
+};
 
-const readTemplate = async (templatePath: string): Promise<Buffer> => {
+const getZipCachePath = (productType: string | null | undefined): string => {
+    if (!productType) {
+        return path.resolve(path.join(process.cwd(), "public", "template.zip"));
+    }
+    const validProductTypes = ["bookStep1", "bookStep2", "bookStep3"];
+    if (validProductTypes.includes(productType)) {
+        return path.resolve(path.join(process.cwd(), "public", `template_${productType}.zip`));
+    }
+    // Fallback to default template if productType is invalid
+    return path.resolve(path.join(process.cwd(), "public", "template.zip"));
+};
+
+const readTemplate = async (templatePath: string, zipCachePath: string): Promise<Buffer> => {
     if (fs.existsSync(zipCachePath)) {
         console.log("Using cached ZIP file...");
         return fs.readFileSync(zipCachePath);
@@ -35,7 +55,7 @@ const generateQRCodeBuffer = async (data: string): Promise<Buffer> => {
     return QRCode.toBuffer(data);
 };
 
-async function generate(StudentName?: string, vat_id?: string): Promise<Buffer | void> {
+async function generate(StudentName?: string, vat_id?: string, productType?: string | null): Promise<Buffer | void> {
 
     const imageModule = new ImageModule({
         centered: false,
@@ -44,7 +64,9 @@ async function generate(StudentName?: string, vat_id?: string): Promise<Buffer |
     });
     try {
         console.log("Starting document generation...");
-        const zipContent = await readTemplate(templatePath);
+        const templatePath = getTemplatePath(productType);
+        const zipCachePath = getZipCachePath(productType);
+        const zipContent = await readTemplate(templatePath, zipCachePath);
         const zip = new PizZip(zipContent);
         const qrCodeBuffer = await generateQRCodeBuffer(`https://chat.whatsapp.com/DysJXGAm6OJIBV1KvwVcDw?id=kdskl?vat_id=${vat_id}`);
 
@@ -118,7 +140,7 @@ export async function POST(req: Request) {
 
     try {
         console.log("Generating document...");
-        const generatedBuffer = await generate(StudentName, vat_id);
+        const generatedBuffer = await generate(StudentName, vat_id, productType);
 
         if (process.env.NEXT_ENV === "development") {
             console.log("Development mode: Skipping CloudConvert and saving file locally.");

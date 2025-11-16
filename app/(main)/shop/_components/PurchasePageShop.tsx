@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 import FeedbackButton from "@/components/feedbackButton";
 import type { ShopPlanRecord, ShopPlansByType, PackageType } from "@/db/queries";
 import { useAuth, SignInButton } from "@clerk/nextjs";
@@ -89,11 +90,41 @@ function adaptPlans(records: ShopPlanRecord[], pkgType: PackageType): Plan[] {
     });
 }
 
-export default function PurchasePageShop({ plansByType }: { plansByType: ShopPlansByType }) {
+export default function PurchasePageShop({
+    plansByType,
+    packageType
+}: {
+    plansByType: ShopPlansByType;
+    packageType: PackageType;
+}) {
     const { userId } = useAuth();
     const bookPurchaseModal = useBookPurchaseModal();
-    const [selectedCategory, setSelectedCategory] = useState<Category>("system")
+    const router = useRouter();
+    const params = useParams();
+
+    // Convert packageType to category
+    const packageTypeToCategory = (pkgType: PackageType): Category => {
+        return pkgType === "book" ? "books" : "system";
+    };
+
+    // Get packageType from route params
+    const routePackageType = params?.packageType as string | undefined;
+    const effectivePackageType: PackageType = (routePackageType === "book" || routePackageType === "system")
+        ? routePackageType
+        : packageType;
+    const initialCategory = packageTypeToCategory(effectivePackageType);
+
+    const [selectedCategory, setSelectedCategory] = useState<Category>(initialCategory);
     const [planBookOptions, setPlanBookOptions] = useState<Record<string, boolean>>({});
+
+    // Sync with route params when they change
+    useEffect(() => {
+        const routePkgType = params?.packageType as string | undefined;
+        if (routePkgType === "book" || routePkgType === "system") {
+            const category = packageTypeToCategory(routePkgType);
+            setSelectedCategory(category);
+        }
+    }, [params]);
 
     // Build categories from keys of plansByType
     const categories = useMemo(() => {
@@ -148,8 +179,14 @@ export default function PurchasePageShop({ plansByType }: { plansByType: ShopPla
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
+    const handleCategoryChange = (category: Category) => {
+        setSelectedCategory(category);
+        const packageType: PackageType = category === "books" ? "book" : "system";
+        router.push(`/shop/${packageType}`, { scroll: false });
+    };
+
     const handleRecommendation = () => {
-        setSelectedCategory("system");
+        handleCategoryChange("system");
         setTimeout(() => {
             document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" });
         }, 100);
@@ -225,7 +262,7 @@ export default function PurchasePageShop({ plansByType }: { plansByType: ShopPla
                             return (
                                 <button
                                     key={cat.id}
-                                    onClick={() => setSelectedCategory(cat.id)}
+                                    onClick={() => handleCategoryChange(cat.id)}
                                     className={cn(
                                         "flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-200",
                                         isActive && "bg-purple-600 text-white shadow-md",
@@ -404,8 +441,8 @@ export default function PurchasePageShop({ plansByType }: { plansByType: ShopPla
                                     {!userId ? (
                                         <SignInButton
                                             mode="modal"
-                                            forceRedirectUrl="/shop"
-                                            signUpForceRedirectUrl="/shop"
+                                            forceRedirectUrl={`/shop/${effectivePackageType}`}
+                                            signUpForceRedirectUrl={`/shop/${effectivePackageType}`}
                                         >
                                             <button
                                                 className={cn(

@@ -21,7 +21,7 @@ export const organizationYears = pgTable("organization_years", {
 });
 
 
-export const productTypeEnum = pgEnum("productType", ["system1", "bookStep1"])
+export const productTypeEnum = pgEnum("productType", ["system1", "bookStep1", "bookStep2", "bookStep3"])
 export const packageTypeEnum = pgEnum("packageType", ["system", "book"])
 export const couponTypeEnum = pgEnum("couponType", ["percentage", "fixed"])
 

@@ -26,7 +26,7 @@ const SystemPage: FC<SystemPageProps> = ({ product }) => {
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
             {/* Back + Feedback */}
             <div className="p-4 flex flex-row items-start justify-between">
-                <Link href="/shop" className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
+                <Link href="/shop/system" className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
                     <ArrowLeft className="w-4 h-4" />
                     Back to Shop
                 </Link>
@@ -151,7 +151,7 @@ const SystemPage: FC<SystemPageProps> = ({ product }) => {
                                 <span className="text-sm text-gray-500">Monthly Price</span>
                             </div>
                             <div className="text-3xl font-bold text-gray-900 mb-6">{monthlyPrice}</div>
-                            <Link href="/shop" className={cn(
+                            <Link href="/shop/system" className={cn(
                                 "w-full py-4 rounded-lg font-semibold text-white transition-all duration-200 flex items-center justify-center gap-2",
                                 "bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 shadow-lg hover:shadow-xl"
                             )}>

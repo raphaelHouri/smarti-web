@@ -43,7 +43,7 @@ const BookPage: FC<BookPageProps> = ({ product }) => {
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
             <div className="p-4 flex flex-row items-start justify-between">
                 <Link
-                    href="/shop"
+                    href="/shop/book"
                     className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
                 >
                     <ArrowLeft className="w-4 h-4" />
