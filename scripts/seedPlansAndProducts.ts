@@ -164,15 +164,53 @@ async function upsertPlans(systemProductId: string, bookStep1ProductId: string, 
         needsBookPlanId?: boolean;
     };
 
-    // First pass: Create/update book plan to get its ID
-    const bookPlanSeed: PlanSeed = {
-        name: "Study Books Collection",
-        description: "Complete study materials in digital and physical format",
+    // Helper function to upsert a book plan
+    const upsertBookPlan = async (planSeed: PlanSeed) => {
+        const existingPlan = await db.query.plans.findFirst({
+            where: (t, { eq }) => eq(t.name, planSeed.name),
+        });
+        if (existingPlan) {
+            await db
+                .update(schema.plans)
+                .set({
+                    packageType: planSeed.packageType as any,
+                    productsIds: planSeed.productsIds as any,
+                    name: planSeed.name,
+                    description: planSeed.description,
+                    days: planSeed.days,
+                    price: planSeed.price,
+                    displayData: planSeed.displayData,
+                    internalDescription: planSeed.internalDescription ?? planSeed.description,
+                    createdAt: new Date(),
+                })
+                .where(eq(schema.plans.id, existingPlan.id));
+            return existingPlan.id;
+        } else {
+            const inserted = await db.insert(schema.plans).values({
+                id: crypto.randomUUID(),
+                packageType: planSeed.packageType as any,
+                productsIds: planSeed.productsIds as any,
+                name: planSeed.name,
+                description: planSeed.description,
+                days: planSeed.days,
+                price: planSeed.price,
+                displayData: planSeed.displayData,
+                internalDescription: planSeed.internalDescription ?? planSeed.description,
+                createdAt: new Date(),
+            }).returning();
+            return inserted[0].id;
+        }
+    };
+
+    // Create/update book plans for each step
+    const bookStep1PlanId = await upsertBookPlan({
+        name: "Study Book Step 1",
+        description: "Preparation Booklet for Grade B Stage A",
         days: 0,
-        price: 1,
+        price: 35,
         packageType: "book",
-        productsIds: [bookStep1ProductId, bookStep2ProductId, bookStep3ProductId],
-        internalDescription: "Books bundle",
+        productsIds: [bookStep1ProductId],
+        internalDescription: "Book Step 1",
         displayData: {
             icon: "BookOpen",
             color: "green",
@@ -183,46 +221,81 @@ async function upsertPlans(systemProductId: string, bookStep1ProductId: string, 
                 "Detailed solutions",
                 "Study guides",
             ],
+            badge: "Step 1",
+            badgeColor: "green",
+        },
+    });
+
+    const bookStep2PlanId = await upsertBookPlan({
+        name: "Study Book Step 2",
+        description: "Preparation Booklet for Grade B Stage B",
+        days: 0,
+        price: 35,
+        packageType: "book",
+        productsIds: [bookStep2ProductId],
+        internalDescription: "Book Step 2",
+        displayData: {
+            icon: "BookOpen",
+            color: "green",
+            features: [
+                "Digital PDF (instant)",
+                "Physical book (shipped)",
+                "400+ practice questions",
+                "Detailed solutions",
+                "Study guides",
+            ],
+            badge: "Step 2",
+            badgeColor: "green",
+        },
+    });
+
+    const bookStep3PlanId = await upsertBookPlan({
+        name: "Study Book Step 3",
+        description: "Preparation Booklet for Grade B Stage C",
+        days: 0,
+        price: 35,
+        packageType: "book",
+        productsIds: [bookStep3ProductId],
+        internalDescription: "Book Step 3",
+        displayData: {
+            icon: "BookOpen",
+            color: "green",
+            features: [
+                "Digital PDF (instant)",
+                "Physical book (shipped)",
+                "400+ practice questions",
+                "Detailed solutions",
+                "Study guides",
+            ],
+            badge: "Step 3",
+            badgeColor: "green",
+        },
+    });
+
+    // Also create a bundle plan with all three books
+    const bookBundlePlanId = await upsertBookPlan({
+        name: "Study Books Collection",
+        description: "Complete study materials in digital and physical format - All 3 Steps",
+        days: 0,
+        price: 100,
+        packageType: "book",
+        productsIds: [bookStep1ProductId, bookStep2ProductId, bookStep3ProductId],
+        internalDescription: "Books bundle - All steps",
+        displayData: {
+            icon: "BookOpen",
+            color: "green",
+            features: [
+                "All 3 book steps included",
+                "Digital PDF (instant)",
+                "Physical books (shipped)",
+                "1200+ practice questions",
+                "Detailed solutions",
+                "Study guides",
+            ],
             badge: "Save $5",
             badgeColor: "green",
         },
-    };
-
-    let bookPlanId: string;
-    const existingBookPlan = await db.query.plans.findFirst({
-        where: (t, { eq }) => eq(t.name, bookPlanSeed.name),
     });
-    if (existingBookPlan) {
-        await db
-            .update(schema.plans)
-            .set({
-                packageType: bookPlanSeed.packageType as any,
-                productsIds: bookPlanSeed.productsIds as any,
-                name: bookPlanSeed.name,
-                description: bookPlanSeed.description,
-                days: bookPlanSeed.days,
-                price: bookPlanSeed.price,
-                displayData: bookPlanSeed.displayData,
-                internalDescription: bookPlanSeed.internalDescription ?? bookPlanSeed.description,
-                createdAt: new Date(),
-            })
-            .where(eq(schema.plans.id, existingBookPlan.id));
-        bookPlanId = existingBookPlan.id;
-    } else {
-        const inserted = await db.insert(schema.plans).values({
-            id: crypto.randomUUID(),
-            packageType: bookPlanSeed.packageType as any,
-            productsIds: bookPlanSeed.productsIds as any,
-            name: bookPlanSeed.name,
-            description: bookPlanSeed.description,
-            days: bookPlanSeed.days,
-            price: bookPlanSeed.price,
-            displayData: bookPlanSeed.displayData,
-            internalDescription: bookPlanSeed.internalDescription ?? bookPlanSeed.description,
-            createdAt: new Date(),
-        }).returning();
-        bookPlanId = inserted[0].id;
-    }
 
     // Second pass: Create/update system plans with book plan reference
     const seeds: PlanSeed[] = [
