@@ -1,6 +1,6 @@
 // app/api/book/convert/route.ts
 // export const runtime = "nodejs";
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import axios from 'axios';
 
 import fs from "fs";
@@ -10,6 +10,7 @@ import Docxtemplater from "docxtemplater";
 import ImageModule from "docxtemplater-image-module-free";
 import QRCode from "qrcode";
 import { getFileName } from '@/lib/book_utils';
+import { auth } from '@clerk/nextjs/server';
 
 // const templatePath = path.resolve(path.join("public", "template.docx"));
 const templatePath = path.resolve(path.join(process.cwd(), "public", "template.docx"));
@@ -35,6 +36,7 @@ const generateQRCodeBuffer = async (data: string): Promise<Buffer> => {
 };
 
 async function generate(StudentName?: string, vat_id?: string): Promise<Buffer | void> {
+
     const imageModule = new ImageModule({
         centered: false,
         getImage: (tagValue: Buffer) => tagValue,
@@ -77,6 +79,7 @@ async function generate(StudentName?: string, vat_id?: string): Promise<Buffer |
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export async function POST(req: Request) {
+    const { userId } = await auth();
     // Read the request body as text
     const bodyText = await req.text();
 
@@ -183,7 +186,7 @@ export async function POST(req: Request) {
         }
 
         const fileBlob = new Blob([generatedBuffer as BlobPart], { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
-        const fileName = getFileName(vat_id,productType ?? "");
+        const fileName = getFileName(productType? userId || "" :vat_id ,productType ?? "");
         uploadFormData.append('file', fileBlob, `${fileName}.docx`);
 
         await axios.post(uploadUrl, uploadFormData, {
