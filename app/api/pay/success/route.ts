@@ -125,6 +125,7 @@ async function handleLegacySuccess(req: NextRequest) {
     type: z.string().optional(),
     StudentName: z.string(),
   });
+  console.log("order", order);
   const parsedOrder = OrderPayloadSchema.safeParse(order);
   if (!parsedOrder.success) {
     return new NextResponse("Invalid Order payload", { status: 400 });
