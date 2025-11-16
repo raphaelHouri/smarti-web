@@ -1,4 +1,5 @@
 import db from '@/db/drizzle';
+import { getProductById } from '@/db/queries';
 import { bookPurchases } from '@/db/schemaSmarti';
 import { and, eq } from 'drizzle-orm';
 import { NextResponse, type NextRequest } from 'next/server';
@@ -34,11 +35,15 @@ export async function GET(request: NextRequest) {
             if (!appUrl) {
                 throw new Error('NEXT_PUBLIC_APP_URL is not configured');
             }
-
+            const product = await getProductById(productId);
+            if (!product) {
+                throw new Error('Product not found');
+            }
             const formData = new URLSearchParams();
             formData.append("vat_id", vatId);
             formData.append("email", email);
             formData.append("StudentName", studentName);
+            formData.append("productType", product.productType);
 
             const convertResp = await fetch(`${appUrl}/api/book/convert`, {
                 method: "POST",

@@ -11,11 +11,10 @@ async function upsertProducts() {
     // Ensure base products exist and are updated
     // system product
     const systemProduct = await db.query.products.findFirst({
-        where: (t, { eq }) => eq(t.productType, "system" as any),
+        where: (t, { eq }) => eq(t.productType, "system1"),
     });
     const systemProductData = {
-        serviceType: "system" as any,
-        productType: "system" as any,
+        productType: "system1" as const,
         name: "Preparation System",
         description: "Monthly Preparation Program",
         createdAt: new Date(),
@@ -46,11 +45,10 @@ async function upsertProducts() {
 
     // book product (bookStep1)
     const bookProduct = await db.query.products.findFirst({
-        where: (t, { eq }) => eq(t.productType, "bookStep1" as any),
+        where: (t, { eq }) => eq(t.productType, "bookStep1"),
     });
     const bookProductData = {
-        serviceType: "system" as any,
-        productType: "bookStep1" as any,
+        productType: "bookStep1" as const,
         name: "Preparation Booklet",
         description: "Preparation Booklet for Grade B Stage A",
         createdAt: new Date(),
@@ -104,7 +102,7 @@ async function upsertPlans(systemProductId: string, bookProductId: string) {
         name: "Study Books Collection",
         description: "Complete study materials in digital and physical format",
         days: 0,
-        price: 35,
+        price: 1,
         packageType: "book",
         productsIds: [bookProductId],
         internalDescription: "Books bundle",

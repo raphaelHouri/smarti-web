@@ -9,7 +9,7 @@ import PizZip from "pizzip";
 import Docxtemplater from "docxtemplater";
 import ImageModule from "docxtemplater-image-module-free";
 import QRCode from "qrcode";
-import { createFileName } from '@/lib/book_utils';
+import { getFileName } from '@/lib/book_utils';
 
 // const templatePath = path.resolve(path.join("public", "template.docx"));
 const templatePath = path.resolve(path.join(process.cwd(), "public", "template.docx"));
@@ -87,6 +87,7 @@ export async function POST(req: Request) {
     const vat_id = params.get("vat_id");
     const email = params.get("email");
     const StudentName = params.get("StudentName");
+    const productType = params.get("productType");
 
     if (!vat_id || !email || !StudentName) {
         console.warn("Missing required fields in the request.");
@@ -182,7 +183,7 @@ export async function POST(req: Request) {
         }
 
         const fileBlob = new Blob([generatedBuffer as BlobPart], { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
-        const fileName = createFileName(vat_id || "unknown");
+        const fileName = getFileName(vat_id,productType ?? "");
         uploadFormData.append('file', fileBlob, `${fileName}.docx`);
 
         await axios.post(uploadUrl, uploadFormData, {

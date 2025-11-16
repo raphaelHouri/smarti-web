@@ -2,7 +2,7 @@
 import { cache } from "react";
 import db from "./drizzle";
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { lessonCategory, lessonQuestionGroups, lessons, questions, userLessonResults, users, userSettings, userWrongQuestions, onlineLessons, coupons, paymentTransactions, bookPurchases } from './schemaSmarti';
+import { lessonCategory, lessonQuestionGroups, lessons, questions, userLessonResults, users, userSettings, userWrongQuestions, onlineLessons, coupons, paymentTransactions, bookPurchases, subscriptions } from './schemaSmarti';
 import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -289,6 +289,57 @@ export const getTransactionDataById = cache(async (transactionId: string) => {
         },
     });
 });
+
+// === Payments: subscriptions and transaction status helpers ===
+export type NewSubscription = {
+    userId: string;
+    productId: string;
+    couponId: string | null;
+    paymentTransactionId: string;
+    systemUntil: Date;
+};
+
+/**
+ * Insert subscriptions for a given transaction idempotently.
+ * If any subscriptions already exist for the paymentTransactionId, no inserts are performed.
+ */
+export async function createSubscriptionsIfMissingForTransaction(
+    subscriptionItems: NewSubscription[],
+    paymentTransactionId: string
+): Promise<void> {
+    if (!Array.isArray(subscriptionItems) || subscriptionItems.length === 0) return;
+
+    const existing = await db.query.subscriptions.findMany({
+        where: (s, { eq }) => eq(s.paymentTransactionId, paymentTransactionId),
+    });
+    if (existing && existing.length > 0) return;
+
+    await db.insert(subscriptions).values(
+        subscriptionItems.map((s) => ({
+            id: crypto.randomUUID(),
+            userId: s.userId,
+            productId: s.productId,
+            couponId: s.couponId ?? null,
+            paymentTransactionId: s.paymentTransactionId,
+            systemUntil: s.systemUntil,
+            createdAt: new Date(),
+        }))
+    );
+}
+
+/**
+ * Mark the payment transaction as fulfilled and update the optional vatId.
+ */
+export async function fulfillPaymentTransaction(transactionId: string, vatId?: string): Promise<void> {
+    await db
+        .update(paymentTransactions)
+        .set({
+            status: "fulfilled",
+            ...(vatId ? { vatId } : {}),
+            updatedAt: new Date(),
+        })
+        .where(eq(paymentTransactions.id, transactionId));
+}
 
 
 export const getLessonsOfCategoryById = cache(async (categoryId: string) => {

@@ -95,7 +95,7 @@ const main = async () => {
         await db.insert(schema.products).values([
             {
                 id: product1Id,
-                productType: "system",
+                productType: "system1",
                 name: "System Access",
                 description: "Full system features",
                 createdAt: new Date()

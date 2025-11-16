@@ -20,15 +20,15 @@ export const organizationYears = pgTable("organization_years", {
     createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const serviceTypeEnum = pgEnum("serviceType", ["system", "book"])
-export const productTypeEnum = pgEnum("productType", ["system", "bookStep1"])
+
+export const productTypeEnum = pgEnum("productType", ["system1", "bookStep1"])
 export const packageTypeEnum = pgEnum("packageType", ["system", "book"])
 export const couponTypeEnum = pgEnum("couponType", ["percentage", "fixed"])
 
 export const products = pgTable("products", {
     id: uuid("id").primaryKey(),
-    serviceType: productTypeEnum("serviceType").default("system").notNull(),
-    productType: productTypeEnum("productType").default("system").notNull(),
+    packageType: packageTypeEnum("packageType").default("system").notNull(),
+    productType: productTypeEnum("productType").default("system1").notNull(),
     name: text("name").notNull(),
     description: text("description"),
     createdAt: timestamp("created_at").defaultNow(),

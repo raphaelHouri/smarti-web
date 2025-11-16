@@ -5,8 +5,9 @@ import { z } from "zod";
 import { sendEmail } from "@/lib/sendMail";
 import { downloadReadyHtml } from "@/emails/downloadReady";
 import { getFileName } from "@/lib/book_utils";
-import { createBookPurchase, getProductById, getTransactionDataById } from "@/db/queries";
+import { createBookPurchase, getProductById, getTransactionDataById, createSubscriptionsIfMissingForTransaction, fulfillPaymentTransaction } from "@/db/queries";
 import { calculateAmount } from "@/lib/utils";
+import type { products as ProductsTable } from "@/db/schemaSmarti";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -365,13 +366,10 @@ const OrderPayloadSchema = z.object({
   amount: z.number(),
 });
 
-async function createBookPurchaseAndGetDownloadUrl(productBookId: string, studentName: string, email: string, paymentTransactionId: string, userId: string, phone: string, vat_id: string): Promise<{ downloadLink: string; filename: string }> {
+async function createBookPurchaseAndGetDownloadUrl(productBook: typeof ProductsTable.$inferSelect, studentName: string, email: string, paymentTransactionId: string, userId: string, phone: string, vat_id: string): Promise<{ downloadLink: string; filename: string }> {
 
 
-  const productBook = await getProductById(productBookId);
-  if (!productBook) {
-    throw new Error("Product book not found");
-  }
+
 
   const gcsBucket = process.env.GCS_BUCKET_NAME;
   if (!gcsBucket) {
@@ -466,7 +464,7 @@ export async function GET(req: NextRequest) {
 
       const systemUntil = new Date(now + 365 * DAY_IN_MS);
       const { downloadLink, filename } = await createBookPurchaseAndGetDownloadUrl(
-        productId,
+        product,
         paymentTransaction.studentName || "",
         paymentTransaction.email || "",
         paymentTransaction.id,
@@ -529,7 +527,7 @@ export async function GET(req: NextRequest) {
 
       const systemUntil = new Date(now + 365 * DAY_IN_MS);
       const { downloadLink, filename } = await createBookPurchaseAndGetDownloadUrl(
-        productBookId,
+        productBook,
         paymentTransaction.studentName || "",
         paymentTransaction.email || "",
         paymentTransaction.id,
@@ -623,6 +621,20 @@ export async function GET(req: NextRequest) {
         }
       }
     }
+    // Create subscriptions (idempotent) and mark transaction as fulfilled
+    if (subscriptionArray.length > 0) {
+      await createSubscriptionsIfMissingForTransaction(
+        subscriptionArray.map((s) => ({
+          userId: s.userId,
+          productId: s.productId,
+          couponId: s.couponId ?? null,
+          paymentTransactionId: s.paymentTransactionId,
+          systemUntil: s.systemUntil,
+        })),
+        paymentTransaction.id
+      );
+    }
+    await fulfillPaymentTransaction(paymentTransaction.id, vat_id);
   } catch (e) {
     console.error("Background task failed:", e);
   }
