@@ -283,9 +283,9 @@ async function handleLegacySuccess(req: NextRequest) {
 export async function GET(req: NextRequest) {
   const hasPlanIdParam = req.nextUrl.searchParams.get("PlanId");
   if (hasPlanIdParam && hasPlanIdParam == "book") {
-    return handleModernSuccess(req);
+    return handleLegacySuccess(req);
   }
-  return handleLegacySuccess(req);
+  return handleModernSuccess(req);
 }
 
 

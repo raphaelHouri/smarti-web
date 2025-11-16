@@ -10,6 +10,8 @@ import Link from "next/link";
 import FeedbackButton from "@/components/feedbackButton";
 import type { ShopPlanRecord, ShopPlansByType, PackageType } from "@/db/queries";
 import { useAuth, SignInButton } from "@clerk/nextjs";
+import { useBookPurchaseModal } from "@/store/use-book-purchase-modal";
+import BookPurchaseModal from "@/components/modals/BookPurchaseModal";
 
 type Category = "system" | "books";
 
@@ -89,9 +91,8 @@ function adaptPlans(records: ShopPlanRecord[], pkgType: PackageType): Plan[] {
 
 export default function PurchasePageShop({ plansByType }: { plansByType: ShopPlansByType }) {
     const { userId } = useAuth();
-    const [selectedCategory, setSelectedCategory] = useState<Category>("system");
-    const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const bookPurchaseModal = useBookPurchaseModal();
+    const [selectedCategory, setSelectedCategory] = useState<Category>("system")
     const [planBookOptions, setPlanBookOptions] = useState<Record<string, boolean>>({});
 
     // Build categories from keys of plansByType
@@ -141,10 +142,7 @@ export default function PurchasePageShop({ plansByType }: { plansByType: ShopPla
         return plan.price;
     };
 
-    const handlePlanSelect = (plan: Plan) => {
-        setSelectedPlan(plan);
-        setIsModalOpen(true);
-    };
+
 
     const scrollToTop = () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -296,7 +294,7 @@ export default function PurchasePageShop({ plansByType }: { plansByType: ShopPla
 
                                     {/* Features */}
                                     <ul className="space-y-3 mb-6 flex-grow">
-                                        {plan.features.map((feature, i) => (
+                                        {plan.features.map((feature: string, i: number) => (
                                             <li key={i} className="flex items-start gap-2">
                                                 <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
                                                 <span className="text-gray-700 dark:text-gray-300 text-sm">
@@ -315,6 +313,19 @@ export default function PurchasePageShop({ plansByType }: { plansByType: ShopPla
                                             >
                                                 <Rocket className="w-3 h-3" />
                                                 View System Details
+                                            </Link>
+                                        </div>
+                                    )}
+
+                                    {/* Book Details Link for book plans */}
+                                    {plan.category === "books" && (
+                                        <div className="mb-4 -mt-2">
+                                            <Link
+                                                href={plan.productId ? `/products/book/${plan.productId}` : "/products/book"}
+                                                className="inline-flex items-center gap-1 text-xs text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 font-medium transition-colors"
+                                            >
+                                                <BookOpen className="w-3 h-3" />
+                                                View Book Details
                                             </Link>
                                         </div>
                                     )}
@@ -390,17 +401,7 @@ export default function PurchasePageShop({ plansByType }: { plansByType: ShopPla
                                     )}
 
                                     {/* Button */}
-                                    {plan.category === "books" ? (
-                                        <Link
-                                            href={plan.productId ? `/products/book/${plan.productId}` : "/products/book"}
-                                            className={cn(
-                                                "w-full py-3 rounded-lg font-medium transition-all duration-200 mt-auto flex items-center justify-center",
-                                                "bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 shadow-md"
-                                            )}
-                                        >
-                                            View Book Details
-                                        </Link>
-                                    ) : !userId ? (
+                                    {!userId ? (
                                         <SignInButton
                                             mode="modal"
                                             forceRedirectUrl="/shop"
@@ -418,17 +419,34 @@ export default function PurchasePageShop({ plansByType }: { plansByType: ShopPla
                                             </button>
                                         </SignInButton>
                                     ) : (
-                                        <button
-                                            onClick={() => handlePlanSelect(plan)}
-                                            className={cn(
-                                                "w-full py-3 rounded-lg font-medium transition-all duration-200 mt-auto",
-                                                plan.badge === "Most Popular"
-                                                    ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600 shadow-md"
-                                                    : "bg-gray-900 dark:bg-gray-700 text-white hover:bg-gray-800 dark:hover:bg-gray-600"
-                                            )}
-                                        >
-                                            Get Started
-                                        </button>
+                                        (() => {
+
+                                            const onClick = () => {
+
+                                                if (plan.category === "books") {
+                                                    bookPurchaseModal.open({ planId: plan.planType });
+                                                } else if (plan.addBookOption && planBookOptions[plan.planType]) {
+                                                    bookPurchaseModal.open({ planId: plan.planType });
+                                                } else {
+                                                    const base = process.env.NEXT_PUBLIC_APP_URL ?? "";
+                                                    const url = `${base}/api/pay?PlanId=${encodeURIComponent(plan.id)}`;
+                                                    window.open(url, "_self");
+                                                }
+                                            };
+                                            return (
+                                                <button
+                                                    onClick={onClick}
+                                                    className={cn(
+                                                        "w-full py-3 rounded-lg font-medium transition-all duration-200 mt-auto",
+                                                        plan.badge === "Most Popular"
+                                                            ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600 shadow-md"
+                                                            : "bg-gray-900 dark:bg-gray-700 text-white hover:bg-gray-800 dark:hover:bg-gray-600"
+                                                    )}
+                                                >
+                                                    Get Started
+                                                </button>
+                                            );
+                                        })()
                                     )}
                                 </div>
                             );
@@ -535,6 +553,8 @@ export default function PurchasePageShop({ plansByType }: { plansByType: ShopPla
                     </div>
                 </div>
             </section>
+            {/* Mount Book Purchase Modal */}
+            <BookPurchaseModal />
         </div>
     );
 }

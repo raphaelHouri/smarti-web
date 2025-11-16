@@ -22,7 +22,7 @@ import FeedbackButton from "@/components/feedbackButton";
 
 type BookPageProps = { product: any | null };
 const BookPage: FC<BookPageProps> = ({ product }) => {
-    const [isPurchasing, setIsPurchasing] = useState(false);
+
     const dd = (product?.displayData ?? {}) as any;
     const title: string = dd.title ?? product?.name ?? "Preparation Booklet";
     const year: string = dd.year ?? "2025";
@@ -37,12 +37,7 @@ const BookPage: FC<BookPageProps> = ({ product }) => {
         "Useful Tips for Parents and Children",
     ];
 
-    const handlePurchase = () => {
-        setIsPurchasing(true);
-        setTimeout(() => {
-            setIsPurchasing(false);
-        }, 2000);
-    };
+
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -174,45 +169,7 @@ const BookPage: FC<BookPageProps> = ({ product }) => {
                                 <span className="text-sm text-gray-500">Special Price</span>
                             </div>
                             <div className="text-3xl font-bold text-gray-900 mb-6">{price}</div>
-                            <button
-                                onClick={handlePurchase}
-                                disabled={isPurchasing}
-                                className={cn(
-                                    "w-full py-4 rounded-lg font-semibold text-white transition-all duration-200 flex items-center justify-center gap-2",
-                                    isPurchasing
-                                        ? "bg-gray-400 cursor-not-allowed"
-                                        : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-lg hover:shadow-xl"
-                                )}
-                            >
-                                {isPurchasing ? (
-                                    <>
-                                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                        Processing...
-                                    </>
-                                ) : (
-                                    <>
-                                        <ShoppingCart className="w-5 h-5" />
-                                        Purchase
-                                    </>
-                                )}
-                            </button>
 
-                            <div className="mt-4 text-center">
-                                <div className="flex items-center justify-center gap-4 text-xs text-gray-500">
-                                    <div className="flex items-center gap-1">
-                                        <Shield className="w-3 h-3" />
-                                        Secure Payment
-                                    </div>
-                                    <div className="flex items-center gap-1">
-                                        <Clock className="w-3 h-3" />
-                                        Instant Delivery
-                                    </div>
-                                    <div className="flex items-center gap-1">
-                                        <Printer className="w-3 h-3" />
-                                        Home Printing
-                                    </div>
-                                </div>
-                            </div>
                         </div>
 
                         <div className="mt-6 grid grid-cols-3 gap-4">
@@ -232,7 +189,6 @@ const BookPage: FC<BookPageProps> = ({ product }) => {
                                     >
                                         <item.icon
                                             className={cn(
-                                                "w-5 h-5",
                                                 item.color === "purple" && "text-purple-600",
                                                 item.color === "green" && "text-green-600",
                                                 item.color === "blue" && "text-blue-600"
@@ -251,5 +207,4 @@ const BookPage: FC<BookPageProps> = ({ product }) => {
 };
 
 export default BookPage;
-
 
