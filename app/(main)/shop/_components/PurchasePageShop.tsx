@@ -90,10 +90,10 @@ function adaptPlans(records: ShopPlanRecord[], pkgType: PackageType): Plan[] {
     });
 }
 
-export default function PurchasePageShop({ 
+export default function PurchasePageShop({
     plansByType,
     packageType = "system"
-}: { 
+}: {
     plansByType: ShopPlansByType;
     packageType?: PackageType;
 }) {
