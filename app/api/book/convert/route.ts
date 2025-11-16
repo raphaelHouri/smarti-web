@@ -68,7 +68,8 @@ async function generate(StudentName?: string, vat_id?: string, productType?: str
         const zipCachePath = getZipCachePath(productType);
         const zipContent = await readTemplate(templatePath, zipCachePath);
         const zip = new PizZip(zipContent);
-        const qrCodeBuffer = await generateQRCodeBuffer(`https://chat.whatsapp.com/DysJXGAm6OJIBV1KvwVcDw?id=kdskl?vat_id=${vat_id}`);
+        const qrCodeBuffer = await generateQRCodeBuffer(`https://chat.whatsapp.com/FThYvpNBjFkH5epoEOJ7PH
+?vat_id=${vat_id}`);
 
         const doc = new Docxtemplater(zip, { modules: [imageModule] });
 
