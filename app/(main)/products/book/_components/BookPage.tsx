@@ -33,6 +33,7 @@ const BookPage: FC<BookPageProps> = ({ product }) => {
     const price: string = dd.price ?? "$35";
     const productType: string = product?.productType ?? "bookStep1";
     const imageSrc: string = `/${productType}.png`;
+    const examplePdfSrc: string = `/${productType}_example.pdf`;
     const description: string = dd.description ?? "מעוניינים בחוברת הכנה מודפסת המדמה תנאי בחינה? תוכלו להדפיס את חוברת ההכנה בבית ולהתחיל לתרגל. החוברת כוללת 3 פרקים: הבנת הנקרא, חשבון, ופרק בחינות. בנוסף, לאורך הספר יש טיפים להורים וילדים.";
     const features: string[] = Array.isArray(dd.features) ? dd.features : [
         "פרק הבנת הנקרא מקיף",
@@ -140,6 +141,16 @@ const BookPage: FC<BookPageProps> = ({ product }) => {
                                 ))}
                             </ul>
                         </div>
+
+                        <a
+                            href={examplePdfSrc}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex w-full items-center justify-center gap-2 bg-white border-2 border-blue-500 text-blue-600 rounded-xl p-4 shadow-md font-medium hover:bg-blue-50 transition-all duration-200 mb-4"
+                        >
+                            <FileText className="w-5 h-5" />
+                            צפה בדוגמה (PDF)
+                        </a>
 
                         <Link
                             href="/shop/book"
