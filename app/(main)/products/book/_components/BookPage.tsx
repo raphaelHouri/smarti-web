@@ -19,6 +19,7 @@ import {
 import { cn, getProductYear } from "@/lib/utils";
 import Link from "next/link";
 import FeedbackButton from "@/components/feedbackButton";
+import Image from "next/image";
 
 type BookPageProps = { product: any | null };
 const BookPage: FC<BookPageProps> = ({ product }) => {
@@ -30,6 +31,8 @@ const BookPage: FC<BookPageProps> = ({ product }) => {
     const grade: string = dd.grade ?? "כיתה ב'";
     const productTypeLabel: string = dd.productTypeLabel ?? "הדפסה ביתית";
     const price: string = dd.price ?? "$35";
+    const productType: string = product?.productType ?? "bookStep1";
+    const imageSrc: string = `/${productType}.png`;
     const description: string = dd.description ?? "מעוניינים בחוברת הכנה מודפסת המדמה תנאי בחינה? תוכלו להדפיס את חוברת ההכנה בבית ולהתחיל לתרגל. החוברת כוללת 3 פרקים: הבנת הנקרא, חשבון, ופרק בחינות. בנוסף, לאורך הספר יש טיפים להורים וילדים.";
     const features: string[] = Array.isArray(dd.features) ? dd.features : [
         "פרק הבנת הנקרא מקיף",
@@ -57,40 +60,17 @@ const BookPage: FC<BookPageProps> = ({ product }) => {
                 <div className="grid lg:grid-cols-5 gap-8">
                     <div className="lg:col-span-3">
                         <div className="relative bg-gray-800 rounded-2xl p-8 mb-6 shadow-2xl">
-                            <div className="relative h-96 bg-gradient-to-br from-blue-900 to-purple-900 rounded-xl overflow-hidden">
+                            <div className="relative h-120 bg-gradient-to-br from-blue-900 to-slate-700 rounded-xl overflow-hidden">
                                 <div className="absolute inset-0 flex items-center justify-center">
-                                    <div className="relative">
-                                        <div className="w-48 h-64 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg shadow-lg transform rotate-3">
-                                            <div className="p-6 text-white">
-                                                <div className="text-center">
-                                                    <h3 className="text-lg font-bold mb-2">{title}</h3>
-                                                    <div className="text-sm opacity-90">{year}</div>
-                                                </div>
-                                                <div className="absolute top-4 right-4">
-                                                    <div className="bg-white text-blue-600 px-2 py-1 rounded text-xs font-bold">{stage}</div>
-                                                </div>
-                                                <div className="absolute bottom-4 left-4">
-                                                    <div className="bg-white text-blue-600 px-2 py-1 rounded text-xs font-bold">{grade}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="absolute top-0 left-0 w-48 h-64 bg-white rounded-lg shadow-lg transform -rotate-2">
-                                            <div className="p-4">
-                                                <div className="h-full bg-gray-50 rounded">
-                                                    <div className="p-4">
-                                                        <div className="w-8 h-8 bg-red-500 rounded text-white text-xs flex items-center justify-center font-bold mb-2">
-                                                            הדפסה ביתית
-                                                        </div>
-                                                        <div className="space-y-2">
-                                                            <div className="h-2 bg-blue-200 rounded"></div>
-                                                            <div className="h-2 bg-green-200 rounded w-3/4"></div>
-                                                            <div className="h-2 bg-yellow-200 rounded w-1/2"></div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                    <div className="relative w-full h-full flex items-center justify-center">
+                                        <Image
+                                            src={imageSrc}
+                                            alt={title}
+                                            width={600}
+                                            height={750}
+                                            className="object-contain max-w-full max-h-full"
+                                            priority
+                                        />
                                     </div>
                                 </div>
 
