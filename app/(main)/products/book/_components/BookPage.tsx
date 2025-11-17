@@ -34,6 +34,7 @@ const BookPage: FC<BookPageProps> = ({ product }) => {
     const productType: string = product?.productType ?? "bookStep1";
     const imageSrc: string = `/${productType}.png`;
     const examplePdfSrc: string = `/${productType}_example.pdf`;
+    const pages: number = dd.pages ?? 115;
     const description: string = dd.description ?? "מעוניינים בחוברת הכנה מודפסת המדמה תנאי בחינה? תוכלו להדפיס את חוברת ההכנה בבית ולהתחיל לתרגל. החוברת כוללת 3 פרקים: הבנת הנקרא, חשבון, ופרק בחינות. בנוסף, לאורך הספר יש טיפים להורים וילדים.";
     const features: string[] = Array.isArray(dd.features) ? dd.features : [
         "פרק הבנת הנקרא מקיף",
@@ -87,7 +88,7 @@ const BookPage: FC<BookPageProps> = ({ product }) => {
 
                         <div className="flex items-center gap-3 text-gray-600">
                             <FileText className="w-5 h-5" />
-                            <span className="font-medium">+115 עמודים</span>
+                            <span className="font-medium">+{pages} עמודים</span>
                         </div>
                     </div>
 

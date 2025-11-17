@@ -346,9 +346,9 @@ export default function PurchasePageShop({
                                         <div className="mb-4 -mt-2">
                                             <Link
                                                 href={plan.productId ? `/products/system/${plan.productId}` : "/products/system"}
-                                                className="inline-flex items-center gap-1 text-xs text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 font-medium transition-colors"
+                                                className="group inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-50 to-blue-50 hover:from-purple-100 hover:to-blue-100 dark:from-purple-900/20 dark:to-blue-900/20 dark:hover:from-purple-900/30 dark:hover:to-blue-900/30 text-purple-700 dark:text-purple-300 hover:text-purple-800 dark:hover:text-purple-200 font-semibold text-sm rounded-lg border border-purple-200 dark:border-purple-800 hover:border-purple-300 dark:hover:border-purple-700 transition-all duration-200 shadow-sm hover:shadow-md"
                                             >
-                                                <Rocket className="w-3 h-3" />
+                                                <Rocket className="w-4 h-4 group-hover:scale-110 transition-transform" />
                                                 צפה בפרטי המערכת
                                             </Link>
                                         </div>
@@ -359,9 +359,9 @@ export default function PurchasePageShop({
                                         <div className="mb-4 -mt-2">
                                             <Link
                                                 href={plan.productId ? `/products/book/${plan.productId}` : "/products/book"}
-                                                className="inline-flex items-center gap-1 text-xs text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 font-medium transition-colors"
+                                                className="group inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/20 dark:hover:from-green-900/30 dark:hover:to-emerald-900/30 text-green-700 dark:text-green-300 hover:text-green-800 dark:hover:text-green-200 font-semibold text-sm rounded-lg border border-green-200 dark:border-green-800 hover:border-green-300 dark:hover:border-green-700 transition-all duration-200 shadow-sm hover:shadow-md"
                                             >
-                                                <BookOpen className="w-3 h-3" />
+                                                <BookOpen className="w-4 h-4 group-hover:scale-110 transition-transform" />
                                                 צפה בפרטי החוברת
                                             </Link>
                                         </div>
@@ -415,9 +415,9 @@ export default function PurchasePageShop({
                                                     </p>
                                                     <Link
                                                         href={plan.productId ? `/products/book/${plan.productId}` : "/products/book"}
-                                                        className="inline-flex items-center gap-1 text-xs text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 font-medium transition-colors"
+                                                        className="group inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/20 dark:hover:from-green-900/30 dark:hover:to-emerald-900/30 text-green-700 dark:text-green-300 hover:text-green-800 dark:hover:text-green-200 font-semibold text-xs rounded-lg border border-green-200 dark:border-green-800 hover:border-green-300 dark:hover:border-green-700 transition-all duration-200 shadow-sm hover:shadow-md"
                                                     >
-                                                        <BookOpen className="w-3 h-3" />
+                                                        <BookOpen className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
                                                         צפה בפרטי החוברת
                                                     </Link>
                                                 </div>
