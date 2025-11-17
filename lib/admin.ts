@@ -11,7 +11,7 @@ const fullAccessUserIds = [
     "user_35c1Ttp2gqRwJVHaDGqWe2errKd",
     "user_351nKgCGf2EByDpF9SLvxnRT8kY",
     "user_34jysbbECoozWYDtYDATELi0Xwq",
-    
+
 ]
 
 export const IsAdmin = async () => {
