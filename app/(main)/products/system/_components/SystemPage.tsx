@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import type { FC } from "react";
-import { ArrowLeft, Award, Check, Rocket, Shield, Star, MonitorSmartphone, BarChart3 } from "lucide-react";
+import { ArrowLeft, Award, Check, Rocket, Shield, Star, MonitorSmartphone, BarChart3, Calendar } from "lucide-react";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn, getProductYear } from "@/lib/utils";
 import FeedbackButton from "@/components/feedbackButton";
 
 type SystemPageProps = { product: any | null };
@@ -15,6 +15,7 @@ const SystemPage: FC<SystemPageProps> = ({ product }) => {
     const subtitle: string = product?.description ?? dd.subtitle ?? "Monthly Preparation Program";
     const periodLabel: string = dd.periodLabel ?? "Monthly";
     const monthlyPrice: string = dd.monthlyPrice ?? "$40";
+    const year: string = getProductYear();
     const description: string = dd.description ?? "Structured learning paths, practice tests, and real-time analytics — all inside a beautiful, kid-friendly system built to improve gifted exam performance.";
     const features: string[] = Array.isArray(dd.features) ? dd.features : [
         "mock lessons unlocked",
@@ -125,10 +126,10 @@ const SystemPage: FC<SystemPageProps> = ({ product }) => {
                             </div>
                             <div className="bg-white rounded-lg p-4 shadow-sm border">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <Star className="w-4 h-4 text-gray-500" />
-                                    <span className="text-sm text-gray-500">Period</span>
+                                    <Calendar className="w-4 h-4 text-gray-500" />
+                                    <span className="text-sm text-gray-500">Year</span>
                                 </div>
-                                <div className="font-semibold text-gray-900">Monthly</div>
+                                <div className="font-semibold text-gray-900">{year}</div>
                             </div>
                         </div>
 

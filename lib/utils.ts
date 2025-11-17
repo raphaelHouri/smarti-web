@@ -90,3 +90,19 @@ export async function calculateAmount(
 
   return Math.max(price, 0);
 }
+
+/**
+ * Get the year from product displayData with a default fallback
+ * @param displayData - The displayData object from the product
+ * @returns The year as a string, defaults to current year
+ */
+export function getProductYear(): string {
+  const now = new Date();
+  let yearString: string;
+  if (now.getMonth() >= 0 && now.getMonth() < 5) {
+      yearString = `${now.getFullYear() - 1} - ${now.getFullYear()}`;
+  } else {
+      yearString = `${now.getFullYear()} - ${now.getFullYear() + 1}`;
+  }
+  return yearString;
+}

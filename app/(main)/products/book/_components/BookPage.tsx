@@ -16,7 +16,7 @@ import {
     Shield,
     Clock
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, getProductYear } from "@/lib/utils";
 import Link from "next/link";
 import FeedbackButton from "@/components/feedbackButton";
 
@@ -25,7 +25,7 @@ const BookPage: FC<BookPageProps> = ({ product }) => {
 
     const dd = (product?.displayData ?? {}) as any;
     const title: string = dd.title ?? product?.name ?? "חוברת הכנה";
-    const year: string = dd.year ?? "2025";
+    const year: string = getProductYear();
     const stage: string = dd.stage ?? "שלב א'";
     const grade: string = dd.grade ?? "כיתה ב'";
     const productTypeLabel: string = dd.productTypeLabel ?? "הדפסה ביתית";

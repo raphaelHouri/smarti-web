@@ -10,7 +10,7 @@ import Docxtemplater from "docxtemplater";
 import ImageModule from "docxtemplater-image-module-free";
 import QRCode from "qrcode";
 import { getFileName } from '@/lib/book_utils';
-import { auth } from '@clerk/nextjs/server';
+import { getProductYear } from '@/lib/utils';
 
 // Get template path based on productType, default to template.docx if productType is null/undefined
 const getTemplatePath = (productType: string | null | undefined): string => {
@@ -73,13 +73,7 @@ async function generate(StudentName?: string, vat_id?: string, productType?: str
 
         const doc = new Docxtemplater(zip, { modules: [imageModule] });
 
-        const now = new Date();
-        let yearString: string;
-        if (now.getMonth() >= 0 && now.getMonth() < 5) {
-            yearString = `${now.getFullYear() - 1} - ${now.getFullYear()}`;
-        } else {
-            yearString = `${now.getFullYear()} - ${now.getFullYear() + 1}`;
-        }
+        let yearString = getProductYear();
 
         console.log("Rendering document with data...");
         await doc.renderAsync({
