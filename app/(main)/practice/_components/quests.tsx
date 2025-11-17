@@ -21,7 +21,7 @@ const QuestsSection = ({ experience }: Props) => {
             <div className="flex items-center justify-between
             w-full space-y-2">
                 <h3 className="text-lg font-bold">
-                    Quests
+                    שלבים
                 </h3>
                 {!userId ? (
                     <Button
@@ -30,15 +30,14 @@ const QuestsSection = ({ experience }: Props) => {
                         size="sm"
                         className="mb-2"
                     >
-                        View all
-                    </Button>
+צפייה                    </Button>
                 ) : <Link href="/quests">
                     <Button
                         variant="primaryOutline"
                         size="sm"
                         className="mb-2"
                     >
-                        View all
+                        צפייה
                     </Button>
                 </Link>}
 

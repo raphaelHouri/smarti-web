@@ -21,7 +21,7 @@ export default async function Home() {
     <div className="max-w-[998px] mx-auto flex-1 w-full flex flex-col lg:flex-row items-center justify-center p-2 gap-2 relative" dir="rtl">
 
       {/* container to hold image */}
-      <div className="relative w-[240px] h-[240px] lg:w-[424px] lg:h-[424px] mb-8 lg:mb-0">
+      <div className=" hidden  sm:block relative w-[240px] h-[240px] lg:w-[424px] lg:h-[424px] mb-8 lg:mb-0">
         <Image
           src="/hero.png"
           alt="hero"
@@ -43,8 +43,9 @@ export default async function Home() {
               className="mx-auto"
               priority
             />
+
           </div>
-          שלוט ושפר את כישורי השפה שלך עם{' '}
+          התכוננו למבחני המחוננים ומצטיינים ביחד עם{' '}
           <span className="text-[#00C950]">סמארטי</span>.
         </h1>
         <div className="flex flex-col items-center justify-center gap-y-3 max-w-[330px] w-full">
@@ -58,7 +59,7 @@ export default async function Home() {
                 forceRedirectUrl="/learn"
               >
                 <Button size="lg" variant="secondary" className="w-full">
-                  התחילו עכשיו
+                  בואו נלמד ביחד
                 </Button>
               </SignUpButton>
               <SignInButton

@@ -27,6 +27,9 @@ const HeaderPage = () => {
             />
 
           </Link>
+          <p className="text-lg font-bold text-[#00C950] tracking-wide">
+            כיתה ב' - שלב א'
+          </p>
         </div>
         <div className="inline-flex gap-x-4 mt-2 ms:ml-0 ml-4">
           <div className="mt-2">
@@ -55,7 +58,7 @@ const HeaderPage = () => {
           <div className="hidden lg:flex">
             <ModeToggle />
           </div>
-          <div className="mt-1">
+          <div className="hidden sm:flex mt-1">
             <FeedbackButton screenName="header" />
           </div>
         </div>

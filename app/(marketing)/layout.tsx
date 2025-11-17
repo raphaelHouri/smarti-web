@@ -15,7 +15,7 @@ const MarketingLayout = ({ children }: MarketingLayoutProps) => {
       </main>
       {/* Can extend the number of sections in the future */}
       {/* <ConnectJson/> */}
-      <FooterPage />
+      {/* <FooterPage /> */}
     </div>
   );
 };
