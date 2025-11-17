@@ -100,9 +100,9 @@ export function getProductYear(): string {
   const now = new Date();
   let yearString: string;
   if (now.getMonth() >= 0 && now.getMonth() < 5) {
-      yearString = `${now.getFullYear() - 1} - ${now.getFullYear()}`;
+    yearString = `${now.getFullYear() - 1} - ${now.getFullYear()}`;
   } else {
-      yearString = `${now.getFullYear()} - ${now.getFullYear() + 1}`;
+    yearString = `${now.getFullYear()} - ${now.getFullYear() + 1}`;
   }
   return yearString;
 }
