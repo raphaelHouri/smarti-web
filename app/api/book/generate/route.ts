@@ -64,7 +64,7 @@ async function handleLegacyGenerate(url: URL) {
 export async function GET(request: NextRequest) {
     try {
         const url = new URL(request.url);
-        const hasTypeParam = Boolean(url.searchParams.get("type"));
+        const hasTypeParam = Boolean(url.searchParams.get("email"));
 
         if (!hasTypeParam) {
             return handleModernGenerate(request);
