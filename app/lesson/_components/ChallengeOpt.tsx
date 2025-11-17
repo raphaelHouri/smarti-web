@@ -56,6 +56,7 @@ const Challenge = ({
                         numberIndex={`${index + 1}`}
                         text={value}
                         selected={selectedOption ? selectedOption === key : false}
+                        isAnswered={!!selectedOption}
                         onClick={() => onSelect(key as "a" | "b" | "c" | "d")}
                         disabled={disabled}
                         status={status}

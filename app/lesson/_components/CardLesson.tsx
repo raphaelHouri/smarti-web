@@ -15,6 +15,7 @@ interface CardLessonProps {
     onClick: () => void;
     disabled?: boolean;
     status?: "correct" | "wrong" | "none";
+    isAnswered?: boolean;
 }
 
 const CardLesson = ({
@@ -27,7 +28,8 @@ const CardLesson = ({
     selected,
     onClick,
     disabled,
-    status
+    status,
+    isAnswered
 }: CardLessonProps) => {
     const handleClick = useCallback(() => {
         if (disabled) return;
@@ -36,17 +38,31 @@ const CardLesson = ({
 
     useKey(numberIndex, handleClick, {}, [handleClick]);
 
-    const isCorrectAnswer = (mode === "review" || mode === "practiceMode") && selected && cardId === "a";
+    const isCorrectAnswer = ((mode === "review" && isAnswered) || mode === "practiceMode" && selected) && cardId === "a";
+    const isNotAnswered = (!isAnswered && mode === "review" && cardId === "a")
     const isWrongAnswer = (mode === "review" || mode === "practiceMode") && selected && cardId !== "a";
     const isComprehensionType = type === "COMPREHENSION";
     const isShapesType = type === "SHAPES";
+    console.log({
+        mode,
+        type,
+        id,
+        cardId,
+        numberIndex,
+        text,
+        selected,
+        onClick,
+        disabled,
+        status,
+        isAnswered
+    });
 
     return (
         <div
             onClick={handleClick}
             className={cn(
                 "h-full border-2 border-b-4 rounded-xl hover:bg-black/5 p-4 lg:p-6 cursor-pointer active:border-b-2",
-                selected && "dark:bg-sky-300 dark:text-black border-sky-300 bg-sky-100 hover:bg-sky-100",
+                selected || isNotAnswered && "dark:bg-sky-300 dark:text-black border-sky-300 bg-sky-100 hover:bg-sky-100",
                 isCorrectAnswer && "dark:border-green-500 border-green-300 bg-green-100 dark:bg-green-200 hover:bg-green-100",
                 isWrongAnswer && "dark:bg-rose-200 dark:hover:bg-rose-200 border-rose-300 bg-rose-100 hover:bg-rose-100",
                 disabled && "pointer-events-none opacity-50",
