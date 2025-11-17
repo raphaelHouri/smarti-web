@@ -15,6 +15,7 @@ const SystemPage: FC<SystemPageProps> = ({ product }) => {
     const subtitle: string = product?.description ?? dd.subtitle ?? "Monthly Preparation Program";
     const periodLabel: string = dd.periodLabel ?? "Monthly";
     const monthlyPrice: string = dd.monthlyPrice ?? "$40";
+    const description: string = dd.description ?? "Structured learning paths, practice tests, and real-time analytics — all inside a beautiful, kid-friendly system built to improve gifted exam performance.";
     const features: string[] = Array.isArray(dd.features) ? dd.features : [
         "mock lessons unlocked",
         "Practice tests & exams",
@@ -109,8 +110,7 @@ const SystemPage: FC<SystemPageProps> = ({ product }) => {
                         {/* Description */}
                         <div className="mb-6">
                             <p className="text-gray-600 leading-relaxed">
-                                Structured learning paths, practice tests, and real-time analytics — all inside
-                                a beautiful, kid-friendly system built to improve gifted exam performance.
+                                {description}
                             </p>
                         </div>
 

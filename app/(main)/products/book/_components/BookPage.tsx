@@ -24,17 +24,18 @@ type BookPageProps = { product: any | null };
 const BookPage: FC<BookPageProps> = ({ product }) => {
 
     const dd = (product?.displayData ?? {}) as any;
-    const title: string = dd.title ?? product?.name ?? "Preparation Booklet";
+    const title: string = dd.title ?? product?.name ?? "חוברת הכנה";
     const year: string = dd.year ?? "2025";
-    const stage: string = dd.stage ?? "Stage A";
-    const grade: string = dd.grade ?? "Grade B";
-    const productTypeLabel: string = dd.productTypeLabel ?? "Home Printing";
+    const stage: string = dd.stage ?? "שלב א'";
+    const grade: string = dd.grade ?? "כיתה ב'";
+    const productTypeLabel: string = dd.productTypeLabel ?? "הדפסה ביתית";
     const price: string = dd.price ?? "$35";
+    const description: string = dd.description ?? "מעוניינים בחוברת הכנה מודפסת המדמה תנאי בחינה? תוכלו להדפיס את חוברת ההכנה בבית ולהתחיל לתרגל. החוברת כוללת 3 פרקים: הבנת הנקרא, חשבון, ופרק בחינות. בנוסף, לאורך הספר יש טיפים להורים וילדים.";
     const features: string[] = Array.isArray(dd.features) ? dd.features : [
-        "Comprehensive Reading Comprehension Chapter",
-        "Arithmetic Chapter with Diverse Exercises",
-        "Exams Chapter for Practice",
-        "Useful Tips for Parents and Children",
+        "פרק הבנת הנקרא מקיף",
+        "פרק חשבון עם תרגילים מגוונים",
+        "פרק בחינות לתרגול",
+        "טיפים שימושיים להורים וילדים",
     ];
 
 
@@ -47,7 +48,7 @@ const BookPage: FC<BookPageProps> = ({ product }) => {
                     className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
                 >
                     <ArrowLeft className="w-4 h-4" />
-                    Back to Shop
+                    חזרה לחנות
                 </Link>
                 <FeedbackButton screenName="book" />
             </div>
@@ -79,7 +80,7 @@ const BookPage: FC<BookPageProps> = ({ product }) => {
                                                 <div className="h-full bg-gray-50 rounded">
                                                     <div className="p-4">
                                                         <div className="w-8 h-8 bg-red-500 rounded text-white text-xs flex items-center justify-center font-bold mb-2">
-                                                            Home Print
+                                                            הדפסה ביתית
                                                         </div>
                                                         <div className="space-y-2">
                                                             <div className="h-2 bg-blue-200 rounded"></div>
@@ -96,7 +97,7 @@ const BookPage: FC<BookPageProps> = ({ product }) => {
                                 <div className="absolute top-4 left-4">
                                     <div className="bg-white px-3 py-1 rounded-full shadow-md">
                                         <span className="text-sm font-bold bg-gradient-to-r from-purple-600 to-blue-600 text-transparent bg-clip-text">
-                                            Gifted
+                                            מחוננים
                                         </span>
                                     </div>
                                 </div>
@@ -105,7 +106,7 @@ const BookPage: FC<BookPageProps> = ({ product }) => {
 
                         <div className="flex items-center gap-3 text-gray-600">
                             <FileText className="w-5 h-5" />
-                            <span className="font-medium">+115 pages</span>
+                            <span className="font-medium">+115 עמודים</span>
                         </div>
                     </div>
 
@@ -114,24 +115,20 @@ const BookPage: FC<BookPageProps> = ({ product }) => {
                             <div className="flex items-center gap-2 mb-4">
                                 <div className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
                                     <Star className="w-4 h-4" />
-                                    Most Recommended
+                                    הכי מומלץ
                                 </div>
                             </div>
 
                             <h1 className="text-3xl font-bold text-gray-900 mb-4">
                                 {product?.description ?? (
-                                    <>Preparation Booklet for <span className="text-blue-600">Grade B Stage A</span></>
+                                    <>חוברת הכנה ל<span className="text-blue-600">כיתה ב' שלב א'</span></>
                                 )}
                             </h1>
                         </div>
 
                         <div className="mb-6">
                             <p className="text-gray-600 leading-relaxed">
-                                Interested in a printed preparation booklet that simulates exam conditions?
-                                You can print the preparation booklet at home and start practicing.
-                                The booklet includes 3 chapters: Reading Comprehension, Arithmetic,
-                                and a chapter of exams. In addition, throughout the book there are
-                                tips for parents and children.
+                                {description}
                             </p>
                         </div>
 
@@ -139,21 +136,21 @@ const BookPage: FC<BookPageProps> = ({ product }) => {
                             <div className="bg-white rounded-lg p-4 shadow-sm border">
                                 <div className="flex items-center gap-2 mb-2">
                                     <Printer className="w-4 h-4 text-gray-500" />
-                                    <span className="text-sm text-gray-500">Product Type</span>
+                                    <span className="text-sm text-gray-500">סוג מוצר</span>
                                 </div>
                                 <div className="font-semibold text-gray-900">{productTypeLabel}</div>
                             </div>
                             <div className="bg-white rounded-lg p-4 shadow-sm border">
                                 <div className="flex items-center gap-2 mb-2">
                                     <Calendar className="w-4 h-4 text-gray-500" />
-                                    <span className="text-sm text-gray-500">Year</span>
+                                    <span className="text-sm text-gray-500">שנה</span>
                                 </div>
                                 <div className="font-semibold text-gray-900">{year}</div>
                             </div>
                         </div>
 
                         <div className="mb-8">
-                            <h3 className="text-lg font-bold text-gray-900 mb-4">{dd.featuresTitle ?? "What's included in the booklet:"}</h3>
+                            <h3 className="text-lg font-bold text-gray-900 mb-4">{dd.featuresTitle ?? "מה כלול בחוברת:"}</h3>
                             <ul className="space-y-3">
                                 {features.map((feature: string, index: number) => (
                                     <li key={index} className="flex items-start gap-3">
@@ -164,19 +161,18 @@ const BookPage: FC<BookPageProps> = ({ product }) => {
                             </ul>
                         </div>
 
-                        <div className="bg-white rounded-xl p-6 shadow-lg border">
-                            <div className="mb-4">
-                                <span className="text-sm text-gray-500">Special Price</span>
-                            </div>
-                            <div className="text-3xl font-bold text-gray-900 mb-6">{price}</div>
-
-                        </div>
+                        <Link
+                            href="/shop/book"
+                            className="block w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-xl p-6 shadow-lg border text-center font-medium hover:from-purple-600 hover:to-blue-600 transition-all duration-200"
+                        >
+                            חזרה לבחירת חבילה
+                        </Link>
 
                         <div className="mt-6 grid grid-cols-3 gap-4">
                             {[
-                                { icon: Award, text: "Expert Created", color: "purple" },
-                                { icon: Shield, text: "100% Secure", color: "green" },
-                                { icon: Download, text: "Instant Access", color: "blue" },
+                                { icon: Award, text: "נוצר על ידי מומחים", color: "purple" },
+                                { icon: Shield, text: "100% מאובטח", color: "green" },
+                                { icon: Download, text: "גישה מיידית", color: "blue" },
                             ].map((item, index) => (
                                 <div key={index} className="text-center">
                                     <div

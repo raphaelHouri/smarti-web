@@ -50,7 +50,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 function formatCurrency(amount: number): string {
-    return new Intl.NumberFormat(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(amount);
+    return new Intl.NumberFormat(undefined, { style: "currency", currency: "ILS", maximumFractionDigits: 0 }).format(amount);
 }
 
 function adaptPlans(records: ShopPlanRecord[], pkgType: PackageType): Plan[] {
@@ -62,7 +62,7 @@ function adaptPlans(records: ShopPlanRecord[], pkgType: PackageType): Plan[] {
         const features: string[] = Array.isArray(dd.features) ? dd.features : [];
         const badge: string | undefined = dd.badge ?? undefined;
         const badgeColor: string | undefined = dd.badgeColor ?? undefined;
-        const period = pkgType === "book" ? undefined : (r.days >= 180 ? "6 months" : r.days >= 30 ? "month" : r.days >= 7 ? "week" : undefined);
+        const period = pkgType === "book" ? undefined : (r.days >= 180 ? "6 חודשים" : r.days >= 30 ? "חודש" : r.days >= 7 ? "שבוע" : undefined);
 
         const addBookOption = dd.addBookOption ? {
             price: String(dd.addBookOption.price ?? ""),
@@ -131,7 +131,7 @@ export default function PurchasePageShop({
         const keys = Object.keys(plansByType) as PackageType[];
         return keys.map((k) => ({
             id: (k === "book" ? "books" : "system") as Category,
-            name: k === "book" ? "Books" : "system",
+            name: k === "book" ? "חוברות" : "מערכת",
             icon: k === "book" ? BookOpen : Rocket,
             color: k === "book" ? "green" : "blue",
         }));
@@ -215,11 +215,11 @@ export default function PurchasePageShop({
                             <div className="mb-6">
                                 <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
                                     <span className="bg-gradient-to-r from-purple-600 via-blue-500 to-pink-500 text-transparent bg-clip-text">
-                                        Choose How Your Child Learns Best!
+                                        בחרו איך הילד שלכם לומד הכי טוב!
                                     </span>
                                 </h1>
                                 <p className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed">
-                                    Flexible learning plans designed by experts to help your child excel in gifted exams
+                                    תוכניות למידה גמישות שתוכננו על ידי מומחים כדי לעזור לילד שלכם להצטיין במבחני מחוננים
                                 </p>
                             </div>
 
@@ -227,11 +227,11 @@ export default function PurchasePageShop({
                             <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
                                 <div className="flex items-center gap-3 bg-white/90 px-6 py-3 rounded-full shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105">
                                     <Award className="w-5 h-5 text-purple-600" />
-                                    <span className="text-sm font-medium text-gray-700">Expert Designed</span>
+                                    <span className="text-sm font-medium text-gray-700">תוכנן על ידי מומחים</span>
                                 </div>
                                 <div className="flex items-center gap-3 bg-white/90 px-6 py-3 rounded-full shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105">
                                     <Star className="w-5 h-5 text-blue-500" />
-                                    <span className="text-sm font-medium text-gray-700">Proven Results</span>
+                                    <span className="text-sm font-medium text-gray-700">תוצאות מוכחות</span>
                                 </div>
                             </div>
                         </div>
@@ -349,7 +349,7 @@ export default function PurchasePageShop({
                                                 className="inline-flex items-center gap-1 text-xs text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 font-medium transition-colors"
                                             >
                                                 <Rocket className="w-3 h-3" />
-                                                View System Details
+                                                צפה בפרטי המערכת
                                             </Link>
                                         </div>
                                     )}
@@ -362,7 +362,7 @@ export default function PurchasePageShop({
                                                 className="inline-flex items-center gap-1 text-xs text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 font-medium transition-colors"
                                             >
                                                 <BookOpen className="w-3 h-3" />
-                                                View Book Details
+                                                צפה בפרטי החוברת
                                             </Link>
                                         </div>
                                     )}
@@ -375,7 +375,7 @@ export default function PurchasePageShop({
                                                 <div className="flex items-center gap-2">
                                                     <BookOpen className="w-4 h-4 text-green-600" />
                                                     <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                                        Add Study Book
+                                                        הוסף חוברת לימוד
                                                     </span>
                                                 </div>
                                                 <button
@@ -411,14 +411,14 @@ export default function PurchasePageShop({
                                                         </span>
                                                     </div>
                                                     <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
-                                                        Includes digital + physical book
+                                                        כולל חוברת דיגיטלית + מודפסת
                                                     </p>
                                                     <Link
                                                         href={plan.productId ? `/products/book/${plan.productId}` : "/products/book"}
                                                         className="inline-flex items-center gap-1 text-xs text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300 font-medium transition-colors"
                                                     >
                                                         <BookOpen className="w-3 h-3" />
-                                                        View Book Details
+                                                        צפה בפרטי החוברת
                                                     </Link>
                                                 </div>
                                             )}
@@ -429,7 +429,7 @@ export default function PurchasePageShop({
                                     {plan.addBookOption && (planBookOptions[plan.planType] ?? true) && (
                                         <div className="mb-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                                             <div className="flex items-center justify-between">
-                                                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Total:</span>
+                                                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">סה"כ:</span>
                                                 <span className="text-2xl font-bold text-gray-900 dark:text-white">
                                                     {getTotalPrice(plan)}
                                                 </span>
@@ -452,7 +452,7 @@ export default function PurchasePageShop({
                                                         : "bg-gray-900 dark:bg-gray-700 text-white hover:bg-gray-800 dark:hover:bg-gray-600"
                                                 )}
                                             >
-                                                Get Started
+                                                התחל עכשיו
                                             </button>
                                         </SignInButton>
                                     ) : (
@@ -480,7 +480,7 @@ export default function PurchasePageShop({
                                                             : "bg-gray-900 dark:bg-gray-700 text-white hover:bg-gray-800 dark:hover:bg-gray-600"
                                                     )}
                                                 >
-                                                    Get Started
+                                                    התחל עכשיו
                                                 </button>
                                             );
                                         })()
@@ -497,19 +497,19 @@ export default function PurchasePageShop({
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-8">
                         <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                            Trusted by Thousands of Families
+                            נבחר על ידי אלפי משפחות
                         </h2>
                         <p className="text-gray-600 dark:text-gray-400">
-                            Join the community of successful learners
+                            הצטרפו לקהילת הלומדים המצליחים
                         </p>
                     </div>
 
                     <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {[
-                            { icon: Shield, text: "100% Secure", subtext: "Safe payments", color: "green" },
-                            { icon: Users, text: "10,000+ Families", subtext: "Trust our program", color: "blue" },
-                            { icon: Award, text: "Expert Created", subtext: "Quality assured", color: "purple" },
-                            { icon: Clock, text: "Instant Access", subtext: "Start immediately", color: "orange" },
+                            { icon: Shield, text: "100% מאובטח", subtext: "תשלומים בטוחים", color: "green" },
+                            { icon: Users, text: "10,000+ משפחות", subtext: "סומכים על התוכנית שלנו", color: "blue" },
+                            { icon: Award, text: "נוצר על ידי מומחים", subtext: "איכות מובטחת", color: "purple" },
+                            { icon: Clock, text: "גישה מיידית", subtext: "התחל מיד", color: "orange" },
                         ].map((item, idx) => (
                             <div
                                 key={idx}
@@ -551,17 +551,17 @@ export default function PurchasePageShop({
                         </div>
 
                         <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-                            Not Sure Which Plan to Choose?
+                            לא בטוחים איזו תוכנית לבחור?
                         </h3>
                         <p className="text-gray-700 dark:text-gray-300 mb-6">
-                            We recommend starting with the <strong className="text-blue-600">Monthly Standard Prep</strong> – it's our most popular option with everything your child needs!
+                            אנו ממליצים להתחיל עם <strong className="text-blue-600">תוכנית ההכנה החודשית הסטנדרטית</strong> – זו האפשרות הפופולרית ביותר שלנו עם כל מה שהילד שלכם צריך!
                         </p>
 
                         <button
                             onClick={handleRecommendation}
                             className="px-8 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg font-medium hover:from-purple-600 hover:to-blue-600 transition-all duration-200 shadow-md"
                         >
-                            View Recommended Plan
+                            צפה בתוכנית המומלצת
                         </button>
                     </div>
                 </div>
@@ -571,21 +571,21 @@ export default function PurchasePageShop({
             <section className="py-12 px-4 text-center">
                 <div className="max-w-3xl mx-auto">
                     <h3 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-3">
-                        Questions? We're Here to Help!
+                        יש שאלות? אנחנו כאן לעזור!
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400 mb-6">
-                        Our support team is ready to assist you in choosing the best plan for your child
+                        צוות התמיכה שלנו מוכן לסייע לכם בבחירת התוכנית הטובה ביותר עבור הילד שלכם
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <button className="px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg font-medium hover:from-purple-600 hover:to-blue-600 transition-all duration-200 shadow-md">
-                            Contact Us
+                            צור קשר
                         </button>
                         <button
                             onClick={scrollToTop}
                             className="px-6 py-3 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 border border-gray-200 dark:border-gray-700 flex items-center justify-center gap-2"
                         >
                             <ArrowUp className="w-4 h-4" />
-                            Back to Top
+                            חזרה למעלה
                         </button>
                     </div>
                 </div>
