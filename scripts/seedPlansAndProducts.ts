@@ -162,6 +162,7 @@ async function upsertPlans(systemProductId: string, bookStep1ProductId: string, 
         productsIds: string[];
         displayData?: any;
         needsBookPlanId?: boolean;
+        order?: number;
     };
 
     // Helper function to upsert a book plan
@@ -181,6 +182,7 @@ async function upsertPlans(systemProductId: string, bookStep1ProductId: string, 
                     price: planSeed.price,
                     displayData: planSeed.displayData,
                     internalDescription: planSeed.internalDescription ?? planSeed.description,
+                    order: planSeed.order,
                     createdAt: new Date(),
                 })
                 .where(eq(schema.plans.id, existingPlan.id));
@@ -196,6 +198,7 @@ async function upsertPlans(systemProductId: string, bookStep1ProductId: string, 
                 price: planSeed.price,
                 displayData: planSeed.displayData,
                 internalDescription: planSeed.internalDescription ?? planSeed.description,
+                order: planSeed.order,
                 createdAt: new Date(),
             }).returning();
             return inserted[0].id;
@@ -211,6 +214,7 @@ async function upsertPlans(systemProductId: string, bookStep1ProductId: string, 
         packageType: "book",
         productsIds: [bookStep1ProductId],
         internalDescription: "Book Step 1",
+        order: 1,
         displayData: {
             icon: "BookOpen",
             color: "green",
@@ -234,6 +238,7 @@ async function upsertPlans(systemProductId: string, bookStep1ProductId: string, 
         packageType: "book",
         productsIds: [bookStep2ProductId],
         internalDescription: "Book Step 2",
+        order: 2,
         displayData: {
             icon: "BookOpen",
             color: "green",
@@ -257,6 +262,7 @@ async function upsertPlans(systemProductId: string, bookStep1ProductId: string, 
         packageType: "book",
         productsIds: [bookStep3ProductId],
         internalDescription: "Book Step 3",
+        order: 3,
         displayData: {
             icon: "BookOpen",
             color: "green",
@@ -281,6 +287,7 @@ async function upsertPlans(systemProductId: string, bookStep1ProductId: string, 
         packageType: "book",
         productsIds: [bookStep1ProductId, bookStep2ProductId, bookStep3ProductId],
         internalDescription: "Books bundle - All steps",
+        order: 4,
         displayData: {
             icon: "BookOpen",
             color: "green",
@@ -307,6 +314,7 @@ async function upsertPlans(systemProductId: string, bookStep1ProductId: string, 
             price: 12,
             packageType: "system",
             productsIds: [systemProductId],
+            order: 1,
             displayData: {
                 icon: "Rocket",
                 color: "blue",
@@ -326,6 +334,7 @@ async function upsertPlans(systemProductId: string, bookStep1ProductId: string, 
             price: 40,
             packageType: "system",
             productsIds: [systemProductId],
+            order: 2,
             displayData: {
                 icon: "Rocket",
                 color: "blue",
@@ -353,6 +362,7 @@ async function upsertPlans(systemProductId: string, bookStep1ProductId: string, 
             price: 199,
             packageType: "system",
             productsIds: [systemProductId],
+            order: 3,
             displayData: {
                 icon: "Rocket",
                 color: "blue",
@@ -391,6 +401,7 @@ async function upsertPlans(systemProductId: string, bookStep1ProductId: string, 
                     price: seed.price,
                     displayData: seed.displayData,
                     internalDescription: seed.internalDescription ?? seed.description,
+                    order: seed.order,
                     createdAt: new Date(),
                 })
                 .where(eq(schema.plans.id, existing.id));
@@ -405,6 +416,7 @@ async function upsertPlans(systemProductId: string, bookStep1ProductId: string, 
                 price: seed.price,
                 displayData: seed.displayData,
                 internalDescription: seed.internalDescription ?? seed.description,
+                order: seed.order,
                 createdAt: new Date(),
             });
         }

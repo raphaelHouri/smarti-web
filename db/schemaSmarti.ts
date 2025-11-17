@@ -45,6 +45,7 @@ export const plans = pgTable("plans", {
     price: integer("price").notNull(),
     displayData: jsonb("display_data"),
     internalDescription: text("internal_description").notNull(),
+    order: integer("order").default(0).notNull(),
     // icon: text("icon"), // Store icon name/key
     // color: text("color"),
     // badge: text("badge"),

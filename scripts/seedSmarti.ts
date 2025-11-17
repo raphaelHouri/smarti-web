@@ -119,6 +119,7 @@ const main = async () => {
                 internalDescription: "Trial access",
                 days: 7,
                 price: 12,
+                order: 1,
                 displayData: {
                     icon: "Rocket",
                     color: "blue",
@@ -140,6 +141,7 @@ const main = async () => {
                 internalDescription: "Monthly subscription",
                 days: 30,
                 price: 40,
+                order: 2,
                 displayData: {
                     icon: "Rocket",
                     color: "blue",
@@ -169,6 +171,7 @@ const main = async () => {
                 internalDescription: "6 months bundle",
                 days: 180,
                 price: 199,
+                order: 3,
                 displayData: {
                     icon: "Rocket",
                     color: "blue",
@@ -199,6 +202,7 @@ const main = async () => {
                 internalDescription: "Books bundle",
                 days: 0,
                 price: 35,
+                order: 1,
                 displayData: {
                     icon: "BookOpen",
                     color: "green",

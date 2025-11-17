@@ -219,7 +219,12 @@ export type PackageType = "system" | "book";
 export type ShopPlansByType = Record<PackageType, ShopPlanRecord[]>;
 
 export const getPlansForShop = cache(async (): Promise<ShopPlansByType> => {
-    const data = await db.query.plans.findMany({});
+    const data = await db.query.plans.findMany({
+        orderBy: (plans, { asc }) => [
+            asc(plans.order),
+            asc(plans.name)
+        ]
+    });
     const grouped: ShopPlansByType = { system: [], book: [] };
     data.forEach((p) => {
         const rec: ShopPlanRecord = {
