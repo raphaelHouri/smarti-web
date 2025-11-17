@@ -30,8 +30,7 @@ const QuestsPage = async () => {
         redirect("/courses");
     }
 
-    // const isPro = !!userSubscription?.isActive
-    const isPro = true
+    const isPro = userSubscription?.isPro ?? false
 
 
 

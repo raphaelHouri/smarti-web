@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import Unit from "../_components/Unit";
 import PromoSection from "../_components/promo";
 import QuestsSection from "../../quests/_components/quests";
-import { getCategories, getFirstCategory, getLessonCategoryById, getLessonCategoryWithLessonsById, getOrCreateUserFromGuest } from "@/db/queries";
+import { getCategories, getFirstCategory, getLessonCategoryById, getLessonCategoryWithLessonsById, getOrCreateUserFromGuest, getUserSubscriptions } from "@/db/queries";
 import LessonCategoryPage from "../../courses/page";
 import FeedbackButton from "@/components/feedbackButton";
 
@@ -22,8 +22,9 @@ const LearnPage = async ({
     const categories = getCategories();
     const lessonCategories = getLessonCategoryById(categoryId);
     const lessonCategoryWithLessons = await getLessonCategoryWithLessonsById(categoryId);
+    const userSubscriptionData = getUserSubscriptions();
 
-    const [user, lessonsCategory, categoriesData] = await Promise.all([userData, lessonCategories, categories]);
+    const [user, lessonsCategory, categoriesData, userSubscription] = await Promise.all([userData, lessonCategories, categories, userSubscriptionData]);
 
     // יצירת מערך חדש עם שדה 'הושלם'
     const lessonsCategoryWithCompleted = lessonsCategory.map((lessonCategoryItem) => {
@@ -78,6 +79,7 @@ const LearnPage = async ({
                         title={categoryDetails.title || "שם היחידה לא מוגדר"}
                         description={categoryDetails.description || "אין תיאור"}
                         lessons={lessonsCategoryWithCompleted}
+                        isPro={userSubscription?.isPro ?? false}
                     />
                 </div>
             </FeedWrapper>
@@ -96,9 +98,9 @@ const LearnPage = async ({
                             ? user.experience
                             : 0
                     }
-                    hasActiveSubscription={false}
+                    hasActiveSubscription={userSubscription?.isPro ?? false}
                 />
-                {!false && (
+                {!(userSubscription?.isPro ?? false) && (
                     <PromoSection
                     />
                 )}

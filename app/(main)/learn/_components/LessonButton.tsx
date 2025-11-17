@@ -17,6 +17,7 @@ interface LessonButtonProps {
     totalQuestions: number | undefined
     totalCount: number | null | undefined,
     isPremium: boolean,
+    isPro?: boolean,
 }
 
 
@@ -28,7 +29,8 @@ const LessonButton = ({
     rightQuestions,
     totalQuestions,
     totalCount,
-    isPremium
+    isPremium,
+    isPro = false,
 }: LessonButtonProps) => {
     const { open } = usePremiumModal();
     const percentage = rightQuestions && totalQuestions ? (rightQuestions / totalQuestions) * 100 : 0;
@@ -67,7 +69,8 @@ const LessonButton = ({
                 pointerEvents: locked ? "none" : "auto"
             }}
             onClick={(e) => {
-                if (isPremium) {
+                // Only block premium content if user doesn't have pro access
+                if (isPremium && !isPro) {
                     e.preventDefault();
                     open();
                 }

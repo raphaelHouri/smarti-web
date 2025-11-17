@@ -429,8 +429,6 @@ const Quiz = ({
         onNextNav();
     }
 
-    const isPro = true
-
     return (
         <>
 

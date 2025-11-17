@@ -451,9 +451,13 @@ export const getUserSubscriptions = cache(async () => {
         };
     }
 
+    // Check if user has full access (whitelist)
+    const { hasFullAccess } = await import("@/lib/admin");
+    const hasAccess = await hasFullAccess(userId);
+
     return {
         lessonCategoryId: "61758a59-2c5e-4865-9c09-002cc0665881",
-        isPro: false,
+        isPro: hasAccess, // Grant premium access if user is whitelisted
         experience: 0,
         geniusScore: 0,
     };
