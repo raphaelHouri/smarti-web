@@ -97,13 +97,10 @@ function bookPurchaseAlreadyHtmlResponse(hasBookPurchase: typeof bookPurchases.$
 
 
 export async function GET(request: Request) {
-  const { userId } = await auth();
-  console.error("userId", userId);
-  console.error("request", request.url);
+  const u = new URL(request.url);
+  const userId = u.searchParams.get("UserId");
   if (!userId) return NextResponse.json({ error: "invalid user" }, { status: 401 });
   const user = await getUserByAuthId(userId);
-  if (!user) return NextResponse.json({ error: "user not found" }, { status: 404 });
-  const u = new URL(request.url);
   const planId = u.searchParams.get("PlanId");
   const bookIncluded = u.searchParams.get("bookIncluded") === "True";
   const couponCode = u.searchParams.get("CouponCode") ?? null;

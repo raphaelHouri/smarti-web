@@ -65,10 +65,6 @@ async function handleLegacyPay(url: URL) {
 }
 
 export async function GET(request: Request) {
-    const { userId } = await auth();
-    console.error("userId", userId);
-    console.error("request", request.url);
-    if (!userId) return NextResponse.json({ error: "invalid user" }, { status: 401 });
     const url = new URL(request.url);
     const hasPlanIdParam = url.searchParams.get("PlanId");
 
