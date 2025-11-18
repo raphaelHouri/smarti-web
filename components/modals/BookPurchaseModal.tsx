@@ -4,18 +4,40 @@ import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/_dialog";
 import { Button } from "../ui/button";
 import { useBookPurchaseModal } from "@/store/use-book-purchase-modal";
+import { useAuth } from "@clerk/nextjs";
 import Image from "next/image";
+import { getUserCoupon } from "@/actions/user-coupon";
 
 export default function BookPurchaseModal() {
     const { isOpen, close, planId } = useBookPurchaseModal();
+    const { userId } = useAuth();
     const [isClient, setIsClient] = useState(false);
     const [studentName, setStudentName] = useState("");
     const [email, setEmail] = useState("");
+    const [savedCoupon, setSavedCoupon] = useState<{ code: string } | null>(null);
     const effectivePlanId = planId ?? "book";
 
     useEffect(() => {
         setIsClient(true);
     }, []);
+
+    // Load saved coupon when modal opens
+    useEffect(() => {
+        if (isOpen && userId) {
+            getUserCoupon()
+                .then(result => {
+                    if (result.coupon) {
+                        setSavedCoupon(result.coupon);
+                    } else {
+                        setSavedCoupon(null);
+                    }
+                })
+                .catch(err => {
+                    console.error("Failed to load coupon:", err);
+                    setSavedCoupon(null);
+                });
+        }
+    }, [isOpen, userId]);
 
     useEffect(() => {
         if (!isOpen) {
@@ -33,7 +55,8 @@ export default function BookPurchaseModal() {
         if (!emailRegex.test(email)) return;
 
         const base = process.env.NEXT_PUBLIC_APP_URL ?? "";
-        const url = `${base}/api/pay?StudentName=${encodeURIComponent(studentName)}&Email=${encodeURIComponent(email)}&PlanId=${encodeURIComponent(effectivePlanId)}&bookIncluded=True`;
+        const couponParam = savedCoupon ? `&CouponCode=${encodeURIComponent(savedCoupon.code)}` : "";
+        const url = `${base}/api/pay?StudentName=${encodeURIComponent(studentName)}&Email=${encodeURIComponent(email)}&PlanId=${encodeURIComponent(effectivePlanId)}&bookIncluded=True${couponParam}`;
         close();
         window.open(url, "_self");
     };

@@ -266,6 +266,90 @@ export const getCoupon = cache(async (lookup: CouponLookup): Promise<CouponRecor
     return coupon ?? null;
 });
 
+export const validateCoupon = async (code: string): Promise<{ valid: boolean; coupon: CouponRecord | null; error?: string }> => {
+    const coupon = await getCoupon({ code });
+
+    if (!coupon) {
+        return { valid: false, coupon: null, error: "קופון לא נמצא" };
+    }
+
+    const now = new Date();
+
+    // Check if coupon is active
+    if (!coupon.isActive) {
+        return { valid: false, coupon, error: "קופון לא פעיל" };
+    }
+
+    // Check if coupon is within valid date range
+    if (now < coupon.validFrom) {
+        return { valid: false, coupon, error: "קופון עדיין לא תקף" };
+    }
+
+    if (now > coupon.validUntil) {
+        return { valid: false, coupon, error: "קופון פג תוקף" };
+    }
+
+    // Check max uses
+    const usedCount = await db.select({ count: sql<number>`count(*)` })
+        .from(subscriptions)
+        .where(eq(subscriptions.couponId, coupon.id));
+
+    const count = Number(usedCount[0]?.count ?? 0);
+    if (count >= coupon.maxUses) {
+        return { valid: false, coupon, error: "קופון הגיע למספר השימושים המקסימלי" };
+    }
+
+    return { valid: true, coupon };
+};
+
+export const getUserSavedCoupon = async (userId: string): Promise<CouponRecord | null> => {
+    const user = await getUserByAuthId(userId);
+    if (!user || !user.savedCouponId) {
+        return null;
+    }
+
+    const coupon = await getCoupon({ id: user.savedCouponId });
+    if (!coupon) {
+        return null;
+    }
+
+    // Validate the saved coupon is still valid
+    const validation = await validateCoupon(coupon.code);
+    if (!validation.valid) {
+        // Clear invalid coupon
+        await db.update(users)
+            .set({ savedCouponId: null })
+            .where(eq(users.id, userId));
+        return null;
+    }
+
+    return coupon;
+};
+
+export const saveUserCoupon = async (userId: string, couponId: string): Promise<{ success: boolean; error?: string }> => {
+    const coupon = await getCoupon({ id: couponId });
+    if (!coupon) {
+        return { success: false, error: "קופון לא נמצא" };
+    }
+
+    const validation = await validateCoupon(coupon.code);
+    if (!validation.valid) {
+        return { success: false, error: validation.error ?? "קופון לא תקף" };
+    }
+
+    await db.update(users)
+        .set({ savedCouponId: couponId })
+        .where(eq(users.id, userId));
+
+    return { success: true };
+};
+
+export const clearUserCoupon = async (userId: string): Promise<void> => {
+    await db.update(users)
+        .set({ savedCouponId: null })
+        .where(eq(users.id, userId));
+};
+
 export const findBookPurchase = cache(async (productId: string, userId: string) => {
     const now = new Date();
     return db.query.bookPurchases.findFirst({

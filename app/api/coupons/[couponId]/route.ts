@@ -18,7 +18,19 @@ export const GET = async (
     const data = await db.query.coupons.findFirst({
         where: eq(coupons.id, couponId)
     })
-    return NextResponse.json(data);
+
+    if (!data) {
+        return NextResponse.json(null);
+    }
+
+    // Transform type to couponType for react-admin
+    const transformed = {
+        ...data,
+        couponType: data.type,
+    };
+    delete (transformed as any).type;
+
+    return NextResponse.json(transformed);
 }
 
 export const PUT = async (
@@ -31,6 +43,13 @@ export const PUT = async (
     const { couponId } = await params;
     const body = await req.json();
     const updatePayload = sanitizeDates(body);
+
+    // Transform couponType to type for database schema
+    if ('couponType' in updatePayload) {
+        updatePayload.type = updatePayload.couponType;
+        delete updatePayload.couponType;
+    }
+
     const data = await db.update(coupons).set(updatePayload).where(
         eq(coupons.id, couponId)
     ).returning()

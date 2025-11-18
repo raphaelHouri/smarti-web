@@ -5,7 +5,7 @@ import { z } from "zod";
 import { sendEmail } from "@/lib/sendMail";
 import { downloadReadyHtml } from "@/emails/downloadReady";
 import { getFileName } from "@/lib/book_utils";
-import { createBookPurchase, getProductById, getTransactionDataById, createSubscriptionsIfMissingForTransaction, fulfillPaymentTransaction } from "@/db/queries";
+import { createBookPurchase, getProductById, getTransactionDataById, createSubscriptionsIfMissingForTransaction, fulfillPaymentTransaction, clearUserCoupon } from "@/db/queries";
 import { calculateAmount } from "@/lib/utils";
 import type { products as ProductsTable } from "@/db/schemaSmarti";
 
@@ -637,6 +637,11 @@ export async function GET(req: NextRequest) {
       );
     }
     await fulfillPaymentTransaction(paymentTransaction.id, vat_id);
+
+    // Clear saved coupon if it was used
+    if (paymentTransaction.couponId) {
+      await clearUserCoupon(userId);
+    }
   } catch (e) {
     console.error("Background task failed:", e);
   }

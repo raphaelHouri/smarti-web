@@ -13,6 +13,10 @@ import type { ShopPlanRecord, ShopPlansByType, PackageType } from "@/db/queries"
 import { useAuth, SignInButton } from "@clerk/nextjs";
 import { useBookPurchaseModal } from "@/store/use-book-purchase-modal";
 import BookPurchaseModal from "@/components/modals/BookPurchaseModal";
+import { useCouponModal } from "@/store/use-coupon-modal";
+import CouponModal from "@/components/modals/CouponModal";
+import { Tag } from "lucide-react";
+import { getUserCoupon } from "@/actions/user-coupon";
 
 type Category = "system" | "books";
 
@@ -99,6 +103,7 @@ export default function PurchasePageShop({
 }) {
     const { userId } = useAuth();
     const bookPurchaseModal = useBookPurchaseModal();
+    const couponModal = useCouponModal();
     const router = useRouter();
     const params = useParams();
 
@@ -116,6 +121,7 @@ export default function PurchasePageShop({
 
     const [selectedCategory, setSelectedCategory] = useState<Category>(initialCategory);
     const [planBookOptions, setPlanBookOptions] = useState<Record<string, boolean>>({});
+    const [savedCoupon, setSavedCoupon] = useState<{ id: string; code: string; type: "percentage" | "fixed"; value: number } | null>(null);
 
     // Sync with route params when they change
     useEffect(() => {
@@ -142,6 +148,24 @@ export default function PurchasePageShop({
     const adapted = [...adaptedSystem, ...adaptedBook];
     const filteredPlans = adapted.filter((p) => p.category === selectedCategory);
 
+    // Load saved coupon
+    useEffect(() => {
+        if (userId) {
+            getUserCoupon()
+                .then(result => {
+                    if (result.coupon) {
+                        setSavedCoupon(result.coupon);
+                    } else {
+                        setSavedCoupon(null);
+                    }
+                })
+                .catch(err => {
+                    console.error("Failed to load coupon:", err);
+                    setSavedCoupon(null);
+                });
+        }
+    }, [userId]);
+
     // Initialize book options as true by default for plans that have addBookOption
     useEffect(() => {
         const initialOptions: Record<string, boolean> = {};
@@ -162,15 +186,45 @@ export default function PurchasePageShop({
         }));
     };
 
-    const getTotalPrice = (plan: Plan): string => {
-        if (plan.category === "books") return plan.price;
+    // Calculate price with coupon discount
+    const calculatePriceWithCoupon = (basePrice: number): number => {
+        if (!savedCoupon) return basePrice;
 
-        // For system plans with book option enabled
-        if (plan.addBookOption && planBookOptions[plan.planType]) {
-            return plan.addBookOption.price;
+        if (savedCoupon.type === "percentage") {
+            return Math.max(0, basePrice - Math.round((basePrice * savedCoupon.value) / 100));
+        } else {
+            return Math.max(0, basePrice - savedCoupon.value);
+        }
+    };
+
+    // Get base price number from formatted string
+    const parsePrice = (priceStr: string): number => {
+        return parseInt(priceStr.replace(/[^\d]/g, "")) || 0;
+    };
+
+    const getTotalPrice = (plan: Plan): string => {
+        let basePrice: number;
+
+        if (plan.category === "books") {
+            basePrice = parsePrice(plan.price);
+        } else if (plan.addBookOption && planBookOptions[plan.planType]) {
+            basePrice = parsePrice(plan.addBookOption.price);
+        } else {
+            basePrice = parsePrice(plan.price);
         }
 
-        return plan.price;
+        const discountedPrice = calculatePriceWithCoupon(basePrice);
+        return formatCurrency(discountedPrice);
+    };
+
+    const getOriginalPrice = (plan: Plan): number => {
+        if (plan.category === "books") {
+            return parsePrice(plan.price);
+        } else if (plan.addBookOption && planBookOptions[plan.planType]) {
+            return parsePrice(plan.addBookOption.price);
+        } else {
+            return parsePrice(plan.price);
+        }
     };
 
 
@@ -194,7 +248,15 @@ export default function PurchasePageShop({
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-white via-purple-50 via-60% to-blue-50 to-90% rounded-[2.5rem] shadow-xl mx-2 md:mx-0 border border-purple-100">
-            <div className="flex flex-row items-start justify-end p-4">
+            <div className="flex flex-row items-start justify-between p-4">
+                {/* Coupon Badge */}
+                <button
+                    onClick={() => couponModal.open()}
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-full shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105 text-sm font-medium"
+                >
+                    <Tag className="w-4 h-4" />
+                    יש קופון?
+                </button>
                 <FeedbackButton screenName="shop" />
             </div>
             {/* Hero Section */}
@@ -316,13 +378,49 @@ export default function PurchasePageShop({
                                         {plan.name}
                                     </h3>
                                     <div className="mb-4">
-                                        <span className="text-4xl font-bold text-gray-900 dark:text-white">
-                                            {plan.price}
-                                        </span>
-                                        {plan.period && (
-                                            <span className="text-gray-600 dark:text-gray-400">
-                                                /{plan.period}
-                                            </span>
+                                        {savedCoupon && (() => {
+                                            const originalPrice = getOriginalPrice(plan);
+                                            const discountedPrice = calculatePriceWithCoupon(originalPrice);
+                                            const hasDiscount = discountedPrice < originalPrice;
+
+                                            return (
+                                                <div className="flex flex-col gap-1">
+                                                    {hasDiscount && (
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-xl text-gray-500 line-through">
+                                                                {formatCurrency(originalPrice)}
+                                                            </span>
+                                                            <span className="px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs font-bold rounded">
+                                                                {savedCoupon.type === "percentage"
+                                                                    ? `${savedCoupon.value}% הנחה`
+                                                                    : `₪${savedCoupon.value} הנחה`}
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                    <div className="flex items-baseline gap-1">
+                                                        <span className="text-4xl font-bold text-gray-900 dark:text-white">
+                                                            {getTotalPrice(plan)}
+                                                        </span>
+                                                        {plan.period && (
+                                                            <span className="text-gray-600 dark:text-gray-400">
+                                                                /{plan.period}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })()}
+                                        {!savedCoupon && (
+                                            <>
+                                                <span className="text-4xl font-bold text-gray-900 dark:text-white">
+                                                    {plan.price}
+                                                </span>
+                                                {plan.period && (
+                                                    <span className="text-gray-600 dark:text-gray-400">
+                                                        /{plan.period}
+                                                    </span>
+                                                )}
+                                            </>
                                         )}
                                     </div>
                                     <p className="text-gray-600 dark:text-gray-400 mb-6">
@@ -466,7 +564,8 @@ export default function PurchasePageShop({
                                                     bookPurchaseModal.open({ planId: plan.planType });
                                                 } else {
                                                     const base = process.env.NEXT_PUBLIC_APP_URL ?? "";
-                                                    const url = `${base}/api/pay?PlanId=${encodeURIComponent(plan.id)}`;
+                                                    const couponParam = savedCoupon ? `&CouponCode=${encodeURIComponent(savedCoupon.code)}` : "";
+                                                    const url = `${base}/api/pay?PlanId=${encodeURIComponent(plan.id)}${couponParam}`;
                                                     window.open(url, "_self");
                                                 }
                                             };
@@ -592,6 +691,8 @@ export default function PurchasePageShop({
             </section>
             {/* Mount Book Purchase Modal */}
             <BookPurchaseModal />
+            {/* Mount Coupon Modal */}
+            <CouponModal />
         </div>
     );
 }

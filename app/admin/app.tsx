@@ -25,6 +25,7 @@ import { LessonQuestionGroupCreate } from "./lessonQuestionGroups/create";
 import { CouponList } from "./coupons/list";
 import { CouponEdit } from "./coupons/edit";
 import { CouponShow } from "./coupons/show";
+import { CouponCreate } from "./coupons/create";
 import { PlanList } from "./plans/list";
 import { PlanEdit } from "./plans/edit";
 import { PlanShow } from "./plans/show";
@@ -109,6 +110,7 @@ const App = () => {
                 name="coupons"
                 list={CouponList}
                 edit={CouponEdit}
+                create={CouponCreate}
                 recordRepresentation="code"
                 icon={Ticket}
                 show={CouponShow}

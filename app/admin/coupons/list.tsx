@@ -1,4 +1,4 @@
-import { DataTable, DateField, List, ReferenceField, BooleanField, NumberField, TextField, Exporter, ExportButton, TopToolbar } from 'react-admin';
+import { DataTable, DateField, List, ReferenceField, BooleanField, NumberField, TextField, Exporter, ExportButton, TopToolbar, CreateButton } from 'react-admin';
 import { exportToXlsx } from '@/lib/xlsxExport';
 
 const couponsExporter: Exporter = (records) => {
@@ -7,6 +7,7 @@ const couponsExporter: Exporter = (records) => {
 
 const ListActions = () => (
     <TopToolbar>
+        <CreateButton />
         <ExportButton exporter={couponsExporter} label="Export XLSX" />
     </TopToolbar>
 );

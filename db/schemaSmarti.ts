@@ -133,6 +133,7 @@ export const users = pgTable("users", {
     lessonCategoryId: uuid("lesson_category_id").references(() => lessonCategory.id, { onDelete: "cascade" }),
     experience: integer("experience").default(0).notNull(),
     geniusScore: integer("genius_score").default(0).notNull(),
+    savedCouponId: uuid("saved_coupon_id").references(() => coupons.id, { onDelete: "set null" }),
 });
 
 export const bookPurchases = pgTable("book_purchases", {
