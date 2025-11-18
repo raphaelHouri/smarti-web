@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import crypto from "crypto";
 import { getDocument } from "@/lib/firestore";
 import { GET as handlePlanPayment } from "../pay2/route";
+import { auth } from "@clerk/nextjs/server";
 
 export const runtime = "nodejs";
 
@@ -64,6 +65,10 @@ async function handleLegacyPay(url: URL) {
 }
 
 export async function GET(request: Request) {
+    const { userId } = await auth();
+    console.error("userId", userId);
+    console.error("request", request.url);
+    if (!userId) return NextResponse.json({ error: "invalid user" }, { status: 401 });
     const url = new URL(request.url);
     const hasPlanIdParam = url.searchParams.get("PlanId");
 
