@@ -2,6 +2,7 @@
 
 import { auth } from "@clerk/nextjs/server";
 import { validateCoupon, getUserSavedCoupon, saveUserCoupon, clearUserCoupon } from "@/db/queries";
+import { revalidatePath } from "next/cache";
 
 export async function getUserCoupon() {
     const { userId } = await auth();
@@ -44,7 +45,7 @@ export async function validateAndSaveCoupon(code: string) {
         if (!result.success) {
             return { success: false, error: result.error ?? "Failed to save coupon", coupon: validation.coupon };
         }
-
+        revalidatePath("/shop/[slug]");
         return { success: true, error: null, coupon: validation.coupon };
     } catch (error) {
         console.error("Failed to validate and save coupon:", error);
