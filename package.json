@@ -14,6 +14,8 @@
     "db:seedPlansAndProducts": "tsx ./scripts/seedPlansAndProducts.ts",
     "db:reset": "tsx ./scripts/reset.ts",
     "db:resetSmarti": "tsx ./scripts/resetSmarti.ts",
+    "clerk:copyUsersToProd": "tsx ./scripts/copyUsersFromClerkDevToProd.ts",
+    "clerk:copyUsersToProd:dry": "tsx ./scripts/copyUsersFromClerkDevToProd.ts --dry-run",
     "typecheck": "tsc --noEmit",
     "precheck": "npm run lint && npm run typecheck",
     "ci-check": "npm run precheck && npm run vercel:pull:preview && npm run vercel:build"
