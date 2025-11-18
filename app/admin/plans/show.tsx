@@ -1,4 +1,4 @@
-import { DateField, NumberField, Show, SimpleShowLayout, TextField } from 'react-admin';
+import { DateField, NumberField, Show, SimpleShowLayout, TextField, BooleanField } from 'react-admin';
 
 export const PlanShow = () => (
     <Show>
@@ -8,6 +8,7 @@ export const PlanShow = () => (
             <TextField source="description" />
             <NumberField source="days" />
             <NumberField source="price" />
+            <BooleanField source="isActive" />
             <DateField source="createdAt" />
         </SimpleShowLayout>
     </Show>

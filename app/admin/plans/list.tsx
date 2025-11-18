@@ -1,4 +1,4 @@
-import { DataTable, DateField, List, NumberField, Exporter, ExportButton, TopToolbar } from 'react-admin';
+import { DataTable, DateField, List, NumberField, Exporter, ExportButton, TopToolbar, BooleanField } from 'react-admin';
 import { exportToXlsx } from '@/lib/xlsxExport';
 
 const plansExporter: Exporter = (records) => {
@@ -19,6 +19,9 @@ export const PlanList = () => (
             <DataTable.Col source="description" />
             <DataTable.NumberCol source="days" />
             <DataTable.NumberCol source="price" />
+            <DataTable.Col source="isActive">
+                <BooleanField source="isActive" />
+            </DataTable.Col>
             <DataTable.Col source="createdAt">
                 <DateField source="createdAt" />
             </DataTable.Col>

@@ -17,7 +17,8 @@ export async function POST(req: Request) {
     }
     const body = await req.json();
     const data = await db.insert(plans).values({
-        ...body
+        ...body,
+        isActive: body.isActive !== undefined ? body.isActive : true,
     }).returning()
 
 

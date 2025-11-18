@@ -220,6 +220,7 @@ export type ShopPlansByType = Record<PackageType, ShopPlanRecord[]>;
 
 export const getPlansForShop = cache(async (): Promise<ShopPlansByType> => {
     const data = await db.query.plans.findMany({
+        where: (plans, { eq }) => eq(plans.isActive, true),
         orderBy: (plans, { asc }) => [
             asc(plans.order),
             asc(plans.name)
