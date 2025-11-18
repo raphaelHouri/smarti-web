@@ -50,10 +50,28 @@ export const PUT = async (
         delete updatePayload.couponType;
     }
 
+    // If maxUses is being updated, check if we need to auto-disable
+    if ('maxUses' in updatePayload) {
+        const currentCoupon = await db.query.coupons.findFirst({
+            where: eq(coupons.id, couponId)
+        });
+        if (currentCoupon && (currentCoupon.uses ?? 0) >= updatePayload.maxUses) {
+            updatePayload.isActive = false;
+        }
+    }
+
     const data = await db.update(coupons).set(updatePayload).where(
         eq(coupons.id, couponId)
     ).returning()
-    return NextResponse.json(data[0]);
+
+    // Transform type to couponType for response
+    const transformed = {
+        ...data[0],
+        couponType: data[0].type,
+    };
+    delete (transformed as any).type;
+
+    return NextResponse.json(transformed);
 }
 
 export const DELETE = async (

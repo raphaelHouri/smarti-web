@@ -28,6 +28,7 @@ export const CouponEdit = () => (
             <DateInput source="validUntil" />
             <BooleanInput source="isActive" />
             <NumberInput source="maxUses" />
+            <NumberInput source="uses" disabled />
             <ReferenceInput source="planId" reference="plans" label="Plan">
                 <SelectInput optionText="name" />
             </ReferenceInput>

@@ -19,6 +19,7 @@ export const CouponShow = () => (
             <DateField source="validUntil" />
             <BooleanField source="isActive" />
             <NumberField source="maxUses" label="Max Uses" />
+            <NumberField source="uses" label="Uses" />
             <ReferenceField source="planId" reference="plans" label="Plan">
                 <TextField source="name" />
             </ReferenceField>

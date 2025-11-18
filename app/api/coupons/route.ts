@@ -64,6 +64,7 @@ export async function POST(req: Request) {
             validUntil: sanitized.validUntil,
             isActive: sanitized.isActive !== undefined ? sanitized.isActive : true,
             maxUses: sanitized.maxUses,
+            uses: 0, // Initialize uses to 0
             planId: sanitized.planId,
             organizationYearId: sanitized.organizationYearId,
         };

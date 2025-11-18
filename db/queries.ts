@@ -289,13 +289,15 @@ export const validateCoupon = async (code: string): Promise<{ valid: boolean; co
         return { valid: false, coupon, error: "קופון פג תוקף" };
     }
 
-    // Check max uses
-    const usedCount = await db.select({ count: sql<number>`count(*)` })
-        .from(subscriptions)
-        .where(eq(subscriptions.couponId, coupon.id));
-
-    const count = Number(usedCount[0]?.count ?? 0);
-    if (count >= coupon.maxUses) {
+    // Check uses against maxUses (using the uses column instead of counting subscriptions)
+    const currentUses = coupon.uses ?? 0;
+    if (currentUses >= coupon.maxUses) {
+        // Auto-disable coupon if it reached max uses
+        if (coupon.isActive) {
+            await db.update(coupons)
+                .set({ isActive: false })
+                .where(eq(coupons.id, coupon.id));
+        }
         return { valid: false, coupon, error: "קופון הגיע למספר השימושים המקסימלי" };
     }
 
@@ -402,6 +404,39 @@ export async function createSubscriptionsIfMissingForTransaction(
         where: (s, { eq }) => eq(s.paymentTransactionId, paymentTransactionId),
     });
     if (existing && existing.length > 0) return;
+
+    // Get unique coupon IDs that are being used
+    const usedCouponIds = new Set(
+        subscriptionItems
+            .map(s => s.couponId)
+            .filter((id): id is string => id !== null && id !== undefined)
+    );
+
+    // Increment uses count for each coupon used
+    for (const couponId of usedCouponIds) {
+        const coupon = await getCoupon({ id: couponId });
+        if (coupon) {
+            const currentUses = coupon.uses ?? 0;
+            // Only increment if not already at max
+            if (currentUses < coupon.maxUses) {
+                const newUses = currentUses + 1;
+                await db.update(coupons)
+                    .set({
+                        uses: newUses,
+                        // Auto-disable if reached max uses
+                        isActive: newUses < coupon.maxUses,
+                    })
+                    .where(eq(coupons.id, couponId));
+            } else {
+                // Already at max, ensure it's disabled
+                if (coupon.isActive) {
+                    await db.update(coupons)
+                        .set({ isActive: false })
+                        .where(eq(coupons.id, couponId));
+                }
+            }
+        }
+    }
 
     await db.insert(subscriptions).values(
         subscriptionItems.map((s) => ({

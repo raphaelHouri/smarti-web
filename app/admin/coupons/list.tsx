@@ -29,6 +29,7 @@ export const CouponList = () => (
                 <BooleanField source="isActive" />
             </DataTable.Col>
             <DataTable.NumberCol source="maxUses" label="Max Uses" />
+            <DataTable.NumberCol source="uses" label="Uses" />
             <DataTable.Col source="planId" label="Plan">
                 <ReferenceField source="planId" reference="plans">
                     <TextField source="name" />
