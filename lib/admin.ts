@@ -7,7 +7,7 @@ const allowedIds = [
 
 // Whitelist of user IDs that have full access (premium features unlocked)
 const fullAccessUserIds = [
-    "user_35X4WQQV8AoN43abjMrb2tIIhlS",
+    "user_35eDYYCGANyULOU1HY2N1wKWjWX",
     "user_35c1Ttp2gqRwJVHaDGqWe2errKd",
     "user_351nKgCGf2EByDpF9SLvxnRT8kY",
     "user_34jysbbECoozWYDtYDATELi0Xwq",
