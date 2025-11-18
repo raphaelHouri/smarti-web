@@ -73,7 +73,7 @@ export const coupons = pgTable("coupons", {
     isActive: boolean("is_active").notNull(),
     maxUses: integer("max_uses").notNull(),
     planId: uuid("plan_id").references(() => plans.id, { onDelete: "cascade" }).notNull(),
-    organizationYearId: uuid("organization_year_id").references(() => organizationYears.id, { onDelete: "cascade" }).notNull(),
+    organizationYearId: uuid("organization_year_id").references(() => organizationYears.id, { onDelete: "set null" }),
     createdAt: timestamp("created_at").defaultNow(),
 });
 

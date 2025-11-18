@@ -28,41 +28,47 @@ export async function POST(req: Request) {
 
     try {
         const body = await req.json();
-        const insertPayload = sanitizeDates(body);
+        const sanitized = sanitizeDates(body);
 
-        // Always generate UUID for id
-        insertPayload.id = crypto.randomUUID();
-
-        // Transform couponType to type for database schema
-        if ('couponType' in insertPayload) {
-            insertPayload.type = insertPayload.couponType;
-            delete insertPayload.couponType;
-        }
-
-        // Validate required fields with better checks
-        if (!insertPayload.code || typeof insertPayload.code !== 'string' || insertPayload.code.trim() === '') {
+        // Validate required fields first
+        if (!sanitized.code || typeof sanitized.code !== 'string' || sanitized.code.trim() === '') {
             return NextResponse.json({ error: "Code is required" }, { status: 400 });
         }
-        if (!insertPayload.planId || insertPayload.planId === '' || insertPayload.planId === null) {
+        if (!sanitized.planId || sanitized.planId === '' || sanitized.planId === null) {
             return NextResponse.json({ error: "Plan ID is required" }, { status: 400 });
         }
-        if (!insertPayload.organizationYearId || insertPayload.organizationYearId === '' || insertPayload.organizationYearId === null) {
-            return NextResponse.json({ error: "Organization Year ID is required" }, { status: 400 });
-        }
-        if (!insertPayload.value || typeof insertPayload.value !== 'number') {
+
+        if (!sanitized.value || typeof sanitized.value !== 'number') {
             return NextResponse.json({ error: "Value is required and must be a number" }, { status: 400 });
         }
-        if (!insertPayload.validFrom) {
+        if (!sanitized.validFrom) {
             return NextResponse.json({ error: "Valid From date is required" }, { status: 400 });
         }
-        if (!insertPayload.validUntil) {
+        if (!sanitized.validUntil) {
             return NextResponse.json({ error: "Valid Until date is required" }, { status: 400 });
         }
-        if (typeof insertPayload.maxUses !== 'number') {
+        if (typeof sanitized.maxUses !== 'number') {
             return NextResponse.json({ error: "Max Uses is required and must be a number" }, { status: 400 });
         }
 
-        const data = await db.insert(coupons).values(insertPayload).returning()
+        // Determine coupon type
+        const couponType = sanitized.couponType || sanitized.type || 'percentage';
+
+        // Explicitly construct the values object with all required fields
+        const values = {
+            id: crypto.randomUUID(),
+            code: sanitized.code.trim(),
+            type: couponType as 'percentage' | 'fixed',
+            value: sanitized.value,
+            validFrom: sanitized.validFrom,
+            validUntil: sanitized.validUntil,
+            isActive: sanitized.isActive !== undefined ? sanitized.isActive : true,
+            maxUses: sanitized.maxUses,
+            planId: sanitized.planId,
+            organizationYearId: sanitized.organizationYearId,
+        };
+
+        const data = await db.insert(coupons).values(values).returning()
 
         // Transform type to couponType for response
         const transformed = {
