@@ -56,7 +56,8 @@ export default function BookPurchaseModal() {
 
         const base = process.env.NEXT_PUBLIC_APP_URL ?? "";
         const couponParam = savedCoupon ? `&CouponCode=${encodeURIComponent(savedCoupon.code)}` : "";
-        const url = `${base}/api/pay?StudentName=${encodeURIComponent(studentName)}&Email=${encodeURIComponent(email)}&PlanId=${encodeURIComponent(effectivePlanId)}&UserId=${encodeURIComponent(userId)}&bookIncluded=True${couponParam}`;
+        const userIdParam = userId ? `&UserId=${encodeURIComponent(userId)}` : "";
+        const url = `${base}/api/pay?StudentName=${encodeURIComponent(studentName)}&Email=${encodeURIComponent(email)}&PlanId=${encodeURIComponent(effectivePlanId)}&bookIncluded=True${couponParam}${userIdParam}`;
         close();
         window.open(url, "_self");
     };
