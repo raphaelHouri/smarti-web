@@ -13,21 +13,21 @@ interface SideBarProps {
 
 const sidebarItems = [
     { href: '/learn', label: 'למידה', iconSrc: '/learn.svg', registerOnly: false },
-    { href: '/leaderboard', label: 'לוח דירוגים', iconSrc: '/leaderboard.svg', registerOnly: true },
-    { href: '/quests', label: 'שלבים', iconSrc: '/quests.svg', registerOnly: true },
     { href: '/online-lesson', label: 'שיעורי אונליין', iconSrc: '/online-lesson.svg', registerOnly: false },
-    { href: '/settings', label: 'הגדרות', iconSrc: '/setting-profile.svg', registerOnly: true },
     { href: '/practice', label: 'תרגול טעויות', iconSrc: '/practice.svg', registerOnly: true },
     { href: '/shop', label: 'שירותים ומוצרים', iconSrc: '/shop.svg', registerOnly: true },
+    { href: '/leaderboard', label: 'לוח דירוגים', iconSrc: '/leaderboard.svg', registerOnly: true },
+    { href: '/quests', label: 'שלבים', iconSrc: '/quests.svg', registerOnly: true },
+    { href: '/settings', label: 'הגדרות', iconSrc: '/setting-profile.svg', registerOnly: true },
 ];
 
 export const SideBar = ({
     className
 }: SideBarProps) => {
     return (
-        <div className={cn("flex h-full lg:w-[256px] lg:fixed right-0 top-0 px-4 border-l-2 flex-col", className)}>
+        <div className={cn("flex h-full lg:w-[256px] lg:fixed right-0 top-0 px-4 border-l-2 flex-col overflow-hidden", className)}>
             <Link href="/">
-                <div className="pt-8 pb-7 pl-4 flex items-center gap-x-3">
+                <div className="pt-8 pb-7 pl-4 flex items-center gap-x-3 flex-shrink-0">
                     <Image
                         src="/smartiLogo.png"
                         alt="Smarti logo"
@@ -37,7 +37,7 @@ export const SideBar = ({
                     />
                 </div>
             </Link>
-            <div className="flex flex-col flex-1 gap-y-4">
+            <div className="flex flex-col flex-1 gap-y-4 overflow-y-auto min-h-0">
                 {sidebarItems.map((item, index) => (
                     <SideBarItems
                         key={index}
@@ -48,7 +48,7 @@ export const SideBar = ({
                     />
                 ))}
             </div>
-            <div className="py-2">
+            <div className="py-2 flex-shrink-0">
                 <ClerkLoading>
                     <Loader className="h-5 w-5 text-muted-foreground animate-spin" />
                 </ClerkLoading>

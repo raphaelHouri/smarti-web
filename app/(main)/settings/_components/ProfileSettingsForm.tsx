@@ -304,11 +304,11 @@ export function ProfileSettingsForm({
                                     </FormControl>
                                     <SelectContent>
 
-                                        <SelectItem value="1st Grade">כיתה א׳</SelectItem>
-                                        <SelectItem value="2nd Grade">כיתה ב׳</SelectItem>
-                                        <SelectItem value="3rd Grade">כיתה ג׳</SelectItem>
-                                        <SelectItem value="4th Grade">כיתה ד׳</SelectItem>
-                                        <SelectItem value="5th Grade">כיתה ה׳</SelectItem>
+                                        <SelectItem value="1st Grade">א׳</SelectItem>
+                                        <SelectItem value="2nd Grade">ב׳</SelectItem>
+                                        <SelectItem value="3rd Grade">ג׳</SelectItem>
+                                        <SelectItem value="4th Grade">ד׳</SelectItem>
+                                        <SelectItem value="5th Grade">ה׳</SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <FormDescription>
