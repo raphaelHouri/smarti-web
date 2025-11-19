@@ -5,6 +5,7 @@ import { auth, clerkClient } from "@clerk/nextjs/server";
 import { lessonCategory, lessonQuestionGroups, lessons, questions, userLessonResults, users, userSettings, userWrongQuestions, onlineLessons, coupons, paymentTransactions, bookPurchases, subscriptions } from './schemaSmarti';
 import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { hasFullAccess } from "@/lib/admin";
 
 export type LessonWithResults =
     typeof lessons.$inferSelect & {
@@ -564,39 +565,16 @@ export const getUserSubscriptions = cache(async () => {
     const { userId } = await auth();
     if (!userId) {
         return {
-            lessonCategoryId: "61758a59-2c5e-4865-9c09-002cc0665881",
             isPro: false,
-            experience: 0,
-            geniusScore: 0,
         };
     }
 
     // Check if user has full access (whitelist)
-    const { hasFullAccess } = await import("@/lib/admin");
     const hasAccess = await hasFullAccess(userId);
 
     return {
-        lessonCategoryId: "61758a59-2c5e-4865-9c09-002cc0665881",
-        isPro: hasAccess, // Grant premium access if user is whitelisted
-        experience: 0,
-        geniusScore: 0,
+        isPro: hasAccess
     };
-    // const subscription = await db.query.subscriptions.findMany({
-    //     where: eq(subscriptions.user_id, userId)
-    // })
-    // if (!subscription) return null;
-
-    // const isActive =
-    //     subscription.stripePriceId
-    //     && subscription.stripeCurrentPeriodEnd?.getTime()!
-    //     + DAY_IN_MS > Date.now()
-
-    // return {
-    //     ...subscription,
-    //     isActive: !!isActive
-    // }
-
-    // PURCHASING AND CANCELLING HANDLED
 })
 // cancelling the subscription tells stripe not to renew next month
 async function getLessonQuestionGroupsWithFirstQuestionCategorySingleQuery(lessonId: string) {
