@@ -277,11 +277,11 @@ export default function PurchasePageShop({
                         <div className="text-center lg:text-left animate-fade-in-up">
                             <div className="mb-6">
                                 <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-                                    <span className="bg-gradient-to-r from-purple-600 via-blue-500 to-pink-500 text-transparent bg-clip-text" dir="rtl">
+                                    <span className="block w-full text-right bg-gradient-to-r from-purple-600 via-blue-500 to-pink-500 text-transparent bg-clip-text" >
                                         בחרו איך הילד שלכם לומד הכי טוב!
                                     </span>
                                 </h1>
-                                <p className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed" dir="rtl">
+                                <p className="block w-full text-right text-lg md:text-xl text-gray-600 mb-8 leading-relaxed">
                                     תוכניות למידה גמישות שתוכננו על ידי מומחים כדי לעזור לילד שלכם להצטיין במבחני מחוננים
                                 </p>
                             </div>
