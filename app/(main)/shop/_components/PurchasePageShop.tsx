@@ -137,7 +137,7 @@ export default function PurchasePageShop({
         const keys = Object.keys(plansByType) as PackageType[];
         return keys.map((k) => ({
             id: (k === "book" ? "books" : "system") as Category,
-            name: k === "book" ? "חוברות" : "מערכת",
+            name: k === "book" ? "חוברת הכנה" : "מערכת למידה",
             icon: k === "book" ? BookOpen : Rocket,
             color: k === "book" ? "green" : "blue",
         }));
@@ -272,15 +272,16 @@ export default function PurchasePageShop({
 
                 <div className="max-w-7xl mx-auto relative z-10">
                     <div className="grid lg:grid-cols-2 gap-16 items-center">
-                        {/* Left side - Text content */}
+
+                        {/* right side - Text content */}
                         <div className="text-center lg:text-left animate-fade-in-up">
                             <div className="mb-6">
                                 <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-                                    <span className="bg-gradient-to-r from-purple-600 via-blue-500 to-pink-500 text-transparent bg-clip-text">
+                                    <span className="bg-gradient-to-r from-purple-600 via-blue-500 to-pink-500 text-transparent bg-clip-text" dir="rtl">
                                         בחרו איך הילד שלכם לומד הכי טוב!
                                     </span>
                                 </h1>
-                                <p className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed">
+                                <p className="text-lg md:text-xl text-gray-600 mb-8 leading-relaxed" dir="rtl">
                                     תוכניות למידה גמישות שתוכננו על ידי מומחים כדי לעזור לילד שלכם להצטיין במבחני מחוננים
                                 </p>
                             </div>
@@ -293,12 +294,11 @@ export default function PurchasePageShop({
                                 </div>
                                 <div className="flex items-center gap-3 bg-white/90 px-6 py-3 rounded-full shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105">
                                     <Star className="w-5 h-5 text-blue-500" />
-                                    <span className="text-sm font-medium text-gray-700">תוצאות מוכחות</span>
+                                    <span className="text-sm font-medium text-gray-700">מדמה מבחן אמיתי</span>
                                 </div>
                             </div>
                         </div>
-
-                        {/* Right side - Clean illustration area */}
+                        {/* left side - Clean illustration area */}
                         <div className="relative h-64 md:h-80 animate-fade-in-right">
                             <div className="absolute inset-0 bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-800/30 dark:to-blue-900/30 rounded-2xl" />
 
