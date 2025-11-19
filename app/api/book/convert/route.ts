@@ -68,8 +68,7 @@ async function generate(StudentName?: string, vat_id?: string, productType?: str
         const zipCachePath = getZipCachePath(productType);
         const zipContent = await readTemplate(templatePath, zipCachePath);
         const zip = new PizZip(zipContent);
-        const qrCodeBuffer = await generateQRCodeBuffer(`https://chat.whatsapp.com/FThYvpNBjFkH5epoEOJ7PH
-?vatId=${vat_id}`);
+        const qrCodeBuffer = await generateQRCodeBuffer(`https://chat.whatsapp.com/FThYvpNBjFkH5epoEOJ7PH?vatId=${vat_id}`);
 
         const doc = new Docxtemplater(zip, { modules: [imageModule] });
 
@@ -79,7 +78,7 @@ async function generate(StudentName?: string, vat_id?: string, productType?: str
         await doc.renderAsync({
             UserFullNameXXXX: StudentName || "רפאל חורי",
             YEARXXXX: yearString,
-            URLXXXX: "https://supergifted.co.il/book",
+            URLXXXX: "https://www.smarti-kids.co.il/shop/book",
             image: qrCodeBuffer
         });
 
