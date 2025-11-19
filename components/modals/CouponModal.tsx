@@ -205,7 +205,7 @@ export default function CouponModal() {
                         <div className="flex gap-2">
                             <input
                                 value={couponCode}
-                                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                                onChange={(e) => setCouponCode(e.target.value)}
                                 onKeyDown={(e) => {
                                     if (e.key === "Enter") {
                                         handleValidateCoupon();
