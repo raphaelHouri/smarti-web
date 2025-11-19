@@ -93,7 +93,7 @@ function buildSubscriptionsSuccessHtml(subscriptions: SubscriptionArrayItem[]): 
           : "הגישה לתכנים נפתחה בהצלחה.";
       const expiryLine =
         subscription.type === "book"
-          ? `הקובץ יהיה זמין להורדה עד <strong class="text-gray-900">${expiresAtLabel}</strong>.`
+          ? `תוקף עד: <strong class="text-gray-900">${expiresAtLabel}</strong>.`
           : `הגישה לתוכן בתוקף עד <strong class="text-gray-900">${expiresAtLabel}</strong>.`;
 
       let body: string;
@@ -110,7 +110,7 @@ function buildSubscriptionsSuccessHtml(subscriptions: SubscriptionArrayItem[]): 
         body = `
         <div class="mt-4 space-y-4">
           <div class="bg-blue-50 border border-blue-100 rounded-lg p-4 text-sm text-gray-700 leading-relaxed space-y-2">
-            <p>השארנו את ההורדה מוכנה עבורך.</p>
+                        ${passwordMarkup}
             <p>${expiryLine}</p>
           </div>
 
@@ -134,7 +134,6 @@ function buildSubscriptionsSuccessHtml(subscriptions: SubscriptionArrayItem[]): 
           </div>
 
           <div class="bg-gray-50 rounded-lg p-4 mt-2">
-            ${passwordMarkup}
             <p class="text-center text-gray-500 text-sm">
               אם לא קיבלתם מייל, בדקו את תיקיית הספאם.
             </p>
