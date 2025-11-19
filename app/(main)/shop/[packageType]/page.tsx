@@ -1,7 +1,7 @@
 import PurchasePageShop from "../_components/PurchasePageShop";
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
-import { getPlansForShop, type PackageType } from "@/db/queries";
+import { getOrCreateUserFromGuest, getPlansForShop, type PackageType } from "@/db/queries";
 import { notFound } from "next/navigation";
 
 export const metadata: Metadata = buildMetadata({
@@ -19,6 +19,8 @@ type ShopPackageTypePageProps = {
 
 export default async function ShopPackageTypePage({ params }: ShopPackageTypePageProps) {
     const { packageType } = await params;
+    const userData = getOrCreateUserFromGuest();
+    const [user] = await Promise.all([userData]);
 
     // Validate packageType
     if (packageType !== "system" && packageType !== "book") {
