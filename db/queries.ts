@@ -37,6 +37,61 @@ export const getLessonCategoryById = cache(async (categoryId: string) => {
 
 
 
+// Helper function to create user from Clerk userId (for webhooks)
+export const createUserFromClerkId = async (clerkUserId: string, lessonCategoryId?: string) => {
+    const existingUser = await db.query.users.findFirst({
+        where: eq(users.id, clerkUserId),
+    });
+
+    if (existingUser) {
+        return existingUser;
+    }
+
+    try {
+        const clerkInstance = await clerkClient();
+        const user = await clerkInstance.users.getUser(clerkUserId);
+        const userEmail = user.emailAddresses.find((e: { id: string; emailAddress: string }) => e.id === user.primaryEmailAddressId)?.emailAddress ?? "";
+
+        let newLessonCategoryId;
+        if (lessonCategoryId) {
+            const lesson = await db.query.lessons.findFirst({
+                where: eq(lessons.lessonCategoryId, lessonCategoryId),
+            });
+            if (!lesson) {
+                throw new Error("Invalid lesson category ID");
+            }
+            newLessonCategoryId = lessonCategoryId;
+        } else {
+            const category = await getFirstCategory();
+            newLessonCategoryId = category?.id || null;
+        }
+
+        // 1. Insert the new user.
+        await db.insert(users).values({
+            id: clerkUserId,
+            name: user.firstName || "משתמש אורח",
+            email: userEmail,
+            lessonCategoryId: newLessonCategoryId,
+        });
+
+        // 2. Insert the corresponding user settings.
+        await db.insert(userSettings).values({
+            id: crypto.randomUUID(),
+            userId: clerkUserId,
+        });
+
+        return await db.query.users.findFirst({
+            where: eq(users.id, clerkUserId),
+            with: {
+                settings: true,
+            }
+        });
+    } catch (error) {
+        console.error('Error creating user from Clerk ID:', error);
+        return null;
+    }
+};
+
 export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string, returnUser: boolean = true) => {
     const { userId } = await auth();
     if (!userId) return null;
