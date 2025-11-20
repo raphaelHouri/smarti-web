@@ -30,7 +30,7 @@ const QuestsPage = async () => {
         redirect("/courses");
     }
 
-    const isPro = userSubscription?.isPro ?? false
+    const isPro = userSubscription ? (userSubscription.has("all") || userSubscription.has("system1")) : false
 
 
 
@@ -40,10 +40,8 @@ const QuestsPage = async () => {
             <StickyWrapper>
                 <UserProgress
                     experience={userProgress.experience}
-                    geniusScore={userProgress.geniusScore}
                     imageSrc={userProgress.settings?.avatar || "/fr.svg"}
                     title={userProgress.lessonCategory?.title || "French"}
-                    hasActiveSubscription={isPro}
                 />
                 {!isPro && (
                     <PromoSection
