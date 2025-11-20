@@ -278,11 +278,10 @@ export default function PurchasePageShop({
                             <div className="mb-6">
                                 <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
                                     <span className="block w-full text-right bg-gradient-to-r from-purple-600 via-blue-500 to-pink-500 text-transparent bg-clip-text" >
-                                        בחרו איך הילד שלכם לומד הכי טוב!
-                                    </span>
+                                        מגיעים הכי מוכנים למבחן המחוננים ומצטיינים!                                    </span>
                                 </h1>
                                 <p className="block w-full text-right text-lg md:text-xl text-gray-600 mb-8 leading-relaxed">
-                                    תוכניות למידה גמישות שתוכננו על ידי מומחים כדי לעזור לילד שלכם להצטיין במבחני מחוננים
+                                    השקעה של מספר ימים יכולה להניב פירות שנים רבות קדימה, זו הנקודה שבה הילדים נמצאים היום.
                                 </p>
                             </div>
 
@@ -593,7 +592,7 @@ export default function PurchasePageShop({
             </section>
 
             {/* Trust Indicators */}
-            <section className="py-12 px-4">
+            {/* <section className="py-12 px-4">
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center mb-8">
                         <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
@@ -640,10 +639,10 @@ export default function PurchasePageShop({
                         ))}
                     </div>
                 </div>
-            </section>
+            </section> */}
 
             {/* Recommendation Box */}
-            <section className="py-8 px-4">
+            {/* <section className="py-8 px-4">
                 <div className="max-w-3xl mx-auto">
                     <div className="bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-800/50 dark:to-blue-900/50 rounded-2xl p-8 text-center border border-gray-200 dark:border-gray-700 shadow-lg">
                         <div className="w-12 h-12 mx-auto mb-4 bg-white dark:bg-gray-800 rounded-xl flex items-center justify-center">
@@ -665,7 +664,7 @@ export default function PurchasePageShop({
                         </button>
                     </div>
                 </div>
-            </section>
+            </section> */}
 
             {/* Help Section */}
             <section className="py-12 px-4 text-center">
@@ -673,13 +672,21 @@ export default function PurchasePageShop({
                     <h3 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-3">
                         יש שאלות? אנחנו כאן לעזור!
                     </h3>
-                    <p className="text-gray-600 dark:text-gray-400 mb-6">
+                    <p className="text-gray-600 dark:text-gray-400 mb-4">
                         צוות התמיכה שלנו מוכן לסייע לכם בבחירת התוכנית הטובה ביותר עבור הילד שלכם
                     </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-500 mb-6">
+                        ווצאפ: <a href={`https://wa.me/972586519423`} target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">058-651-9423</a>
+                    </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <button className="px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg font-medium hover:from-purple-600 hover:to-blue-600 transition-all duration-200 shadow-md">
-                            צור קשר
-                        </button>
+                        <a
+                            href={`https://wa.me/972586519423?text=${encodeURIComponent("שלום, אשמח לקבל עזרה במערכת סמארטי בנושא השירותים ומוצרים...")}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg font-medium hover:from-purple-600 hover:to-blue-600 transition-all duration-200 shadow-md inline-flex items-center justify-center"
+                        >
+                            צור קשר בווצאפ
+                        </a>
                         <button
                             onClick={scrollToTop}
                             className="px-6 py-3 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 border border-gray-200 dark:border-gray-700 flex items-center justify-center gap-2"
