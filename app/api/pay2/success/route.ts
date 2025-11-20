@@ -189,6 +189,8 @@ function buildSubscriptionsSuccessHtml(subscriptions: SubscriptionArrayItem[]): 
   });
 
   const bookItemsJson = JSON.stringify(bookItems).replace(/</g, "\\u003c");
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "";
+  const backToAppUrl = appUrl ? `${appUrl}/learn` : "/learn";
 
   return `
 <!doctype html>
@@ -212,6 +214,13 @@ function buildSubscriptionsSuccessHtml(subscriptions: SubscriptionArrayItem[]): 
 
     <div class="space-y-6 w-full">
       ${sections}
+    </div>
+
+    <div class="mt-8 pt-6 border-t border-gray-200 w-full">
+      <a href="${escapeHtml(backToAppUrl)}" 
+         class="inline-flex items-center justify-center w-full py-3 px-6 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200 font-medium">
+        לחזרה למערכת
+      </a>
     </div>
   </div>
 
