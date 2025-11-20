@@ -35,14 +35,13 @@ export const SideBarItems = ({
                 className="justify-start h-[52px]"
                 onClick={OpenRegisterModal}
             >
+                <span className="mr-2 ml-auto">{label}</span>
                 <Image
                     src={iconSrc}
                     alt="label"
-                    className="ml-auto"
                     height={32}
                     width={32}
                 />
-                <span className="mr-2">{label}</span>
             </Button>
         );
     }
@@ -53,14 +52,13 @@ export const SideBarItems = ({
             asChild
         >
             <Link href={href} className="dark:text-slate-200">
+                <span className="mr-2 ml-auto">{label}</span>
                 <Image
                     src={iconSrc}
                     alt="label"
-                    className="ml-auto"
                     height={32}
                     width={32}
                 />
-                <span className="mr-2">{label}</span>
             </Link>
         </Button>
     )
