@@ -22,11 +22,11 @@ export const metadata: Metadata = buildMetadata({
 const LeaderBoardPage = async () => {
     const userProgressData = getUserProgress();
     const userSubscriptionData = getUserSubscriptions();
-    const isPro = userSubscription ? (userSubscription.has("all") || userSubscription.has("system1")) : false;
     const topTenUsersData = getTopUsers();
-
-
+    
+    
     const [userProgress, userSubscription, topTenUsers] = await Promise.all([userProgressData, userSubscriptionData, topTenUsersData])
+    const isPro = userSubscription ? (userSubscription.has("all") || userSubscription.has("system1")) : false;
 
     if (!userProgress || !userProgress.lessonCategoryId) {
         redirect("/learn");

@@ -23,8 +23,8 @@ const LearnPage = async ({
     const lessonCategories = getLessonCategoryById(categoryId);
     const lessonCategoryWithLessons = await getLessonCategoryWithLessonsById(categoryId);
     const userSubscriptionData = getUserSubscriptions();
-    const isPro = userSubscription ? (userSubscription.has("all") || userSubscription.has("system1")) : false;
     const [user, lessonsCategory, categoriesData, userSubscription] = await Promise.all([userData, lessonCategories, categories, userSubscriptionData]);
+    const isPro = userSubscription ? (userSubscription.has("all") || userSubscription.has("system1")) : false;
 
     // יצירת מערך חדש עם שדה 'הושלם'
     const lessonsCategoryWithCompleted = lessonsCategory.map((lessonCategoryItem) => {
