@@ -2,8 +2,8 @@
 import { cache } from "react";
 import db from "./drizzle";
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { lessonCategory, lessonQuestionGroups, lessons, questions, userLessonResults, users, userSettings, userWrongQuestions, onlineLessons, coupons, paymentTransactions, bookPurchases, subscriptions } from './schemaSmarti';
-import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
+import { lessonCategory, lessonQuestionGroups, lessons, questions, userLessonResults, users, userSettings, userWrongQuestions, onlineLessons, coupons, paymentTransactions, bookPurchases, subscriptions, ProductType } from './schemaSmarti';
+import { and, asc, desc, eq, gt, inArray, isNotNull, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { hasFullAccess } from "@/lib/admin";
 
@@ -565,17 +565,37 @@ export const getUserProgress = cache(async () => {
 export const getUserSubscriptions = cache(async () => {
     const { userId } = await auth();
     if (!userId) {
-        return {
-            isPro: false,
-        };
+        return new Set<ProductType>();
     }
 
     // Check if user has full access (whitelist)
     const hasAccess = await hasFullAccess(userId);
+    if (hasAccess) return new Set<ProductType>(["all"]);
+    // Get all valid subscriptions that haven't passed system_until
+    const validSubscriptions = await db.query.subscriptions.findMany({
+        where: (subs, { eq, and, isNotNull, gt, sql }) => and(
+            eq(subs.userId, userId),
+            // systemUntil must not be null and greater than current time (not passed)
+            isNotNull(subs.systemUntil),
+            gt(subs.systemUntil, sql`NOW()`)
+        ),
+        with: {
+            product: {
+                columns: {
+                    productType: true,
+                },
+            },
+        },
+    });
 
-    return {
-        isPro: hasAccess
-    };
+    // Extract unique productTypes as a Set
+    const productTypes = new Set<ProductType>(
+        validSubscriptions
+            .map(sub => sub.product?.productType)
+            .filter((type): type is NonNullable<typeof type> => type !== undefined && type !== null)
+    );
+
+    return productTypes;
 })
 // cancelling the subscription tells stripe not to renew next month
 async function getLessonQuestionGroupsWithFirstQuestionCategorySingleQuery(lessonId: string) {

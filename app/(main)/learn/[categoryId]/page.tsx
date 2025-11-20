@@ -23,7 +23,7 @@ const LearnPage = async ({
     const lessonCategories = getLessonCategoryById(categoryId);
     const lessonCategoryWithLessons = await getLessonCategoryWithLessonsById(categoryId);
     const userSubscriptionData = getUserSubscriptions();
-
+    const isPro = userSubscription ? (userSubscription.has("all") || userSubscription.has("system1")) : false;
     const [user, lessonsCategory, categoriesData, userSubscription] = await Promise.all([userData, lessonCategories, categories, userSubscriptionData]);
 
     // יצירת מערך חדש עם שדה 'הושלם'
@@ -79,7 +79,7 @@ const LearnPage = async ({
                         title={categoryDetails.title || "שם היחידה לא מוגדר"}
                         description={categoryDetails.description || "אין תיאור"}
                         lessons={lessonsCategoryWithCompleted}
-                        isPro={userSubscription?.isPro ?? false}
+                        isPro={userSubscription ? (userSubscription.has("all") || userSubscription.has("system1")) : false}
                     />
                 </div>
             </FeedWrapper>
@@ -88,19 +88,13 @@ const LearnPage = async ({
                 <UserProgress
                     imageSrc={user?.settings?.avatar || categoryDetails.imageSrc || "/fr.svg"}
                     title={categoryDetails.categoryType || "שם הקטגוריה לא נמצא"}
-                    geniusScore={
-                        user && "geniusScore" in user && typeof user.geniusScore === "number"
-                            ? user.geniusScore
-                            : 0
-                    }
                     experience={
                         user && "experience" in user && typeof user.experience === "number"
                             ? user.experience
                             : 0
                     }
-                    hasActiveSubscription={userSubscription?.isPro ?? false}
                 />
-                {!(userSubscription?.isPro ?? false) && (
+                {!isPro && (
                     <PromoSection
                     />
                 )}

@@ -42,7 +42,7 @@ const PracticePage = async () => {
         redirect("/learn");
     }
 
-    const isPro = userSubscription?.isPro;
+    const isPro = userSubscription ? (userSubscription.has("all") || userSubscription.has("system1")) : false;
 
     const groupedSummary: GroupedSummaryType = wrongQuestionsWithDetails.reduce((acc, wrongQuestionEntry) => {
         const question = wrongQuestionEntry.question;
@@ -101,10 +101,8 @@ const PracticePage = async () => {
             <StickyWrapper>
                 <UserProgress
                     experience={userProgress.experience}
-                    geniusScore={userProgress.geniusScore}
                     imageSrc={userProgress.settings?.avatar || "/fr.svg"}
                     title={userProgress.lessonCategory?.title || "Active Course"}
-                    hasActiveSubscription={isPro}
                 />
                 {!isPro && <PromoSection />}
                 <QuestsSection experience={userProgress.experience} />

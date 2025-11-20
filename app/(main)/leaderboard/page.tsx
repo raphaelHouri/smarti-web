@@ -22,6 +22,7 @@ export const metadata: Metadata = buildMetadata({
 const LeaderBoardPage = async () => {
     const userProgressData = getUserProgress();
     const userSubscriptionData = getUserSubscriptions();
+    const isPro = userSubscription ? (userSubscription.has("all") || userSubscription.has("system1")) : false;
     const topTenUsersData = getTopUsers();
 
 
@@ -31,7 +32,6 @@ const LeaderBoardPage = async () => {
         redirect("/learn");
     }
 
-    const isPro = userSubscription?.isPro;
 
     return (
         <div className="flex flex-row-reverse gap-[42px] px-6" dir="rtl">
@@ -40,8 +40,6 @@ const LeaderBoardPage = async () => {
                     imageSrc={userProgress.settings?.avatar || "/fr.svg"}
                     title={userProgress.lessonCategory?.categoryType || "Math"}
                     experience={userProgress.experience}
-                    geniusScore={userProgress.geniusScore}
-                    hasActiveSubscription={isPro}
                 />
                 {!isPro && (
                     <PromoSection

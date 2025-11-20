@@ -49,7 +49,7 @@ const SettingsPage = async () => {
         redirect("/learn");
     }
 
-    const isPro = userSubscription?.isPro;
+    const isPro = userSubscription ? (userSubscription.has("all") || userSubscription.has("system1")) : false;
 
     return (
         <div className="flex flex-row-reverse gap-[42px] px-6">
@@ -58,8 +58,6 @@ const SettingsPage = async () => {
                     imageSrc={userProgress.settings?.avatar || "/fr.svg"} // Make sure activeCourse is defined or fetched
                     title={userProgress.settings?.avatar || "Math"} // Make sure activeCourse is defined or fetched
                     experience={userProgress.experience}
-                    geniusScore={userProgress.geniusScore}
-                    hasActiveSubscription={isPro}
                 />
                 {!isPro && (
                     <PromoSection />

@@ -1,7 +1,6 @@
 import Link from "next/link"
 import { Button } from "./ui/button"
 import Image from "next/image"
-import { InfinityIcon } from "lucide-react"
 
 
 interface ActiveCourse {
@@ -13,9 +12,7 @@ interface ActiveCourse {
 interface UserProgressProps {
     title: string;
     imageSrc: string;
-    geniusScore: number;
     experience: number;
-    hasActiveSubscription: boolean;
 }
 
 
@@ -23,8 +20,6 @@ export const UserProgress = ({
     title,
     imageSrc,
     experience,
-    geniusScore,
-    hasActiveSubscription
 }: UserProgressProps) => {
     return (
         <div className="flex items-center justify-between gap-x-2
@@ -55,7 +50,6 @@ export const UserProgress = ({
                     <Image src="/heart.svg" alt="geniusScore" height={22} width={22}
                         className="mr-2"
                     />
-                    {hasActiveSubscription ? <InfinityIcon className="h-4 w-4 stroke-[3]" /> : geniusScore}
                 </Button>
             </Link>
         </div>

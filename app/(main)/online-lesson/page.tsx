@@ -24,7 +24,6 @@ const OnlineLessonPage = async () => {
         getCategoriesForOnlineLessons(),
     ]);
 
-    const isPro = userSubscription?.isPro;
 
     // Check if user's lessonCategoryId has online lessons
     if (userProgress?.lessonCategoryId) {
@@ -44,10 +43,8 @@ const OnlineLessonPage = async () => {
             <StickyWrapper>
                 <UserProgress
                     experience={userProgress?.experience || 0}
-                    geniusScore={userProgress?.geniusScore || 0}
                     imageSrc={userProgress?.settings?.avatar || "/fr.svg"}
                     title={userProgress?.lessonCategory?.title || "Online Lessons"}
-                    hasActiveSubscription={isPro}
                 />
             </StickyWrapper>
             <FeedWrapper>

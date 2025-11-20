@@ -26,7 +26,6 @@ const OnlineLessonCategoryPage = async ({ params }: OnlineLessonCategoryPageProp
         getCategoriesForOnlineLessons(),
     ]);
 
-    const isPro = userSubscription?.isPro;
     const currentCategory = categories.find(c => c.id === categoryId);
 
     if (!currentCategory && categories.length > 0) {
@@ -46,10 +45,8 @@ const OnlineLessonCategoryPage = async ({ params }: OnlineLessonCategoryPageProp
             <StickyWrapper>
                 <UserProgress
                     experience={userProgress?.experience || 0}
-                    geniusScore={userProgress?.geniusScore || 0}
                     imageSrc={userProgress?.settings?.avatar || "/fr.svg"}
                     title={userProgress?.lessonCategory?.title || "Online Lessons"}
-                    hasActiveSubscription={isPro}
                 />
             </StickyWrapper>
             <FeedWrapper>
