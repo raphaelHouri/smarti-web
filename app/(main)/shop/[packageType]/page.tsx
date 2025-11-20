@@ -19,7 +19,7 @@ type ShopPackageTypePageProps = {
 
 export default async function ShopPackageTypePage({ params }: ShopPackageTypePageProps) {
     const { packageType } = await params;
-    const userData = getOrCreateUserFromGuest();
+    const userData = getOrCreateUserFromGuest(undefined, false);
     const [user] = await Promise.all([userData]);
 
     // Validate packageType

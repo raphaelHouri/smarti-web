@@ -37,7 +37,7 @@ export const getLessonCategoryById = cache(async (categoryId: string) => {
 
 
 
-export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string) => {
+export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string, returnUser: boolean = true) => {
     const { userId } = await auth();
     if (!userId) return null;
 
@@ -84,15 +84,16 @@ export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string) 
                 id: crypto.randomUUID(),
                 userId: userId,
             });
+            if (returnUser) {
+                const newUser = await db.query.users.findFirst({
+                    where: eq(users.id, userId),
+                    with: {
+                        settings: true,
+                    }
+                });
 
-            const newUser = await db.query.users.findFirst({
-                where: eq(users.id, userId),
-                with: {
-                    settings: true,
-                }
-            });
-
-            return newUser;
+                return newUser;
+            }
         } catch (error) {
             return null;
         }
