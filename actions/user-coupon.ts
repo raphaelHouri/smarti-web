@@ -45,7 +45,7 @@ export async function validateAndSaveCoupon(code: string) {
         if (!result.success) {
             return { success: false, error: result.error ?? "Failed to save coupon", coupon: validation.coupon };
         }
-        revalidatePath("/shop/[slug]");
+        revalidatePath("/shop/[slug]", "page");
         return { success: true, error: null, coupon: validation.coupon };
     } catch (error) {
         console.error("Failed to validate and save coupon:", error);
@@ -61,6 +61,7 @@ export async function removeUserCoupon() {
 
     try {
         await clearUserCoupon(userId);
+        revalidatePath("/shop/[slug]", "page");
         return { success: true, error: null };
     } catch (error) {
         console.error("Failed to remove coupon:", error);
