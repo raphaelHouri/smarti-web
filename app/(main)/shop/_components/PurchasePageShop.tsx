@@ -564,8 +564,9 @@ export default function PurchasePageShop({
                                                     bookPurchaseModal.open({ planId: plan.planType });
                                                 } else {
                                                     const base = process.env.NEXT_PUBLIC_APP_URL ?? "";
+                                                    const userIdParam = userId ? `&UserId=${encodeURIComponent(userId)}` : "";
                                                     const couponParam = savedCoupon ? `&CouponCode=${encodeURIComponent(savedCoupon.code)}` : "";
-                                                    const url = `${base}/api/pay?PlanId=${encodeURIComponent(plan.id)}${couponParam}`;
+                                                    const url = `${base}/api/pay?PlanId=${encodeURIComponent(plan.id)}${couponParam}${userIdParam}`;
                                                     window.open(url, "_self");
                                                 }
                                             };
