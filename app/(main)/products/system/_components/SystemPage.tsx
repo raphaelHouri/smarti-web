@@ -11,17 +11,17 @@ type SystemPageProps = { product: any | null };
 const SystemPage: FC<SystemPageProps> = ({ product }) => {
     const [isLoading] = useState(false);
     const dd = (product?.displayData ?? {}) as any;
-    const title: string = dd.title ?? product?.name ?? "Preparation System";
-    const subtitle: string = product?.description ?? dd.subtitle ?? "Monthly Preparation Program";
-    const periodLabel: string = dd.periodLabel ?? "Monthly";
+    const title: string = dd.title ?? product?.name ?? "מערכת הכנה";
+    const subtitle: string = product?.description ?? dd.subtitle ?? "תוכנית הכנה חודשית";
+    const periodLabel: string = dd.periodLabel ?? "חודשי";
     const monthlyPrice: string = dd.monthlyPrice ?? "$40";
     const year: string = getProductYear();
-    const description: string = dd.description ?? "Structured learning paths, practice tests, and real-time analytics — all inside a beautiful, kid-friendly system built to improve gifted exam performance.";
+    const description: string = dd.description ?? "נתיבי למידה מובנים, מבחני תרגול ואנליטיקה בזמן אמת — הכל בתוך מערכת יפה וידידותית לילדים שנועדה לשפר ביצועים בבחינות מחוננים.";
     const features: string[] = Array.isArray(dd.features) ? dd.features : [
-        "mock lessons unlocked",
-        "Practice tests & exams",
-        "Personalized analytics",
-        "Email support",
+        "שיעורי סימולציה פתוחים",
+        "מבחני תרגול ובחינות",
+        "אנליטיקה מותאמת אישית",
+        "תמיכה באימייל",
     ];
 
     return (
@@ -30,7 +30,7 @@ const SystemPage: FC<SystemPageProps> = ({ product }) => {
             <div className="p-4 flex flex-row items-start justify-between">
                 <Link href="/shop/system" className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
                     <ArrowLeft className="w-4 h-4" />
-                    Back to Shop
+                    חזרה לחנות
                 </Link>
                 <FeedbackButton screenName="system" />
             </div>
@@ -54,12 +54,12 @@ const SystemPage: FC<SystemPageProps> = ({ product }) => {
                                                 </div>
                                                 <div className="absolute top-4 right-4">
                                                     <div className="bg-white text-purple-600 px-2 py-1 rounded text-xs font-bold">
-                                                        Online
+                                                        אונליין
                                                     </div>
                                                 </div>
                                                 <div className="absolute bottom-4 left-4">
                                                     <div className="bg-white text-purple-600 px-2 py-1 rounded text-xs font-bold">
-                                                        All Levels
+                                                        כל הרמות
                                                     </div>
                                                 </div>
                                             </div>
@@ -68,11 +68,11 @@ const SystemPage: FC<SystemPageProps> = ({ product }) => {
                                         {/* Dashboard Cards */}
                                         <div className="absolute -top-6 -right-10 w-44 h-28 bg-white/95 rounded-xl shadow-md backdrop-blur flex items-center justify-center gap-3 p-4">
                                             <BarChart3 className="w-6 h-6 text-purple-600" />
-                                            <div className="text-xs font-medium text-gray-700">Progress Analytics</div>
+                                            <div className="text-xs font-medium text-gray-700">אנליטיקת התקדמות</div>
                                         </div>
                                         <div className="absolute -bottom-6 -left-10 w-44 h-28 bg-white/90 rounded-xl shadow-md backdrop-blur flex items-center justify-center gap-3 p-4">
                                             <MonitorSmartphone className="w-6 h-6 text-blue-600" />
-                                            <div className="text-xs font-medium text-gray-700">Any Device</div>
+                                            <div className="text-xs font-medium text-gray-700">כל מכשיר</div>
                                         </div>
                                     </div>
                                 </div>
@@ -81,7 +81,7 @@ const SystemPage: FC<SystemPageProps> = ({ product }) => {
                                 <div className="absolute top-4 left-4">
                                     <div className="bg-white px-3 py-1 rounded-full shadow-md">
                                         <span className="text-sm font-bold bg-gradient-to-r from-purple-600 to-blue-600 text-transparent bg-clip-text">
-                                            Gifted
+                                            מחוננים
                                         </span>
                                     </div>
                                 </div>
@@ -91,7 +91,7 @@ const SystemPage: FC<SystemPageProps> = ({ product }) => {
                         {/* Subtitle */}
                         <div className="flex items-center gap-3 text-gray-600">
                             <Star className="w-5 h-5 text-yellow-500" />
-                            <span className="font-medium">Most Recommended</span>
+                            <span className="font-medium">מומלץ ביותר</span>
                         </div>
                     </div>
 
@@ -102,7 +102,7 @@ const SystemPage: FC<SystemPageProps> = ({ product }) => {
                             <div className="flex items-center gap-2 mb-4">
                                 <div className="bg-purple-100 text-purple-600 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
                                     <Award className="w-4 h-4" />
-                                    Expert Designed
+                                    עוצב על ידי מומחים
                                 </div>
                             </div>
                             <h1 className="text-3xl font-bold text-gray-900 mb-4">{subtitle}</h1>
@@ -120,14 +120,14 @@ const SystemPage: FC<SystemPageProps> = ({ product }) => {
                             <div className="bg-white rounded-lg p-4 shadow-sm border">
                                 <div className="flex items-center gap-2 mb-2">
                                     <Rocket className="w-4 h-4 text-gray-500" />
-                                    <span className="text-sm text-gray-500">Access Type</span>
+                                    <span className="text-sm text-gray-500">סוג גישה</span>
                                 </div>
-                                <div className="font-semibold text-gray-900">Online System</div>
+                                <div className="font-semibold text-gray-900">מערכת אונליין</div>
                             </div>
                             <div className="bg-white rounded-lg p-4 shadow-sm border">
                                 <div className="flex items-center gap-2 mb-2">
                                     <Calendar className="w-4 h-4 text-gray-500" />
-                                    <span className="text-sm text-gray-500">Year</span>
+                                    <span className="text-sm text-gray-500">שנה</span>
                                 </div>
                                 <div className="font-semibold text-gray-900">{year}</div>
                             </div>
@@ -135,7 +135,7 @@ const SystemPage: FC<SystemPageProps> = ({ product }) => {
 
                         {/* What's Included */}
                         <div className="mb-8">
-                            <h3 className="text-lg font-bold text-gray-900 mb-4">What's included in the system:</h3>
+                            <h3 className="text-lg font-bold text-gray-900 mb-4">מה כלול במערכת:</h3>
                             <ul className="space-y-3">
                                 {features.map((feature, index) => (
                                     <li key={index} className="flex items-start gap-3">
@@ -147,37 +147,22 @@ const SystemPage: FC<SystemPageProps> = ({ product }) => {
                         </div>
 
                         {/* Purchase Section */}
-                        <div className="bg-white rounded-xl p-6 shadow-lg border">
-                            <div className="mb-2">
-                                <span className="text-sm text-gray-500">Monthly Price</span>
-                            </div>
-                            <div className="text-3xl font-bold text-gray-900 mb-6">{monthlyPrice}</div>
-                            <Link href="/shop/system" className={cn(
-                                "w-full py-4 rounded-lg font-semibold text-white transition-all duration-200 flex items-center justify-center gap-2",
-                                "bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 shadow-lg hover:shadow-xl"
-                            )}>
-                                Choose Plan
-                            </Link>
-                            <div className="mt-4 text-center">
-                                <div className="flex items-center justify-center gap-4 text-xs text-gray-500">
-                                    <div className="flex items-center gap-1">
-                                        <Shield className="w-3 h-3" />
-                                        Secure Payment
-                                    </div>
-                                    <div className="flex items-center gap-1">
-                                        <Star className="w-3 h-3 text-yellow-500" />
-                                        Proven Results
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
+
+                        {/* Back to Shop Button */}
+                        <Link
+                            href="/shop/system"
+                            className="block w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-xl p-6 shadow-lg border text-center font-medium hover:from-purple-600 hover:to-blue-600 transition-all duration-200 mt-6"
+                        >
+                            חזרה לבחירת חבילה
+                        </Link>
 
                         {/* Additional Trust Indicators (match Book) */}
                         <div className="mt-6 grid grid-cols-3 gap-4">
                             {[
-                                { icon: Award, text: "Expert Created", color: "purple" },
-                                { icon: Shield, text: "100% Secure", color: "green" },
-                                { icon: Rocket, text: "Instant Access", color: "blue" },
+                                { icon: Award, text: "נוצר על ידי מומחים", color: "purple" },
+                                { icon: Shield, text: "100% מאובטח", color: "green" },
+                                { icon: Rocket, text: "גישה מיידית", color: "blue" },
                             ].map((item, index) => (
                                 <div key={index} className="text-center">
                                     <div
