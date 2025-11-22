@@ -27,7 +27,7 @@ export const SideBar = ({
     return (
         <div className={cn("flex h-full lg:w-[256px] lg:fixed right-0 top-0 px-4 border-l-2 flex-col overflow-hidden", className)}>
             <Link href="/">
-                <div className="pt-8 pb-7 pl-4 flex items-center gap-x-3 flex-shrink-0">
+                <div className="pt-8 pb-7 pl-4 flex items-center gap-x-3 flex-shrink-0 flex-col">
                     <Image
                         src="/smartiLogo.png"
                         alt="Smarti logo"
@@ -35,6 +35,9 @@ export const SideBar = ({
                         width={240}
                         priority
                     />
+                    <p className="text-lg font-bold text-[#00C950] tracking-wide text-center">
+                        כיתה ב' - שלב א'
+                    </p>
                 </div>
             </Link>
             <div className="flex flex-col flex-1 gap-y-4 overflow-y-auto min-h-0">

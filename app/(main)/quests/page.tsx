@@ -4,11 +4,11 @@ import { UserProgress } from "@/components/UserProgress";
 import { getUserProgress, getUserSubscriptions } from "@/db/queries";
 import { redirect } from "next/navigation";
 import { Progress } from "@/components/ui/progress";
-import Image from "next/image";
 import { Award, Flame, TrendingUp, Star } from "lucide-react";
 import Link from "next/link";
 import PromoSection from "../learn/_components/promo";
 import { quests } from "@/constants";
+import QuestIcon from "@/components/QuestIcon";
 import QuestsJson from "./_components/lottie";
 import FeedbackButton from "@/components/feedbackButton";
 import type { Metadata } from "next";
@@ -92,11 +92,10 @@ const QuestsPage = async () => {
                                         className="w-full flex items-center p-4 gap-x-4 border-t-2 hover:bg-muted/40 transition-colors"
                                     >
                                         <div className="relative">
-                                            <Image
-                                                src="/points.svg"
-                                                alt="נקודות"
-                                                height={56}
+                                            <QuestIcon
+                                                animationPath={quest.animation}
                                                 width={56}
+                                                height={56}
                                             />
                                             <div className="absolute -top-2 -right-2 size-7 rounded-full bg-background ring-1 ring-border grid place-items-center">
                                                 <Icon className={`size-4 ${iconClasses}`} />

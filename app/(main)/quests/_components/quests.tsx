@@ -1,11 +1,11 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import Link from "next/link";
 import { quests } from "@/constants";
 import { Progress } from "@/components/ui/progress";
 import { useRegisterModal } from "@/store/use-register-modal";
 import { useAuth } from "@clerk/nextjs";
+import QuestIcon from "@/components/QuestIcon";
 
 type Props = {
     experience: number
@@ -50,11 +50,10 @@ const QuestsSection = ({ experience }: Props) => {
                             <div key={quest.title}
                                 className="w-full flex items-center p-4 gap-x-4 border-t-2"
                             >
-                                <Image
-                                    src="/experience.svg"
-                                    alt="experience"
-                                    height={40}
+                                <QuestIcon
+                                    animationPath={quest.animation}
                                     width={40}
+                                    height={40}
                                 />
                                 <div className="flex flex-col gap-y-2 w-full">
                                     <p className="font-bold text-lg text-neutral-700 dark:text-slate-200">

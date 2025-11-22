@@ -25,6 +25,7 @@ const HeaderPage = () => {
               className="mr-2"
               priority
             />
+            
 
           </Link>
           <p className="text-lg font-bold text-[#00C950] tracking-wide">
