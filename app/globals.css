@@ -115,6 +115,14 @@ body,
   z-index: 2;
 }
 
+.dark .wheel {
+  background: radial-gradient(
+    100% 100% at center,
+    hsla(0, 0%, 70%, 0) 47.8%,
+    hsl(0, 0%, 70%) 48%
+  );
+}
+
 .hamster {
   animation: hamster var(--dur) ease-in-out infinite;
   top: 50%;
@@ -262,6 +270,20 @@ body,
         hsla(0, 0%, 55%, 0) 46.9%,
         hsl(0, 0%, 65%) 47% 52.9%,
         hsla(0, 0%, 65%, 0) 53%
+      )
+      50% 50% / 99% 99% no-repeat;
+}
+
+.dark .spoke {
+  background: radial-gradient(
+      100% 100% at center,
+      hsl(0, 0%, 70%) 4.8%,
+      hsla(0, 0%, 70%, 0) 5%
+    ),
+    linear-gradient(
+        hsla(0, 0%, 65%, 0) 46.9%,
+        hsl(0, 0%, 75%) 47% 52.9%,
+        hsla(0, 0%, 75%, 0) 53%
       )
       50% 50% / 99% 99% no-repeat;
 }
