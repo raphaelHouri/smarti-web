@@ -40,6 +40,11 @@ body,
     --ring: 222.2 84% 4.9%;
 
     --radius: 0.5rem;
+
+    /* Wheel loader colors for light mode */
+    --wheel-gray: 60%;
+    --wheel-gray-light: 65%;
+    --wheel-gray-dark: 55%;
   }
 
   .dark {
@@ -70,6 +75,11 @@ body,
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
+
+    /* Wheel loader colors for dark mode */
+    --wheel-gray: 90%;
+    --wheel-gray-light: 95%;
+    --wheel-gray-dark: 85%;
   }
 }
 
@@ -109,18 +119,10 @@ body,
 .wheel {
   background: radial-gradient(
     100% 100% at center,
-    hsla(0, 0%, 60%, 0) 47.8%,
-    hsl(0, 0%, 60%) 48%
+    hsla(0, 0%, var(--wheel-gray), 0) 47.8%,
+    hsl(0, 0%, var(--wheel-gray)) 48%
   );
   z-index: 2;
-}
-
-.dark .wheel {
-  background: radial-gradient(
-    100% 100% at center,
-    hsla(0, 0%, 70%, 0) 47.8%,
-    hsl(0, 0%, 70%) 48%
-  );
 }
 
 .hamster {
@@ -263,27 +265,13 @@ body,
   animation: spoke var(--dur) linear infinite;
   background: radial-gradient(
       100% 100% at center,
-      hsl(0, 0%, 60%) 4.8%,
-      hsla(0, 0%, 60%, 0) 5%
+      hsl(0, 0%, var(--wheel-gray)) 4.8%,
+      hsla(0, 0%, var(--wheel-gray), 0) 5%
     ),
     linear-gradient(
-        hsla(0, 0%, 55%, 0) 46.9%,
-        hsl(0, 0%, 65%) 47% 52.9%,
-        hsla(0, 0%, 65%, 0) 53%
-      )
-      50% 50% / 99% 99% no-repeat;
-}
-
-.dark .spoke {
-  background: radial-gradient(
-      100% 100% at center,
-      hsl(0, 0%, 70%) 4.8%,
-      hsla(0, 0%, 70%, 0) 5%
-    ),
-    linear-gradient(
-        hsla(0, 0%, 65%, 0) 46.9%,
-        hsl(0, 0%, 75%) 47% 52.9%,
-        hsla(0, 0%, 75%, 0) 53%
+        hsla(0, 0%, var(--wheel-gray-dark), 0) 46.9%,
+        hsl(0, 0%, var(--wheel-gray-light)) 47% 52.9%,
+        hsla(0, 0%, var(--wheel-gray-light), 0) 53%
       )
       50% 50% / 99% 99% no-repeat;
 }
