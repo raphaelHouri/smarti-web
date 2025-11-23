@@ -29,6 +29,16 @@ export default async function ShopPackageTypePage({ params }: ShopPackageTypePag
 
     const packageTypeTyped: PackageType = packageType;
     const plansByType = await getPlansForShop();
-    return <PurchasePageShop plansByType={plansByType} packageType={packageTypeTyped} />;
+
+    // Extract user info for BookPurchaseModal
+    const userInfo = user ? {
+        name: user.name,
+        email: user.email
+    } : {
+        name: null,
+        email: null
+    };
+
+    return <PurchasePageShop plansByType={plansByType} packageType={packageTypeTyped} userInfo={userInfo} />;
 }
 

@@ -96,10 +96,15 @@ function adaptPlans(records: ShopPlanRecord[], pkgType: PackageType): Plan[] {
 
 export default function PurchasePageShop({
     plansByType,
-    packageType = "system"
+    packageType = "system",
+    userInfo
 }: {
     plansByType: ShopPlansByType;
     packageType?: PackageType;
+    userInfo: {
+        name: string | null;
+        email: string | null;
+    };
 }) {
     const { userId } = useAuth();
     const bookPurchaseModal = useBookPurchaseModal();
@@ -575,9 +580,9 @@ export default function PurchasePageShop({
                                             const onClick = () => {
 
                                                 if (plan.category === "books") {
-                                                    bookPurchaseModal.open({ planId: plan.planType });
+                                                    bookPurchaseModal.open({ planId: plan.planType, userInfo });
                                                 } else if (plan.addBookOption && planBookOptions[plan.planType]) {
-                                                    bookPurchaseModal.open({ planId: plan.planType });
+                                                    bookPurchaseModal.open({ planId: plan.planType, userInfo });
                                                 } else {
                                                     const base = process.env.NEXT_PUBLIC_APP_URL ?? "";
                                                     const userIdParam = userId ? `&UserId=${encodeURIComponent(userId)}` : "";

@@ -7,9 +7,10 @@ import { useBookPurchaseModal } from "@/store/use-book-purchase-modal";
 import { useAuth } from "@clerk/nextjs";
 import Image from "next/image";
 import { getUserCoupon } from "@/actions/user-coupon";
+import { updateUserName } from "@/actions/user-info";
 
 export default function BookPurchaseModal() {
-    const { isOpen, close, planId } = useBookPurchaseModal();
+    const { isOpen, close, planId, userInfo } = useBookPurchaseModal();
     const { userId } = useAuth();
     const [isClient, setIsClient] = useState(false);
     const [studentName, setStudentName] = useState("");
@@ -21,9 +22,10 @@ export default function BookPurchaseModal() {
         setIsClient(true);
     }, []);
 
-    // Load saved coupon when modal opens
+    // Load saved coupon and user info when modal opens
     useEffect(() => {
         if (isOpen && userId) {
+            // Load coupon
             getUserCoupon()
                 .then(result => {
                     if (result.coupon) {
@@ -36,8 +38,18 @@ export default function BookPurchaseModal() {
                     console.error("Failed to load coupon:", err);
                     setSavedCoupon(null);
                 });
+
+            // Use userInfo from store
+            if (userInfo) {
+                if (userInfo.name && userInfo.name !== "משתמש אורח") {
+                    setStudentName(userInfo.name);
+                }
+                if (userInfo.email) {
+                    setEmail(userInfo.email);
+                }
+            }
         }
-    }, [isOpen, userId]);
+    }, [isOpen, userId, userInfo]);
 
     useEffect(() => {
         if (!isOpen) {
@@ -48,11 +60,16 @@ export default function BookPurchaseModal() {
 
     if (!isClient) return null;
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!studentName.trim()) return;
         if (!email.trim()) return;
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) return;
+
+        // If user is "משתמש אורח", save the name to DB
+        if (userId && userInfo?.name === "משתמש אורח" && studentName.trim() !== "משתמש אורח") {
+            await updateUserName(studentName.trim());
+        }
 
         const base = process.env.NEXT_PUBLIC_APP_URL ?? "";
         const couponParam = savedCoupon ? `&CouponCode=${encodeURIComponent(savedCoupon.code)}` : "";
@@ -119,5 +136,4 @@ export default function BookPurchaseModal() {
         </Dialog>
     );
 }
-
 
