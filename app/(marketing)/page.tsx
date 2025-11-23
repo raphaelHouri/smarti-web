@@ -62,7 +62,7 @@ export default async function Home() {
                   בואו נלמד ביחד
                 </Button>
               </SignUpButton>
-              <SignInButton
+              {/* <SignInButton
                 mode="modal"
                 forceRedirectUrl="/learn"
               >
@@ -70,7 +70,7 @@ export default async function Home() {
                   כבר יש לי חשבון
                 </Button>
 
-              </SignInButton>
+              </SignInButton> */}
             </SignedOut>
             <SignedIn>
               <Button variant="secondary" size="lg" className="w-full" asChild>
