@@ -45,7 +45,10 @@ export async function validateAndSaveCoupon(code: string) {
         if (!result.success) {
             return { success: false, error: result.error ?? "Failed to save coupon", coupon: validation.coupon };
         }
-        revalidatePath("/shop/[slug]", "page");
+        // Revalidate all shop pages to reflect coupon changes
+        revalidatePath("/shop/system");
+        revalidatePath("/shop/book");
+        revalidatePath("/shop");
         return { success: true, error: null, coupon: validation.coupon };
     } catch (error) {
         console.error("Failed to validate and save coupon:", error);
@@ -61,7 +64,10 @@ export async function removeUserCoupon() {
 
     try {
         await clearUserCoupon(userId);
-        revalidatePath("/shop/[slug]", "page");
+        // Revalidate all shop pages to reflect coupon removal
+        revalidatePath("/shop/system");
+        revalidatePath("/shop/book");
+        revalidatePath("/shop");
         return { success: true, error: null };
     } catch (error) {
         console.error("Failed to remove coupon:", error);
