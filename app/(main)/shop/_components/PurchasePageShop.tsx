@@ -12,9 +12,9 @@ import FeedbackButton from "@/components/feedbackButton";
 import type { ShopPlanRecord, ShopPlansByType, PackageType } from "@/db/queries";
 import { useAuth, SignInButton } from "@clerk/nextjs";
 import { useBookPurchaseModal } from "@/store/use-book-purchase-modal";
-import BookPurchaseModal from "@/components/modals/BookPurchaseModal";
+import BookPurchaseModal from "@/components/modals/useBookPurchaseModal";
 import { useCouponModal } from "@/store/use-coupon-modal";
-import CouponModal from "@/components/modals/CouponModal";
+import CouponModal from "@/components/modals/useCouponModal";
 import { Tag } from "lucide-react";
 import { getUserCoupon } from "@/actions/user-coupon";
 
