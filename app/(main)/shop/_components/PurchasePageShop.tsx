@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import {
     Package, Rocket, BookOpen, Video, Check, Star,
     Shield, Users, Award, Clock, HelpCircle, ArrowUp
@@ -148,8 +148,8 @@ export default function PurchasePageShop({
     const adapted = [...adaptedSystem, ...adaptedBook];
     const filteredPlans = adapted.filter((p) => p.category === selectedCategory);
 
-    // Load saved coupon
-    useEffect(() => {
+    // Load saved coupon function
+    const loadCoupon = useCallback(() => {
         if (userId) {
             getUserCoupon()
                 .then(result => {
@@ -165,6 +165,23 @@ export default function PurchasePageShop({
                 });
         }
     }, [userId]);
+
+    // Load coupon on mount and when userId changes
+    useEffect(() => {
+        loadCoupon();
+    }, [loadCoupon]);
+
+    // Listen for coupon updates from CouponModal
+    useEffect(() => {
+        const handleCouponUpdate = () => {
+            loadCoupon();
+        };
+
+        window.addEventListener('couponUpdated', handleCouponUpdate);
+        return () => {
+            window.removeEventListener('couponUpdated', handleCouponUpdate);
+        };
+    }, [loadCoupon]);
 
     // Initialize book options as true by default for plans that have addBookOption
     useEffect(() => {

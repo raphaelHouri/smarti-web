@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from "../ui/button";
 import { useCouponModal } from "@/store/use-coupon-modal";
 import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import { Loader2, CheckCircle2, XCircle, Tag, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getUserCoupon, validateAndSaveCoupon, removeUserCoupon, validateCouponCode } from "@/actions/user-coupon";
@@ -24,6 +25,7 @@ type Coupon = {
 export default function CouponModal() {
     const { isOpen, close } = useCouponModal();
     const { userId } = useAuth();
+    const router = useRouter();
     const [couponCode, setCouponCode] = useState("");
     const [isValidating, setIsValidating] = useState(false);
     const [validationResult, setValidationResult] = useState<{ valid: boolean; coupon: Coupon | null; error?: string } | null>(null);
@@ -95,6 +97,10 @@ export default function CouponModal() {
                 setSavedCoupon(result.coupon);
                 setCouponCode("");
                 setValidationResult(null);
+                // Dispatch custom event to notify PurchasePageShop to reload coupon
+                window.dispatchEvent(new CustomEvent('couponUpdated', { detail: { coupon: result.coupon } }));
+                // Also refresh the router to ensure server-side cache is cleared
+                router.refresh();
             } else {
                 setValidationResult({
                     valid: false,
@@ -120,6 +126,10 @@ export default function CouponModal() {
         try {
             await removeUserCoupon();
             setSavedCoupon(null);
+            // Dispatch custom event to notify PurchasePageShop to reload coupon
+            window.dispatchEvent(new CustomEvent('couponUpdated', { detail: { coupon: null } }));
+            // Also refresh the router to ensure server-side cache is cleared
+            router.refresh();
         } catch (error) {
             console.error("Failed to remove coupon:", error);
         } finally {
