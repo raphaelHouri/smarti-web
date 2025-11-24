@@ -53,7 +53,7 @@ export default async function Home() {
             <Loader className="h-5 w-5 text-muted-foreground animate-spin" />
           </ClerkLoading>
           <ClerkLoaded>
-            <SignedOut>
+            {/* <SignedOut>
               <SignUpButton
                 mode="modal"
                 forceRedirectUrl="/learn"
@@ -62,7 +62,7 @@ export default async function Home() {
                   בואו נלמד ביחד
                 </Button>
               </SignUpButton>
-              {/* <SignInButton
+              <SignInButton
                 mode="modal"
                 forceRedirectUrl="/learn"
               >
@@ -70,23 +70,26 @@ export default async function Home() {
                   כבר יש לי חשבון
                 </Button>
 
-              </SignInButton> */}
-            </SignedOut>
+              </SignInButton>
+            </SignedOut> */}
             <SignedIn>
               <Button variant="secondary" size="lg" className="w-full" asChild>
                 <Link href="/learn">
-                  המשך ללמוד
+                  התחל ללמוד
                 </Link>
               </Button>
             </SignedIn>
           </ClerkLoaded>
           {/* divider */}
 
-          {!userId ? <><div className="w-full h-[1px] bg-slate-300 dark:bg-slate-700" /><Button variant="primaryOutline" size="lg" className="w-full" asChild>
-            <Link href="/learn">
-              המשך כאורח 👨🏻‍💻
-            </Link>
-          </Button></> : null}
+          {!userId ?
+            <>
+              <div className="w-full h-[1px] bg-slate-300 dark:bg-slate-700" />
+              <Button variant="primaryOutline" size="lg" className="w-full" asChild>
+                <Link href="/learn">
+                  המשך כאורח 👨🏻‍💻
+                </Link>
+              </Button></> : null}
         </div>
       </div>
       {/* <LottieJson/> */}
