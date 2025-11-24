@@ -150,7 +150,8 @@ export async function POST(req: NextRequest) {
                     if (categoryMap[String(value)]) {
                         obj.categoryId = categoryMap[String(value)];
                     } else {
-                        console.warn(`Row ${i + 2}: Category type '${value}' not found in database. Trying form categoryId.`);
+                        obj.categoryId = String(value);
+                        // console.warn(`Row ${i + 2}: Category type '${value}' not found in database. Trying form categoryId.`);
                     }
                 } else if (header === 'topicType') {
                     obj.topicType = String(value);
