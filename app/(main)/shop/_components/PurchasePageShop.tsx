@@ -97,11 +97,11 @@ function adaptPlans(records: ShopPlanRecord[], pkgType: PackageType): Plan[] {
 export default function PurchasePageShop({
     plansByType,
     packageType = "system",
-    userInfo
+    userInfo = { name: null, email: null }
 }: {
     plansByType: ShopPlansByType;
     packageType?: PackageType;
-    userInfo: {
+    userInfo?: {
         name: string | null;
         email: string | null;
     };
