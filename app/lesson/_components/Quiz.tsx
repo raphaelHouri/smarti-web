@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils";
-import { useState, useTransition, useEffect, useMemo, useCallback, useLayoutEffect } from "react";
+import { useState, useTransition, useEffect, useMemo, useCallback, useLayoutEffect, useRef } from "react";
 import useWindowSize from 'react-use/lib/useWindowSize'
 import Confetti from 'react-confetti'
 import Header from "./Header";
@@ -25,6 +25,8 @@ import { Button } from "@/components/ui/button";
 import CountdownTimer from "./CountdownTimer";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import FeedbackButton from "@/components/feedbackButton";
+import { useExitModal } from "@/store/use-exit-modal";
+import { usePreventBackNavigation } from "@/hooks/use-prevent-back-navigation";
 
 const optionsSchema = z.object({
     a: z.string(),
@@ -94,6 +96,13 @@ const Quiz = ({
     const { open: OpenFinishLessonModal, isApproved: isFinishApproved, clearApprove, approve } = useFinishLessonModal();
     const { open: OpenPracticeModal, isOpen, close } = usePracticeModal();
     const { open: OpenRegisterModal } = useRegisterModal();
+    const { open: openExitModal } = useExitModal();
+
+    // Prevent back navigation during quiz mode
+    usePreventBackNavigation({
+        enabled: mode === "quiz",
+        onBackAttempt: openExitModal,
+    });
     useLayoutEffect(() => {
         if (lessonId == 'practiceMode') {
             setMode("practiceMode")
