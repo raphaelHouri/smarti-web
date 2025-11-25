@@ -2,7 +2,7 @@
 import { cache } from "react";
 import db from "./drizzle";
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { lessonCategory, lessonQuestionGroups, lessons, questions, userLessonResults, users, userSettings, userWrongQuestions, onlineLessons, coupons, paymentTransactions, bookPurchases, subscriptions, ProductType } from './schemaSmarti';
+import { lessonCategory, lessonQuestionGroups, lessons, questions, userLessonResults, users, userSettings, userWrongQuestions, onlineLessons, coupons, paymentTransactions, bookPurchases, subscriptions, ProductType, PaymentStatus } from './schemaSmarti';
 import { and, asc, desc, eq, gt, inArray, isNotNull, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { hasFullAccess } from "@/lib/admin";
@@ -457,11 +457,13 @@ export async function createSubscriptionsIfMissingForTransaction(
 /**
  * Mark the payment transaction as fulfilled and update the optional vatId.
  */
-export async function fulfillPaymentTransaction(transactionId: string, vatId?: string): Promise<void> {
+
+
+export async function updatePaymentTransaction(transactionId: string, vatId?: string, status?: PaymentStatus): Promise<void> {
     await db
         .update(paymentTransactions)
         .set({
-            status: "fulfilled",
+            status: status,
             ...(vatId ? { vatId } : {}),
             updatedAt: new Date(),
         })

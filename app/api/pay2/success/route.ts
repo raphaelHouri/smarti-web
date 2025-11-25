@@ -5,9 +5,9 @@ import { z } from "zod";
 import { sendEmail } from "@/lib/sendMail";
 import { downloadReadyHtml } from "@/emails/downloadReady";
 import { getFileName } from "@/lib/book_utils";
-import { createBookPurchase, getProductById, getTransactionDataById, createSubscriptionsIfMissingForTransaction, fulfillPaymentTransaction, clearUserCoupon } from "@/db/queries";
+import { createBookPurchase, getProductById, getTransactionDataById, createSubscriptionsIfMissingForTransaction, clearUserCoupon, updatePaymentTransaction } from "@/db/queries";
 import { calculateAmount } from "@/lib/utils";
-import type { products as ProductsTable } from "@/db/schemaSmarti";
+import type { PaymentStatus, products as ProductsTable } from "@/db/schemaSmarti";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -374,18 +374,19 @@ const OrderPayloadSchema = z.object({
   amount: z.number(),
 });
 
-async function createBookPurchaseAndGetDownloadUrl(productBook: typeof ProductsTable.$inferSelect, studentName: string, email: string, paymentTransactionId: string, userId: string, phone: string, vat_id: string): Promise<{ downloadLink: string; filename: string }> {
-
-
-
+async function createBookPurchaseAndGetDownloadUrl(productBook: typeof ProductsTable.$inferSelect, studentName: string, email: string, paymentTransactionId: string, userId: string, phone: string, vat_id: string, status: PaymentStatus): Promise<{ downloadLink: string; filename: string }> {
 
   const gcsBucket = process.env.GCS_BUCKET_NAME;
   if (!gcsBucket) {
     throw new Error("Server misconfigured");
   }
-
   const filename = `${getFileName(userId, productBook.productType)}.pdf`;
   const downloadLink = `https://storage.cloud.google.com/${gcsBucket}/${filename}?authuser=3`;
+  if (status === "fulfilled" || status === "icount" || status === "bookCreated") {
+    return { downloadLink, filename };
+  }
+
+
   const generated = false;
 
   await createBookPurchase({
@@ -401,6 +402,7 @@ async function createBookPurchaseAndGetDownloadUrl(productBook: typeof ProductsT
     generated,
     vatId: vat_id,
   });
+  await updatePaymentTransaction(paymentTransactionId, vat_id, "bookCreated");
 
   return { downloadLink, filename };
 
@@ -455,6 +457,9 @@ export async function GET(req: NextRequest) {
   if (price !== amount) {
     return new NextResponse("Price mismatch", { status: 400 });
   }
+  if (paymentTransaction.status === "created") {
+    await updatePaymentTransaction(paymentTransaction.id, vat_id, "paid");
+  }
 
   const userId = paymentTransaction.userId;
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? null;
@@ -480,7 +485,8 @@ export async function GET(req: NextRequest) {
         paymentTransaction.id,
         userId,
         phone,
-        vat_id
+        vat_id,
+        paymentTransaction.status
       );
       const convertUrl = appUrl ? `${appUrl}/api/book/generate?userId=${userId}&productId=${product.id}` : null;
 
@@ -543,7 +549,8 @@ export async function GET(req: NextRequest) {
         paymentTransaction.id,
         userId,
         phone,
-        vat_id
+        vat_id,
+        paymentTransaction.status
       );
       const convertUrl = appUrl ? `${appUrl}/api/book/generate?userId=${userId}&productId=${productBook.id}` : null;
 
@@ -611,10 +618,13 @@ export async function GET(req: NextRequest) {
         await resp.text();
       }
     }
+    if (paymentTransaction.status != "fulfilled" && paymentTransaction.status != "icount") {
+      await updatePaymentTransaction(paymentTransaction.id, vat_id, "icount");
+    }
 
     if (bookDownloadInfos.length > 0) {
       const recipientEmail = paymentTransaction.email;
-      if (recipientEmail) {
+      if (recipientEmail && paymentTransaction.status != "fulfilled") {
         const recipientName = paymentTransaction.studentName ?? "הורה יקר";
         for (const info of bookDownloadInfos) {
           await sendEmail(
@@ -632,7 +642,7 @@ export async function GET(req: NextRequest) {
       }
     }
     // Create subscriptions (idempotent) and mark transaction as fulfilled
-    if (subscriptionArray.length > 0) {
+    if (subscriptionArray.length > 0 && paymentTransaction.status != "fulfilled") {
       await createSubscriptionsIfMissingForTransaction(
         subscriptionArray.map((s) => ({
           userId: s.userId,
@@ -644,7 +654,10 @@ export async function GET(req: NextRequest) {
         paymentTransaction.id
       );
     }
-    await fulfillPaymentTransaction(paymentTransaction.id, vat_id);
+    if (paymentTransaction.status != "fulfilled") {
+      await updatePaymentTransaction(paymentTransaction.id, vat_id, "fulfilled");
+    }
+
 
     // Clear saved coupon if it was used
     if (paymentTransaction.couponId) {
