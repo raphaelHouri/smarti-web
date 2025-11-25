@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 
 // Type definition for CloseWatcher API (experimental, available in modern browsers)
 interface CloseWatcher extends EventTarget {
@@ -59,6 +59,12 @@ export function usePreventBackNavigation({
 }: UsePreventBackNavigationOptions) {
     const historyStatePushed = useRef(false);
     const closeWatcherRef = useRef<CloseWatcher | null>(null);
+    const onBackAttemptRef = useRef(onBackAttempt);
+
+    // Keep the callback ref updated
+    useEffect(() => {
+        onBackAttemptRef.current = onBackAttempt;
+    }, [onBackAttempt]);
 
     useEffect(() => {
         if (!enabled) {
@@ -76,11 +82,16 @@ export function usePreventBackNavigation({
         // Try to use CloseWatcher API (modern browsers - Chrome 102+, Safari 16.4+)
         if (useCloseWatcher && typeof CloseWatcher !== "undefined") {
             try {
+                // Destroy existing watcher if any
+                if (closeWatcherRef.current) {
+                    closeWatcherRef.current.destroy();
+                }
+
                 const closeWatcher = new CloseWatcher();
                 closeWatcherRef.current = closeWatcher;
 
                 const handleClose = () => {
-                    onBackAttempt();
+                    onBackAttemptRef.current();
                 };
 
                 closeWatcher.addEventListener("close", handleClose);
@@ -99,18 +110,32 @@ export function usePreventBackNavigation({
         }
 
         // Fallback: Manual implementation for older browsers
-        // Add a history entry so we can detect back navigation (only once)
-        if (!historyStatePushed.current) {
-            window.history.pushState({ preventBack: true }, "");
-            historyStatePushed.current = true;
-        }
+        // Ensure we always have a guard state in the history stack
+        const ensureGuardState = () => {
+            // Check if current state is our guard state
+            const currentState = window.history.state;
+            if (!currentState || !currentState.preventBack) {
+                // Push guard state if it doesn't exist
+                window.history.pushState({ preventBack: true }, "");
+                historyStatePushed.current = true;
+            }
+        };
+
+        // Always ensure we have a guard state when enabled
+        ensureGuardState();
 
         // Handle browser back button
-        const handlePopState = () => {
-            // Immediately push the state back to prevent navigation
-            window.history.pushState({ preventBack: true }, "");
+        const handlePopState = (e: PopStateEvent) => {
+            // Always prevent back navigation when enabled
+            // Push the state back immediately to prevent navigation
+            // Use setTimeout with 0 delay to ensure this happens after the popstate event completes
+            setTimeout(() => {
+                window.history.pushState({ preventBack: true }, "");
+                historyStatePushed.current = true;
+            }, 0);
+
             // Trigger callback
-            onBackAttempt();
+            onBackAttemptRef.current();
         };
 
         // Handle touch events for swipe back detection (mobile - all devices)
@@ -225,6 +250,6 @@ export function usePreventBackNavigation({
             window.removeEventListener("touchend", handleTouchEnd);
             window.removeEventListener("touchcancel", handleTouchCancel);
         };
-    }, [enabled, onBackAttempt, useCloseWatcher]);
+    }, [enabled, useCloseWatcher]); // Removed onBackAttempt from dependencies since we use ref
 }
 
