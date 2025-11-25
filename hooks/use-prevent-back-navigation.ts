@@ -60,6 +60,7 @@ export function usePreventBackNavigation({
     const historyStatePushed = useRef(false);
     const closeWatcherRef = useRef<CloseWatcher | null>(null);
     const onBackAttemptRef = useRef(onBackAttempt);
+    const guardCheckIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
     // Keep the callback ref updated
     useEffect(() => {
@@ -75,6 +76,12 @@ export function usePreventBackNavigation({
             if (closeWatcherRef.current) {
                 closeWatcherRef.current.destroy();
                 closeWatcherRef.current = null;
+            }
+
+            // Clear interval if it exists
+            if (guardCheckIntervalRef.current) {
+                clearInterval(guardCheckIntervalRef.current);
+                guardCheckIntervalRef.current = null;
             }
             return;
         }
@@ -124,18 +131,34 @@ export function usePreventBackNavigation({
         // Always ensure we have a guard state when enabled
         ensureGuardState();
 
+        // Set up periodic check to ensure guard state is always maintained
+        // This handles cases where the state might get consumed unexpectedly
+        // Check every 1 second to ensure guard state persists
+        guardCheckIntervalRef.current = setInterval(() => {
+            if (enabled) {
+                ensureGuardState();
+            }
+        }, 1000); // Check every 1 second
+
         // Handle browser back button
         const handlePopState = (e: PopStateEvent) => {
-            // Always prevent back navigation when enabled
-            // Push the state back immediately to prevent navigation
-            // Use setTimeout with 0 delay to ensure this happens after the popstate event completes
-            setTimeout(() => {
-                window.history.pushState({ preventBack: true }, "");
-                historyStatePushed.current = true;
-            }, 0);
+            // CRITICAL: Push the state back IMMEDIATELY and SYNCHRONOUSLY to prevent navigation
+            // This must happen before any async operations
+            window.history.pushState({ preventBack: true }, "");
+            historyStatePushed.current = true;
 
-            // Trigger callback
+            // Trigger callback to show popup
             onBackAttemptRef.current();
+
+            // Double-check: Ensure guard state is still there after a brief moment
+            // This handles edge cases where the state might get consumed
+            setTimeout(() => {
+                const currentState = window.history.state;
+                if (!currentState || !currentState.preventBack) {
+                    window.history.pushState({ preventBack: true }, "");
+                    historyStatePushed.current = true;
+                }
+            }, 10);
         };
 
         // Handle touch events for swipe back detection (mobile - all devices)
@@ -217,7 +240,10 @@ export function usePreventBackNavigation({
                 (isSwipeInProgress && (isFastSwipe || distance > SWIPE_THRESHOLD))
             ) {
                 e.preventDefault();
-                onBackAttempt();
+                // Ensure guard state is maintained
+                ensureGuardState();
+                // Trigger callback
+                onBackAttemptRef.current();
             }
 
             // Reset touch coordinates
@@ -249,6 +275,12 @@ export function usePreventBackNavigation({
             window.removeEventListener("touchmove", handleTouchMove);
             window.removeEventListener("touchend", handleTouchEnd);
             window.removeEventListener("touchcancel", handleTouchCancel);
+
+            // Clear interval
+            if (guardCheckIntervalRef.current) {
+                clearInterval(guardCheckIntervalRef.current);
+                guardCheckIntervalRef.current = null;
+            }
         };
     }, [enabled, useCloseWatcher]); // Removed onBackAttempt from dependencies since we use ref
 }
