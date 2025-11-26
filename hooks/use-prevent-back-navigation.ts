@@ -1,26 +1,4 @@
-import { useEffect, useRef, useCallback } from "react";
-
-// Type definition for CloseWatcher API (experimental, available in modern browsers)
-interface CloseWatcher extends EventTarget {
-    requestClose(): void;
-    destroy(): void;
-    addEventListener(
-        type: "close" | "cancel",
-        listener: (event: Event) => void,
-        options?: boolean | AddEventListenerOptions
-    ): void;
-    removeEventListener(
-        type: "close" | "cancel",
-        listener: (event: Event) => void,
-        options?: boolean | EventListenerOptions
-    ): void;
-}
-
-interface CloseWatcherConstructor {
-    new(): CloseWatcher;
-}
-
-declare const CloseWatcher: CloseWatcherConstructor | undefined;
+import { useEffect, useRef } from "react";
 
 interface UsePreventBackNavigationOptions {
     /**
@@ -31,11 +9,6 @@ interface UsePreventBackNavigationOptions {
      * Callback when back navigation is attempted
      */
     onBackAttempt: () => void;
-    /**
-     * Whether to use the CloseWatcher API (modern browsers)
-     * @default true
-     */
-    useCloseWatcher?: boolean;
 }
 
 /**
@@ -55,12 +28,8 @@ interface UsePreventBackNavigationOptions {
 export function usePreventBackNavigation({
     enabled,
     onBackAttempt,
-    useCloseWatcher = true,
 }: UsePreventBackNavigationOptions) {
-    const historyStatePushed = useRef(false);
-    const closeWatcherRef = useRef<CloseWatcher | null>(null);
     const onBackAttemptRef = useRef(onBackAttempt);
-    const guardCheckIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
     // Keep the callback ref updated
     useEffect(() => {
@@ -69,99 +38,43 @@ export function usePreventBackNavigation({
 
     useEffect(() => {
         if (!enabled) {
-            // Reset the flag when disabled
-            historyStatePushed.current = false;
-
-            // Clean up CloseWatcher if it exists
-            if (closeWatcherRef.current) {
-                closeWatcherRef.current.destroy();
-                closeWatcherRef.current = null;
-            }
-
-            // Clear interval if it exists
-            if (guardCheckIntervalRef.current) {
-                clearInterval(guardCheckIntervalRef.current);
-                guardCheckIntervalRef.current = null;
-            }
+            // When not enabled (not in quiz mode), do nothing
             return;
         }
 
-        // Try to use CloseWatcher API (modern browsers - Chrome 102+, Safari 16.4+)
-        if (useCloseWatcher && typeof CloseWatcher !== "undefined") {
+        // ---- History & browser back button ----
+        //
+        // Strategy:
+        // 1. Push a dummy history entry when quiz mode starts.
+        // 2. Any time the user presses the system/back button (popstate),
+        //    immediately push a new dummy entry and show the exit modal.
+        //
+        // This way:
+        // - The user visually stays on the quiz.
+        // - The modal is opened on EVERY back attempt during quiz mode.
+
+        const pushGuardState = () => {
             try {
-                // Destroy existing watcher if any
-                if (closeWatcherRef.current) {
-                    closeWatcherRef.current.destroy();
-                }
-
-                const closeWatcher = new CloseWatcher();
-                closeWatcherRef.current = closeWatcher;
-
-                const handleClose = () => {
-                    onBackAttemptRef.current();
-                };
-
-                closeWatcher.addEventListener("close", handleClose);
-                closeWatcher.addEventListener("cancel", handleClose);
-
-                return () => {
-                    closeWatcher.removeEventListener("close", handleClose);
-                    closeWatcher.removeEventListener("cancel", handleClose);
-                    closeWatcher.destroy();
-                    closeWatcherRef.current = null;
-                };
-            } catch (error) {
-                // CloseWatcher not supported or failed, fall back to manual implementation
-                console.debug("CloseWatcher not available, using fallback");
-            }
-        }
-
-        // Fallback: Manual implementation for older browsers
-        // Ensure we always have a guard state in the history stack
-        const ensureGuardState = () => {
-            // Check if current state is our guard state
-            const currentState = window.history.state;
-            if (!currentState || !currentState.preventBack) {
-                // Push guard state if it doesn't exist
-                window.history.pushState({ preventBack: true }, "");
-                historyStatePushed.current = true;
+                window.history.pushState({ quizGuard: true }, "");
+            } catch {
+                // In very old/locked environments pushState can fail – ignore silently.
             }
         };
 
-        // Always ensure we have a guard state when enabled
-        ensureGuardState();
-
-        // Set up periodic check to ensure guard state is always maintained
-        // This handles cases where the state might get consumed unexpectedly
-        // Check every 1 second to ensure guard state persists
-        guardCheckIntervalRef.current = setInterval(() => {
-            if (enabled) {
-                ensureGuardState();
-            }
-        }, 1000); // Check every 1 second
+        // Initial guard state when quiz mode becomes active
+        pushGuardState();
 
         // Handle browser back button
-        const handlePopState = (e: PopStateEvent) => {
-            // CRITICAL: Push the state back IMMEDIATELY and SYNCHRONOUSLY to prevent navigation
-            // This must happen before any async operations
-            window.history.pushState({ preventBack: true }, "");
-            historyStatePushed.current = true;
-
-            // Trigger callback to show popup
+        const handlePopState = () => {
+            // Immediately re‑add guard entry so the user stays on the quiz page
+            pushGuardState();
+            // Show exit modal on EVERY back attempt in quiz mode
             onBackAttemptRef.current();
-
-            // Double-check: Ensure guard state is still there after a brief moment
-            // This handles edge cases where the state might get consumed
-            setTimeout(() => {
-                const currentState = window.history.state;
-                if (!currentState || !currentState.preventBack) {
-                    window.history.pushState({ preventBack: true }, "");
-                    historyStatePushed.current = true;
-                }
-            }, 10);
         };
 
-        // Handle touch events for swipe back detection (mobile - all devices)
+        // ---- Touch / swipe back (mobile, especially iOS) ----
+        //
+        // We approximate system "swipe from edge to go back" and open the modal instead.
         let touchStartX = 0;
         let touchStartY = 0;
         let touchStartTime = 0;
@@ -240,9 +153,9 @@ export function usePreventBackNavigation({
                 (isSwipeInProgress && (isFastSwipe || distance > SWIPE_THRESHOLD))
             ) {
                 e.preventDefault();
-                // Ensure guard state is maintained
-                ensureGuardState();
-                // Trigger callback
+                // Make sure we have a guard history entry so real back won't leave
+                pushGuardState();
+                // Open the exit modal on swipe‑back gesture
                 onBackAttemptRef.current();
             }
 
@@ -275,13 +188,7 @@ export function usePreventBackNavigation({
             window.removeEventListener("touchmove", handleTouchMove);
             window.removeEventListener("touchend", handleTouchEnd);
             window.removeEventListener("touchcancel", handleTouchCancel);
-
-            // Clear interval
-            if (guardCheckIntervalRef.current) {
-                clearInterval(guardCheckIntervalRef.current);
-                guardCheckIntervalRef.current = null;
-            }
         };
-    }, [enabled, useCloseWatcher]); // Removed onBackAttempt from dependencies since we use ref
+    }, [enabled]);
 }
 
