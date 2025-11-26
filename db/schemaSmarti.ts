@@ -162,10 +162,13 @@ export const bookPurchases = pgTable("book_purchases", {
 export const paymentStatusEnum = pgEnum("payment_status", [
     "created",
     "paid",
+    "bookCreated",
+    "icount",
     "fulfilled",
     "failed",
     "cancelled",
 ]);
+export type PaymentStatus = typeof paymentStatusEnum.enumValues[number];
 
 export const paymentTransactions = pgTable("payment_transactions", {
     id: uuid("id").defaultRandom().primaryKey(),
