@@ -67,6 +67,13 @@ export const OnlineLessonCreate = (props: CreateProps) => {
                 <TextInput source="description" />
                 <TextInput source="link" required />
                 <NumberInput source="order" defaultValue={0} />
+                <NumberInput
+                    source="systemStep"
+                    label="System Step"
+                    min={1}
+                    max={3}
+                    required
+                />
 
                 <div style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '20px' }}>
                     <p>Or import multiple online lessons from an Excel file:</p>

@@ -58,6 +58,7 @@ const SettingsPage = async () => {
                     imageSrc={userProgress.settings?.avatar || "/fr.svg"} // Make sure activeCourse is defined or fetched
                     title={userProgress.settings?.avatar || "Math"} // Make sure activeCourse is defined or fetched
                     experience={userProgress.experience}
+                    geniusScore={userProgress.geniusScore}
                 />
                 {!isPro && (
                     <PromoSection />

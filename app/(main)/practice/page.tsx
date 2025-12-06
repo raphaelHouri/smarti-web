@@ -46,16 +46,20 @@ const PracticePage = async () => {
 
     const groupedSummary: GroupedSummaryType = wrongQuestionsWithDetails.reduce((acc, wrongQuestionEntry) => {
         const question = wrongQuestionEntry.question;
-        if (!question) return acc;
+        const lessonCategory = wrongQuestionEntry.lessonCategory;
+        const lessonCategoryId = wrongQuestionEntry.lessonCategoryId;
+        if (!question || !lessonCategory || !lessonCategoryId) return acc;
 
-        const { categoryId, topicType, category } = question;
+        const { topicType } = question;
+        const categoryId = lessonCategoryId;
+        const categoryType = lessonCategory.categoryType;
 
         if (!acc[categoryId]) {
             acc[categoryId] = {
                 totalWrong: 0,
                 topics: [],
                 categoryId,
-                categoryType: category.categoryType,
+                categoryType,
             };
         }
 
@@ -101,6 +105,7 @@ const PracticePage = async () => {
             <StickyWrapper>
                 <UserProgress
                     experience={userProgress.experience}
+                    geniusScore={userProgress.geniusScore}
                     imageSrc={userProgress.settings?.avatar || "/fr.svg"}
                     title={userProgress.lessonCategory?.title || "Active Course"}
                 />

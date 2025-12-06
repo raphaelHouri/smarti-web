@@ -25,6 +25,7 @@ export const FeedbackList = () => (
             <DataTable.Col source="rate" />
             <DataTable.Col source="title" />
             <DataTable.Col source="description" />
+            <DataTable.Col source="systemStep" />
             <DataTable.Col source="createdAt">
                 <DateField source="createdAt" />
             </DataTable.Col>

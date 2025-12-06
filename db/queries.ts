@@ -2,7 +2,8 @@
 import { cache } from "react";
 import db from "./drizzle";
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { lessonCategory, lessonQuestionGroups, lessons, questions, userLessonResults, users, userSettings, userWrongQuestions, onlineLessons, coupons, paymentTransactions, bookPurchases, subscriptions, ProductType, PaymentStatus } from './schemaSmarti';
+import { cookies } from "next/headers";
+import { lessonCategory, lessonQuestionGroups, lessons, questions, userLessonResults, users, userSettings, userWrongQuestions, onlineLessons, coupons, paymentTransactions, bookPurchases, subscriptions, ProductType, PaymentStatus, userSystemStats } from './schemaSmarti';
 import { and, asc, desc, eq, gt, inArray, isNotNull, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { hasFullAccess } from "@/lib/admin";
@@ -15,12 +16,21 @@ export type LessonWithResults =
 
 
 export const getCategories = cache(async () => {
-    const data = await db.query.lessonCategory.findMany();
+    const { userId } = await auth();
+    if (!userId) return [];
+    const userSystemStep = await getUserSystemStep(userId);
+    const data = await db.query.lessonCategory.findMany({
+        where: eq(lessonCategory.systemStep, userSystemStep),
+    });
     return data;
 });
 
 export const getLessonCategory = cache(async () => {
+    const { userId } = await auth();
+    if (!userId) return [];
+    const userSystemStep = await getUserSystemStep(userId);
     const data = await db.query.lessons.findMany({
+        where: eq(lessons.systemStep, userSystemStep),
         with: {
             category: true
         },
@@ -41,6 +51,10 @@ export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string, 
     const { userId } = await auth();
     if (!userId) return null;
 
+    const cookieValue = (await cookies()).get("systemStep")?.value;
+    const cookieNumber = cookieValue ? Number(cookieValue) : NaN;
+    const cookieSystemStep = [1, 2, 3].includes(cookieNumber) ? cookieNumber : 1;
+
     const existingUser = await db.query.users.findFirst({
         where: eq(users.id, userId),
         with: {
@@ -55,7 +69,7 @@ export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string, 
             const clerkInstance = await clerkClient();
             const user = await clerkInstance.users.getUser(userId);
             const userEmail = user.emailAddresses.find((e: { id: string; emailAddress: string }) => e.id === user.primaryEmailAddressId)?.emailAddress ?? "";
-            let newLessonCategoryId
+            let newLessonCategoryId;
             if (lessonCategoryId) {
                 const lesson = await db.query.lessons.findFirst({
                     where: eq(lessons.lessonCategoryId, lessonCategoryId),
@@ -63,13 +77,12 @@ export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string, 
                 if (!lesson) {
                     throw new Error("Invalid lesson category ID");
                 }
-                newLessonCategoryId = lessonCategoryId
+                newLessonCategoryId = lessonCategoryId;
 
             } else {
                 const category = await getFirstCategory();
                 newLessonCategoryId = category?.id || null;
             }
-
 
             // 1. Insert the new user.
             await db.insert(users).values({
@@ -77,13 +90,19 @@ export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string, 
                 name: user.firstName || "משתמש אורח", // Use the user's name from Clerk
                 email: userEmail,
                 lessonCategoryId: newLessonCategoryId,
+                systemStep: cookieSystemStep,
             });
 
             // 2. Insert the corresponding user settings.
             await db.insert(userSettings).values({
                 id: crypto.randomUUID(),
                 userId: userId,
+                systemStep: cookieSystemStep,
             });
+
+            // 3. Initialize user system stats for the current step
+            await getOrCreateUserSystemStats(userId, cookieSystemStep);
+
             if (returnUser) {
                 const newUser = await db.query.users.findFirst({
                     where: eq(users.id, userId),
@@ -97,12 +116,70 @@ export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string, 
         } catch (error) {
             return null;
         }
+    } else {
+        // If user already exists and cookie has a valid systemStep, optionally sync it
+        if ([1, 2, 3].includes(cookieSystemStep) && existingUser.systemStep !== cookieSystemStep) {
+            await db.update(users)
+                .set({ systemStep: cookieSystemStep })
+                .where(eq(users.id, userId));
+        }
+        // Ensure stats are initialized for the current step
+        await getOrCreateUserSystemStats(userId, cookieSystemStep);
     }
 
     return existingUser;
 });
 
+const getUserSystemStep = cache(async (userId?: string | null): Promise<number> => {
+    if (userId) {
+        const user = await db.query.users.findFirst({
+            where: eq(users.id, userId),
+            columns: { systemStep: true },
+        });
+        if (user?.systemStep && [1, 2, 3].includes(user.systemStep)) {
+            return user.systemStep;
+        }
+    }
 
+    const cookieValue = (await cookies()).get("systemStep")?.value;
+    const cookieNumber = cookieValue ? Number(cookieValue) : NaN;
+    if ([1, 2, 3].includes(cookieNumber)) {
+        return cookieNumber as 1 | 2 | 3;
+    }
+
+    return 1;
+});
+
+export const getOrCreateUserSystemStats = cache(async (userId: string, systemStep: number) => {
+
+    if (![1, 2, 3].includes(systemStep)) {
+        return null;
+    }
+
+    const existingStats = await db.query.userSystemStats.findFirst({
+        where: and(
+            eq(userSystemStats.userId, userId),
+            eq(userSystemStats.systemStep, systemStep)
+        ),
+    });
+
+    if (existingStats) {
+        return existingStats;
+    }
+
+    // Initialize stats for this step with default values
+    const newStats = await db.insert(userSystemStats).values({
+        id: crypto.randomUUID(),
+        userId,
+        systemStep,
+        experience: 0,
+        geniusScore: 0,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+    }).returning();
+
+    return newStats[0] ?? null;
+});
 
 export const addResultsToUser = cache(async (lessonId: string, userId: string, answers: any[], questionList: string[], startAt: Date | null) => {
 
@@ -116,6 +193,8 @@ export const addResultsToUser = cache(async (lessonId: string, userId: string, a
         throw new Error(`User with ID ${userId} not found.`);
     }
 
+    const userSystemStep = await getUserSystemStep(userId);
+
     if (existingResult) {
         await db.update(userLessonResults)
             .set({
@@ -124,6 +203,7 @@ export const addResultsToUser = cache(async (lessonId: string, userId: string, a
                 answers,
                 rightQuestions: answers.filter(answer => answer == "a").length,
                 totalQuestions: answers.length,
+                systemStep: userSystemStep,
                 createdAt: new Date(),
             })
             .where(eq(userLessonResults.id, existingResult.id));
@@ -137,31 +217,87 @@ export const addResultsToUser = cache(async (lessonId: string, userId: string, a
             completedAt: new Date(),
             rightQuestions: answers.filter(answer => answer == "a").length,
             totalQuestions: answers.length,
+            systemStep: userSystemStep,
             createdAt: new Date(),
         });
-        await db.update(users)
-            .set({
-                experience: user.experience + answers.reduce((acc, answer) => acc + (answer === 'a' || answer != null ? 10 : 0), 0),
-                geniusScore: user.geniusScore + answers.reduce((acc, answer, index) => acc + (answer === 'a' ? (index <= 1 ? 5 : 5 + Math.round(acc / 3)) : 0), 0),
-            })
-            .where(eq(users.id, userId));
+    }
 
+    const experienceDelta = answers.reduce(
+        (acc, answer) => acc + (answer === "a" || answer != null ? 10 : 0),
+        0
+    );
+    const geniusScoreDelta = answers.reduce(
+        (acc, answer, index) =>
+            acc + (answer === "a" ? (index <= 1 ? 5 : 5 + Math.round(acc / 3)) : 0),
+        0
+    );
+
+    const existingStats = await db.query.userSystemStats.findFirst({
+        where: and(
+            eq(userSystemStats.userId, userId),
+            eq(userSystemStats.systemStep, userSystemStep)
+        ),
+    });
+
+    if (existingStats) {
+        await db
+            .update(userSystemStats)
+            .set({
+                experience: existingStats.experience + experienceDelta,
+                geniusScore: existingStats.geniusScore + geniusScoreDelta,
+                updatedAt: new Date(),
+            })
+            .where(eq(userSystemStats.id, existingStats.id));
+    } else {
+        await db.insert(userSystemStats).values({
+            id: crypto.randomUUID(),
+            userId,
+            systemStep: userSystemStep,
+            experience: experienceDelta,
+            geniusScore: geniusScoreDelta,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        });
+    }
+
+    // Map each questionId to its real lessonCategoryId based on lessonQuestionGroups for this lesson & step
+    const lessonQuestionGroupsForLesson = await db.query.lessonQuestionGroups.findMany({
+        where: (lg, { and, eq }) => and(
+            eq(lg.lessonId, lessonId),
+            eq(lg.systemStep, userSystemStep)
+        ),
+        columns: {
+            categoryId: true,
+            questionList: true,
+        },
+    });
+
+    const questionToCategory = new Map<string, string>();
+    for (const group of lessonQuestionGroupsForLesson) {
+        if (!group.categoryId || !group.questionList) continue;
+        for (const qId of group.questionList) {
+            if (!qId || questionToCategory.has(qId)) continue;
+            questionToCategory.set(qId, qId ? group.categoryId : group.categoryId);
+        }
     }
 
     answers.forEach(async (answer, index) => {
         if (answer !== "a") {
+            const questionId = questionList[index];
             const existingWrongQuestion = await db.query.userWrongQuestions.findFirst({
                 where: and(
                     eq(userWrongQuestions.userId, userId),
-                    eq(userWrongQuestions.questionId, questionList[index])
+                    eq(userWrongQuestions.questionId, questionId)
                 ),
             });
 
             if (!existingWrongQuestion) {
                 await db.insert(userWrongQuestions).values({
                     id: crypto.randomUUID(),
-                    questionId: questionList[index],
-                    userId: userId,
+                    questionId,
+                    userId,
+                    systemStep: userSystemStep,
+                    lessonCategoryId: questionToCategory.get(questionId) ?? null,
                     isNull: answer ? false : true,
                 });
             }
@@ -198,7 +334,10 @@ export const addResultsToUser = cache(async (lessonId: string, userId: string, a
 
 // getFirstCategory
 export const getFirstCategory = cache(async () => {
+    const { userId } = await auth();
+    const userSystemStep = await getUserSystemStep(userId);
     const data = await db.query.lessonCategory.findFirst({
+        where: eq(lessonCategory.systemStep, userSystemStep),
         orderBy: (lessonCategory, { asc }) => [asc(lessonCategory.categoryType)],
     });
 
@@ -221,8 +360,13 @@ export type PackageType = "system" | "book";
 export type ShopPlansByType = Record<PackageType, ShopPlanRecord[]>;
 
 export const getPlansForShop = cache(async (): Promise<ShopPlansByType> => {
+    const { userId } = await auth();
+    const userSystemStep = await getUserSystemStep(userId);
     const data = await db.query.plans.findMany({
-        where: (plans, { eq }) => eq(plans.isActive, true),
+        where: (plans, { eq, and }) => and(
+            eq(plans.isActive, true),
+            eq(plans.systemStep, userSystemStep)
+        ),
         orderBy: (plans, { asc }) => [
             asc(plans.order),
             asc(plans.name)
@@ -472,10 +616,17 @@ export async function updatePaymentTransaction(transactionId: string, vatId?: st
 
 
 export const getLessonsOfCategoryById = cache(async (categoryId: string) => {
+    const { userId } = await auth();
+    if (!userId) return [];
+    const userSystemStep = await getUserSystemStep(userId);
     const data = await db.query.lessonCategory.findMany({
-        where: eq(lessonCategory.id, String(categoryId)),
+        where: and(
+            eq(lessonCategory.id, String(categoryId)),
+            eq(lessonCategory.systemStep, userSystemStep)
+        ),
         with: {
             lessons: {
+                where: eq(lessons.systemStep, userSystemStep),
                 orderBy: (lessons, { asc }) => [asc(lessons.lessonOrder)],
             }
         },
@@ -484,15 +635,21 @@ export const getLessonsOfCategoryById = cache(async (categoryId: string) => {
 })
 
 export const getOnlineLessonsWithCategory = cache(async (categoryId?: string) => {
+    const { userId } = await auth();
+    const userSystemStep = await getUserSystemStep(userId);
     const data = categoryId
         ? await db.query.onlineLessons.findMany({
-            where: (t, { eq }) => eq(t.categoryId, categoryId),
+            where: (t, { eq, and }) => and(
+                eq(t.categoryId, categoryId),
+                eq(t.systemStep, userSystemStep)
+            ),
             orderBy: (t, { asc }) => [asc(t.order), asc(t.title)],
             with: {
                 category: true,
             },
         })
         : await db.query.onlineLessons.findMany({
+            where: (t, { eq }) => eq(t.systemStep, userSystemStep),
             orderBy: (t, { asc }) => [asc(t.order), asc(t.title)],
             with: {
                 category: true,
@@ -508,14 +665,19 @@ export const getOnlineLessonsWithCategory = cache(async (categoryId?: string) =>
 });
 
 export const getCategoriesForOnlineLessons = cache(async () => {
-    const categories = await db.query.lessonCategory.findMany();
-    const onlineLessons = await db.query.onlineLessons.findMany({
+    const { userId } = await auth();
+    const userSystemStep = await getUserSystemStep(userId);
+    const onlineLessonsData = await db.query.onlineLessons.findMany({
+        where: eq(onlineLessons.systemStep, userSystemStep),
         with: {
             category: true,
         }
     });
+    const categories = await db.query.lessonCategory.findMany({
+        where: eq(lessonCategory.systemStep, userSystemStep),
+    });
 
-    const categoryIds = new Set(onlineLessons.map(ol => ol.categoryId));
+    const categoryIds = new Set(onlineLessonsData.map(ol => ol.categoryId));
     return categories.filter(cat => categoryIds.has(cat.id)).map(cat => ({
         id: cat.id,
         categoryType: cat.categoryType,
@@ -526,6 +688,7 @@ export const getCategoriesForOnlineLessons = cache(async () => {
 export const getLessonCategoryWithLessonsById = cache(async (categoryId: string) => {
     const { userId } = await auth();
     if (!userId) return [];
+    const userSystemStep = await getUserSystemStep(userId);
 
     return db
         .select({
@@ -545,7 +708,9 @@ export const getLessonCategoryWithLessonsById = cache(async (categoryId: string)
         .where(
             and(
                 // eq(userLessonResults.userId, userId),      // <-- filter by THIS user
-                eq(lessons.lessonCategoryId, categoryId)
+                eq(lessons.lessonCategoryId, categoryId),
+                eq(userLessonResults.systemStep, userSystemStep),
+                eq(lessons.systemStep, userSystemStep)
             )
         )
         .orderBy(desc(userLessonResults.completedAt), desc(userLessonResults.createdAt));
@@ -555,14 +720,32 @@ export const getLessonCategoryWithLessonsById = cache(async (categoryId: string)
 export const getUserProgress = cache(async () => {
     const { userId } = await auth();
     if (!userId) return null;
-    const data = await db.query.users.findFirst({
+    const userSystemStep = await getUserSystemStep(userId);
+
+    const user = await db.query.users.findFirst({
         where: eq(users.id, userId),
         with: {
             lessonCategory: true,
             settings: true,
         }
-    })
-    return data;
+    });
+
+    if (!user) return null;
+
+    // Get user system stats for the current step
+    const systemStats = await db.query.userSystemStats.findFirst({
+        where: and(
+            eq(userSystemStats.userId, userId),
+            eq(userSystemStats.systemStep, userSystemStep)
+        ),
+    });
+
+    // Return user with experience and geniusScore from userSystemStats
+    return {
+        ...user,
+        experience: systemStats?.experience ?? 0,
+        geniusScore: systemStats?.geniusScore ?? 0,
+    };
 })
 export const getUserSubscriptions = cache(async () => {
     const { userId } = await auth();
@@ -623,8 +806,7 @@ async function getLessonQuestionGroupsWithFirstQuestionCategorySingleQuery(lesso
     })
         .from(lessonQuestionGroups)
         .leftJoin(lessons, eq(lessonQuestionGroups.lessonId, lessons.id))
-        .leftJoin(questions, eq(questions.id, sql<string>`${lessonQuestionGroups.questionList}[1]`))
-        .leftJoin(lessonCategory, eq(lessonCategory.id, questions.categoryId))
+        .leftJoin(lessonCategory, eq(lessonCategory.id, lessonQuestionGroups.categoryId))
         .where(eq(lessonQuestionGroups.lessonId, lessonId))
         .orderBy(asc(lessonQuestionGroups.createdAt));
 
@@ -643,13 +825,14 @@ async function getLessonQuestionGroupsWithFirstQuestionCategorySingleQuery(lesso
 
 export const getQuizDataByLessonId = cache(async (lessonId: string) => {
     const { userId } = await auth();
+    const userSystemStep = await getUserSystemStep(userId);
     let userPreviousAnswers = null;
     if (userId) {
         const result = await db.query.userLessonResults.findFirst({
             where: and(
-
                 eq(userLessonResults.userId, userId),
-                eq(userLessonResults.lessonId, lessonId)
+                eq(userLessonResults.lessonId, lessonId),
+                eq(userLessonResults.systemStep, userSystemStep)
             ),
             orderBy: (userLessonResults, { desc }) => [desc(userLessonResults.createdAt)],
         });
@@ -657,7 +840,10 @@ export const getQuizDataByLessonId = cache(async (lessonId: string) => {
     }
 
     const questionGroupsResult = await db.query.lessonQuestionGroups.findMany({
-        where: eq(lessonQuestionGroups.lessonId, lessonId),
+        where: and(
+            eq(lessonQuestionGroups.lessonId, lessonId),
+            eq(lessonQuestionGroups.systemStep, userSystemStep)
+        ),
         orderBy: (lessonQuestionGroups, { asc }) => [asc(lessonQuestionGroups.createdAt)],
         with: {
             category: {
@@ -670,10 +856,10 @@ export const getQuizDataByLessonId = cache(async (lessonId: string) => {
 
     // TypeScript will now correctly infer the types for group.category.categoryType
     const questionGroups = questionGroupsResult.map(group => ({
-
         time: group.time,
         id: group.id,
         createdAt: group.createdAt,
+        systemStep: group.systemStep,
         lessonId: group.lessonId,
         questionList: group.questionList,
         categoryId: group.categoryId,
@@ -685,15 +871,10 @@ export const getQuizDataByLessonId = cache(async (lessonId: string) => {
     // Flatten all question IDs from all groups
     const questionIds = questionGroups.flatMap(group => group.questionList ?? []);
 
-
-    await db.query.questions.findMany({
-        where: (questions, { inArray }) => inArray(questions.id, questionIds),
-    })
-
     // Get all questions for those IDs
     const questionsList = questionIds.length
         ? await db.query.questions.findMany({
-            where: (q) => inArray(q.id, questionIds),
+            where: (q, { inArray: inArrayFn }) => inArrayFn(q.id, questionIds),
         })
         : [];
 
@@ -720,19 +901,30 @@ export const getUserWrongQuestionsByCategoryId = cache(async (categoryId: string
             userPreviousAnswers: null
         };
     }
+    const userSystemStep = await getUserSystemStep(userId);
 
-    // Fetch all user wrong questions for the given category using Drizzle syntax
+    // Fetch all user wrong questions for the given category using the stored lessonCategoryId
     const wrongQuestions = await db.query.userWrongQuestions.findMany({
-        where: (wrongQuestionsAlias, { eq, and, inArray }) => and(
+        where: (wrongQuestionsAlias, { eq, and }) => and(
             eq(wrongQuestionsAlias.userId, userId),
-            inArray(wrongQuestionsAlias.questionId,
-                db.select({ id: questions.id })
-                    .from(questions)
-                    .where(eq(questions.categoryId, categoryId))
-            )
+            eq(wrongQuestionsAlias.systemStep, userSystemStep),
+            eq(wrongQuestionsAlias.lessonCategoryId, categoryId)
         ),
         with: {
-            question: true,
+            question: {
+                columns: {
+                    id: true,
+                    content: true,
+                    question: true,
+                    format: true,
+                    options: true,
+                    topicType: true,
+                    explanation: true,
+                    managerId: true,
+                    createdAt: true,
+                    // categoryId is intentionally excluded since it was removed
+                },
+            },
         },
         limit: 30,
     });
@@ -743,7 +935,7 @@ export const getUserWrongQuestionsByCategoryId = cache(async (categoryId: string
     // Fetch questions for those IDs
     const questionsList = questionIds.length
         ? await db.query.questions.findMany({
-            where: (q) => inArray(q.id, questionIds),
+            where: (q, { inArray: inArrayFn }) => inArrayFn(q.id, questionIds),
         })
         : [];
 
@@ -757,8 +949,10 @@ export const getUserWrongQuestionsByCategoryId = cache(async (categoryId: string
         {
             id: "fake-group-id",
             createdAt: new Date(),
+            systemStep: userSystemStep,
             lessonId: "fake-lesson-id",
             category: "fake-category",
+            categoryId: categoryId,
             categoryType: "fake-category-type",
             questionList: questionIds,
             time: 0
@@ -777,11 +971,13 @@ export const removeQuestionsWrongByQuestionId = cache(async (questionId: string)
     if (!userId) {
         throw new Error("User ID is required.");
     }
+    const userSystemStep = await getUserSystemStep(userId);
 
     await db.delete(userWrongQuestions).where(
         and(
             eq(userWrongQuestions.userId, userId),
-            eq(userWrongQuestions.questionId, questionId)
+            eq(userWrongQuestions.questionId, questionId),
+            eq(userWrongQuestions.systemStep, userSystemStep)
         )
     );
     revalidatePath("/lesson/[slug]");
@@ -794,6 +990,7 @@ export const removeQuestionsWrongByQuestionId = cache(async (questionId: string)
 export const saveUserResult = cache(async (result: Array<"a" | "b" | "c" | "d" | null>, lessonId: string, questions: string[]) => {
     const { userId } = await auth();
     if (!userId) return null;
+    const userSystemStep = await getUserSystemStep(userId);
     const totalScore = result.filter(answer => answer == "a").length;
 
     // Insert user lesson result using drizzle
@@ -806,6 +1003,7 @@ export const saveUserResult = cache(async (result: Array<"a" | "b" | "c" | "d" |
         answers: result,
         rightQuestions: totalScore,
         totalQuestions: result.length,
+        systemStep: userSystemStep,
         createdAt: new Date(),
     });
 
@@ -818,6 +1016,27 @@ export const saveUserResult = cache(async (result: Array<"a" | "b" | "c" | "d" |
             .filter((q): q is string => q !== null),
     };
 
+    // Map each questionId to its real lessonCategoryId based on lessonQuestionGroups for this lesson & step
+    const lessonQuestionGroupsForLesson = await db.query.lessonQuestionGroups.findMany({
+        where: (lg, { and, eq }) => and(
+            eq(lg.lessonId, lessonId),
+            eq(lg.systemStep, userSystemStep)
+        ),
+        columns: {
+            categoryId: true,
+            questionList: true,
+        },
+    });
+
+    const questionToCategory = new Map<string, string>();
+    for (const group of lessonQuestionGroupsForLesson) {
+        if (!group.categoryId || !group.questionList) continue;
+        for (const qId of group.questionList) {
+            if (!qId || questionToCategory.has(qId)) continue;
+            questionToCategory.set(qId, group.categoryId);
+        }
+    }
+
     // Insert wrong questions for the user using drizzle
     if (Array.isArray(questions) && questions.length > 0) {
         // Insert wrong answers and null answers into userWrongQuestions
@@ -827,12 +1046,16 @@ export const saveUserResult = cache(async (result: Array<"a" | "b" | "c" | "d" |
                 questionId,
                 userId,
                 isNull: true,
+                systemStep: userSystemStep,
+                lessonCategoryId: questionToCategory.get(questionId) ?? null,
             })),
             ...wrongResult.wrongAnswers.map((questionId: string) => ({
                 id: crypto.randomUUID(),
                 questionId,
                 userId,
+                systemStep: userSystemStep,
                 isNull: false,
+                lessonCategoryId: questionToCategory.get(questionId) ?? null,
             })),
         ];
 
@@ -849,16 +1072,19 @@ export const getTopUsers = cache(async () => {
     if (!userId) {
         return [];
     }
+    const userSystemStep = await getUserSystemStep(userId);
     const data = await db
         .select({
             id: users.id,
             email: users.email,
-            experience: users.experience,
+            experience: userSystemStats.experience,
             avatar: userSettings.avatar,
         })
-        .from(users)
+        .from(userSystemStats)
+        .innerJoin(users, eq(userSystemStats.userId, users.id))
         .leftJoin(userSettings, eq(userSettings.userId, users.id))
-        .orderBy(desc(users.experience))
+        .where(eq(userSystemStats.systemStep, userSystemStep))
+        .orderBy(desc(userSystemStats.experience))
         .limit(10);
     return data;
 })
@@ -885,27 +1111,29 @@ export const getAllWrongQuestionsWithDetails = async () => {
     }
 
     // Fetch all userWrongQuestions for the current user
-    // And eagerly load the related 'questions' data using 'with'
+    // Explicitly select only the columns we need from questions (excluding category_id)
     const wrongQuestionsWithDetails = await db.query.userWrongQuestions.findMany({
         where: eq(userWrongQuestions.userId, userId),
         with: {
             question: {
-                with: {
-                    category: true, // Assuming 'category' is the relation to fetch category details
+                columns: {
+                    id: true,
+                    content: true,
+                    question: true,
+                    format: true,
+                    options: true,
+                    topicType: true,
+                    explanation: true,
+                    managerId: true,
+                    createdAt: true,
+                    // categoryId is intentionally excluded since it was removed
                 },
             },
+            lessonCategory: true,
         },
     });
 
-    // Replace categoryId with category title
-    const result = wrongQuestionsWithDetails.map((entry) => ({
-        ...entry,
-        question: {
-            ...entry.question
-        },
-    }));
-
-    return result;
+    return wrongQuestionsWithDetails;
 };
 
 

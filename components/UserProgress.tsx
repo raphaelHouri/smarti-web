@@ -13,6 +13,7 @@ interface UserProgressProps {
     title: string;
     imageSrc: string;
     experience: number;
+    geniusScore?: number;
 }
 
 
@@ -20,6 +21,7 @@ export const UserProgress = ({
     title,
     imageSrc,
     experience,
+    geniusScore = 0,
 }: UserProgressProps) => {
     return (
         <div className="flex items-center justify-between gap-x-2
@@ -50,6 +52,7 @@ export const UserProgress = ({
                     <Image src="/heart.svg" alt="geniusScore" height={22} width={22}
                         className="mr-2"
                     />
+                    {geniusScore}
                 </Button>
             </Link>
         </div>

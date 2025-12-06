@@ -37,6 +37,13 @@ export const CouponEdit = () => (
                     optionText={(record) => record ? `${record.year}` : ''}
                 />
             </ReferenceInput>
+            <NumberInput
+                source="systemStep"
+                label="System Step"
+                min={1}
+                max={3}
+                required
+            />
             <DateInput source="createdAt" disabled />
         </SimpleForm>
     </Edit>

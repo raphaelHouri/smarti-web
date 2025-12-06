@@ -16,10 +16,18 @@ export async function POST(req: Request) {
         return new NextResponse("UnAuthorized", { status: 401 })
     }
     const body = await req.json();
-    const data = await db.insert(lessonCategory).values({
-        ...body
-    }).returning()
 
+    // If id is provided and not empty, use it; otherwise generate a UUID
+    const valuesToInsert: typeof lessonCategory.$inferInsert = {
+        ...body,
+    };
+
+    // Generate UUID if id is not provided or empty
+    if (!body.id || (typeof body.id === 'string' && body.id.trim() === '')) {
+        valuesToInsert.id = crypto.randomUUID();
+    }
+
+    const data = await db.insert(lessonCategory).values(valuesToInsert).returning();
 
     return NextResponse.json(data[0]);
 }

@@ -15,6 +15,7 @@ interface ParsedOnlineLessonRow {
     description?: string | null;
     link: string;
     order?: number;
+    systemStep: number;
 }
 
 export async function POST(req: NextRequest) {
@@ -106,12 +107,21 @@ export async function POST(req: NextRequest) {
                     if (categoryMap[catType]) obj.categoryId = categoryMap[catType];
                 } else if (header === 'topicType') {
                     obj.topicType = String(value);
+                } else if (header === 'systemStep') {
+                    const n = Number(value);
+                    if (!Number.isFinite(n) || n < 1 || n > 3) {
+                        throw new Error(`Row ${i + 2}: systemStep must be 1, 2 or 3.`);
+                    }
+                    (obj as any).systemStep = n;
                 }
             }
 
             if (!obj.title) throw new Error(`Row ${i + 2}: title is required.`);
             if (!obj.link) throw new Error(`Row ${i + 2}: link is required.`);
             if (!obj.categoryId) throw new Error(`Row ${i + 2}: categoryId/categoryType is required or invalid.`);
+            if ((obj as any).systemStep == null) {
+                throw new Error(`Row ${i + 2}: systemStep is missing.`);
+            }
 
             toInsert.push(obj as ParsedOnlineLessonRow);
         }

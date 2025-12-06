@@ -34,6 +34,7 @@ export const products = pgTable("products", {
     productType: productTypeEnum("productType").default("system1").notNull(),
     name: text("name").notNull(),
     description: text("description"),
+    systemStep: integer("system_step").default(1).notNull(),
     createdAt: timestamp("created_at").defaultNow(),
     displayData: jsonb("display_data"),
 });
@@ -50,6 +51,7 @@ export const plans = pgTable("plans", {
     internalDescription: text("internal_description").notNull(),
     order: integer("order").default(0).notNull(),
     isActive: boolean("is_active").default(true).notNull(),
+    systemStep: integer("system_step").default(1).notNull(),
     // icon: text("icon"), // Store icon name/key
     // color: text("color"),
     // badge: text("badge"),
@@ -64,6 +66,7 @@ export const subscriptions = pgTable("subscriptions", {
     couponId: uuid("coupon_id").references(() => coupons.id, { onDelete: "cascade" }),
     paymentTransactionId: uuid("payment_transaction_id").references(() => paymentTransactions.id, { onDelete: "cascade" }),
     systemUntil: timestamp("system_until"),
+    systemStep: integer("system_step").default(1).notNull(),
     createdAt: timestamp("created_at"),
 });
 
@@ -79,6 +82,7 @@ export const coupons = pgTable("coupons", {
     uses: integer("uses").default(0).notNull(),
     planId: uuid("plan_id").references(() => plans.id, { onDelete: "cascade" }).notNull(),
     organizationYearId: uuid("organization_year_id").references(() => organizationYears.id, { onDelete: "set null" }),
+    systemStep: integer("system_step").default(1).notNull(),
     createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -87,6 +91,7 @@ export const lessonCategory = pgTable("lesson_category", {
     categoryType: text("category_type").notNull(),
     title: text("title").notNull(),
     description: text("description").notNull(),
+    systemStep: integer("system_step").default(1).notNull(),
     createdAt: timestamp("created_at").defaultNow(),
     imageSrc: text("image_src").notNull(),
 });
@@ -96,6 +101,7 @@ export const lessons = pgTable("lessons", {
     lessonCategoryId: uuid("lesson_category_id").references(() => lessonCategory.id, { onDelete: "cascade" }).notNull(),
     lessonOrder: integer("lesson_order").notNull(),
     isPremium: boolean("is_premium").default(true).notNull(),
+    systemStep: integer("system_step").default(1).notNull(),
     createdAt: timestamp("created_at").defaultNow(),
 }, (table) => ({
     uniqueCategoryOrder: {
@@ -119,7 +125,6 @@ export const questions = pgTable("questions", {
     question: text("question").notNull(),
     format: formatEnum("format").notNull(),
     options: jsonb("options"),
-    categoryId: uuid("category_id").references(() => lessonCategory.id, { onDelete: "cascade" }).notNull(),
     topicType: text("topic_type"),
     explanation: text("explanation"),
     managerId: text("manager_id").notNull().unique(),
@@ -139,7 +144,23 @@ export const users = pgTable("users", {
     experience: integer("experience").default(0).notNull(),
     geniusScore: integer("genius_score").default(0).notNull(),
     savedCouponId: uuid("saved_coupon_id").references(() => coupons.id, { onDelete: "set null" }),
+    systemStep: integer("system_step").default(1).notNull(),
 });
+
+export const userSystemStats = pgTable("user_system_stats", {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: text("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+    systemStep: integer("system_step").notNull(),
+    experience: integer("experience").default(0).notNull(),
+    geniusScore: integer("genius_score").default(0).notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => ({
+    userStepUnique: {
+        columns: [table.userId, table.systemStep],
+        unique: true,
+    },
+}));
 
 export const bookPurchases = pgTable("book_purchases", {
     id: uuid("id").defaultRandom().primaryKey(),
@@ -154,6 +175,7 @@ export const bookPurchases = pgTable("book_purchases", {
     generated: boolean("generated").default(false).notNull(),
     vatId: text("vat_id").notNull(),
     validUntil: timestamp("valid_until").notNull(),
+    systemStep: integer("system_step").default(1).notNull(),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -184,6 +206,7 @@ export const paymentTransactions = pgTable("payment_transactions", {
     totalPrice: integer("total_price").notNull(),
     couponId: uuid("coupon_id").references(() => coupons.id, { onDelete: "set null" }),
     bookIncluded: boolean("book_included").default(false).notNull(),
+    systemStep: integer("system_step").default(1).notNull(),
 
     metadata: jsonb("metadata"),
 
@@ -218,6 +241,7 @@ export const userSettings = pgTable("user_settings", {
     grade_class: text("grade_class"),
     gender: text("gender"),
     avatar: avatarEnum("avatar").default("/smarti_avatar.png"),
+    systemStep: integer("system_step").default(1).notNull(),
 });
 
 
@@ -229,6 +253,7 @@ export const lessonQuestionGroups = pgTable("lesson_question_groups", {
     // Arrays cannot have FK constraints in Postgres; enforce in application code
     questionList: uuid("question_list").array().notNull(), // No array foreign key support
     time: integer("time").notNull(),
+    systemStep: integer("system_step").default(1).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -241,6 +266,7 @@ export const userLessonResults = pgTable("user_lesson_results", {
     answers: jsonb("answers").notNull(), // Store answers as JSONB
     rightQuestions: integer("right_questions").notNull(),
     totalQuestions: integer("total_questions").notNull(),
+    systemStep: integer("system_step").default(1).notNull(),
     createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -249,6 +275,8 @@ export const userWrongQuestions = pgTable("user_wrong_questions", {
     isNull: boolean("is_null").default(false),
     questionId: uuid("question_id").references(() => questions.id, { onDelete: "cascade" }).notNull(),
     userId: text("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+    systemStep: integer("system_step").default(1).notNull(),
+    lessonCategoryId: uuid("lesson_category_id").references(() => lessonCategory.id, { onDelete: "cascade" }),
 });
 
 export const feedbacks = pgTable("feedbacks", {
@@ -259,6 +287,7 @@ export const feedbacks = pgTable("feedbacks", {
     rate: text("rate"),                              // Rating (e.g., 0-4 or 1-5)
     title: text("title"),           // Subject or title of the feedback
     description: text("description"),                   // Detailed feedback text
+    systemStep: integer("system_step").default(1).notNull(),
     createdAt: timestamp("created_at").defaultNow(), // When the feedback was submitted
 
 });
@@ -272,6 +301,7 @@ export const onlineLessons = pgTable("online_lessons", {
     description: text("description"),
     link: text("link").notNull(),
     order: integer("order").default(0).notNull(),
+    systemStep: integer("system_step").default(1).notNull(),
     createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -291,6 +321,7 @@ export const userRelations = relations(users, ({ one, many }) => ({
     subscriptions: many(subscriptions),
     lessonResults: many(userLessonResults),
     wrongQuestions: many(userWrongQuestions),
+    systemStats: many(userSystemStats),
 }));
 
 export const userSettingsRelations = relations(userSettings, ({ one }) => ({
@@ -358,10 +389,6 @@ export const lessonQuestionGroupRelations = relations(lessonQuestionGroups, ({ o
 
 export const questionRelations = relations(questions, ({ one, many }) => ({
     wrongQuestions: many(userWrongQuestions),
-    category: one(lessonCategory, { // 👈 added
-        fields: [questions.categoryId],
-        references: [lessonCategory.id],
-    }),
 }));
 
 export const onlineLessonRelations = relations(onlineLessons, ({ one }) => ({
@@ -402,7 +429,18 @@ export const userWrongQuestionRelations = relations(userWrongQuestions, ({ one }
     user: one(users, {
         fields: [userWrongQuestions.userId],
         references: [users.id],
-    })
+    }),
+    lessonCategory: one(lessonCategory, {
+        fields: [userWrongQuestions.lessonCategoryId],
+        references: [lessonCategory.id],
+    }),
+}));
+
+export const userSystemStatsRelations = relations(userSystemStats, ({ one }) => ({
+    user: one(users, {
+        fields: [userSystemStats.userId],
+        references: [users.id],
+    }),
 }));
 
 

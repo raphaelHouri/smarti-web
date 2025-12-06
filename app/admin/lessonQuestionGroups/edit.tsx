@@ -11,8 +11,14 @@ export const LessonQuestionGroupEdit = () => (
                 <SelectInput optionText="categoryType" />
             </ReferenceInput>
             <TextInput source="questionList" />
-            
             <NumberInput source="time" />
+            <NumberInput
+                source="systemStep"
+                label="System Step"
+                min={1}
+                max={3}
+                required
+            />
             <DateInput source="createdAt" />
         </SimpleForm>
     </Edit>

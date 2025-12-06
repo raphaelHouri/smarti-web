@@ -12,6 +12,7 @@ import { QuestionList } from "./questions/list";
 import { MessageSquare, HelpCircle, Layers, BookOpen, ListTree, Ticket, Package, Building, Calendar, Users as UsersIcon, Settings, CreditCard, ClipboardCheck, AlertTriangle, Link as LinkIcon } from "lucide-react";
 import { LessonCategoryList } from "./lessonCategory/list";
 import { LessonCategoryEdit } from "./lessonCategory/edit";
+import { LessonCategoryCreate } from "./lessonCategory/create";
 import { LessonCategoryShow } from "./lessonCategory/show";
 import { QuestionCreate } from "./questions/create";
 import { LessonList } from "./lessons/list";
@@ -83,6 +84,7 @@ const App = () => {
             <Resource
                 name="lessonCategory"
                 list={LessonCategoryList}
+                create={LessonCategoryCreate}
                 edit={LessonCategoryEdit}
                 recordRepresentation="text"
                 icon={Layers}
