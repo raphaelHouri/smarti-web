@@ -5,7 +5,8 @@ import { getLessonsOfCategoryById } from "@/db/queries";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { users } from "@/db/schemaSmarti";
+import { userSettings } from "@/db/schemaSmarti";
+import { eq } from "drizzle-orm";
 
 
 
@@ -27,10 +28,11 @@ export const updateUserCategory = async (courseId: string) => {
 
         if (user) {
             //all I have to do is await and update over here
-            // Replace 'activeCourseId' with a valid property from the users schema, e.g., 'activeCategoryId'
-            const data = await db.update(users).set({
+            // Update lessonCategoryId in userSettings instead of users
+            await db.update(userSettings).set({
                 lessonCategoryId: courseId,
             })
+                .where(eq(userSettings.userId, userId));
             //break the cache and revalidate
             revalidatePath("/courses");
             revalidatePath("/learn");
