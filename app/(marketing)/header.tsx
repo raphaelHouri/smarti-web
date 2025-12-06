@@ -11,16 +11,7 @@ import FeedbackButton from "@/components/feedbackButton";
 import db from "@/db/drizzle";
 import { users } from "@/db/schemaSmarti";
 import { eq } from "drizzle-orm";
-
-function getSystemStepLabel(step: number | null): string {
-  if (step === 2) {
-    return "כיתה ב' - שלב ב'";
-  }
-  if (step === 3) {
-    return "כיתה ב' - שלב ג'";
-  }
-  return "כיתה ב' - שלב א'";
-}
+import { getSystemStepLabel } from "@/lib/utils";
 
 const HeaderPage = async () => {
   const { userId } = await auth();

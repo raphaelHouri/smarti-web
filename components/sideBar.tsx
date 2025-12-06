@@ -9,6 +9,7 @@ import { ChevronFirst, Loader } from "lucide-react";
 
 interface SideBarProps {
     className?: string;
+    systemStepLabel?: string;
 }
 
 const sidebarItems = [
@@ -22,7 +23,8 @@ const sidebarItems = [
 ];
 
 export const SideBar = ({
-    className
+    className,
+    systemStepLabel = "כיתה ב' - שלב א'"
 }: SideBarProps) => {
     return (
         <div className={cn("flex h-full lg:w-[256px] lg:fixed right-0 top-0 px-4 border-l-2 flex-col overflow-hidden", className)}>
@@ -36,7 +38,7 @@ export const SideBar = ({
                         priority
                     />
                     <p className="text-lg font-bold text-[#00C950] tracking-wide text-center">
-                        כיתה ב' - שלב א'
+                        {systemStepLabel}
                     </p>
                 </div>
             </Link>

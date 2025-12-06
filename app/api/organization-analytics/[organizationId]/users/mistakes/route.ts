@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import db from "@/db/drizzle";
 import { auth } from "@clerk/nextjs/server";
-import { users, userWrongQuestions, questions, lessonCategory, organizationYears } from "@/db/schemaSmarti";
+import { users, userWrongQuestions, questions, organizationYears } from "@/db/schemaSmarti";
 import { and, eq, sql } from "drizzle-orm";
 
 export async function GET(
@@ -37,22 +37,20 @@ export async function GET(
         }
 
         // Aggregate wrong questions for this user
+        // Note: categoryId removed from questions table - category info no longer available directly
         const rows = await db
             .select({
-                categoryId: questions.categoryId,
-                categoryType: lessonCategory.categoryType,
                 topicType: questions.topicType,
                 count: sql<number>`COUNT(*)`,
             })
             .from(userWrongQuestions)
             .leftJoin(questions, eq(userWrongQuestions.questionId, questions.id))
-            .leftJoin(lessonCategory, eq(questions.categoryId, lessonCategory.id))
             .where(eq(userWrongQuestions.userId, targetUserId))
-            .groupBy(questions.categoryId, lessonCategory.categoryType, questions.topicType);
+            .groupBy(questions.topicType);
 
         const data = rows.map((r) => ({
-            categoryId: r.categoryId,
-            categoryType: r.categoryType ?? null,
+            categoryId: null,
+            categoryType: null,
             topicType: r.topicType ?? "UNKNOWN",
             wrongCount: Number(r.count) || 0,
         }));

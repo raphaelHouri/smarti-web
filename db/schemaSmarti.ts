@@ -125,7 +125,6 @@ export const questions = pgTable("questions", {
     question: text("question").notNull(),
     format: formatEnum("format").notNull(),
     options: jsonb("options"),
-    categoryId: uuid("category_id").references(() => lessonCategory.id, { onDelete: "cascade" }).notNull(),
     topicType: text("topic_type"),
     explanation: text("explanation"),
     managerId: text("manager_id").notNull().unique(),
@@ -277,6 +276,7 @@ export const userWrongQuestions = pgTable("user_wrong_questions", {
     questionId: uuid("question_id").references(() => questions.id, { onDelete: "cascade" }).notNull(),
     userId: text("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
     systemStep: integer("system_step").default(1).notNull(),
+    lessonCategoryId: uuid("lesson_category_id").references(() => lessonCategory.id, { onDelete: "cascade" }),
 });
 
 export const feedbacks = pgTable("feedbacks", {
@@ -389,10 +389,6 @@ export const lessonQuestionGroupRelations = relations(lessonQuestionGroups, ({ o
 
 export const questionRelations = relations(questions, ({ one, many }) => ({
     wrongQuestions: many(userWrongQuestions),
-    category: one(lessonCategory, { // 👈 added
-        fields: [questions.categoryId],
-        references: [lessonCategory.id],
-    }),
 }));
 
 export const onlineLessonRelations = relations(onlineLessons, ({ one }) => ({
@@ -433,7 +429,11 @@ export const userWrongQuestionRelations = relations(userWrongQuestions, ({ one }
     user: one(users, {
         fields: [userWrongQuestions.userId],
         references: [users.id],
-    })
+    }),
+    lessonCategory: one(lessonCategory, {
+        fields: [userWrongQuestions.lessonCategoryId],
+        references: [lessonCategory.id],
+    }),
 }));
 
 export const userSystemStatsRelations = relations(userSystemStats, ({ one }) => ({

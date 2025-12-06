@@ -10,6 +10,7 @@ const fullAccessUserIds = [
     "user_35eDYYCGANyULOU1HY2N1wKWjWX",
     "user_35c1Ttp2gqRwJVHaDGqWe2errKd",
     "user_351nKgCGf2EByDpF9SLvxnRT8kY",
+    "user_35kTiNLGDNW4htHyQlpdu0WLfir",
     "user_34jysbbECoozWYDtYDATELi0Xwq",
 
 ]

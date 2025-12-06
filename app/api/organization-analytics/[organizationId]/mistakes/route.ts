@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import db from "@/db/drizzle";
 import { auth } from "@clerk/nextjs/server";
-import { users, organizationYears, userWrongQuestions, questions, lessonCategory } from "@/db/schemaSmarti";
+import { users, organizationYears, userWrongQuestions, questions } from "@/db/schemaSmarti";
 import { and, eq, inArray, sql } from "drizzle-orm";
 
 export async function GET(
@@ -50,25 +50,22 @@ export async function GET(
             return NextResponse.json({ data: [] });
         }
 
-        // Aggregate wrong questions by category and topic type
-        // Join user_wrong_questions -> questions -> lesson_category to access categoryType and topicType
+        // Aggregate wrong questions by topic type
+        // Note: categoryId removed from questions table - category info no longer available directly
         const rows = await db
             .select({
-                categoryId: questions.categoryId,
-                categoryType: lessonCategory.categoryType,
                 topicType: questions.topicType,
                 count: sql<number>`COUNT(*)`,
             })
             .from(userWrongQuestions)
             .leftJoin(questions, eq(userWrongQuestions.questionId, questions.id))
-            .leftJoin(lessonCategory, eq(questions.categoryId, lessonCategory.id))
             .where(inArray(userWrongQuestions.userId, userIds))
-            .groupBy(questions.categoryId, lessonCategory.categoryType, questions.topicType);
+            .groupBy(questions.topicType);
 
         // Shape response
         const data = rows.map((r) => ({
-            categoryId: r.categoryId,
-            categoryType: r.categoryType ?? null,
+            categoryId: null,
+            categoryType: null,
             topicType: r.topicType ?? "UNKNOWN",
             wrongCount: Number(r.count) || 0,
         }));

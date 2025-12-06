@@ -260,20 +260,44 @@ export const addResultsToUser = cache(async (lessonId: string, userId: string, a
         });
     }
 
+    // Map each questionId to its real lessonCategoryId based on lessonQuestionGroups for this lesson & step
+    const lessonQuestionGroupsForLesson = await db.query.lessonQuestionGroups.findMany({
+        where: (lg, { and, eq }) => and(
+            eq(lg.lessonId, lessonId),
+            eq(lg.systemStep, userSystemStep)
+        ),
+        columns: {
+            categoryId: true,
+            questionList: true,
+        },
+    });
+
+    const questionToCategory = new Map<string, string>();
+    for (const group of lessonQuestionGroupsForLesson) {
+        if (!group.categoryId || !group.questionList) continue;
+        for (const qId of group.questionList) {
+            if (!qId || questionToCategory.has(qId)) continue;
+            questionToCategory.set(qId, qId ? group.categoryId : group.categoryId);
+        }
+    }
+
     answers.forEach(async (answer, index) => {
         if (answer !== "a") {
+            const questionId = questionList[index];
             const existingWrongQuestion = await db.query.userWrongQuestions.findFirst({
                 where: and(
                     eq(userWrongQuestions.userId, userId),
-                    eq(userWrongQuestions.questionId, questionList[index])
+                    eq(userWrongQuestions.questionId, questionId)
                 ),
             });
 
             if (!existingWrongQuestion) {
                 await db.insert(userWrongQuestions).values({
                     id: crypto.randomUUID(),
-                    questionId: questionList[index],
-                    userId: userId,
+                    questionId,
+                    userId,
+                    systemStep: userSystemStep,
+                    lessonCategoryId: questionToCategory.get(questionId) ?? null,
                     isNull: answer ? false : true,
                 });
             }
@@ -782,8 +806,7 @@ async function getLessonQuestionGroupsWithFirstQuestionCategorySingleQuery(lesso
     })
         .from(lessonQuestionGroups)
         .leftJoin(lessons, eq(lessonQuestionGroups.lessonId, lessons.id))
-        .leftJoin(questions, eq(questions.id, sql<string>`${lessonQuestionGroups.questionList}[1]`))
-        .leftJoin(lessonCategory, eq(lessonCategory.id, questions.categoryId))
+        .leftJoin(lessonCategory, eq(lessonCategory.id, lessonQuestionGroups.categoryId))
         .where(eq(lessonQuestionGroups.lessonId, lessonId))
         .orderBy(asc(lessonQuestionGroups.createdAt));
 
@@ -880,19 +903,28 @@ export const getUserWrongQuestionsByCategoryId = cache(async (categoryId: string
     }
     const userSystemStep = await getUserSystemStep(userId);
 
-    // Fetch all user wrong questions for the given category using Drizzle syntax
+    // Fetch all user wrong questions for the given category using the stored lessonCategoryId
     const wrongQuestions = await db.query.userWrongQuestions.findMany({
-        where: (wrongQuestionsAlias, { eq, and, inArray }) => and(
+        where: (wrongQuestionsAlias, { eq, and }) => and(
             eq(wrongQuestionsAlias.userId, userId),
             eq(wrongQuestionsAlias.systemStep, userSystemStep),
-            inArray(wrongQuestionsAlias.questionId,
-                db.select({ id: questions.id })
-                    .from(questions)
-                    .where(eq(questions.categoryId, categoryId))
-            )
+            eq(wrongQuestionsAlias.lessonCategoryId, categoryId)
         ),
         with: {
-            question: true,
+            question: {
+                columns: {
+                    id: true,
+                    content: true,
+                    question: true,
+                    format: true,
+                    options: true,
+                    topicType: true,
+                    explanation: true,
+                    managerId: true,
+                    createdAt: true,
+                    // categoryId is intentionally excluded since it was removed
+                },
+            },
         },
         limit: 30,
     });
@@ -982,6 +1014,27 @@ export const saveUserResult = cache(async (result: Array<"a" | "b" | "c" | "d" |
             .filter((q): q is string => q !== null),
     };
 
+    // Map each questionId to its real lessonCategoryId based on lessonQuestionGroups for this lesson & step
+    const lessonQuestionGroupsForLesson = await db.query.lessonQuestionGroups.findMany({
+        where: (lg, { and, eq }) => and(
+            eq(lg.lessonId, lessonId),
+            eq(lg.systemStep, userSystemStep)
+        ),
+        columns: {
+            categoryId: true,
+            questionList: true,
+        },
+    });
+
+    const questionToCategory = new Map<string, string>();
+    for (const group of lessonQuestionGroupsForLesson) {
+        if (!group.categoryId || !group.questionList) continue;
+        for (const qId of group.questionList) {
+            if (!qId || questionToCategory.has(qId)) continue;
+            questionToCategory.set(qId, group.categoryId);
+        }
+    }
+
     // Insert wrong questions for the user using drizzle
     if (Array.isArray(questions) && questions.length > 0) {
         // Insert wrong answers and null answers into userWrongQuestions
@@ -992,6 +1045,7 @@ export const saveUserResult = cache(async (result: Array<"a" | "b" | "c" | "d" |
                 userId,
                 isNull: true,
                 systemStep: userSystemStep,
+                lessonCategoryId: questionToCategory.get(questionId) ?? null,
             })),
             ...wrongResult.wrongAnswers.map((questionId: string) => ({
                 id: crypto.randomUUID(),
@@ -999,6 +1053,7 @@ export const saveUserResult = cache(async (result: Array<"a" | "b" | "c" | "d" |
                 userId,
                 systemStep: userSystemStep,
                 isNull: false,
+                lessonCategoryId: questionToCategory.get(questionId) ?? null,
             })),
         ];
 
@@ -1054,27 +1109,29 @@ export const getAllWrongQuestionsWithDetails = async () => {
     }
 
     // Fetch all userWrongQuestions for the current user
-    // And eagerly load the related 'questions' data using 'with'
+    // Explicitly select only the columns we need from questions (excluding category_id)
     const wrongQuestionsWithDetails = await db.query.userWrongQuestions.findMany({
         where: eq(userWrongQuestions.userId, userId),
         with: {
             question: {
-                with: {
-                    category: true, // Assuming 'category' is the relation to fetch category details
+                columns: {
+                    id: true,
+                    content: true,
+                    question: true,
+                    format: true,
+                    options: true,
+                    topicType: true,
+                    explanation: true,
+                    managerId: true,
+                    createdAt: true,
+                    // categoryId is intentionally excluded since it was removed
                 },
             },
+            lessonCategory: true,
         },
     });
 
-    // Replace categoryId with category title
-    const result = wrongQuestionsWithDetails.map((entry) => ({
-        ...entry,
-        question: {
-            ...entry.question
-        },
-    }));
-
-    return result;
+    return wrongQuestionsWithDetails;
 };
 
 

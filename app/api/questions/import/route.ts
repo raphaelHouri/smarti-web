@@ -17,7 +17,6 @@ interface ParsedQuestionFromCSV {
         c?: string;
         d?: string;
     } | null;
-    categoryId: string;
     topicType?: string | null;
     explanation?: string | null;
     managerId: string;
@@ -31,12 +30,6 @@ export async function POST(req: NextRequest) {
 
     const formData = await req.formData();
     const file = formData.get('file') as File | null;
-
-    const lessonCategories = await db.query.lessonCategory.findMany();
-    const categoryMap = lessonCategories.reduce((map, category) => {
-        map[category.categoryType] = category.id;
-        return map;
-    }, {} as Record<string, string>);
 
     if (!file) {
         return NextResponse.json({ message: 'No file uploaded.' }, { status: 400 });
@@ -146,13 +139,6 @@ export async function POST(req: NextRequest) {
                     const subOptionKey = header.split('.')[1];
                     if (!obj.options) obj.options = {};
                     (obj.options as any)[subOptionKey] = String(value);
-                } else if (header === 'categoryId') {
-                    if (categoryMap[String(value)]) {
-                        obj.categoryId = categoryMap[String(value)];
-                    } else {
-                        obj.categoryId = String(value);
-                        // console.warn(`Row ${i + 2}: Category type '${value}' not found in database. Trying form categoryId.`);
-                    }
                 } else if (header === 'topicType') {
                     obj.topicType = String(value);
                 } else if (header === 'explanation') {
@@ -170,9 +156,7 @@ export async function POST(req: NextRequest) {
                 throw new Error(`Row ${i + 2}: Format could not be determined or is missing.`);
             }
 
-            if (!obj.categoryId) {
-                throw new Error(`Row ${i + 2}: Category ID is missing or invalid.`);
-            }
+
 
             if (!obj.managerId) {
                 throw new Error(`Row ${i + 2}: Manager ID is missing.`);
