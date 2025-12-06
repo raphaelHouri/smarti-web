@@ -467,7 +467,7 @@ const Quiz = ({
                     </div>
                 </div>
             )}
-            <div className="flex-1">
+            <div className="flex-1 mb-10">
                 <div className="h-full justify-center flex items-center">
                     <div className="lg:min-h-[300px] w-full xl:w-[800px]  2xl:w-[1000px] [@media(min-width:1750px)]:w-[1200px] lg:px-0 px-2 sm:px-6 flex flex-col gap-y-6">
 
@@ -531,7 +531,7 @@ const Quiz = ({
                             )}
                             {/* Show SHAPES type question as image centered above the question from bucket */}
                             {question.format === "SHAPES" && question.content && (
-                                <div className="flex flex-col items-center justify-center w-full mb-6 sm:mb-8 gap-2">
+                                <div className="flex flex-col items-center justify-center w-full mt-2 sm:mt-4 mb-6 sm:mb-8 gap-2">
                                     <div className="flex justify-center">
                                         <img
                                             src={question.content}
