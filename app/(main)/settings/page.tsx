@@ -39,7 +39,7 @@ const SettingsPage = async () => {
         currentUserSettingsData,
     ]);
 
-    if (!userProgress || !userProgress.lessonCategoryId) {
+    if (!userProgress || !userProgress.settings?.lessonCategoryId) {
         redirect("/learn");
     }
 

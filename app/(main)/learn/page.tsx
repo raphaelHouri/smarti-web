@@ -21,12 +21,12 @@ const LearnPage = async () => {
 
 
 
-    if (!user || ('user' in user && !(user as any)?.user?.lessonCategoryId)) {
+    if (!user || !user.settings?.lessonCategoryId) {
         const firstCategory = await getFirstCategory();
         redirect(`/learn/${firstCategory?.id}`);
     }
-    if (user && 'lessonCategoryId' in user && user.lessonCategoryId) {
-        redirect(`/learn/${user.lessonCategoryId}`);
+    if (user.settings.lessonCategoryId) {
+        redirect(`/learn/${user.settings.lessonCategoryId}`);
     }
     return <LoadingPage />
 

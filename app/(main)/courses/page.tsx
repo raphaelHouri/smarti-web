@@ -12,8 +12,8 @@ const LessonCategoryPage = async () => {
 
     const [lessonCategory, user] = await Promise.all([lessonCategoriesPromise, userPromise]);
     let lessonCategoryId = null;
-    if (user && 'lessonCategoryId' in user) {
-        lessonCategoryId = user.lessonCategoryId;
+    if (user?.settings?.lessonCategoryId) {
+        lessonCategoryId = user.settings.lessonCategoryId;
     }
     return (
         <div className="mx-auto px-2 max-w-[768px]">

@@ -28,7 +28,7 @@ const LeaderBoardPage = async () => {
     const [userProgress, userSubscription, topTenUsers] = await Promise.all([userProgressData, userSubscriptionData, topTenUsersData])
     const isPro = userSubscription ? (userSubscription.has("all") || userSubscription.has("system1")) : false;
 
-    if (!userProgress || !userProgress.lessonCategoryId) {
+    if (!userProgress || !userProgress.settings?.lessonCategoryId) {
         redirect("/learn");
     }
 
@@ -38,7 +38,7 @@ const LeaderBoardPage = async () => {
             <StickyWrapper>
                 <UserProgress
                     imageSrc={userProgress.settings?.avatar || "/fr.svg"}
-                    title={userProgress.lessonCategory?.categoryType || "Math"}
+                    title={userProgress.settings?.lessonCategory?.categoryType || "Math"}
                     experience={userProgress.experience}
                     geniusScore={userProgress.geniusScore}
                 />

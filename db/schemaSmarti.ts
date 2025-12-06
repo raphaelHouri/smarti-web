@@ -140,7 +140,6 @@ export const users = pgTable("users", {
     createdAt: timestamp("created_at").defaultNow(),
     organizationYearId: uuid("organization_year_id").references(() => organizationYears.id, { onDelete: "cascade" }),
     // userSettingsId: uuid("user_settings_id"),
-    lessonCategoryId: uuid("lesson_category_id").references(() => lessonCategory.id, { onDelete: "cascade" }),
     experience: integer("experience").default(0).notNull(),
     geniusScore: integer("genius_score").default(0).notNull(),
     savedCouponId: uuid("saved_coupon_id").references(() => coupons.id, { onDelete: "set null" }),
@@ -242,6 +241,7 @@ export const userSettings = pgTable("user_settings", {
     gender: text("gender"),
     avatar: avatarEnum("avatar").default("/smarti_avatar.png"),
     systemStep: integer("system_step").default(1).notNull(),
+    lessonCategoryId: uuid("lesson_category_id").references(() => lessonCategory.id, { onDelete: "cascade" }),
 });
 
 
@@ -314,10 +314,6 @@ export const userRelations = relations(users, ({ one, many }) => ({
         fields: [users.id],
         references: [userSettings.userId],
     }),
-    lessonCategory: one(lessonCategory, {
-        fields: [users.lessonCategoryId],
-        references: [lessonCategory.id],
-    }),
     subscriptions: many(subscriptions),
     lessonResults: many(userLessonResults),
     wrongQuestions: many(userWrongQuestions),
@@ -328,7 +324,11 @@ export const userSettingsRelations = relations(userSettings, ({ one }) => ({
     user: one(users, {
         fields: [userSettings.userId],
         references: [users.id],
-    })
+    }),
+    lessonCategory: one(lessonCategory, {
+        fields: [userSettings.lessonCategoryId],
+        references: [lessonCategory.id],
+    }),
 }));
 
 export const subscriptionRelations = relations(subscriptions, ({ one }) => ({

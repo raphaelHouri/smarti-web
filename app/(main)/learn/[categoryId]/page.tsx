@@ -53,8 +53,8 @@ const LearnPage = async ({
             }
             categoryId = category.id;
         }
-    } else if (user.lessonCategoryId) {
-        categoryId = user.lessonCategoryId;
+    } else if (user.settings?.lessonCategoryId) {
+        categoryId = user.settings.lessonCategoryId;
     } else {
         redirect("/courses");
     }

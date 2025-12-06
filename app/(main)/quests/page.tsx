@@ -26,7 +26,7 @@ const QuestsPage = async () => {
 
     const [userProgress, userSubscription] = await Promise.all([userProgressData, userSubscriptionData])
 
-    if (!userProgress || !userProgress.lessonCategoryId) {
+    if (!userProgress || !userProgress.settings?.lessonCategoryId) {
         redirect("/courses");
     }
 
@@ -42,7 +42,7 @@ const QuestsPage = async () => {
                     experience={userProgress.experience}
                     geniusScore={userProgress.geniusScore}
                     imageSrc={userProgress.settings?.avatar || "/fr.svg"}
-                    title={userProgress.lessonCategory?.title || "French"}
+                    title={userProgress.settings?.lessonCategory?.title || "French"}
                 />
                 {!isPro && (
                     <PromoSection

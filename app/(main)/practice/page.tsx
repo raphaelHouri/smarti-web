@@ -38,7 +38,7 @@ const PracticePage = async () => {
         getAllWrongQuestionsWithDetails(),
     ]);
 
-    if (!userProgress || !userProgress.lessonCategoryId) {
+    if (!userProgress || !userProgress.settings?.lessonCategoryId) {
         redirect("/learn");
     }
 
@@ -107,7 +107,7 @@ const PracticePage = async () => {
                     experience={userProgress.experience}
                     geniusScore={userProgress.geniusScore}
                     imageSrc={userProgress.settings?.avatar || "/fr.svg"}
-                    title={userProgress.lessonCategory?.title || "Active Course"}
+                    title={userProgress.settings?.lessonCategory?.title || "Active Course"}
                 />
                 {!isPro && <PromoSection />}
                 <QuestsSection experience={userProgress.experience} />

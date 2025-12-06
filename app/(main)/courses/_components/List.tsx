@@ -10,7 +10,7 @@ import { lessonCategory, users } from "@/db/schemaSmarti";
 
 interface ListProps {
     lessonCategories: typeof lessonCategory.$inferSelect[];
-    lessonCategoryId?: typeof users.$inferSelect.lessonCategoryId,
+    lessonCategoryId?: string | null,
 }
 
 

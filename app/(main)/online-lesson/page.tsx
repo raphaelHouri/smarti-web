@@ -26,10 +26,10 @@ const OnlineLessonPage = async () => {
 
 
     // Check if user's lessonCategoryId has online lessons
-    if (userProgress?.lessonCategoryId) {
-        const userCategoryExists = categories.find(c => c.id === userProgress.lessonCategoryId);
+    if (userProgress?.settings?.lessonCategoryId) {
+        const userCategoryExists = categories.find(c => c.id === userProgress.settings.lessonCategoryId);
         if (userCategoryExists) {
-            redirect(`/online-lesson/${userProgress.lessonCategoryId}`);
+            redirect(`/online-lesson/${userProgress.settings.lessonCategoryId}`);
         }
     }
 
@@ -45,7 +45,7 @@ const OnlineLessonPage = async () => {
                     experience={userProgress?.experience || 0}
                     geniusScore={userProgress?.geniusScore || 0}
                     imageSrc={userProgress?.settings?.avatar || "/fr.svg"}
-                    title={userProgress?.lessonCategory?.title || "Online Lessons"}
+                    title={userProgress?.settings?.lessonCategory?.title || "Online Lessons"}
                 />
             </StickyWrapper>
             <FeedWrapper>

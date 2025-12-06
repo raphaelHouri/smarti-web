@@ -89,7 +89,6 @@ export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string, 
                 id: userId,
                 name: user.firstName || "משתמש אורח", // Use the user's name from Clerk
                 email: userEmail,
-                lessonCategoryId: newLessonCategoryId,
                 systemStep: cookieSystemStep,
             });
 
@@ -98,6 +97,7 @@ export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string, 
                 id: crypto.randomUUID(),
                 userId: userId,
                 systemStep: cookieSystemStep,
+                lessonCategoryId: newLessonCategoryId,
             });
 
             // 3. Initialize user system stats for the current step
@@ -117,11 +117,23 @@ export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string, 
             return null;
         }
     } else {
-        // If user already exists and cookie has a valid systemStep, optionally sync it
+        // If user already exists and cookie has a valid systemStep, sync it across all necessary fields
         if ([1, 2, 3].includes(cookieSystemStep) && existingUser.systemStep !== cookieSystemStep) {
+            // Update users table
             await db.update(users)
                 .set({ systemStep: cookieSystemStep })
                 .where(eq(users.id, userId));
+
+            // Update userSettings table
+            await db.update(userSettings)
+                .set({ systemStep: cookieSystemStep })
+                .where(eq(userSettings.userId, userId));
+
+            // Update the existingUser object to reflect the change
+            existingUser.systemStep = cookieSystemStep;
+            if (existingUser.settings) {
+                existingUser.settings.systemStep = cookieSystemStep;
+            }
         }
         // Ensure stats are initialized for the current step
         await getOrCreateUserSystemStats(userId, cookieSystemStep);
@@ -725,8 +737,11 @@ export const getUserProgress = cache(async () => {
     const user = await db.query.users.findFirst({
         where: eq(users.id, userId),
         with: {
-            lessonCategory: true,
-            settings: true,
+            settings: {
+                with: {
+                    lessonCategory: true,
+                }
+            },
         }
     });
 
