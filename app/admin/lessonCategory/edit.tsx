@@ -1,4 +1,4 @@
-import { DateInput, Edit, SimpleForm, TextInput } from 'react-admin';
+import { DateInput, Edit, NumberInput, SimpleForm, TextInput } from 'react-admin';
 
 export const LessonCategoryEdit = () => (
     <Edit>
@@ -7,6 +7,13 @@ export const LessonCategoryEdit = () => (
             <TextInput source="categoryType" />
             <TextInput source="title" />
             <TextInput source="description" />
+            <NumberInput
+                source="systemStep"
+                label="System Step"
+                min={1}
+                max={3}
+                required
+            />
             <DateInput source="createdAt" />
             <TextInput source="imageSrc" />
         </SimpleForm>

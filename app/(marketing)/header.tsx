@@ -1,20 +1,59 @@
 
 import { ClerkLoaded, ClerkLoading, SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
+import { cookies } from "next/headers";
 import Image from "next/image";
 import { Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ModeToggle } from "@/components/mode-toggle";
 import FeedbackButton from "@/components/feedbackButton";
+import db from "@/db/drizzle";
+import { users } from "@/db/schemaSmarti";
+import { eq } from "drizzle-orm";
 
+function getSystemStepLabel(step: number | null): string {
+  if (step === 2) {
+    return "כיתה ב' - שלב ב'";
+  }
+  if (step === 3) {
+    return "כיתה ב' - שלב ג'";
+  }
+  return "כיתה ב' - שלב א'";
+}
 
-const HeaderPage = () => {
+const HeaderPage = async () => {
+  const { userId } = await auth();
+  let currentStep: number | null = null;
+
+  if (userId) {
+    const user = await db.query.users.findFirst({
+      where: eq(users.id, userId),
+      columns: { systemStep: true },
+    });
+    currentStep = user?.systemStep ?? null;
+  }
+
+  if (!currentStep) {
+    const cookieValue = (await cookies()).get("systemStep")?.value;
+    const cookieNumber = cookieValue ? Number(cookieValue) : NaN;
+    if ([1, 2, 3].includes(cookieNumber)) {
+      currentStep = cookieNumber;
+    }
+  }
+
+  const label = getSystemStepLabel(currentStep);
+
   return (
-    <header className="h-20 w-full border-b-2 border-slate-100
+    <header
+      className="h-20 w-full border-b-2 border-slate-100
     dark:border-none
-    px-4">
-      <div className="h-full lg:max-w-screen-lg mx-auto items-center
-    justify-between flex">
+    px-4"
+    >
+      <div
+        className="h-full lg:max-w-screen-lg mx-auto items-center
+    justify-between flex"
+      >
         <div className="pt-8 pb-7 flex items-center gap-x-1">
           <Link href="/">
             <Image
@@ -25,11 +64,9 @@ const HeaderPage = () => {
               className="mr-2"
               priority
             />
-
-
           </Link>
           <p className="text-lg font-bold text-[#00C950] tracking-wide">
-            כיתה ב' - שלב א'
+            {label}
           </p>
         </div>
         <div className="inline-flex gap-x-4 mt-2 ms:ml-0 ml-4">
@@ -64,9 +101,9 @@ const HeaderPage = () => {
           </div>
         </div>
       </div>
-    </header >
+    </header>
   );
-}
+};
 
 export default HeaderPage;
 

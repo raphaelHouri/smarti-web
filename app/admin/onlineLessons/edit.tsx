@@ -11,6 +11,13 @@ export const OnlineLessonEdit = () => (
             <TextInput source="description" />
             <TextInput source="link" />
             <NumberInput source="order" />
+            <NumberInput
+                source="systemStep"
+                label="System Step"
+                min={1}
+                max={3}
+                required
+            />
         </SimpleForm>
     </Edit>
 );

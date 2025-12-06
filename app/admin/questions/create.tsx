@@ -5,6 +5,7 @@ import {
     TextInput,
     ReferenceInput,
     SelectInput,
+    NumberInput,
     useDataProvider,
     useNotify,
     useRedirect,
@@ -146,6 +147,13 @@ export const QuestionCreate = (props: CreateProps) => {
                 <TextInput source="topicType" />
                 <TextInput source="explanation" />
                 <TextInput source="managerId" required label="Manager ID" />
+                <NumberInput
+                    source="systemStep"
+                    label="System Step"
+                    min={1}
+                    max={3}
+                    required
+                />
 
                 <div style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '20px' }}>
                     <p>Or import multiple questions from an Excel file:</p>

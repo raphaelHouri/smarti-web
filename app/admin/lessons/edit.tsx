@@ -9,6 +9,13 @@ export const LessonEdit = () => (
             </ReferenceInput>
             <NumberInput source="lessonOrder" />
             <BooleanInput source="isPremium" label="Premium" />
+            <NumberInput
+                source="systemStep"
+                label="System Step"
+                min={1}
+                max={3}
+                required
+            />
             <DateInput source="createdAt" />
         </SimpleForm>
     </Edit>

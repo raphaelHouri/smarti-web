@@ -15,6 +15,7 @@ interface ParsedRow {
     time?: string | number;
     premium?: string | boolean;
     groupCategoryType?: string;
+    systemStep?: string | number;
 }
 
 export async function POST(req: NextRequest) {
@@ -51,6 +52,8 @@ export async function POST(req: NextRequest) {
                 return 'premium';
             case 'groupCategoryType':
                 return 'groupCategoryType';
+            case 'systemStep':
+                return 'systemStep';
             default:
                 return String(h || '').trim();
         }
@@ -139,13 +142,38 @@ export async function POST(req: NextRequest) {
     for (let i = 0; i < parsedData.length; i++) {
         const raw = parsedData[i] as ParsedRow;
         const categoryType = (raw.categoryType || '').trim();
-        const categoryId = categoryMap[categoryType];
+        // Try to find categoryId, allowing for misplaced numbers at start or end of categoryType
+        let categoryId = categoryMap[categoryType];
+        if (!categoryId) {
+            // Try all keys in the map to find a match ignoring leading/trailing digits
+            const normalize = (s: string) => s.replace(/^\d+/, '').replace(/\d+$/, '').trim();
+            const normalizedCategoryType = normalize(categoryType);
+            for (const [key, value] of Object.entries(categoryMap)) {
+                if (normalize(key) === normalizedCategoryType) {
+                    categoryId = value;
+                    break;
+                }
+            }
+        }
         if (!categoryId) {
             errors.push({ row: i + 2, message: `Unknown categoryType: ${categoryType}` });
             continue;
         }
         const groupCategoryType = (raw.groupCategoryType || '').trim();
-        const groupCategoryId = categoryMap[groupCategoryType];
+        // const groupCategoryId = categoryMap[groupCategoryType];
+        let groupCategoryId = categoryMap[categoryType];
+        if (!groupCategoryId) {
+            // Try all keys in the map to find a match ignoring leading/trailing digits
+            const normalize = (s: string) => s.replace(/^\d+/, '').replace(/\d+$/, '').trim();
+            const normalizedGroupCategoryType = normalize(groupCategoryType);
+            for (const [key, value] of Object.entries(categoryMap)) {
+                if (normalize(key) === normalizedGroupCategoryType) {
+                    groupCategoryId = value;
+                    break;
+                }
+            }
+        }
+        
         if (!groupCategoryId) {
             errors.push({ row: i + 2, message: `Unknown groupCategoryType: ${groupCategoryType}` });
             continue;
@@ -164,6 +192,15 @@ export async function POST(req: NextRequest) {
         const timeSec = typeof raw.time === 'number' ? raw.time : parseInt(String(raw.time || '').trim(), 10);
         if (!Number.isFinite(timeSec)) {
             errors.push({ row: i + 2, message: 'Invalid time' });
+            continue;
+        }
+
+        const rawStep = raw.systemStep;
+        const systemStepNum = typeof rawStep === 'number'
+            ? rawStep
+            : parseInt(String(rawStep || '').trim(), 10);
+        if (!Number.isFinite(systemStepNum) || systemStepNum < 1 || systemStepNum > 3) {
+            errors.push({ row: i + 2, message: 'Invalid or missing systemStep (must be 1, 2, or 3)' });
             continue;
         }
 
@@ -186,7 +223,8 @@ export async function POST(req: NextRequest) {
         const existingLesson = await db.query.lessons.findFirst({
             where: and(
                 eq(lessons.lessonCategoryId, categoryId),
-                eq(lessons.lessonOrder, orderNum)
+                eq(lessons.lessonOrder, orderNum),
+                eq(lessons.systemStep, systemStepNum)
             )
         });
 
@@ -197,6 +235,7 @@ export async function POST(req: NextRequest) {
                 lessonCategoryId: categoryId,
                 lessonOrder: orderNum,
                 isPremium,
+                systemStep: systemStepNum,
             } as DrizzleLessonInsert;
 
             const inserted = await db.insert(lessons).values(lessonToInsert).returning();
@@ -216,6 +255,7 @@ export async function POST(req: NextRequest) {
             categoryId: groupCategoryId,
             questionList: normalizedQuestionList as unknown as string[],
             time: Number(timeSec),
+            systemStep: systemStepNum,
         } as DrizzleLessonQGInsert;
 
         await db.insert(lessonQuestionGroups).values(qgToInsert);

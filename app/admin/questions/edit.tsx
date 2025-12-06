@@ -1,4 +1,4 @@
-import { DateInput, Edit, ReferenceInput, SelectInput, SimpleForm, TextInput } from 'react-admin';
+import { DateInput, Edit, NumberInput, ReferenceInput, SelectInput, SimpleForm, TextInput } from 'react-admin';
 
 export const QuestionEdit = () => (
     <Edit>
@@ -18,6 +18,13 @@ export const QuestionEdit = () => (
             <TextInput source="explanation" />
             <TextInput source="managerId" required label="Manager ID" />
             <DateInput source="createdAt" disabled />
+            <NumberInput
+                source="systemStep"
+                label="System Step"
+                min={1}
+                max={3}
+                required
+            />
         </SimpleForm>
     </Edit>
 );

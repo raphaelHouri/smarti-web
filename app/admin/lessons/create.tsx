@@ -41,8 +41,8 @@ export const LessonCreate = () => {
     const handleDownloadTemplate = async () => {
         const XLSX = await import('xlsx');
         const data = [
-            ['questionIds', 'categoryType', 'order', 'time', 'premium'],
-            ['11111111-1111-1111-1111-111111111111;22222222-2222-2222-2222-222222222222', 'MATH_BASICS', 1, 600, true],
+            ['questionIds', 'categoryType', 'groupCategoryType', 'order', 'time', 'premium', 'systemStep'],
+            ['11111111-1111-1111-1111-111111111111;22222222-2222-2222-2222-222222222222', 'MATH_BASICS', 'MATH_BASICS', 1, 600, true, 1],
         ];
         const worksheet = XLSX.utils.aoa_to_sheet(data);
         const workbook = XLSX.utils.book_new();
@@ -58,6 +58,13 @@ export const LessonCreate = () => {
                 </ReferenceInput>
                 <NumberInput source="lessonOrder" />
                 <BooleanInput source="isPremium" label="Premium" defaultValue={true} />
+                <NumberInput
+                    source="systemStep"
+                    label="System Step"
+                    min={1}
+                    max={3}
+                    required
+                />
 
                 <div style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '20px' }}>
                     <p>Or import lessons and groups from an Excel/CSV file:</p>

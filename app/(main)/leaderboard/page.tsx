@@ -23,8 +23,8 @@ const LeaderBoardPage = async () => {
     const userProgressData = getUserProgress();
     const userSubscriptionData = getUserSubscriptions();
     const topTenUsersData = getTopUsers();
-    
-    
+
+
     const [userProgress, userSubscription, topTenUsers] = await Promise.all([userProgressData, userSubscriptionData, topTenUsersData])
     const isPro = userSubscription ? (userSubscription.has("all") || userSubscription.has("system1")) : false;
 
@@ -40,6 +40,7 @@ const LeaderBoardPage = async () => {
                     imageSrc={userProgress.settings?.avatar || "/fr.svg"}
                     title={userProgress.lessonCategory?.categoryType || "Math"}
                     experience={userProgress.experience}
+                    geniusScore={userProgress.geniusScore}
                 />
                 {!isPro && (
                     <PromoSection

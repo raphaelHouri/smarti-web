@@ -40,6 +40,7 @@ const QuestsPage = async () => {
             <StickyWrapper>
                 <UserProgress
                     experience={userProgress.experience}
+                    geniusScore={userProgress.geniusScore}
                     imageSrc={userProgress.settings?.avatar || "/fr.svg"}
                     title={userProgress.lessonCategory?.title || "French"}
                 />

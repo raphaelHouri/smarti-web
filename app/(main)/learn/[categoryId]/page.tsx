@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import Unit from "../_components/Unit";
 import PromoSection from "../_components/promo";
 import QuestsSection from "../../quests/_components/quests";
-import { getCategories, getFirstCategory, getLessonCategoryById, getLessonCategoryWithLessonsById, getOrCreateUserFromGuest, getUserSubscriptions } from "@/db/queries";
+import { getCategories, getFirstCategory, getLessonCategoryById, getLessonCategoryWithLessonsById, getOrCreateUserFromGuest, getUserProgress, getUserSubscriptions } from "@/db/queries";
 import LessonCategoryPage from "../../courses/page";
 import FeedbackButton from "@/components/feedbackButton";
 
@@ -19,11 +19,12 @@ const LearnPage = async ({
 }) => {
     let { categoryId } = await params
     const userData = getOrCreateUserFromGuest();
+    const userProgressData = getUserProgress();
     const categories = getCategories();
     const lessonCategories = getLessonCategoryById(categoryId);
     const lessonCategoryWithLessons = await getLessonCategoryWithLessonsById(categoryId);
     const userSubscriptionData = getUserSubscriptions();
-    const [user, lessonsCategory, categoriesData, userSubscription] = await Promise.all([userData, lessonCategories, categories, userSubscriptionData]);
+    const [user, userProgress, lessonsCategory, categoriesData, userSubscription] = await Promise.all([userData, userProgressData, lessonCategories, categories, userSubscriptionData]);
     const isPro = userSubscription ? (userSubscription.has("all") || userSubscription.has("system1")) : false;
 
     // יצירת מערך חדש עם שדה 'הושלם'
@@ -86,20 +87,17 @@ const LearnPage = async ({
             <StickyWrapper>
 
                 <UserProgress
-                    imageSrc={user?.settings?.avatar || categoryDetails.imageSrc || "/fr.svg"}
+                    imageSrc={userProgress?.settings?.avatar || categoryDetails.imageSrc || "/fr.svg"}
                     title={categoryDetails.categoryType || "שם הקטגוריה לא נמצא"}
-                    experience={
-                        user && "experience" in user && typeof user.experience === "number"
-                            ? user.experience
-                            : 0
-                    }
+                    experience={userProgress?.experience || 0}
+                    geniusScore={userProgress?.geniusScore || 0}
                 />
                 {!isPro && (
                     <PromoSection
                     />
                 )}
                 <QuestsSection
-                    experience={user && "experience" in user && typeof user.experience === "number" ? user.experience : 0}
+                    experience={userProgress?.experience || 0}
                 />
             </StickyWrapper>
         </div>

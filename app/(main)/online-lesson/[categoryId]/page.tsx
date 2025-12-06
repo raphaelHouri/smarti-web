@@ -45,6 +45,7 @@ const OnlineLessonCategoryPage = async ({ params }: OnlineLessonCategoryPageProp
             <StickyWrapper>
                 <UserProgress
                     experience={userProgress?.experience || 0}
+                    geniusScore={userProgress?.geniusScore || 0}
                     imageSrc={userProgress?.settings?.avatar || "/fr.svg"}
                     title={userProgress?.lessonCategory?.title || "Online Lessons"}
                 />

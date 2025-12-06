@@ -97,6 +97,13 @@ export const LessonQuestionGroupCreate = (props: CreateProps) => {
                 </ReferenceInput>
                 <TextInput source="questionList" label="Question IDs (comma or semicolon separated)" />
                 <NumberInput source="time" />
+                <NumberInput
+                    source="systemStep"
+                    label="System Step"
+                    min={1}
+                    max={3}
+                    required
+                />
 
                 <div style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '20px' }}>
                     <p>Or import lessons and groups from an Excel file:</p>
