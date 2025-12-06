@@ -61,7 +61,28 @@ export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string, 
             settings: true,
         }
     });
+    let newLessonCategoryId;
+    if (lessonCategoryId) {
+        // Validate that the lesson category exists and matches the current system step
+        const category = await db.query.lessonCategory.findFirst({
+            where: and(
+                eq(lessonCategory.id, lessonCategoryId),
+                eq(lessonCategory.systemStep, cookieSystemStep)
+            ),
+        });
+        if (!category) {
+            throw new Error("Invalid lesson category ID or category does not match current system step");
+        }
+        newLessonCategoryId = lessonCategoryId;
 
+    } else {
+        // Get the first category for the current system step
+        const category = await db.query.lessonCategory.findFirst({
+            where: eq(lessonCategory.systemStep, cookieSystemStep),
+            orderBy: (lessonCategory, { asc }) => [asc(lessonCategory.categoryType)],
+        });
+        newLessonCategoryId = category?.id || null;
+    }
     if (!existingUser) {
         try {
             // Perform all inserts inside a transaction to ensure data integrity.
@@ -69,20 +90,7 @@ export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string, 
             const clerkInstance = await clerkClient();
             const user = await clerkInstance.users.getUser(userId);
             const userEmail = user.emailAddresses.find((e: { id: string; emailAddress: string }) => e.id === user.primaryEmailAddressId)?.emailAddress ?? "";
-            let newLessonCategoryId;
-            if (lessonCategoryId) {
-                const lesson = await db.query.lessons.findFirst({
-                    where: eq(lessons.lessonCategoryId, lessonCategoryId),
-                });
-                if (!lesson) {
-                    throw new Error("Invalid lesson category ID");
-                }
-                newLessonCategoryId = lessonCategoryId;
 
-            } else {
-                const category = await getFirstCategory();
-                newLessonCategoryId = category?.id || null;
-            }
 
             // 1. Insert the new user.
             await db.insert(users).values({
@@ -117,6 +125,37 @@ export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string, 
             return null;
         }
     } else {
+        // If user already exists, check if settings exist for the current step
+        const existingSettings = await db.query.userSettings.findFirst({
+            where: and(
+                eq(userSettings.userId, userId),
+                eq(userSettings.systemStep, cookieSystemStep)
+            ),
+        });
+
+        // If settings don't exist for this step, create a new one
+        if (!existingSettings) {
+            // Get the existing settings to copy values from (if any exist)
+            const anyExistingSettings = await db.query.userSettings.findFirst({
+                where: eq(userSettings.userId, userId),
+                orderBy: (userSettings, { desc }) => [desc(userSettings.systemStep)],
+            });
+
+            // Create new settings for the current step, copying values from existing settings if available
+            await db.insert(userSettings).values({
+                id: crypto.randomUUID(),
+                userId: userId,
+                systemStep: cookieSystemStep,
+                lessonCategoryId: newLessonCategoryId,
+                lessonClock: anyExistingSettings?.lessonClock ?? true,
+                quizClock: anyExistingSettings?.quizClock ?? true,
+                immediateResult: anyExistingSettings?.immediateResult ?? false,
+                grade_class: anyExistingSettings?.grade_class ?? null,
+                gender: anyExistingSettings?.gender ?? null,
+                avatar: anyExistingSettings?.avatar ?? "/smarti_avatar.png",
+            });
+        }
+
         // If user already exists and cookie has a valid systemStep, sync it across all necessary fields
         if ([1, 2, 3].includes(cookieSystemStep) && existingUser.systemStep !== cookieSystemStep) {
             // Update users table
@@ -124,19 +163,45 @@ export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string, 
                 .set({ systemStep: cookieSystemStep })
                 .where(eq(users.id, userId));
 
-            // Update userSettings table
-            await db.update(userSettings)
-                .set({ systemStep: cookieSystemStep })
-                .where(eq(userSettings.userId, userId));
-
             // Update the existingUser object to reflect the change
             existingUser.systemStep = cookieSystemStep;
-            if (existingUser.settings) {
-                existingUser.settings.systemStep = cookieSystemStep;
-            }
         }
+
         // Ensure stats are initialized for the current step
         await getOrCreateUserSystemStats(userId, cookieSystemStep);
+
+        // Fetch the updated user with settings for the current step
+        if (returnUser) {
+            // Query settings for the current step directly
+            const stepSettings = await db.query.userSettings.findFirst({
+                where: and(
+                    eq(userSettings.userId, userId),
+                    eq(userSettings.systemStep, cookieSystemStep)
+                ),
+            });
+
+            // Re-fetch user with settings to ensure we have the latest data
+            const updatedUser = await db.query.users.findFirst({
+                where: eq(users.id, userId),
+                with: {
+                    settings: true,
+                }
+            });
+
+            // If we found settings for the current step, use them; otherwise use what was fetched
+            if (updatedUser) {
+                if (stepSettings) {
+                    // Replace with settings for the current step
+                    return {
+                        ...updatedUser,
+                        settings: stepSettings,
+                    } as typeof updatedUser;
+                }
+                return updatedUser;
+            }
+
+            return existingUser;
+        }
     }
 
     return existingUser;
