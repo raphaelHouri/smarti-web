@@ -149,7 +149,7 @@ export async function POST(req: NextRequest) {
             }
 
             // --- Server-side Validation for each row ---
-            if (!obj.question) {
+            if (!obj.question && !obj.content) {
                 throw new Error(`Row ${i + 2}: Question content is missing.`);
             }
             if (!obj.format) {
