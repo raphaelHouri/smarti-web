@@ -92,6 +92,7 @@ export const lessonCategory = pgTable("lesson_category", {
     title: text("title").notNull(),
     description: text("description").notNull(),
     systemStep: integer("system_step").default(1).notNull(),
+    order: integer("order").default(0).notNull(),
     createdAt: timestamp("created_at").defaultNow(),
     imageSrc: text("image_src").notNull(),
 });

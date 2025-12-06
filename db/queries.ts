@@ -21,6 +21,7 @@ export const getCategories = cache(async () => {
     const userSystemStep = await getUserSystemStep(userId);
     const data = await db.query.lessonCategory.findMany({
         where: eq(lessonCategory.systemStep, userSystemStep),
+        orderBy: (lessonCategory, { asc }) => [asc(lessonCategory.order), asc(lessonCategory.categoryType)],
     });
     return data;
 });
@@ -79,7 +80,7 @@ export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string, 
         // Get the first category for the current system step
         const category = await db.query.lessonCategory.findFirst({
             where: eq(lessonCategory.systemStep, cookieSystemStep),
-            orderBy: (lessonCategory, { asc }) => [asc(lessonCategory.categoryType)],
+            orderBy: (lessonCategory, { asc }) => [asc(lessonCategory.order), asc(lessonCategory.categoryType)],
         });
         newLessonCategoryId = category?.id || null;
     }
@@ -415,7 +416,7 @@ export const getFirstCategory = cache(async () => {
     const userSystemStep = await getUserSystemStep(userId);
     const data = await db.query.lessonCategory.findFirst({
         where: eq(lessonCategory.systemStep, userSystemStep),
-        orderBy: (lessonCategory, { asc }) => [asc(lessonCategory.categoryType)],
+        orderBy: (lessonCategory, { asc }) => [asc(lessonCategory.order), asc(lessonCategory.categoryType)],
     });
 
     return data ?? null;
@@ -752,6 +753,7 @@ export const getCategoriesForOnlineLessons = cache(async () => {
     });
     const categories = await db.query.lessonCategory.findMany({
         where: eq(lessonCategory.systemStep, userSystemStep),
+        orderBy: (lessonCategory, { asc }) => [asc(lessonCategory.order), asc(lessonCategory.categoryType)],
     });
 
     const categoryIds = new Set(onlineLessonsData.map(ol => ol.categoryId));
