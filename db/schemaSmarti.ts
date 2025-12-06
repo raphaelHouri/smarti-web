@@ -122,7 +122,7 @@ export const avatarEnum = pgEnum("avatar", [
 export const questions = pgTable("questions", {
     id: uuid("id").defaultRandom().primaryKey(),
     content: text("content"),
-    question: text("question").notNull(),
+    question: text("question"),
     format: formatEnum("format").notNull(),
     options: jsonb("options"),
     topicType: text("topic_type"),
