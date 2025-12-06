@@ -542,14 +542,14 @@ const Quiz = ({
                                 </div>
                             )}
 
-                            <div className="flex flex-row items-start justify-between gap-4 mb-3 sm:mb-4">
+                            {question.question ? <div className="flex flex-row items-start justify-between gap-4 mb-3 sm:mb-4">
                                 <div className="flex-1">
 
                                     <h1 className="lg:text-3xl text-lg lg:text-start font-bold text-neutral-700 dark:text-neutral-300">
                                         <QuestionBubble format={question.format} question={question.question ?? ""} />
                                     </h1>
                                 </div>
-                            </div>
+                            </div> : null}
 
                             <Challenge
                                 format={question.format}
