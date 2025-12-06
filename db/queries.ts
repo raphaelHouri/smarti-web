@@ -856,10 +856,10 @@ export const getQuizDataByLessonId = cache(async (lessonId: string) => {
 
     // TypeScript will now correctly infer the types for group.category.categoryType
     const questionGroups = questionGroupsResult.map(group => ({
-
         time: group.time,
         id: group.id,
         createdAt: group.createdAt,
+        systemStep: group.systemStep,
         lessonId: group.lessonId,
         questionList: group.questionList,
         categoryId: group.categoryId,
@@ -949,8 +949,10 @@ export const getUserWrongQuestionsByCategoryId = cache(async (categoryId: string
         {
             id: "fake-group-id",
             createdAt: new Date(),
+            systemStep: userSystemStep,
             lessonId: "fake-lesson-id",
             category: "fake-category",
+            categoryId: categoryId,
             categoryType: "fake-category-type",
             questionList: questionIds,
             time: 0
