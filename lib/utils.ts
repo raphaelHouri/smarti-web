@@ -109,7 +109,7 @@ export function getProductYear(): string {
 
 export function getSystemStepLabel(step: number | null): string {
   if (step === 2) {
-    return "כיתה ב' - שלב ב'";
+    return "שלב ב'";
   }
   if (step === 3) {
     return "כיתה ב' - שלב ג'";

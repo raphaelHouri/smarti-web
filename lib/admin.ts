@@ -2,7 +2,8 @@ import { auth } from "@clerk/nextjs/server";
 
 const allowedIds = [
     "user_2egY1XnJuT5C9JUjr32CeUS38u2",
-    "user_306j7eqpKh6upN8qiAHC02HsiPD"
+    "user_306j7eqpKh6upN8qiAHC02HsiPD",
+    "user_35e887Adqg7eDDBfQ8b4bk5BOas"
 ]
 
 // Whitelist of user IDs that have full access (premium features unlocked)
@@ -12,6 +13,7 @@ const fullAccessUserIds = [
     "user_351nKgCGf2EByDpF9SLvxnRT8kY",
     "user_35kTiNLGDNW4htHyQlpdu0WLfir",
     "user_34jysbbECoozWYDtYDATELi0Xwq",
+    "user_35e887Adqg7eDDBfQ8b4bk5BOas"
 
 ]
 
