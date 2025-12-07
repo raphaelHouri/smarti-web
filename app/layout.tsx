@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   description:
     "סמרטי - פלטפורמה להכנה למבחני מחוננים בעיקר לכיתות ב–ג: תרגולים אונליין, חוברות וסימולציות מודפסות, פעילויות פרונטליות והדרכת הורים מותאמת בכל הארץ.",
   manifest: "/manifest.json",
-  themeColor: "#3b82f6",
+  themeColor: "#22c55e",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -78,7 +78,7 @@ export default function RootLayout({
       <html lang="he" dir="rtl" suppressHydrationWarning>
         <head>
           <link rel="manifest" href="/manifest.json" />
-          <meta name="theme-color" content="#3b82f6" />
+          <meta name="theme-color" content="#22c55e" />
           <meta name="apple-mobile-web-app-capable" content="yes" />
           <meta name="apple-mobile-web-app-status-bar-style" content="default" />
           <meta name="apple-mobile-web-app-title" content="סמארטי" />
