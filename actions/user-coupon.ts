@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@clerk/nextjs/server";
-import { validateCoupon, getUserSavedCoupon, saveUserCoupon, clearUserCoupon } from "@/db/queries";
+import { validateCoupon, getUserSavedCoupon, saveUserCoupon, clearUserCoupon, getUserSystemStep } from "@/db/queries";
 import { revalidatePath } from "next/cache";
 
 export async function getUserCoupon() {
@@ -11,7 +11,8 @@ export async function getUserCoupon() {
     }
 
     try {
-        const coupon = await getUserSavedCoupon(userId);
+        const systemStep = await getUserSystemStep(userId);
+        const coupon = await getUserSavedCoupon(userId, systemStep);
         return { coupon, error: null };
     } catch (error) {
         console.error("Failed to get user coupon:", error);
@@ -30,6 +31,7 @@ export async function validateAndSaveCoupon(code: string) {
     }
 
     try {
+        const systemStep = await getUserSystemStep(userId);
         const validation = await validateCoupon(code.trim());
 
         if (!validation.valid || !validation.coupon) {
@@ -40,7 +42,7 @@ export async function validateAndSaveCoupon(code: string) {
             };
         }
 
-        const result = await saveUserCoupon(userId, validation.coupon.id);
+        const result = await saveUserCoupon(userId, validation.coupon.id, systemStep);
 
         if (!result.success) {
             return { success: false, error: result.error ?? "Failed to save coupon", coupon: validation.coupon };
@@ -63,7 +65,8 @@ export async function removeUserCoupon() {
     }
 
     try {
-        await clearUserCoupon(userId);
+        const systemStep = await getUserSystemStep(userId);
+        await clearUserCoupon(userId, systemStep);
         // Revalidate all shop pages to reflect coupon removal
         revalidatePath("/shop/system");
         revalidatePath("/shop/book");

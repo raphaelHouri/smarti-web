@@ -143,7 +143,6 @@ export const users = pgTable("users", {
     // userSettingsId: uuid("user_settings_id"),
     experience: integer("experience").default(0).notNull(),
     geniusScore: integer("genius_score").default(0).notNull(),
-    savedCouponId: uuid("saved_coupon_id").references(() => coupons.id, { onDelete: "set null" }),
     systemStep: integer("system_step").default(1).notNull(),
 });
 
@@ -243,6 +242,7 @@ export const userSettings = pgTable("user_settings", {
     avatar: avatarEnum("avatar").default("/smarti_avatar.png"),
     systemStep: integer("system_step").default(1).notNull(),
     lessonCategoryId: uuid("lesson_category_id").references(() => lessonCategory.id, { onDelete: "cascade" }),
+    savedCouponId: uuid("saved_coupon_id").references(() => coupons.id, { onDelete: "set null" }),
 });
 
 

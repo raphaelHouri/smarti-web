@@ -55,7 +55,7 @@ const PracticeModal = () => {
                                 close()
                                 router.push("/practice")
                             }}>
-                             המשך
+                            המשך
                         </Button>
                     </div>
                 </DialogFooter>

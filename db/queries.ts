@@ -529,13 +529,19 @@ export const validateCoupon = async (code: string): Promise<{ valid: boolean; co
     return { valid: true, coupon };
 };
 
-export const getUserSavedCoupon = async (userId: string): Promise<CouponRecord | null> => {
-    const user = await getUserByAuthId(userId);
-    if (!user || !user.savedCouponId) {
+export const getUserSavedCoupon = async (userId: string, systemStep: number): Promise<CouponRecord | null> => {
+    const settings = await db.query.userSettings.findFirst({
+        where: and(
+            eq(userSettings.userId, userId),
+            eq(userSettings.systemStep, systemStep)
+        ),
+    });
+
+    if (!settings || !settings.savedCouponId) {
         return null;
     }
 
-    const coupon = await getCoupon({ id: user.savedCouponId });
+    const coupon = await getCoupon({ id: settings.savedCouponId });
     if (!coupon) {
         return null;
     }
@@ -544,16 +550,19 @@ export const getUserSavedCoupon = async (userId: string): Promise<CouponRecord |
     const validation = await validateCoupon(coupon.code);
     if (!validation.valid) {
         // Clear invalid coupon
-        await db.update(users)
+        await db.update(userSettings)
             .set({ savedCouponId: null })
-            .where(eq(users.id, userId));
+            .where(and(
+                eq(userSettings.userId, userId),
+                eq(userSettings.systemStep, systemStep)
+            ));
         return null;
     }
 
     return coupon;
 };
 
-export const saveUserCoupon = async (userId: string, couponId: string): Promise<{ success: boolean; error?: string }> => {
+export const saveUserCoupon = async (userId: string, couponId: string, systemStep: number): Promise<{ success: boolean; error?: string }> => {
     const coupon = await getCoupon({ id: couponId });
     if (!coupon) {
         return { success: false, error: "קופון לא נמצא" };
@@ -564,17 +573,53 @@ export const saveUserCoupon = async (userId: string, couponId: string): Promise<
         return { success: false, error: validation.error ?? "קופון לא תקף" };
     }
 
-    await db.update(users)
-        .set({ savedCouponId: couponId })
-        .where(eq(users.id, userId));
+    // Get or create user settings for this system step
+    const existingSettings = await db.query.userSettings.findFirst({
+        where: and(
+            eq(userSettings.userId, userId),
+            eq(userSettings.systemStep, systemStep)
+        ),
+    });
+
+    if (existingSettings) {
+        await db.update(userSettings)
+            .set({ savedCouponId: couponId })
+            .where(and(
+                eq(userSettings.userId, userId),
+                eq(userSettings.systemStep, systemStep)
+            ));
+    } else {
+        // Create new settings if they don't exist
+        // Get any existing settings to copy defaults from
+        const anyExistingSettings = await db.query.userSettings.findFirst({
+            where: eq(userSettings.userId, userId),
+            orderBy: (userSettings, { desc }) => [desc(userSettings.systemStep)],
+        });
+
+        await db.insert(userSettings).values({
+            id: crypto.randomUUID(),
+            userId: userId,
+            systemStep: systemStep,
+            savedCouponId: couponId,
+            lessonClock: anyExistingSettings?.lessonClock ?? true,
+            quizClock: anyExistingSettings?.quizClock ?? true,
+            immediateResult: anyExistingSettings?.immediateResult ?? false,
+            grade_class: anyExistingSettings?.grade_class ?? null,
+            gender: anyExistingSettings?.gender ?? null,
+            avatar: anyExistingSettings?.avatar ?? "/smarti_avatar.png",
+        });
+    }
 
     return { success: true };
 };
 
-export const clearUserCoupon = async (userId: string): Promise<void> => {
-    await db.update(users)
+export const clearUserCoupon = async (userId: string, systemStep: number): Promise<void> => {
+    await db.update(userSettings)
         .set({ savedCouponId: null })
-        .where(eq(users.id, userId));
+        .where(and(
+            eq(userSettings.userId, userId),
+            eq(userSettings.systemStep, systemStep)
+        ));
 };
 
 export const findBookPurchase = cache(async (productId: string, userId: string) => {
