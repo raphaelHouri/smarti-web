@@ -1,7 +1,26 @@
 import type { NextConfig } from "next";
 import withPWA from "next-pwa";
 
-const nextConfig = {
+const pwaConfig = {
+  dest: "public",
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === "development" && process.env.ENABLE_PWA !== "true",
+  runtimeCaching: [
+    {
+      urlPattern: /^https?.*/,
+      handler: "NetworkFirst",
+      options: {
+        cacheName: "offlineCache",
+        expiration: {
+          maxEntries: 200,
+        },
+      },
+    },
+  ],
+};
+
+const nextConfig: NextConfig = {
   images: {
     domains: ['img.clerk.com', 'firebasestorage.googleapis.com'],
   },
@@ -34,24 +53,9 @@ const nextConfig = {
       }
     ];
   },
-  pwa: {
-    dest: "public",
-    register: true,
-    skipWaiting: true,
-    disable: process.env.NODE_ENV === "development" && process.env.ENABLE_PWA !== "true",
-    runtimeCaching: [
-      {
-        urlPattern: /^https?.*/,
-        handler: "NetworkFirst",
-        options: {
-          cacheName: "offlineCache",
-          expiration: {
-            maxEntries: 200,
-          },
-        },
-      },
-    ],
-  },
-} satisfies NextConfig & { pwa?: any };
+};
 
-export default withPWA(nextConfig);
+export default withPWA({
+  ...nextConfig,
+  pwa: pwaConfig,
+});
