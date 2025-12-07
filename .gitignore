@@ -36,3 +36,11 @@ yarn-error.log*
 next-env.d.ts
 gifted-8a4bc-firebase-adminsdk-8ram5-943a8ec443.json
 client_secret_764731190346-l1sod27j5ejqmv2pd53o9aikjv5q3uoc.apps.googleusercontent.com.json
+
+# PWA generated files
+public/sw.js
+public/sw.js.map
+public/workbox-*.js
+public/workbox-*.js.map
+public/worker-*.js
+public/worker-*.js.map

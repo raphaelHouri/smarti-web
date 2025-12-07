@@ -20,8 +20,16 @@ export const metadata: Metadata = {
   title: "סמארטי | הכנה למבחני מחוננים ומצטיינים",
   description:
     "סמרטי - פלטפורמה להכנה למבחני מחוננים בעיקר לכיתות ב–ג: תרגולים אונליין, חוברות וסימולציות מודפסות, פעילויות פרונטליות והדרכת הורים מותאמת בכל הארץ.",
+  manifest: "/manifest.json",
+  themeColor: "#3b82f6",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "סמארטי",
+  },
   icons: {
-    icon: '/favicon-32x32.png'
+    icon: '/favicon-32x32.png',
+    apple: '/icon-192x192.png',
   },
   keywords: [
     "מחוננים",
@@ -67,7 +75,14 @@ export default function RootLayout({
     // }}
     >
       <html lang="he" dir="rtl" suppressHydrationWarning>
-
+        <head>
+          <link rel="manifest" href="/manifest.json" />
+          <meta name="theme-color" content="#3b82f6" />
+          <meta name="apple-mobile-web-app-capable" content="yes" />
+          <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+          <meta name="apple-mobile-web-app-title" content="סמארטי" />
+          <link rel="apple-touch-icon" href="/icon-192x192.png" />
+        </head>
         <body className={font.className}>
           <ThemeProvider
             attribute="class"
