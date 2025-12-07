@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 import withPWA from "next-pwa";
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   images: {
     domains: ['img.clerk.com', 'firebasestorage.googleapis.com'],
   },
@@ -33,11 +33,7 @@ const nextConfig: NextConfig = {
         ]
       }
     ];
-  }
-};
-
-const pwaConfig = withPWA({
-  ...nextConfig,
+  },
   pwa: {
     dest: "public",
     register: true,
@@ -56,6 +52,6 @@ const pwaConfig = withPWA({
       },
     ],
   },
-});
+} satisfies NextConfig & { pwa?: any };
 
-export default pwaConfig;
+export default withPWA(nextConfig);
