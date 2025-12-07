@@ -42,7 +42,6 @@ const pwaConfig = withPWA({
   skipWaiting: true,
   // Enable in development for testing (set to true to disable)
   disable: process.env.NODE_ENV === "development" && process.env.ENABLE_PWA !== "true",
-  buildExcludes: [/middleware-manifest\.json$/],
   runtimeCaching: [
     {
       urlPattern: /^https?.*/,
