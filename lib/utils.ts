@@ -114,5 +114,5 @@ export function getSystemStepLabel(step: number | null): string {
   if (step === 3) {
     return "כיתה ב' - שלב ג'";
   }
-  return "כיתה ב' - שלב א'";
+  return "שלב א'";
 }
