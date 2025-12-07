@@ -6,6 +6,7 @@ import Link from "next/link";
 import { SideBarItems } from "./sideBar-items";
 import { ClerkLoaded, ClerkLoading, UserButton } from "@clerk/nextjs";
 import { ChevronFirst, Loader } from "lucide-react";
+import { UserEmail } from "./user-email";
 
 interface SideBarProps {
     className?: string;
@@ -56,14 +57,17 @@ export const SideBar = ({
                     />
                 ))}
             </div>
-            <div className="py-2 flex-shrink-0">
+            <div className="py-2 flex-shrink-0 flex flex-col gap-2">
                 <ClerkLoading>
                     <Loader className="h-5 w-5 text-muted-foreground animate-spin" />
                 </ClerkLoading>
                 <ClerkLoaded>
-                    <UserButton
-                        afterSignOutUrl="/"
-                    />
+                    <div className="flex items-center gap-2">
+                        <UserButton
+                            afterSignOutUrl="/"
+                        />
+                        <UserEmail />
+                    </div>
                 </ClerkLoaded>
             </div>
         </div>
