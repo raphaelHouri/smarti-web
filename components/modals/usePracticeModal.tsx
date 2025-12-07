@@ -42,11 +42,10 @@ const PracticeModal = () => {
                     </div>
                     <DialogTitle className="text-center
                 font-bold text-2xl">
-                        Practice Lesson.
+                        כל הכבוד על התרגול!
                     </DialogTitle>
                     <DialogDescription className="text-center text-base">
-                        Use practice lesson to regain hearts and points, you can&apos;t
-                        loose it here.
+                        תמשיכו לצבור נקודות ולהתקדם. השתמשו בשיעור לשפר את הידע שלכם.
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
@@ -56,7 +55,7 @@ const PracticeModal = () => {
                                 close()
                                 router.push("/practice")
                             }}>
-                            I understand!
+                             המשך
                         </Button>
                     </div>
                 </DialogFooter>
