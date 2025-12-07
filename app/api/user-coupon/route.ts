@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { validateCoupon, getUserSavedCoupon, saveUserCoupon, clearUserCoupon, getCoupon } from "@/db/queries";
+import { validateCoupon, getUserSavedCoupon, saveUserCoupon, clearUserCoupon, getCoupon, getUserSystemStep } from "@/db/queries";
 
 // GET - Get user's saved coupon
 export async function GET() {
@@ -9,7 +9,8 @@ export async function GET() {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const coupon = await getUserSavedCoupon(userId);
+    const systemStep = await getUserSystemStep(userId);
+    const coupon = await getUserSavedCoupon(userId, systemStep);
     return NextResponse.json({ coupon });
 }
 
@@ -36,7 +37,8 @@ export async function POST(req: Request) {
         }, { status: 400 });
     }
 
-    const result = await saveUserCoupon(userId, validation.coupon.id);
+    const systemStep = await getUserSystemStep(userId);
+    const result = await saveUserCoupon(userId, validation.coupon.id, systemStep);
 
     if (!result.success) {
         return NextResponse.json({ error: result.error }, { status: 400 });
@@ -55,7 +57,8 @@ export async function DELETE() {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    await clearUserCoupon(userId);
+    const systemStep = await getUserSystemStep(userId);
+    await clearUserCoupon(userId, systemStep);
     return NextResponse.json({ success: true });
 }
 

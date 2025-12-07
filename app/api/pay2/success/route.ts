@@ -5,7 +5,7 @@ import { z } from "zod";
 import { sendEmail } from "@/lib/sendMail";
 import { downloadReadyHtml } from "@/emails/downloadReady";
 import { getFileName } from "@/lib/book_utils";
-import { createBookPurchase, getProductById, getTransactionDataById, createSubscriptionsIfMissingForTransaction, clearUserCoupon, updatePaymentTransaction } from "@/db/queries";
+import { createBookPurchase, getProductById, getTransactionDataById, createSubscriptionsIfMissingForTransaction, clearUserCoupon, updatePaymentTransaction, getUserSystemStep } from "@/db/queries";
 import { calculateAmount } from "@/lib/utils";
 import type { PaymentStatus, products as ProductsTable } from "@/db/schemaSmarti";
 
@@ -661,7 +661,8 @@ export async function GET(req: NextRequest) {
 
     // Clear saved coupon if it was used
     if (paymentTransaction.couponId) {
-      await clearUserCoupon(userId);
+      const systemStep = await getUserSystemStep(userId);
+      await clearUserCoupon(userId, systemStep);
     }
   } catch (e) {
     console.error("Background task failed:", e);
