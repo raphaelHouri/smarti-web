@@ -3,12 +3,14 @@
   "short_name": "סמארטי",
   "description": "פלטפורמה להכנה למבחני מחוננים בעיקר לכיתות ב–ג: תרגולים אונליין, חוברות וסימולציות מודפסות, פעילויות פרונטליות והדרכת הורים מותאמת בכל הארץ.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#3b82f6",
   "orientation": "portrait-primary",
   "dir": "rtl",
   "lang": "he",
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/icon-192x192.png",

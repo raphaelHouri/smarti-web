@@ -13,6 +13,7 @@ import RegisterModal from "@/components/modals/useRegisterModal";
 import PremiumModal from "@/components/modals/usePremiumModal";
 import { heIL } from '@clerk/localizations'
 import FeedbackModal from "@/components/modals/useFeedbacksModal";
+import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 
 const font = Poppins({ subsets: ["latin"], weight: ["500"] })
 
@@ -96,6 +97,7 @@ export default function RootLayout({
             <FeedbackModal />
             <RegisterModal />
             <PremiumModal />
+            <PWAInstallPrompt />
             {children}
           </ThemeProvider>
         </body>
