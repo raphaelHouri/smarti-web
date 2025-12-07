@@ -208,7 +208,7 @@ export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string, 
     return existingUser;
 });
 
-const getUserSystemStep = cache(async (userId?: string | null): Promise<number> => {
+export const getUserSystemStep = cache(async (userId?: string | null): Promise<number> => {
     if (userId) {
         const user = await db.query.users.findFirst({
             where: eq(users.id, userId),

@@ -6,9 +6,11 @@ import { redirect } from "next/navigation";
 import Unit from "../_components/Unit";
 import PromoSection from "../_components/promo";
 import QuestsSection from "../../quests/_components/quests";
-import { getCategories, getFirstCategory, getLessonCategoryById, getLessonCategoryWithLessonsById, getOrCreateUserFromGuest, getUserProgress, getUserSubscriptions } from "@/db/queries";
+import { getCategories, getFirstCategory, getLessonCategoryById, getLessonCategoryWithLessonsById, getOrCreateUserFromGuest, getUserProgress, getUserSubscriptions, getUserSystemStep } from "@/db/queries";
 import LessonCategoryPage from "../../courses/page";
 import FeedbackButton from "@/components/feedbackButton";
+import { checkIsPro } from "@/lib/utils";
+import { auth } from "@clerk/nextjs/server";
 
 // כל הטקסטים, פרופס וכו' יתורגמו לעברית
 
@@ -25,7 +27,11 @@ const LearnPage = async ({
     const lessonCategoryWithLessons = await getLessonCategoryWithLessonsById(categoryId);
     const userSubscriptionData = getUserSubscriptions();
     const [user, userProgress, lessonsCategory, categoriesData, userSubscription] = await Promise.all([userData, userProgressData, lessonCategories, categories, userSubscriptionData]);
-    const isPro = userSubscription ? (userSubscription.has("all") || userSubscription.has("system1")) : false;
+
+    // Get systemStep from user or cookie
+    const { userId } = await auth();
+    const systemStep = await getUserSystemStep(userId);
+    const isPro = checkIsPro(userSubscription, systemStep);
 
     // יצירת מערך חדש עם שדה 'הושלם'
     const lessonsCategoryWithCompleted = lessonsCategory.map((lessonCategoryItem) => {
@@ -80,7 +86,7 @@ const LearnPage = async ({
                         title={categoryDetails.title || "שם היחידה לא מוגדר"}
                         description={categoryDetails.description || "אין תיאור"}
                         lessons={lessonsCategoryWithCompleted}
-                        isPro={userSubscription ? (userSubscription.has("all") || userSubscription.has("system1")) : false}
+                        isPro={isPro}
                     />
                 </div>
             </FeedWrapper>

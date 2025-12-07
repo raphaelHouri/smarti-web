@@ -1,7 +1,9 @@
 import FeedWrapper from "@/components/FeedWrapper";
 import StickyWrapper from "@/components/sticky-wrapper";
 import { UserProgress } from "@/components/UserProgress";
-import { getUserProgress, getUserSubscriptions } from "@/db/queries";
+import { getUserProgress, getUserSubscriptions, getUserSystemStep } from "@/db/queries";
+import { checkIsPro } from "@/lib/utils";
+import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { Progress } from "@/components/ui/progress";
 import { Award, Flame, TrendingUp, Star } from "lucide-react";
@@ -30,7 +32,9 @@ const QuestsPage = async () => {
         redirect("/courses");
     }
 
-    const isPro = userSubscription ? (userSubscription.has("all") || userSubscription.has("system1")) : false
+    const { userId } = await auth();
+    const systemStep = await getUserSystemStep(userId);
+    const isPro = checkIsPro(userSubscription, systemStep);
 
 
 

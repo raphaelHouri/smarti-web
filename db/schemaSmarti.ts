@@ -21,7 +21,7 @@ export const organizationYears = pgTable("organization_years", {
 });
 
 
-const productTypeValues = ["all", "system1", "bookStep1", "bookStep2", "bookStep3"] as const
+const productTypeValues = ["all", "system1", "system2", "bookStep1", "bookStep2", "bookStep3"] as const
 export type ProductType = typeof productTypeValues[number]
 export const productTypeEnum = pgEnum("productType", productTypeValues)
 

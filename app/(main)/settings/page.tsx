@@ -2,7 +2,8 @@
 import FeedWrapper from "@/components/FeedWrapper";
 import StickyWrapper from "@/components/sticky-wrapper";
 import { UserProgress } from "@/components/UserProgress";
-import { getUserProgress, getUserSubscriptions, getUserSettingsById, getUserByAuthId } from "@/db/queries"; // Add getUserSettingsById and getUserByAuthId
+import { getUserProgress, getUserSubscriptions, getUserSettingsById, getUserByAuthId, getUserSystemStep } from "@/db/queries"; // Add getUserSettingsById and getUserByAuthId
+import { checkIsPro } from "@/lib/utils";
 import { redirect } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import SettingsAnimation from "./_components/lottie";
@@ -49,7 +50,8 @@ const SettingsPage = async () => {
         redirect("/learn");
     }
 
-    const isPro = userSubscription ? (userSubscription.has("all") || userSubscription.has("system1")) : false;
+    const systemStep = await getUserSystemStep(userId);
+    const isPro = checkIsPro(userSubscription, systemStep);
 
     return (
         <div className="flex flex-row-reverse gap-[42px] px-6">
