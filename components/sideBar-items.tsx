@@ -12,14 +12,16 @@ interface SideBarItemsProps {
     label: string,
     iconSrc: string,
     href: string,
-    registerOnly: boolean
+    registerOnly: boolean,
+    onNavigate?: () => void
 }
 
 export const SideBarItems = ({
     label,
     iconSrc,
     href,
-    registerOnly
+    registerOnly,
+    onNavigate
 }: SideBarItemsProps) => {
     //usePathname to manage the routes whether active or not
 
@@ -28,12 +30,21 @@ export const SideBarItems = ({
     const { open: OpenRegisterModal } = useRegisterModal();
     const { userId } = useAuth();
 
+    const handleClick = () => {
+        if (onNavigate) {
+            onNavigate();
+        }
+    };
+
     if (registerOnly && !userId) {
         return (
             <Button
                 variant="ghost"
                 className="justify-start h-[52px]"
-                onClick={OpenRegisterModal}
+                onClick={() => {
+                    OpenRegisterModal();
+                    handleClick();
+                }}
             >
                 <span className="mr-2 ml-auto">{label}</span>
                 <Image
@@ -51,7 +62,7 @@ export const SideBarItems = ({
             className="justify-start h-[52px]"
             asChild
         >
-            <Link href={href} className="dark:text-slate-200">
+            <Link href={href} className="dark:text-slate-200" onClick={handleClick}>
                 <span className="mr-2 ml-auto">{label}</span>
                 <Image
                     src={iconSrc}

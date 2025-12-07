@@ -10,6 +10,7 @@ import { ChevronFirst, Loader } from "lucide-react";
 interface SideBarProps {
     className?: string;
     systemStepLabel?: string;
+    onNavigate?: () => void;
 }
 
 const sidebarItems = [
@@ -24,11 +25,12 @@ const sidebarItems = [
 
 export const SideBar = ({
     className,
-    systemStepLabel = "כיתה ב' - שלב א'"
+    systemStepLabel = "כיתה ב' - שלב א'",
+    onNavigate
 }: SideBarProps) => {
     return (
         <div className={cn("flex h-full lg:w-[256px] lg:fixed right-0 top-0 px-4 border-l-2 flex-col overflow-hidden", className)}>
-            <Link href="/">
+            <Link href="/" onClick={onNavigate}>
                 <div className="pt-8 pb-7 pl-4 flex items-center gap-x-3 flex-shrink-0 flex-col">
                     <Image
                         src="/smartiLogo.png"
@@ -50,6 +52,7 @@ export const SideBar = ({
                         iconSrc={item.iconSrc}
                         href={item.href}
                         registerOnly={item.registerOnly}
+                        onNavigate={onNavigate}
                     />
                 ))}
             </div>

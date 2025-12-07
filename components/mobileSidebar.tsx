@@ -1,4 +1,6 @@
+"use client";
 
+import { useState } from "react";
 import {
   Sheet,
   SheetContent,
@@ -9,13 +11,15 @@ import { SideBar } from "./sideBar";
 import { MenuIcon } from "lucide-react";
 
 export const MobileSideBar = () => {
+  const [open, setOpen] = useState(false);
+
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger>
         <MenuIcon className="text-white" />
       </SheetTrigger>
       <SheetContent className='p-0 z-[100]' side="right">
-        <SideBar />
+        <SideBar onNavigate={() => setOpen(false)} />
       </SheetContent>
     </Sheet>
   )
