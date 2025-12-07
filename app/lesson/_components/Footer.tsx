@@ -183,8 +183,7 @@ const Footer = ({
                             size={isMobile ? "sm" : "lg"}
                             onClick={onPrev}
                         >
-
-                            הסר שאלה מרשימת התרגול החוזר
+                            {isMobile ? "הסר מרשימה" : "הסר שאלה מרשימת התרגול החוזר"}
                             <CheckCircle2 className="h-4 w-4 mr-2" />
                         </Button>
 
