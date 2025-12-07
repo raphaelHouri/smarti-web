@@ -32,7 +32,7 @@ export async function validateAndSaveCoupon(code: string) {
 
     try {
         const systemStep = await getUserSystemStep(userId);
-        const validation = await validateCoupon(code.trim());
+        const validation = await validateCoupon(code.trim(), systemStep);
 
         if (!validation.valid || !validation.coupon) {
             return {
@@ -84,7 +84,15 @@ export async function validateCouponCode(code: string) {
     }
 
     try {
-        const validation = await validateCoupon(code.trim());
+        const { userId } = await auth();
+        let systemStep: number | undefined;
+
+        // If user is authenticated, get their systemStep for validation
+        if (userId) {
+            systemStep = await getUserSystemStep(userId);
+        }
+
+        const validation = await validateCoupon(code.trim(), systemStep);
         return validation;
     } catch (error) {
         console.error("Failed to validate coupon:", error);

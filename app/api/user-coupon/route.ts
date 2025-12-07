@@ -28,7 +28,8 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Invalid coupon code" }, { status: 400 });
     }
 
-    const validation = await validateCoupon(code);
+    const systemStep = await getUserSystemStep(userId);
+    const validation = await validateCoupon(code, systemStep);
 
     if (!validation.valid || !validation.coupon) {
         return NextResponse.json({
@@ -37,7 +38,6 @@ export async function POST(req: Request) {
         }, { status: 400 });
     }
 
-    const systemStep = await getUserSystemStep(userId);
     const result = await saveUserCoupon(userId, validation.coupon.id, systemStep);
 
     if (!result.success) {

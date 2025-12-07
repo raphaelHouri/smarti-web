@@ -491,11 +491,16 @@ export const getCoupon = cache(async (lookup: CouponLookup): Promise<CouponRecor
     return coupon ?? null;
 });
 
-export const validateCoupon = async (code: string): Promise<{ valid: boolean; coupon: CouponRecord | null; error?: string }> => {
+export const validateCoupon = async (code: string, systemStep?: number): Promise<{ valid: boolean; coupon: CouponRecord | null; error?: string }> => {
     const coupon = await getCoupon({ code });
 
     if (!coupon) {
         return { valid: false, coupon: null, error: "קופון לא נמצא" };
+    }
+
+    // Validate systemStep if provided
+    if (systemStep !== undefined && coupon.systemStep !== systemStep) {
+        return { valid: false, coupon, error: "קופון לא תקף לשלב זה" };
     }
 
     const now = new Date();
@@ -547,7 +552,7 @@ export const getUserSavedCoupon = async (userId: string, systemStep: number): Pr
     }
 
     // Validate the saved coupon is still valid
-    const validation = await validateCoupon(coupon.code);
+    const validation = await validateCoupon(coupon.code, systemStep);
     if (!validation.valid) {
         // Clear invalid coupon
         await db.update(userSettings)
@@ -568,7 +573,7 @@ export const saveUserCoupon = async (userId: string, couponId: string, systemSte
         return { success: false, error: "קופון לא נמצא" };
     }
 
-    const validation = await validateCoupon(coupon.code);
+    const validation = await validateCoupon(coupon.code, systemStep);
     if (!validation.valid) {
         return { success: false, error: validation.error ?? "קופון לא תקף" };
     }
