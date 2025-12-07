@@ -150,7 +150,8 @@ export async function GET(request: Request) {
     studentName,
     couponId,
     bookIncluded,
-    totalPrice: amount
+    totalPrice: amount,
+    systemStep: plan.systemStep
   };
 
   const inserted = await db.insert(paymentTransactions).values(transaction).returning({ id: paymentTransactions.id });

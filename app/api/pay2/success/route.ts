@@ -44,6 +44,7 @@ type SubscriptionArrayItem = {
   couponId: string | null;
   paymentTransactionId: string;
   systemUntil: Date;
+  systemStep: number;
   displayName: string;
   type: "system" | "book";
   downloadLink?: string;
@@ -496,6 +497,7 @@ export async function GET(req: NextRequest) {
         couponId: paymentTransaction.couponId,
         paymentTransactionId: paymentTransaction.id,
         systemUntil,
+        systemStep: product.systemStep,
         displayName: product.name ?? "החוברת הדיגיטלית",
         type: "book",
         downloadLink,
@@ -525,6 +527,7 @@ export async function GET(req: NextRequest) {
         couponId: paymentTransaction.couponId,
         paymentTransactionId: paymentTransaction.id,
         systemUntil,
+        systemStep: product.systemStep,
         displayName: product.name ?? "מנוי",
         type: "system",
       });
@@ -560,6 +563,7 @@ export async function GET(req: NextRequest) {
         couponId: paymentTransaction.couponId,
         paymentTransactionId: paymentTransaction.id,
         systemUntil,
+        systemStep: productBook.systemStep,
         displayName: productBook.name ?? "החוברת הדיגיטלית",
         type: "book",
         downloadLink,
@@ -650,6 +654,7 @@ export async function GET(req: NextRequest) {
           couponId: s.couponId ?? null,
           paymentTransactionId: s.paymentTransactionId,
           systemUntil: s.systemUntil,
+          systemStep: s.systemStep,
         })),
         paymentTransaction.id
       );

@@ -663,6 +663,7 @@ export type NewSubscription = {
     couponId: string | null;
     paymentTransactionId: string;
     systemUntil: Date;
+    systemStep: number;
 };
 
 /**
@@ -721,6 +722,7 @@ export async function createSubscriptionsIfMissingForTransaction(
             couponId: s.couponId ?? null,
             paymentTransactionId: s.paymentTransactionId,
             systemUntil: s.systemUntil,
+            systemStep: s.systemStep,
             createdAt: new Date(),
         }))
     );
