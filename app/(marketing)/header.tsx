@@ -50,8 +50,8 @@ const HeaderPage = async () => {
             <Image
               src="/smartiLogo.png"
               alt="Smarti mascot"
-              width={240}
-              height={65}
+              width={200}
+              height={50}
               className="mr-2"
               priority
             />
