@@ -145,6 +145,9 @@ export function checkIsPro(
   if (userSubscription.has("system2") && systemStep === 2) {
     return true;
   }
+  if (userSubscription.has("system3") && systemStep === 3) {
+    return true;
+  }
 
   return false;
 }
