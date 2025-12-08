@@ -56,7 +56,7 @@ const CardLesson = ({
                 disabled && "pointer-events-none opacity-50",
                 isComprehensionType && "lg:p-3 w-full",
                 isShapesType && "flex flex-col items-center justify-center p-2 lg:p-4",
-                isShapesType && selected && "dark:bg-sky-300 dark:text-black border-sky-300 bg-sky-100 hover:bg-sky-100 flex flex-col items-center justify-center p-2 lg:p-4"
+                isShapesType && selected && mode !== "practiceMode" && "dark:bg-sky-300 dark:text-black border-sky-300 bg-sky-100 hover:bg-sky-100 flex flex-col items-center justify-center p-2 lg:p-4"
             )}
         >
             {isShapesType && text.startsWith("http") ? (
