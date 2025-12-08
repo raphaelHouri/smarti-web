@@ -242,7 +242,7 @@ const Quiz = ({
         return (
             <div
                 className={cn(
-                    "w-full p-4 lg:p-6 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/10 shadow-xl",
+                    "w-full p-2 lg:p-6 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg border border-white/10 shadow-xl",
                     " xl:max-w-md mx-auto", // center + limit on mobile/tablet
                 )}
             >
@@ -349,9 +349,6 @@ const Quiz = ({
                                 </div>
                             </div>
                         ))}
-                        <p className="text-center text-xs lg:text-sm text-neutral-400 dark:text-neutral-500 mt-2">
-                            הקישו על מספר שאלה כדי {mode === "quiz" ? "לנווט" : "לסקור את תשובתכם"}
-                        </p>
                         {mode === "review" ? (
                             <div className="flex justify-center pt-2">
                                 <Button
