@@ -13,7 +13,7 @@ import { existsSync } from "fs";
 import { join } from "path";
 
 const sizes = [192, 256, 384, 512];
-const sourceImage = join(process.cwd(), "public", "smartiLogo.png");
+const sourceImage = join(process.cwd(), "public", "1111111.png");
 const outputDir = join(process.cwd(), "public");
 
 async function generateIcons() {
