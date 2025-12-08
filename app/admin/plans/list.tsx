@@ -22,6 +22,7 @@ export const PlanList = () => (
             <DataTable.Col source="isActive">
                 <BooleanField source="isActive" />
             </DataTable.Col>
+            <DataTable.NumberCol source="systemStep" label="System Step" />
             <DataTable.Col source="createdAt">
                 <DateField source="createdAt" />
             </DataTable.Col>

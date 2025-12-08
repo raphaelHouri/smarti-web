@@ -44,6 +44,7 @@ export const CouponList = () => (
                     <TextField source="year" />
                 </ReferenceField>
             </DataTable.Col>
+            <DataTable.NumberCol source="systemStep" label="System Step" />
             <DataTable.Col source="createdAt">
                 <DateField source="createdAt" />
             </DataTable.Col>

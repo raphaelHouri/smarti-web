@@ -27,6 +27,7 @@ export const UserLessonResultsList = () => (
             </DataTable.Col>
             <DataTable.NumberCol source="rightQuestions" label="Right Questions" />
             <DataTable.NumberCol source="totalQuestions" label="Total Questions" />
+            <DataTable.NumberCol source="systemStep" label="System Step" />
             <DataTable.Col source="startedAt">
                 <DateField source="startedAt" />
             </DataTable.Col>

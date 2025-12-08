@@ -35,6 +35,7 @@ export const SubscriptionsList = () => (
             <DataTable.Col source="systemUntil">
                 <DateField source="systemUntil" />
             </DataTable.Col>
+            <DataTable.NumberCol source="systemStep" label="System Step" />
             <DataTable.Col source="createdAt">
                 <DateField source="createdAt" />
             </DataTable.Col>

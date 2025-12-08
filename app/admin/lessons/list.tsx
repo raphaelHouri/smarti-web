@@ -24,6 +24,7 @@ export const LessonList = () => (
             <DataTable.Col source="isPremium" label="Premium">
                 <BooleanField source="isPremium" />
             </DataTable.Col>
+            <DataTable.NumberCol source="systemStep" label="System Step" />
             <DataTable.Col source="createdAt">
                 <DateField source="createdAt" />
             </DataTable.Col>

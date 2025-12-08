@@ -20,7 +20,7 @@ const Header = ({
         items-center justify-between mx-auto px-10 flex gap-x-7 w-full">
             <X
                 onClick={open} //Todo:Add exit modal
-                className="text-slate-500 hover:opacity-75 transition cursor-pointer"
+                className="text-slate-500 hover:opacity-75 transition cursor-pointer h-[1rem] w-[1rem]"
             />
             <Progress value={percentage} />
 

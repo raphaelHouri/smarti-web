@@ -21,6 +21,7 @@ export const UserSettingsList = () => (
             <DataTable.Col source="grade_class" label="Grade/Class" />
             <DataTable.Col source="gender" />
             <DataTable.Col source="avatar" />
+            <DataTable.NumberCol source="systemStep" label="System Step" />
         </DataTable>
     </List>
 );

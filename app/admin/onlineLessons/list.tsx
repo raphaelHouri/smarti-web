@@ -51,6 +51,7 @@ export const OnlineLessonList = () => (
             <DataTable.Col source="order">
                 <NumberField source="order" />
             </DataTable.Col>
+            <DataTable.NumberCol source="systemStep" label="System Step" />
             <DataTable.Col source="createdAt">
                 <DateField source="createdAt" />
             </DataTable.Col>

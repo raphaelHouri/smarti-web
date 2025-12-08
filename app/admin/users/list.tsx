@@ -40,6 +40,7 @@ export const UsersList = () => (
             </DataTable.Col>
             <DataTable.NumberCol source="experience" />
             <DataTable.NumberCol source="geniusScore" label="Genius Score" />
+            <DataTable.NumberCol source="systemStep" label="System Step" />
             <DataTable.Col source="createdAt">
                 <DateField source="createdAt" />
             </DataTable.Col>

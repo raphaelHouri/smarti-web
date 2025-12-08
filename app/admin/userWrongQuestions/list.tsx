@@ -28,6 +28,7 @@ export const UserWrongQuestionsList = () => (
             <DataTable.Col source="isNull" label="Is Null">
                 <BooleanField source="isNull" />
             </DataTable.Col>
+            <DataTable.NumberCol source="systemStep" label="System Step" />
         </DataTable>
     </List>
 );
