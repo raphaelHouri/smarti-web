@@ -465,14 +465,14 @@ const Quiz = ({
                 </div>
             )}
             <div className="flex-1 mb-10">
+                {/* Side result grid – mobile position change */}
+                <div className="block xl:hidden mb-2">
+                    {/* Mobile: show the grid above the question with expand/collapse */}
+                    {mode !== "practiceMode" && renderResultGrid()}
+                </div>
                 <div className="h-full justify-center flex items-center">
                     <div className="lg:min-h-[300px] w-full xl:w-[800px]  2xl:w-[1000px] [@media(min-width:1750px)]:w-[1200px] lg:px-0 px-2 sm:px-6 flex flex-col gap-y-6">
 
-                        {/* Side result grid – mobile position change */}
-                        <div className="block xl:hidden mb-2">
-                            {/* Mobile: show the grid above the question with expand/collapse */}
-                            {mode !== "practiceMode" && renderResultGrid()}
-                        </div>
                         <div
                             className={cn(
                                 "hidden xl:block absolute right-2 [@media(min-width:1900px)]:right-6 top-1/4 -translate-y-1/4",
