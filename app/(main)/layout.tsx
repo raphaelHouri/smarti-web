@@ -1,11 +1,7 @@
 import { MobileHeader } from "@/components/mobile-header";
 import { SideBar } from "@/components/sideBar";
 import { AnimatedBackground } from "./shop/_components/AnimatedBackground";
-import { auth } from "@clerk/nextjs/server";
-import { cookies } from "next/headers";
-import db from "@/db/drizzle";
-import { users } from "@/db/schemaSmarti";
-import { eq } from "drizzle-orm";
+import { getSystemStep } from "@/actions/get-system-step";
 import { getSystemStepLabel } from "@/lib/utils";
 
 interface Props {
@@ -15,25 +11,7 @@ interface Props {
 const MainLayout = async ({
     children
 }: Props) => {
-    const { userId } = await auth();
-    let currentStep: number | null = null;
-
-    if (userId) {
-        const user = await db.query.users.findFirst({
-            where: eq(users.id, userId),
-            columns: { systemStep: true },
-        });
-        currentStep = user?.systemStep ?? null;
-    }
-
-    if (!currentStep) {
-        const cookieValue = (await cookies()).get("systemStep")?.value;
-        const cookieNumber = cookieValue ? Number(cookieValue) : NaN;
-        if ([1, 2, 3].includes(cookieNumber)) {
-            currentStep = cookieNumber;
-        }
-    }
-
+    const currentStep = await getSystemStep();
     const systemStepLabel = getSystemStepLabel(currentStep);
 
     return (

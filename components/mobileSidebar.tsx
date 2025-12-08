@@ -13,8 +13,8 @@ import { useSystemStepLabel } from "@/hooks/use-system-step";
 
 export const MobileSideBar = () => {
   const [open, setOpen] = useState(false);
-  // Refresh system step label when sidebar opens
-  const systemStepLabel = useSystemStepLabel([open]);
+  // Automatically updates when systemStep changes via Next.js revalidation
+  const systemStepLabel = useSystemStepLabel();
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>

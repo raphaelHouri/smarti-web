@@ -1,38 +1,16 @@
 
 import { ClerkLoaded, ClerkLoading, SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
-import { auth } from "@clerk/nextjs/server";
-import { cookies } from "next/headers";
 import Image from "next/image";
 import { Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ModeToggle } from "@/components/mode-toggle";
 import FeedbackButton from "@/components/feedbackButton";
-import db from "@/db/drizzle";
-import { users } from "@/db/schemaSmarti";
-import { eq } from "drizzle-orm";
+import { getSystemStep } from "@/actions/get-system-step";
 import { getSystemStepLabel } from "@/lib/utils";
 
 const HeaderPage = async () => {
-  const { userId } = await auth();
-  let currentStep: number | null = null;
-
-  if (userId) {
-    const user = await db.query.users.findFirst({
-      where: eq(users.id, userId),
-      columns: { systemStep: true },
-    });
-    currentStep = user?.systemStep ?? null;
-  }
-
-  if (!currentStep) {
-    const cookieValue = (await cookies()).get("systemStep")?.value;
-    const cookieNumber = cookieValue ? Number(cookieValue) : NaN;
-    if ([1, 2, 3].includes(cookieNumber)) {
-      currentStep = cookieNumber;
-    }
-  }
-
+  const currentStep = await getSystemStep();
   const label = getSystemStepLabel(currentStep);
 
   return (
@@ -56,9 +34,20 @@ const HeaderPage = async () => {
               priority
             />
           </Link>
-          <p className="text-lg font-bold text-[#00C950] tracking-wide">
-            {label}
-          </p>
+          {currentStep && [1, 2, 3].includes(currentStep) ? (
+            <Image
+              src={`/step${currentStep}.png`}
+              alt="Smarti step"
+              width={200}
+              height={50}
+              className="mr-2"
+              priority
+            />
+          ) : (
+            <p className="text-lg font-bold text-[#00C950] tracking-wide sm:block hidden">
+              {label}
+            </p>
+          )}
         </div>
         <div className="inline-flex gap-x-4 mt-2 ms:ml-0 ml-4">
           <div className="mt-2">

@@ -1,46 +1,38 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { getSystemStepFromCookie, getSystemStepLabel } from "@/lib/utils";
 
 /**
- * Custom hook to get the current system step and label from cookies
- * @param refreshDeps - Optional dependency array to refresh when these values change
- * @returns Object with step number, label, and refresh function
+ * Simple hook to get the current system step and label from cookies
+ * For client components that need immediate cookie-based values
+ * Note: For server components, use the getSystemStep server action instead
  */
-export function useSystemStep(refreshDeps: unknown[] = []) {
+export function useSystemStep() {
     const [step, setStep] = useState<number>(1);
     const [label, setLabel] = useState<string>("שלב א'");
 
-    const refresh = useCallback(() => {
+    useEffect(() => {
         const currentStep = getSystemStepFromCookie();
         setStep(currentStep);
         setLabel(getSystemStepLabel(currentStep));
     }, []);
 
-    useEffect(() => {
-        refresh();
-    }, [refresh, ...refreshDeps]);
-
-    return { step, label, refresh };
+    return { step, label };
 }
 
 /**
- * Custom hook to get the current system step label from cookies
- * Useful when you only need the label
- * @param refreshDeps - Optional dependency array to refresh when these values change
+ * Simple hook to get the current system step label from cookies
+ * For client components that need immediate cookie-based values
+ * Note: For server components, use the getSystemStep server action instead
  */
-export function useSystemStepLabel(refreshDeps: unknown[] = []) {
+export function useSystemStepLabel() {
     const [label, setLabel] = useState<string>("שלב א'");
 
-    const refresh = useCallback(() => {
+    useEffect(() => {
         const step = getSystemStepFromCookie();
         setLabel(getSystemStepLabel(step));
     }, []);
-
-    useEffect(() => {
-        refresh();
-    }, [refresh, ...refreshDeps]);
 
     return label;
 }

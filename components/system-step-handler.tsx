@@ -24,8 +24,9 @@ export function SystemStepHandler() {
                         } else {
                             await setGuestSystemStep(stepNumber);
                         }
-                        // Remove query param after setting the step, but keep the step in the URL for a moment
-                        // so the tabs can read it
+                        // Server action already calls revalidatePath(), refresh router
+                        router.refresh();
+                        // Remove query param after setting the step
                         setTimeout(() => {
                             router.replace("/");
                         }, 100);

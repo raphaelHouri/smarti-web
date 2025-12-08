@@ -3,7 +3,7 @@
 import { useTransition, useState, useEffect } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { setGuestSystemStep, setUserSystemStep } from "@/actions/user-system-step";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 
 type SystemStepTabsProps = {
@@ -33,6 +33,7 @@ import { getSystemStepFromCookie } from "@/lib/utils";
 
 export function SystemStepTabs({ isAuthenticated, initialStep }: SystemStepTabsProps) {
     const [isPending, startTransition] = useTransition();
+    const router = useRouter();
     const searchParams = useSearchParams();
     const stepParam = searchParams.get("step");
 
@@ -50,29 +51,31 @@ export function SystemStepTabs({ isAuthenticated, initialStep }: SystemStepTabsP
         return String(getSystemStepFromCookie());
     };
 
-    const [currentValue, setCurrentValue] = useState<string>(getInitialValue());
+    const [currentValue, setCurrentValue] = useState<"1" | "2" | "3">(getInitialValue() as "1" | "2" | "3");
 
     // Update currentValue when query param changes
     useEffect(() => {
         if (stepParam) {
             const stepNumber = Number(stepParam);
             if ([1, 2, 3].includes(stepNumber)) {
-                setCurrentValue(String(stepNumber));
+                setCurrentValue(String(stepNumber) as "1" | "2" | "3");
             }
         }
     }, [stepParam]);
 
     const handleChange = (value: string) => {
-        setCurrentValue(value);
+        setCurrentValue(value as "1" | "2" | "3");
         const numeric = Number(value);
         if (![1, 2, 3].includes(numeric)) return;
 
-        startTransition(() => {
+        startTransition(async () => {
             if (isAuthenticated) {
-                void setUserSystemStep(numeric);
+                await setUserSystemStep(numeric);
             } else {
-                void setGuestSystemStep(numeric);
+                await setGuestSystemStep(numeric);
             }
+            // Server action already calls revalidatePath(), just refresh the router
+            router.refresh();
         });
     };
 
@@ -95,7 +98,7 @@ export function SystemStepTabs({ isAuthenticated, initialStep }: SystemStepTabsP
                 ))}
             </TabsList>
             <Image
-                src="/smarti.png"
+                src={`/smarti_step${currentValue}.png`}
                 alt="Smarti Logo"
                 width={300}
                 height={290}
