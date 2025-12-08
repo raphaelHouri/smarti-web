@@ -16,8 +16,20 @@ export async function POST(req: Request) {
         return new NextResponse("UnAuthorized", { status: 401 })
     }
     const body = await req.json();
+
+    // Parse displayData if it's a string
+    let displayData = body.displayData;
+    if (typeof displayData === 'string' && displayData.trim()) {
+        try {
+            displayData = JSON.parse(displayData);
+        } catch (e) {
+            return new NextResponse("Invalid JSON in displayData", { status: 400 });
+        }
+    }
+
     const data = await db.insert(plans).values({
         ...body,
+        displayData: displayData || null,
         isActive: body.isActive !== undefined ? body.isActive : true,
     }).returning()
 

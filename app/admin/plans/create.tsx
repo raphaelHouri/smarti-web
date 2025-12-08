@@ -1,6 +1,5 @@
 import {
-    DateInput,
-    Edit,
+    Create,
     NumberInput,
     SimpleForm,
     TextInput,
@@ -10,19 +9,9 @@ import {
     SelectArrayInput,
 } from 'react-admin';
 
-export const PlanEdit = () => (
-    <Edit
-        transform={(data) => ({
-            ...data,
-            displayData: data.displayData
-                ? (typeof data.displayData === 'string'
-                    ? data.displayData
-                    : JSON.stringify(data.displayData, null, 2))
-                : '',
-        })}
-    >
+export const PlanCreate = () => (
+    <Create>
         <SimpleForm>
-            <TextInput source="id" disabled />
             <TextInput source="name" required />
             <TextInput source="description" multiline rows={3} />
             <TextInput source="internalDescription" label="Internal Description" required multiline rows={3} />
@@ -32,6 +21,7 @@ export const PlanEdit = () => (
                     { id: 'system', name: 'System' },
                     { id: 'book', name: 'Book' },
                 ]}
+                defaultValue="system"
                 required
             />
             <ReferenceArrayInput source="productsIds" reference="products" label="Products">
@@ -39,13 +29,14 @@ export const PlanEdit = () => (
             </ReferenceArrayInput>
             <NumberInput source="days" required />
             <NumberInput source="price" required />
-            <NumberInput source="order" />
-            <BooleanInput source="isActive" />
+            <NumberInput source="order" defaultValue={0} />
+            <BooleanInput source="isActive" defaultValue={true} />
             <NumberInput
                 source="systemStep"
                 label="System Step"
                 min={1}
                 max={3}
+                defaultValue={1}
                 required
             />
             <TextInput
@@ -55,7 +46,7 @@ export const PlanEdit = () => (
                 rows={5}
                 helperText="Enter JSON object with icon, color, features, badge, badgeColor, addBookOption"
             />
-            <DateInput source="createdAt" disabled />
         </SimpleForm>
-    </Edit>
+    </Create>
 );
+

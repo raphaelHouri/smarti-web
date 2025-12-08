@@ -29,9 +29,23 @@ export const PUT = async (
     }
     const { planId } = await params;
     const body = await req.json();
-    const data = await db.update(plans).set({
-        ...body
-    }).where(
+
+    // Parse displayData if it's a string
+    let displayData = body.displayData;
+    if (typeof displayData === 'string' && displayData.trim()) {
+        try {
+            displayData = JSON.parse(displayData);
+        } catch (e) {
+            return new NextResponse("Invalid JSON in displayData", { status: 400 });
+        }
+    }
+
+    const updateData: any = { ...body };
+    if (displayData !== undefined) {
+        updateData.displayData = displayData;
+    }
+
+    const data = await db.update(plans).set(updateData).where(
         eq(plans.id, planId)
     ).returning()
     return NextResponse.json(data[0]);

@@ -30,6 +30,7 @@ import { CouponCreate } from "./coupons/create";
 import { PlanList } from "./plans/list";
 import { PlanEdit } from "./plans/edit";
 import { PlanShow } from "./plans/show";
+import { PlanCreate } from "./plans/create";
 import { OrganizationInfoList } from "./organizationInfo/list";
 import { OrganizationInfoEdit } from "./organizationInfo/edit";
 import { OrganizationInfoShow } from "./organizationInfo/show";
@@ -120,6 +121,7 @@ const App = () => {
             <Resource
                 name="plans"
                 list={PlanList}
+                create={PlanCreate}
                 edit={PlanEdit}
                 recordRepresentation="name"
                 icon={Package}

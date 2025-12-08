@@ -22,11 +22,11 @@ const stepTabs = [
         value: 2 as const,
         description: "העמקה בפתרון שאלות, הרחבת אוצר המילים וחיזוק חשיבה לוגית.",
     },
-    // {
-    //     title: "שלב ג",
-    //     value: 3 as const,
-    //     description: "הכנה מתקדמת לקראת מבחנים מאתגרים, סימולציות ותרגול ממוקד.",
-    // },
+    {
+        title: "שלב ג",
+        value: 3 as const,
+        description: "הכנה מתקדמת לקראת מבחנים מאתגרים, סימולציות ותרגול ממוקד.",
+    },
 ];
 
 function getStepFromCookie(): number {
