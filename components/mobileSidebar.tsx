@@ -9,9 +9,12 @@ import {
   from "@/components/ui/sheet";
 import { SideBar } from "./sideBar";
 import { MenuIcon } from "lucide-react";
+import { useSystemStepLabel } from "@/hooks/use-system-step";
 
 export const MobileSideBar = () => {
   const [open, setOpen] = useState(false);
+  // Refresh system step label when sidebar opens
+  const systemStepLabel = useSystemStepLabel([open]);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -19,7 +22,7 @@ export const MobileSideBar = () => {
         <MenuIcon className="text-white" />
       </SheetTrigger>
       <SheetContent className='p-0 z-[100]' side="right">
-        <SideBar onNavigate={() => setOpen(false)} />
+        <SideBar systemStepLabel={systemStepLabel} onNavigate={() => setOpen(false)} />
       </SheetContent>
     </Sheet>
   )

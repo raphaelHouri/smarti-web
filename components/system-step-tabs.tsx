@@ -29,19 +29,7 @@ const stepTabs = [
     },
 ];
 
-function getStepFromCookie(): number {
-    if (typeof document === "undefined") return 1;
-    const cookies = document.cookie.split("; ");
-    const stepCookie = cookies.find((cookie) => cookie.startsWith("systemStep="));
-    if (stepCookie) {
-        const stepValue = stepCookie.split("=")[1];
-        const stepNumber = Number(stepValue);
-        if ([1, 2, 3].includes(stepNumber)) {
-            return stepNumber;
-        }
-    }
-    return 1;
-}
+import { getSystemStepFromCookie } from "@/lib/utils";
 
 export function SystemStepTabs({ isAuthenticated, initialStep }: SystemStepTabsProps) {
     const [isPending, startTransition] = useTransition();
@@ -59,7 +47,7 @@ export function SystemStepTabs({ isAuthenticated, initialStep }: SystemStepTabsP
         if (initialStep && [1, 2, 3].includes(initialStep)) {
             return String(initialStep);
         }
-        return String(getStepFromCookie());
+        return String(getSystemStepFromCookie());
     };
 
     const [currentValue, setCurrentValue] = useState<string>(getInitialValue());

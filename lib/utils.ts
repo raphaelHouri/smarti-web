@@ -118,6 +118,24 @@ export function getSystemStepLabel(step: number | null): string {
 }
 
 /**
+ * Get system step from cookie (client-side only)
+ * @returns System step (1, 2, or 3), defaults to 1
+ */
+export function getSystemStepFromCookie(): number {
+  if (typeof document === "undefined") return 1;
+  const cookies = document.cookie.split("; ");
+  const stepCookie = cookies.find((cookie) => cookie.startsWith("systemStep="));
+  if (stepCookie) {
+    const stepValue = stepCookie.split("=")[1];
+    const stepNumber = Number(stepValue);
+    if ([1, 2, 3].includes(stepNumber)) {
+      return stepNumber;
+    }
+  }
+  return 1;
+}
+
+/**
  * Check if user has Pro access based on subscription and system step
  * @param userSubscription - Set of ProductType subscriptions, or null if no subscriptions
  * @param systemStep - Current system step (1, 2, or 3)
