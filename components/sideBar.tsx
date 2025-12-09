@@ -1,16 +1,16 @@
 // reusable component
 
-import { cn } from "@/lib/utils";
+import { cn, getSystemStepLabel } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { SideBarItems } from "./sideBar-items";
 import { ClerkLoaded, ClerkLoading, UserButton } from "@clerk/nextjs";
-import { ChevronFirst, Loader } from "lucide-react";
+import { Loader } from "lucide-react";
 import { UserEmail } from "./user-email";
 
 interface SideBarProps {
     className?: string;
-    systemStepLabel?: string;
+    systemStep?: number;
     onNavigate?: () => void;
 }
 
@@ -26,9 +26,11 @@ const sidebarItems = [
 
 export const SideBar = ({
     className,
-    systemStepLabel = "כיתה ב' - שלב א'",
+    systemStep = 1,
     onNavigate
 }: SideBarProps) => {
+    const systemStepLabel = getSystemStepLabel(systemStep);
+
     return (
         <div className={cn("flex h-full lg:w-[256px] lg:fixed right-0 top-0 px-4 border-l-2 flex-col overflow-hidden", className)}>
             <Link href="/" onClick={onNavigate}>
@@ -40,9 +42,20 @@ export const SideBar = ({
                         width={240}
                         priority
                     />
-                    <p className="text-lg font-bold text-[#00C950] tracking-wide text-center">
-                        {systemStepLabel}
-                    </p>
+                    {systemStep && [1, 2, 3].includes(systemStep) ? (
+                        <Image
+                            src={`/step${systemStep}.png`}
+                            alt="Smarti step"
+                            width={200}
+                            height={50}
+                            className="mr-2"
+                            priority
+                        />
+                    ) : (
+                        <p className="text-lg font-bold text-[#00C950] tracking-wide text-center">
+                            {systemStepLabel}
+                        </p>
+                    )}
                 </div>
             </Link>
             <div className="flex flex-col flex-1 gap-y-4 overflow-y-auto min-h-0">

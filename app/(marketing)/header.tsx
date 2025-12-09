@@ -34,7 +34,7 @@ const HeaderPage = async () => {
               priority
             />
           </Link>
-          {currentStep && [1, 2, 3].includes(currentStep) ? (
+          {/* {currentStep && [1, 2, 3].includes(currentStep) ? (
             <Image
               src={`/step${currentStep}.png`}
               alt="Smarti step"
@@ -47,7 +47,7 @@ const HeaderPage = async () => {
             <p className="text-lg font-bold text-[#00C950] tracking-wide sm:block hidden">
               {label}
             </p>
-          )}
+          )} */}
         </div>
         <div className="inline-flex gap-x-4 mt-2 ms:ml-0 ml-4">
           <div className="mt-2">
