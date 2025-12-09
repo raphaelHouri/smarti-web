@@ -13,6 +13,18 @@ export type LessonWithResults =
         results: Array<typeof userLessonResults.$inferSelect>;
     };
 
+type UserWithSettingsRelation = typeof users.$inferSelect & {
+    settings: Array<typeof userSettings.$inferSelect & {
+        lessonCategory?: typeof lessonCategory.$inferSelect | null;
+    }>;
+};
+
+export type UserWithSettings = Omit<UserWithSettingsRelation, 'settings'> & {
+    settings: (typeof userSettings.$inferSelect & {
+        lessonCategory?: typeof lessonCategory.$inferSelect | null;
+    }) | null;
+};
+
 
 
 export const getCategories = cache(async () => {
@@ -48,7 +60,7 @@ export const getLessonCategoryById = cache(async (categoryId: string) => {
 
 
 
-export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string, returnUser: boolean = true) => {
+export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string, returnUser: boolean = true): Promise<UserWithSettings | null> => {
     const { userId } = await auth();
     if (!userId) return null;
 
@@ -56,12 +68,19 @@ export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string, 
     const cookieNumber = cookieValue ? Number(cookieValue) : NaN;
     const cookieSystemStep = [1, 2, 3].includes(cookieNumber) ? cookieNumber : 1;
 
-    const existingUser = await db.query.users.findFirst({
-        where: eq(users.id, userId),
+    const existingUserResult = await db.query.users.findFirst({
+        where: eq(users.id, userId), // Remove the systemStep filter here
         with: {
-            settings: true,
+            settings: {
+                where: (settings, { eq }) => eq(settings.systemStep, cookieSystemStep),
+                limit: 1
+            },
         }
     });
+    const existingUser = existingUserResult ? {
+        ...existingUserResult,
+        settings: existingUserResult.settings[0],
+    } : null;
     let newLessonCategoryId;
     if (lessonCategoryId) {
         // Validate that the lesson category exists and matches the current system step
@@ -113,12 +132,22 @@ export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string, 
             await getOrCreateUserSystemStats(userId, cookieSystemStep);
 
             if (returnUser) {
-                const newUser = await db.query.users.findFirst({
+                const newUserResult = await db.query.users.findFirst({
                     where: eq(users.id, userId),
                     with: {
-                        settings: true,
+                        settings: {
+                            where: (settings, { eq, and }) => and(
+                                eq(settings.userId, userId),
+                                eq(settings.systemStep, cookieSystemStep)
+                            ),
+                            limit: 1
+                        },
                     }
                 });
+                const newUser = newUserResult ? {
+                    ...newUserResult,
+                    settings: newUserResult.settings[0],
+                } : null;
 
                 return newUser;
             }
@@ -173,35 +202,25 @@ export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string, 
 
         // Fetch the updated user with settings for the current step
         if (returnUser) {
-            // Query settings for the current step directly
-            const stepSettings = await db.query.userSettings.findFirst({
-                where: and(
-                    eq(userSettings.userId, userId),
-                    eq(userSettings.systemStep, cookieSystemStep)
-                ),
-            });
-
-            // Re-fetch user with settings to ensure we have the latest data
-            const updatedUser = await db.query.users.findFirst({
+            // Re-fetch user with settings filtered by systemStep
+            const updatedUserResult = await db.query.users.findFirst({
                 where: eq(users.id, userId),
                 with: {
-                    settings: true,
+                    settings: {
+                        where: (settings, { eq, and }) => and(
+                            eq(settings.userId, userId),
+                            eq(settings.systemStep, cookieSystemStep)
+                        ),
+                        limit: 1
+                    },
                 }
             });
+            const updatedUser = updatedUserResult ? {
+                ...updatedUserResult,
+                settings: updatedUserResult.settings[0],
+            } : null;
 
-            // If we found settings for the current step, use them; otherwise use what was fetched
-            if (updatedUser) {
-                if (stepSettings) {
-                    // Replace with settings for the current step
-                    return {
-                        ...updatedUser,
-                        settings: stepSettings,
-                    } as typeof updatedUser;
-                }
-                return updatedUser;
-            }
-
-            return existingUser;
+            return updatedUser || existingUser;
         }
     }
 
@@ -853,10 +872,12 @@ export const getUserProgress = cache(async () => {
     if (!userId) return null;
     const userSystemStep = await getUserSystemStep(userId);
 
-    const user = await db.query.users.findFirst({
+    const userResult = await db.query.users.findFirst({
         where: eq(users.id, userId),
         with: {
             settings: {
+                where: (settings, { eq }) => eq(settings.systemStep, userSystemStep),
+                limit: 1,
                 with: {
                     lessonCategory: true,
                 }
@@ -864,7 +885,12 @@ export const getUserProgress = cache(async () => {
         }
     });
 
-    if (!user) return null;
+    if (!userResult) return null;
+
+    const user = {
+        ...userResult,
+        settings: userResult.settings[0],
+    };
 
     // Get user system stats for the current step
     const systemStats = await db.query.userSystemStats.findFirst({

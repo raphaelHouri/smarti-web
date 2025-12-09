@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import Unit from "../_components/Unit";
 import PromoSection from "../_components/promo";
 import QuestsSection from "../../quests/_components/quests";
-import { getCategories, getFirstCategory, getLessonCategoryById, getLessonCategoryWithLessonsById, getOrCreateUserFromGuest, getUserProgress, getUserSubscriptions, getUserSystemStep } from "@/db/queries";
+import { getCategories, getFirstCategory, getLessonCategoryById, getLessonCategoryWithLessonsById, getOrCreateUserFromGuest, getUserProgress, getUserSubscriptions, getUserSystemStep, type UserWithSettings } from "@/db/queries";
 import LessonCategoryPage from "../../courses/page";
 import FeedbackButton from "@/components/feedbackButton";
 import { checkIsPro } from "@/lib/utils";
@@ -59,7 +59,7 @@ const LearnPage = async ({
             }
             categoryId = category.id;
         }
-    } else if (user.settings?.lessonCategoryId) {
+    } else if (user?.settings?.lessonCategoryId) {
         categoryId = user.settings.lessonCategoryId;
     } else {
         redirect("/courses");

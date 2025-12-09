@@ -243,7 +243,12 @@ export const userSettings = pgTable("user_settings", {
     systemStep: integer("system_step").default(1).notNull(),
     lessonCategoryId: uuid("lesson_category_id").references(() => lessonCategory.id, { onDelete: "cascade" }),
     savedCouponId: uuid("saved_coupon_id").references(() => coupons.id, { onDelete: "set null" }),
-});
+}, (table) => ({
+    userSystemStepUnique: {
+        columns: [table.userId, table.systemStep],
+        unique: true,
+    },
+}));
 
 
 
@@ -311,10 +316,7 @@ export const onlineLessons = pgTable("online_lessons", {
 // === RELATIONS ===
 
 export const userRelations = relations(users, ({ one, many }) => ({
-    settings: one(userSettings, {
-        fields: [users.id],
-        references: [userSettings.userId],
-    }),
+    settings: many(userSettings),
     subscriptions: many(subscriptions),
     lessonResults: many(userLessonResults),
     wrongQuestions: many(userWrongQuestions),
