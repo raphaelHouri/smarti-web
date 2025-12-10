@@ -174,7 +174,7 @@ export async function POST(req: NextRequest) {
         }
         const groupCategoryType = (raw.groupCategoryType || '').trim();
         // const groupCategoryId = categoryMap[groupCategoryType];
-        let groupCategoryId = categoryMap[categoryType];
+        let groupCategoryId = categoryMap[groupCategoryType];
         if (!groupCategoryId) {
             // Try all keys in the map to find a match ignoring leading/trailing digits
             const normalize = (s: string) => s.replace(/^\d+/, '').replace(/\d+$/, '').trim();
