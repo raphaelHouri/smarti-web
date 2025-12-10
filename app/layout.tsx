@@ -11,7 +11,7 @@ import PracticeModal from "@/components/modals/usePracticeModal";
 import FinishLessonModal from "@/components/modals/useFinishLessonModal";
 import RegisterModal from "@/components/modals/useRegisterModal";
 import PremiumModal from "@/components/modals/usePremiumModal";
-import { heIL } from '@clerk/localizations'
+import { customHeIL } from '@/lib/clerk-localization'
 import FeedbackModal from "@/components/modals/useFeedbacksModal";
 import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 
@@ -66,7 +66,7 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider
-      localization={heIL}
+      localization={customHeIL}
       afterSignOutUrl="/"
       afterSignUpUrl="/courses"
 
