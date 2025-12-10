@@ -80,7 +80,7 @@ const LeaderBoardPage = async () => {
                             </p>
                             <p className="text-muted-foreground dark:text-slate-200">
                                 <span className="inline-flex items-center gap-1">
-                                    <img src="/points.svg" alt="נקודות" width={20} height={20} className="inline-block" />
+                                    <img src="/stars.svg" alt="נקודות" width={20} height={20} className="inline-block" />
                                     {userDetail.experience}
                                     <span className="ml-1">XP</span>
                                 </span>
@@ -92,7 +92,7 @@ const LeaderBoardPage = async () => {
                             items={topTenUsers.map((u) => ({
                                 id: u.id,
                                 userName: u.email,
-                                points: u.experience,
+                                stars: u.experience,
                                 avatar: u.avatar ?? "/default-avatar.png",
                             }))}
                         />

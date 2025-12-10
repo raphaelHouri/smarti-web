@@ -29,7 +29,7 @@ const PracticeCategoryIdPage = async ({
         <Quiz
 
             initialLessonId={"practiceMode"}
-            initialHearts={10}
+            initialCoins={10}
             questionGroups={questionGroups}
             questionsDict={questionsDict}
             userPreviousAnswers={userPreviousAnswers}

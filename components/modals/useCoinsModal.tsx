@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/_dialog";
 import Image from "next/image";
 import { Button } from "../ui/button";
-import { useHeartsModal } from "@/store/use-hearts";
+import { useCoinsModal } from "@/store/use-coins";
 
-const HeartsModal = () => {
+const CoinsModal = () => {
     const router = useRouter();
     const [isClient, setIsClient] = useState<boolean>(false)
-    const { isOpen, close, open } = useHeartsModal();
+    const { isOpen, close, open } = useCoinsModal();
 
     //Doing this to avoid hydration errors
     // mounting the component
@@ -42,17 +42,17 @@ const HeartsModal = () => {
                     </div>
                     <DialogTitle className="text-center
                 font-bold text-2xl">
-                        You ran out of hearts.
+                        You ran out of coins.
                     </DialogTitle>
                     <DialogDescription className="text-center text-base">
-                        Get Pro for unlimited hearts, or purchase them in the store.
+                        Get Pro for unlimited coins, or purchase them in the store.
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
                     <div className="flex flex-col gap-y-3 w-full">
                         <Button variant="primary" size="default" className="w-full"
                             onClick={onClick}>
-                            Get Unlimited Hearts
+                            Get Unlimited Coins
                         </Button>
                         <Button variant="primaryOutline" size="default" className="w-full"
                             onClick={close}>
@@ -65,4 +65,5 @@ const HeartsModal = () => {
     );
 }
 
-export default HeartsModal;
+export default CoinsModal;
+

@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { useMedia, useMount } from "react-use";
 import ResultCard from "./result-card";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useHeartsModal } from "@/store/use-hearts";
+
 import { usePracticeModal } from "@/store/use-practice-modal";
 import CelebrateJson from "./lottie";
 import { lessonQuestionGroups, questions } from "@/db/schemaSmarti";
@@ -27,6 +27,7 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import FeedbackButton from "@/components/feedbackButton";
 import { useExitModal } from "@/store/use-exit-modal";
 import { usePreventBackNavigation } from "@/hooks/use-prevent-back-navigation";
+import { useCoinsModal } from "@/store/use-coins";
 
 const optionsSchema = z.object({
     a: z.string(),
@@ -38,7 +39,7 @@ const optionsSchema = z.object({
 export type Options = z.infer<typeof optionsSchema>;
 interface QuizProps {
     initialLessonId: string
-    initialHearts: number
+    initialCoins: number
     questionGroups: (typeof lessonQuestionGroups.$inferSelect & { categoryType: string, categoryId: string })[],
     questionsDict: { [q: string]: typeof questions.$inferSelect };
     userPreviousAnswers: ("a" | "b" | "c" | "d" | null)[] | null;
@@ -46,12 +47,12 @@ interface QuizProps {
 
 const Quiz = ({
     initialLessonId,
-    initialHearts,
+    initialCoins,
     questionGroups,
     questionsDict,
     userPreviousAnswers = null
 }: QuizProps) => {
-    const [hearts, setHearts] = useState(initialHearts);
+    const [coins, setCoins] = useState(initialCoins);
     const [status, setStatus] = useState<"correct" | "wrong" | "none">("none")
     const [resultList, setResultList] = useState<Array<"a" | "b" | "c" | "d" | null>>(questionGroups.flatMap(categoryValue => categoryValue.questionList.map(() => null)));
     const [selectedOption, setSelectedOption] = useState<"a" | "b" | "c" | "d" | null>()
@@ -92,7 +93,7 @@ const Quiz = ({
     const options = optionsSchema.parse(question.options);
     if (!options) return <p>אפשרויות התשובה אינן קיימות</p>
 
-    const { open: OpenHeartsModal } = useHeartsModal();
+    const { open: OpenCoinsModal } = useCoinsModal();
     const { open: OpenFinishLessonModal, isApproved: isFinishApproved, clearApprove, approve } = useFinishLessonModal();
     const { open: OpenPracticeModal, isOpen, close } = usePracticeModal();
     const { open: OpenRegisterModal } = useRegisterModal();
@@ -391,11 +392,11 @@ const Quiz = ({
                     </div>
                     <div className="flex flex-row items-center  sm:gap-x-6 gap-x-3 w-full max-w-xs sm:max-w-md">
                         <ResultCard
-                            variant="points"
+                            variant="stars"
                             value={resultList.reduce((acc, answer) => acc + (answer === 'a' || answer != null ? 10 : 0), 0)}
                         />
                         <ResultCard
-                            variant="hearts"
+                            variant="coins"
                             value={resultList.reduce((acc, answer, index) => acc + (answer === 'a' ? (index <= 1 ? 5 : 5 + Math.round(acc / 3)) : 0), 0)}
                         />
                     </div>

@@ -24,7 +24,7 @@ const LessonIdPage = async ({
         <Quiz
 
             initialLessonId={lessonId}
-            initialHearts={10}
+            initialCoins={10}
             questionGroups={questionGroups}
             questionsDict={questionsDict}
             userPreviousAnswers={userPreviousAnswers}

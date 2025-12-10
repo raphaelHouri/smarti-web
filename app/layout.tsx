@@ -6,7 +6,7 @@ import { Toaster, toast } from 'sonner'
 import { Poppins } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import ExitModal from "@/components/modals/useExitModal";
-import HeartsModal from "@/components/modals/useHeartsModal";
+import CoinsModal from "@/components/modals/useCoinsModal";
 import PracticeModal from "@/components/modals/usePracticeModal";
 import FinishLessonModal from "@/components/modals/useFinishLessonModal";
 import RegisterModal from "@/components/modals/useRegisterModal";
@@ -91,7 +91,7 @@ export default function RootLayout({
           >
             <Toaster richColors position="bottom-right" />
             <ExitModal />
-            <HeartsModal />
+            <CoinsModal />
             <PracticeModal />
             <FinishLessonModal />
             <FeedbackModal />

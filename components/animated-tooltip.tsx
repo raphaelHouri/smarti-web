@@ -15,7 +15,7 @@ export const AnimatedTooltip = ({
   items: {
     id: string;
     userName: string;
-    points: number;
+    stars: number;
     avatar: string;
   }[];
 }) => {
@@ -72,7 +72,7 @@ export const AnimatedTooltip = ({
               <div className="font-bold text-white relative z-30 text-base">
                 {item.userName}
               </div>
-              <div className="text-white text-xs">{item.points}</div>
+              <div className="text-white text-xs">{item.stars}</div>
             </motion.div>
           )}
           <Image

@@ -28,14 +28,14 @@ const PracticeModal = () => {
                 <DialogHeader>
                     <div className="items-center justify-center flex w-full mb-5">
                         <Image
-                            src="/heart.svg"
-                            alt="Heart"
+                            src="/coin.svg"
+                            alt="Coin"
                             height={80}
                             width={80}
                         />
                         <Image
-                            src="/points.svg"
-                            alt="Point"
+                            src="/stars.svg"
+                            alt="Star"
                             height={80}
                             width={80}
                         />
