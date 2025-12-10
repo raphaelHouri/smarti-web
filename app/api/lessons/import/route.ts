@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import db from "@/db/drizzle";
-import { lessons, lessonQuestionGroups } from "@/db/schemaSmarti";
+import { lessons, lessonQuestionGroups, lessonCategory } from "@/db/schemaSmarti";
 import { IsAdmin } from "@/lib/admin";
 import { InferInsertModel, and, eq, inArray } from 'drizzle-orm';
 import * as XLSX from 'xlsx';
@@ -102,9 +102,22 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ message: 'No valid data found in the file after parsing.' }, { status: 400 });
     }
 
-    // Preload category map by categoryType
-    const lessonCategories = await db.query.lessonCategory.findMany();
-    const categoryMap = lessonCategories.reduce((map, category) => {
+    // Get system step from the first row
+    const firstRow = parsedData[0] as ParsedRow;
+    const rawStep = firstRow.systemStep;
+    const systemStepNum = typeof rawStep === 'number'
+        ? rawStep
+        : parseInt(String(rawStep || '').trim(), 10);
+
+    if (!Number.isFinite(systemStepNum) || systemStepNum < 1 || systemStepNum > 3) {
+        return NextResponse.json({ message: 'Invalid or missing systemStep in first row (must be 1, 2, or 3)' }, { status: 400 });
+    }
+
+    // Preload category map by categoryType, filtered by system step
+    const lessonCategories = await db.query.lessonCategory.findMany({
+        where: eq(lessonCategory.systemStep, systemStepNum)
+    });
+    const categoryMap: Record<string, string> = lessonCategories.reduce((map, category) => {
         map[category.categoryType] = category.id;
         return map;
     }, {} as Record<string, string>);
@@ -173,7 +186,7 @@ export async function POST(req: NextRequest) {
                 }
             }
         }
-        
+
         if (!groupCategoryId) {
             errors.push({ row: i + 2, message: `Unknown groupCategoryType: ${groupCategoryType}` });
             continue;
