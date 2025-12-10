@@ -18,7 +18,7 @@ import { buildMetadata } from "@/lib/seo";
 export const metadata: Metadata = buildMetadata({
     title: "סמארטי | הכנה למבחני מחוננים ומצטיינים",
     description: "גלו את המצטיינים וצפו בדירוג הלומדים לפי נקודות וניסיון.",
-    keywords: ["טבלת מובילים", "דירוג לומדים", "XP"],
+    keywords: ["טבלת מובילים", "דירוג לומדים", "כוכבים"],
 });
 
 const LeaderBoardPage = async () => {
@@ -82,7 +82,7 @@ const LeaderBoardPage = async () => {
                                 <span className="inline-flex items-center gap-1">
                                     <img src="/stars.svg" alt="נקודות" width={20} height={20} className="inline-block" />
                                     {userDetail.experience}
-                                    <span className="ml-1">XP</span>
+                                    <span className="ml-1">כוכבים</span>
                                 </span>
                             </p>
                         </div>
