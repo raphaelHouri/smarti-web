@@ -4,8 +4,9 @@
 import { auth } from "@clerk/nextjs/server"; // Assuming you're using Clerk for authentication
 import db from "@/db/drizzle"; // Your Drizzle DB instance
 import { users, userSettings } from "@/db/schemaSmarti"; // Your Drizzle schema
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { getUserSystemStep } from "@/db/queries";
 
 interface UpdateUserParams {
     name?: string;
@@ -44,9 +45,15 @@ export async function updateUser(params: UpdateUserParams) {
             .where(eq(users.id, userId));
     }
 
+    // Get current system step
+    const systemStep = await getUserSystemStep(userId);
+
     // Update or insert user settings
     const existingSettings = await db.query.userSettings.findFirst({
-        where: eq(userSettings.userId, userId),
+        where: and(
+            eq(userSettings.userId, userId),
+            eq(userSettings.systemStep, systemStep)
+        ),
     });
 
     const avatarValue = sanitizeAvatar(params.avatar);
@@ -62,13 +69,17 @@ export async function updateUser(params: UpdateUserParams) {
         if (Object.keys(updateData).length > 0) {
             await db.update(userSettings)
                 .set(updateData)
-                .where(eq(userSettings.userId, userId));
+                .where(and(
+                    eq(userSettings.userId, userId),
+                    eq(userSettings.systemStep, systemStep)
+                ));
         }
     } else {
         // If settings don't exist, create them
         const insertData: typeof userSettings.$inferInsert = {
             id: crypto.randomUUID(),
             userId: userId,
+            systemStep: systemStep,
         };
         if (params.lessonClock !== undefined) insertData.lessonClock = params.lessonClock;
         if (params.quizClock !== undefined) insertData.quizClock = params.quizClock;

@@ -1257,8 +1257,12 @@ export const getUserByAuthId = async (authId: string) => {
 }
 
 export const getUserSettingsById = async (userId: string) => {
+    const systemStep = await getUserSystemStep(userId);
     const data = await db.query.userSettings.findFirst({
-        where: eq(userSettings.userId, userId),
+        where: and(
+            eq(userSettings.userId, userId),
+            eq(userSettings.systemStep, systemStep)
+        ),
     });
     return data;
 }

@@ -1,12 +1,12 @@
 "use server";
 
 import db from "@/db/drizzle";
-import { getLessonsOfCategoryById } from "@/db/queries";
+import { getLessonsOfCategoryById, getUserSystemStep } from "@/db/queries";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { userSettings } from "@/db/schemaSmarti";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
 
 
@@ -28,11 +28,16 @@ export const updateUserCategory = async (courseId: string) => {
 
         if (user) {
             //all I have to do is await and update over here
+            // Get current system step
+            const systemStep = await getUserSystemStep(userId);
             // Update lessonCategoryId in userSettings instead of users
             await db.update(userSettings).set({
                 lessonCategoryId: courseId,
             })
-                .where(eq(userSettings.userId, userId));
+                .where(and(
+                    eq(userSettings.userId, userId),
+                    eq(userSettings.systemStep, systemStep)
+                ));
             //break the cache and revalidate
             revalidatePath("/courses");
             revalidatePath("/learn");
