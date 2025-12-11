@@ -289,34 +289,31 @@ const Quiz = ({
                     " xl:max-w-md mx-auto", // center + limit on mobile/tablet
                 )}
             >
-                {true && (
+                {["quiz", "review", "summary"].includes(mode) && (
                     <div className="mb-2 flex items-center gap-2 justify-between">
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
                             תרגול: {lessonQueryParam ?? "אין תרגול"}
                         </span>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
-                            {mode}
-                        </span>
-                        {mode in ["quiz", "review", "practiceMode"] && (
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setIsGridExpanded(!isGridExpanded)}
-                                className="text-xs sm:text-sm text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 xl:hidden"
-                            >
-                                {isGridExpanded ? (
-                                    <>
-                                        הסתר תרגילים
-                                        <ChevronUp className="inline ml-1 align-middle w-4 h-4" />
-                                    </>
-                                ) : (
-                                    <>
-                                        הצג תרגילים
-                                        <ChevronDown className="inline ml-1 align-middle w-4 h-4" />
-                                    </>
-                                )}
-                            </Button>
-                        )}
+
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setIsGridExpanded(!isGridExpanded)}
+                            className="text-xs sm:text-sm text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 xl:hidden"
+                        >
+                            {isGridExpanded ? (
+                                <>
+                                    הסתר תרגילים
+                                    <ChevronUp className="inline ml-1 align-middle w-4 h-4" />
+                                </>
+                            ) : (
+                                <>
+                                    הצג תרגילים
+                                    <ChevronDown className="inline ml-1 align-middle w-4 h-4" />
+                                </>
+                            )}
+                        </Button>
+
                     </div>
                 )}
                 {(isGridExpanded || !isMobile) && (
