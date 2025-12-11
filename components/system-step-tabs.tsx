@@ -113,7 +113,7 @@ export function SystemStepTabs({ isAuthenticated, initialStep }: SystemStepTabsP
                             src="/logoFont.png"
                             alt="סמארטי"
                             width={100}
-                            height={40}
+                            height={28}
                             className="inline-block h-[1.0em] w-auto align-middle"
                         />
                     </h1>
