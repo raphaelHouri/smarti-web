@@ -195,7 +195,7 @@ const Quiz = ({
             setIsGridExpanded(true);
         } else if (mode === "summary") {
             // In summary mode, show grid on mobile (desktop shows it via !isMobile condition)
-            setIsGridExpanded(isMobile);
+            setIsGridExpanded(!isMobile);
         }
     }, [mode, isMobile]);
     const progressPct = useMemo(
@@ -293,6 +293,9 @@ const Quiz = ({
                     <div className="mb-2 flex items-center gap-2 justify-between">
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
                             תרגול: {lessonQueryParam ?? "אין תרגול"}
+                        </span>
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                            {mode}
                         </span>
                         {mode in ["quiz", "review", "practiceMode"] && (
                             <Button
