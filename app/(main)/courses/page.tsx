@@ -16,7 +16,7 @@ const LessonCategoryPage = async () => {
         lessonCategoryId = user.settings.lessonCategoryId;
     }
     return (
-        <div className="mx-auto px-2 max-w-[768px]">
+        <div className="mx-auto px-2 max-w-[768px] 2xl:max-w-[998px]">
 
             <List
                 lessonCategories={lessonCategory}

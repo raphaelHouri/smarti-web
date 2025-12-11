@@ -45,7 +45,7 @@ export const List = ({
     }
 
     return (
-        <div className="pt-1 grid sm:grid-cols-2 2xl:grid-cols-3 3xl:grid-cols-4  gap-1 sm:mb-6 mb-4">
+        <div className="pt-1 grid sm:grid-cols-2  2xl:grid-cols-4 3xl:grid-cols-4  gap-1 sm:mb-6 mb-4">
             {lessonCategories.map((lessonCategory) => (
                 <CardPage
                     key={lessonCategory.id}
