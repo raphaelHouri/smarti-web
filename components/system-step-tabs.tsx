@@ -107,14 +107,14 @@ export function SystemStepTabs({ isAuthenticated, initialStep }: SystemStepTabsP
             />
             {stepTabs.map((step) => (
                 <TabsContent key={step.value} value={String(step.value)} className="mt-3">
-                    <h1 className="font-bold text-xl lg:text-3xl text-neutral-600 max-w-[600px] text-center dark:bg-clip-text dark:text-transparent dark:bg-gradient-to-tr from-slate-500 to-neutral-300/90">
+                    <h1 dir="rtl" className="font-bold text-xl lg:text-3xl text-neutral-600 max-w-[600px] text-center dark:bg-clip-text dark:text-transparent dark:bg-gradient-to-tr from-slate-500 to-neutral-300/90">
                         התכוננו למבחני המחוננים ומצטיינים ביחד עם{' '}
                         <Image
-                            src="/smartiLogo.png"
+                            src="/logoFont.png"
                             alt="סמארטי"
-                            width={120}
+                            width={100}
                             height={40}
-                            className="inline-block h-[1.2em] w-auto align-middle"
+                            className="inline-block h-[1.0em] w-auto align-middle"
                         />
                     </h1>
                 </TabsContent>
