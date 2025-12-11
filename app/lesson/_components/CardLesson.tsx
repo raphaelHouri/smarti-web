@@ -50,7 +50,7 @@ const CardLesson = ({
             onClick={handleClick}
             className={cn(
                 "h-full border-2 border-b-4 rounded-xl hover:bg-black/5 p-4 lg:p-6 cursor-pointer active:border-b-2",
-                selected || isNotAnswered && "dark:bg-sky-300 dark:text-black border-sky-300 bg-sky-100 hover:bg-sky-100",
+                (selected && mode !== "practiceMode") || isNotAnswered && "dark:bg-sky-300 dark:text-black border-sky-300 bg-sky-100 hover:bg-sky-100",
                 isCorrectAnswer && "dark:border-green-500 border-green-300 bg-green-100 dark:bg-green-200 hover:bg-green-100",
                 isWrongAnswer && "dark:bg-rose-200 dark:hover:bg-rose-200 border-rose-300 bg-rose-100 hover:bg-rose-100",
                 disabled && "pointer-events-none opacity-50",
