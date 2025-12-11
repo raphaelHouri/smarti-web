@@ -16,7 +16,7 @@ const Header = ({
 }: HeaderProps) => {
     const { open } = useExitModal();
     return (
-        <div className="lg:pt-[50px] pt-[20px] max-w-[1140px]
+        <div className="lg:pt-[50px] pt-[20px] max-w-[1140px] xl:pr-48 2xl:pr-0 
         items-center justify-between mx-auto px-10 flex gap-x-7 w-full">
             <X
                 onClick={open} //Todo:Add exit modal
