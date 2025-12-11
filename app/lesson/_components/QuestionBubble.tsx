@@ -33,7 +33,7 @@ const QuestionBubble = ({
                 width={40}
                 className="block lg:hidden"
             />
-            <div className="relative py-2 border-2 px-4 rounded-xl text-md   lg:text-lg font-medium">
+            <div className="relative py-2 border-2 px-4 rounded-xl text-md   lg:text-lg font-medium whitespace-pre-line">
                 {format === "MATH" ? renderTextWithLTRFormulas(question) : question}
                 <div
                     className="absolute -right-3 top-1/2 w-0 h-0 hover:animate-pulse cursor-pointer
