@@ -193,8 +193,11 @@ const Quiz = ({
             setIsGridExpanded(false);
         } else if (mode === "review") {
             setIsGridExpanded(true);
+        } else if (mode === "summary") {
+            // In summary mode, show grid on mobile (desktop shows it via !isMobile condition)
+            setIsGridExpanded(isMobile);
         }
-    }, [mode]);
+    }, [mode, isMobile]);
     const progressPct = useMemo(
         () => {
             return ((activeIndex + (!!selectedOption ? 1 : 0)) / total) * 100
@@ -286,12 +289,12 @@ const Quiz = ({
                     " xl:max-w-md mx-auto", // center + limit on mobile/tablet
                 )}
             >
-                {mode in ["quiz", "review"] || true && (
+                {mode in ["quiz", "review", "practiceMode"] && (
                     <div className="mb-2 flex items-center gap-2 justify-between">
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
                             תרגול: {lessonQueryParam ?? "אין תרגול"}
                         </span>
-                        {(mode === "quiz" || mode === "review") && (
+                        {mode in ["quiz", "review", "practiceMode"] && (
                             <Button
                                 variant="ghost"
                                 size="sm"
