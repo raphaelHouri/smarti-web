@@ -28,6 +28,8 @@ import FeedbackButton from "@/components/feedbackButton";
 import { useExitModal } from "@/store/use-exit-modal";
 import { usePreventBackNavigation } from "@/hooks/use-prevent-back-navigation";
 import { useCoinsModal } from "@/store/use-coins";
+import { trackEvent } from "@/lib/posthog";
+import { useSystemStep } from "@/hooks/use-system-step";
 
 const optionsSchema = z.object({
     a: z.string(),
@@ -98,6 +100,7 @@ const Quiz = ({
     const { open: OpenPracticeModal, isOpen, close } = usePracticeModal();
     const { open: OpenRegisterModal } = useRegisterModal();
     const { open: openExitModal } = useExitModal();
+    const { step: systemStep } = useSystemStep();
 
     // Prevent back navigation during quiz mode
     usePreventBackNavigation({
@@ -119,11 +122,47 @@ const Quiz = ({
             // OpenPracticeModal();
         }
         setStartAt(new Date());
+
+        // Track lesson/quiz start
+        if (lessonId !== 'practiceMode') {
+            trackEvent("lesson_started", {
+                systemStep,
+                lessonId,
+                totalQuestions: total,
+            });
+        } else {
+            trackEvent("practice_mode_started", {
+                systemStep,
+                totalQuestions: total,
+            });
+        }
     })
     useEffect(() => {
         const handleFinishApproval = async () => {
             if (isFinishApproved && userId) {
                 await addResultsToUser(lessonId, userId, resultList, questionsMap.map(q => q.questionId), startAt);
+
+                // Track lesson completion
+                const answeredQuestions = resultList.filter(answer => answer !== null).length;
+                const duration = startAt ? Math.round((new Date().getTime() - startAt.getTime()) / 1000) : undefined;
+
+                if (lessonId !== 'practiceMode') {
+                    trackEvent("lesson_completed", {
+                        systemStep,
+                        lessonId,
+                        totalQuestions: total,
+                        answeredQuestions,
+                        duration,
+                    });
+                } else {
+                    trackEvent("practice_mode_completed", {
+                        systemStep,
+                        totalQuestions: total,
+                        answeredQuestions,
+                        duration,
+                    });
+                }
+
                 setMode("summary");
                 clearApprove();
             }
@@ -133,7 +172,7 @@ const Quiz = ({
             }
         };
         handleFinishApproval();
-    }, [isFinishApproved]);
+    }, [isFinishApproved, lessonId, userId, resultList, questionsMap, total, systemStep, startAt]);
     useEffect(() => {
         const handleUserEffect = async () => {
             if (userId && guest) {

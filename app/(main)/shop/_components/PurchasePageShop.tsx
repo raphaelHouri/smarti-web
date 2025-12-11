@@ -17,6 +17,8 @@ import { useCouponModal } from "@/store/use-coupon-modal";
 import CouponModal from "@/components/modals/useCouponModal";
 import { Tag } from "lucide-react";
 import { getUserCoupon } from "@/actions/user-coupon";
+import { trackEvent } from "@/lib/posthog";
+import { useSystemStep } from "@/hooks/use-system-step";
 
 type Category = "system" | "books";
 
@@ -111,6 +113,7 @@ export default function PurchasePageShop({
     const couponModal = useCouponModal();
     const router = useRouter();
     const params = useParams();
+    const { step: systemStep } = useSystemStep();
 
     // Convert packageType to category
     const packageTypeToCategory = (pkgType: PackageType): Category => {
@@ -175,6 +178,38 @@ export default function PurchasePageShop({
     useEffect(() => {
         loadCoupon();
     }, [loadCoupon]);
+
+    // Track shop page view on mount
+    useEffect(() => {
+        trackEvent("shop_page_viewed", {
+            systemStep,
+            category: selectedCategory,
+            packageType: effectivePackageType,
+        });
+    }, []); // Only on mount
+
+    // Track category change
+    useEffect(() => {
+        if (selectedCategory) {
+            trackEvent("shop_category_changed", {
+                systemStep,
+                category: selectedCategory,
+                packageType: effectivePackageType,
+            });
+        }
+    }, [selectedCategory, systemStep, effectivePackageType]);
+
+    // Track coupon applied when coupon is loaded
+    useEffect(() => {
+        if (savedCoupon) {
+            trackEvent("coupon_applied", {
+                systemStep,
+                couponCode: savedCoupon.code,
+                couponType: savedCoupon.type,
+                discountValue: savedCoupon.value,
+            });
+        }
+    }, [savedCoupon, systemStep]);
 
     // Listen for coupon updates from CouponModal
     useEffect(() => {
@@ -258,6 +293,11 @@ export default function PurchasePageShop({
     const handleCategoryChange = (category: Category) => {
         setSelectedCategory(category);
         const packageType: PackageType = category === "books" ? "book" : "system";
+        trackEvent("shop_category_changed", {
+            systemStep,
+            category,
+            packageType,
+        });
         router.push(`/shop/${packageType}`, { scroll: false });
     };
 
@@ -578,6 +618,24 @@ export default function PurchasePageShop({
                                         (() => {
 
                                             const onClick = () => {
+                                                // Track plan selection
+                                                const originalPrice = getOriginalPrice(plan);
+                                                const discountedPrice = calculatePriceWithCoupon(originalPrice);
+
+                                                trackEvent("plan_selected", {
+                                                    systemStep,
+                                                    planId: plan.id,
+                                                    planName: plan.name,
+                                                    planType: plan.planType,
+                                                    category: plan.category,
+                                                    price: originalPrice,
+                                                    discountedPrice,
+                                                    hasBookOption: !!plan.addBookOption,
+                                                    bookOptionSelected: plan.addBookOption ? (planBookOptions[plan.planType] ?? true) : false,
+                                                    couponCode: savedCoupon?.code,
+                                                    couponType: savedCoupon?.type,
+                                                    discountValue: savedCoupon?.value,
+                                                });
 
                                                 if (plan.category === "books") {
                                                     bookPurchaseModal.open({ planId: plan.planType, userInfo });

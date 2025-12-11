@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { getSystemStepFromCookie, getSystemStepLabel } from "@/lib/utils";
+import { trackEvent } from "@/lib/posthog";
 
 /**
  * Simple hook to get the current system step and label from cookies
@@ -17,6 +18,15 @@ export function useSystemStep() {
         setStep(currentStep);
         setLabel(getSystemStepLabel(currentStep));
     }, []);
+
+    // Track systemStep changes
+    useEffect(() => {
+        if (step) {
+            trackEvent("system_step_changed", {
+                systemStep: step,
+            });
+        }
+    }, [step]);
 
     return { step, label };
 }

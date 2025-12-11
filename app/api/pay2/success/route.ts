@@ -8,6 +8,7 @@ import { getFileName } from "@/lib/book_utils";
 import { createBookPurchase, getProductById, getTransactionDataById, createSubscriptionsIfMissingForTransaction, clearUserCoupon, updatePaymentTransaction, getUserSystemStep } from "@/db/queries";
 import { calculateAmount } from "@/lib/utils";
 import type { PaymentStatus, products as ProductsTable } from "@/db/schemaSmarti";
+import { trackServerEvent } from "@/lib/posthog-server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -416,8 +417,28 @@ export async function GET(req: NextRequest) {
   const phone = params.cell;
   const isApproved = isApprovedCCode(params.CCode);
   if (!isApproved) {
-
     const code = params.CCode || "—";
+
+    // Track payment failure
+    try {
+      const order = hexToUtf8Json<OrderPayload>(params.Order);
+      const parsedOrder = OrderPayloadSchema.safeParse(order);
+      if (parsedOrder.success) {
+        const { transactionId } = parsedOrder.data;
+        const paymentTransaction = await getTransactionDataById(transactionId);
+        if (paymentTransaction) {
+          trackServerEvent(paymentTransaction.userId, "payment_failed", {
+            systemStep: paymentTransaction.plan?.systemStep,
+            transactionId,
+            errorCode: code,
+            planId: paymentTransaction.planId,
+          });
+        }
+      }
+    } catch (e) {
+      // Ignore tracking errors for failed payments
+    }
+
     const failHtml = failHtmlTemplate(code);
     return new NextResponse(failHtml, { headers: { "content-type": "text/html; charset=utf-8" } });
   }
@@ -463,6 +484,18 @@ export async function GET(req: NextRequest) {
   }
 
   const userId = paymentTransaction.userId;
+
+  // Track payment success
+  trackServerEvent(userId, "payment_success", {
+    systemStep: paymentTransaction.plan?.systemStep,
+    transactionId,
+    amount,
+    planId: paymentTransaction.planId,
+    planType: paymentTransaction.plan?.packageType,
+    couponId: paymentTransaction.couponId || undefined,
+    bookIncluded: paymentTransaction.bookIncluded,
+    paymentMethod: "credit_card", // Yaad payment gateway
+  });
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? null;
   const planProductIds = paymentTransaction.plan.productsIds ?? [];
 
@@ -658,6 +691,18 @@ export async function GET(req: NextRequest) {
         })),
         paymentTransaction.id
       );
+
+      // Track subscription creation
+      subscriptionArray.forEach((subscription) => {
+        trackServerEvent(userId, "subscription_created", {
+          systemStep: subscription.systemStep,
+          subscriptionId: subscription.paymentTransactionId, // Using transaction ID as subscription identifier
+          productId: subscription.productId,
+          productType: subscription.type,
+          validUntil: subscription.systemUntil.toISOString(),
+          planId: paymentTransaction.planId,
+        });
+      });
     }
     if (paymentTransaction.status != "fulfilled") {
       await updatePaymentTransaction(paymentTransaction.id, vat_id, "fulfilled");

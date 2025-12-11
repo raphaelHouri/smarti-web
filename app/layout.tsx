@@ -14,6 +14,7 @@ import PremiumModal from "@/components/modals/usePremiumModal";
 import { customHeIL } from '@/lib/clerk-localization'
 import FeedbackModal from "@/components/modals/useFeedbacksModal";
 import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
+import { PostHogProvider } from "@/components/posthog-provider";
 
 const font = Poppins({ subsets: ["latin"], weight: ["500"] })
 
@@ -89,16 +90,18 @@ export default function RootLayout({
             attribute="class"
             defaultTheme="system"
           >
-            <Toaster richColors position="bottom-right" />
-            <ExitModal />
-            <CoinsModal />
-            <PracticeModal />
-            <FinishLessonModal />
-            <FeedbackModal />
-            <RegisterModal />
-            <PremiumModal />
-            <PWAInstallPrompt />
-            {children}
+            <PostHogProvider>
+              <Toaster richColors position="bottom-right" />
+              <ExitModal />
+              <CoinsModal />
+              <PracticeModal />
+              <FinishLessonModal />
+              <FeedbackModal />
+              <RegisterModal />
+              <PremiumModal />
+              <PWAInstallPrompt />
+              {children}
+            </PostHogProvider>
           </ThemeProvider>
         </body>
       </html>

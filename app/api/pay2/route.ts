@@ -6,6 +6,7 @@ import { auth } from "@clerk/nextjs/server";
 import { paymentTransactions, bookPurchases } from "@/db/schemaSmarti";
 import { getPlan, findBookPurchase, getCoupon, getProductById, getUserByAuthId } from "@/db/queries";
 import { calculateAmount } from "@/lib/utils";
+import { trackServerEvent } from "@/lib/posthog-server";
 
 export const runtime = "nodejs";
 
@@ -157,7 +158,18 @@ export async function GET(request: Request) {
   const inserted = await db.insert(paymentTransactions).values(transaction).returning({ id: paymentTransactions.id });
   const transactionId = inserted[0]?.id;
 
-
+  // Track purchase initiation
+  trackServerEvent(userId, "purchase_initiated", {
+    systemStep: plan.systemStep,
+    planId,
+    planName: plan.name,
+    planType: plan.packageType,
+    category: plan.packageType === "book" ? "books" : "system",
+    totalPrice: amount,
+    couponCode: couponCode || undefined,
+    bookIncluded,
+    transactionId,
+  });
 
   const data = {
     transactionId,
@@ -190,6 +202,14 @@ export async function GET(request: Request) {
   const token = process.env.YAAD_TOKEN || "default";
   const signature = crypto.createHmac("sha256", token).update(qs, "utf8").digest("hex");
   const redirectUrl = `https://icom.yaad.net/p/?${qs}&signature=${signature}`;
+
+  // Track payment redirect
+  trackServerEvent(userId, "payment_redirected", {
+    systemStep: plan.systemStep,
+    transactionId,
+    amount,
+    planId,
+  });
 
   return NextResponse.redirect(redirectUrl, { status: 302 });
 }
