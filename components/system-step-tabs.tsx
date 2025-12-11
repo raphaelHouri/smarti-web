@@ -109,7 +109,7 @@ export function SystemStepTabs({ isAuthenticated, initialStep }: SystemStepTabsP
                 <TabsContent key={step.value} value={String(step.value)} className="mt-3">
                     <h1 className="font-bold text-xl lg:text-3xl text-neutral-600 max-w-[600px] text-center dark:bg-clip-text dark:text-transparent dark:bg-gradient-to-tr from-slate-500 to-neutral-300/90">
                         התכוננו למבחני המחוננים ומצטיינים ביחד עם{' '}
-                        <span className="text-[#00C950] "> סמארטי -  {step.title}</span>
+                        <span className="text-[#00C950] "> סמארטי -  {false ? step.title : ""}</span>
                     </h1>
                 </TabsContent>
             ))}
