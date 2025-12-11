@@ -10,7 +10,7 @@ import { useEffect } from "react";
 export function initPostHog() {
     if (typeof window === "undefined") return;
 
-    const posthogKey = process.env.NEXT_POSTHOG_KEY;
+    const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY;
     const posthogHost = process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://app.posthog.com";
 
     if (!posthogKey) {
