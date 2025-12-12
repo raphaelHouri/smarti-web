@@ -49,19 +49,21 @@ const LearnPage = async ({
         };
     });
 
+    // Handle guests and users without saved category
     if (!user) {
-        if (categoryId) {
-            // אין צורך בלוגיקה נוספת, categoryId כבר קיים
-        } else {
+        if (!categoryId) {
             const category = await getFirstCategory();
             if (!category || !category.id) {
-                throw new Error("לא נמצאו קטגוריות");
+                redirect("/courses");
             }
             categoryId = category.id;
         }
-    } else if (user?.settings?.lessonCategoryId) {
+        // Guests can access any category, continue with the categoryId
+    } else if (user?.settings?.lessonCategoryId && !categoryId) {
+        // Authenticated user without categoryId in URL, use their saved category
         categoryId = user.settings.lessonCategoryId;
-    } else {
+    } else if (!categoryId) {
+        // No categoryId and no saved category, redirect to courses
         redirect("/courses");
     }
 

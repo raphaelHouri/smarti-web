@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
-import { setGuestSystemStep, setUserSystemStep } from "@/actions/user-system-step";
+import { setGuestSystemStep, setUserSystemStep, initializeSystemStepCookie } from "@/actions/user-system-step";
 
 export function SystemStepHandler() {
     const searchParams = useSearchParams();
@@ -11,6 +11,15 @@ export function SystemStepHandler() {
     const { isSignedIn } = useAuth();
     const stepParam = searchParams.get("step");
     const hasProcessed = useRef(false);
+    const hasInitialized = useRef(false);
+
+    // Initialize cookie on mount if it doesn't exist
+    useEffect(() => {
+        if (!hasInitialized.current) {
+            hasInitialized.current = true;
+            void initializeSystemStepCookie();
+        }
+    }, []);
 
     useEffect(() => {
         if (stepParam && !hasProcessed.current) {

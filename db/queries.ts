@@ -7,6 +7,7 @@ import { lessonCategory, lessonQuestionGroups, lessons, questions, userLessonRes
 import { and, asc, desc, eq, gt, inArray, isNotNull, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { hasFullAccess } from "@/lib/admin";
+import { getDefaultSystemStep } from "@/lib/utils";
 
 export type LessonWithResults =
     typeof lessons.$inferSelect & {
@@ -29,7 +30,7 @@ export type UserWithSettings = Omit<UserWithSettingsRelation, 'settings'> & {
 
 export const getCategories = cache(async () => {
     const { userId } = await auth();
-    if (!userId) return [];
+    // Get systemStep for both authenticated and guest users (from cookie)
     const userSystemStep = await getUserSystemStep(userId);
     const data = await db.query.lessonCategory.findMany({
         where: eq(lessonCategory.systemStep, userSystemStep),
@@ -40,7 +41,7 @@ export const getCategories = cache(async () => {
 
 export const getLessonCategory = cache(async () => {
     const { userId } = await auth();
-    if (!userId) return [];
+    // Get systemStep for both authenticated and guest users (from cookie)
     const userSystemStep = await getUserSystemStep(userId);
     const data = await db.query.lessons.findMany({
         where: eq(lessons.systemStep, userSystemStep),
@@ -244,7 +245,7 @@ export const getUserSystemStep = cache(async (userId?: string | null): Promise<n
         return cookieNumber as 1 | 2 | 3;
     }
 
-    return 1;
+    return getDefaultSystemStep();
 });
 
 export const getOrCreateUserSystemStats = cache(async (userId: string, systemStep: number) => {
@@ -431,14 +432,41 @@ export const addResultsToUser = cache(async (lessonId: string, userId: string, a
 
 // getFirstCategory
 export const getFirstCategory = cache(async () => {
-    const { userId } = await auth();
-    const userSystemStep = await getUserSystemStep(userId);
-    const data = await db.query.lessonCategory.findFirst({
-        where: eq(lessonCategory.systemStep, userSystemStep),
-        orderBy: (lessonCategory, { asc }) => [asc(lessonCategory.order), asc(lessonCategory.categoryType)],
-    });
+    try {
+        const { userId } = await auth();
+        // Get systemStep for both authenticated and guest users (from cookie)
+        const userSystemStep = await getUserSystemStep(userId);
 
-    return data ?? null;
+        // Validate systemStep is a valid number
+        if (![1, 2, 3].includes(userSystemStep)) {
+            console.error(`[getFirstCategory] Invalid systemStep: ${userSystemStep}, userId: ${userId}`);
+            // Try to get any category as fallback
+            const fallbackData = await db.query.lessonCategory.findFirst({
+                orderBy: (lessonCategory, { asc }) => [asc(lessonCategory.order), asc(lessonCategory.categoryType)],
+            });
+            return fallbackData ?? null;
+        }
+
+        // Try to get category for current system step
+        // Note: Using the same pattern as getCategories which works
+        let data = await db.query.lessonCategory.findFirst({
+            where: eq(lessonCategory.systemStep, userSystemStep),
+            orderBy: (lessonCategory, { asc }) => [asc(lessonCategory.categoryType)],
+        });
+
+        // If no category found for current system step, try to get any category as fallback
+        if (!data) {
+            data = await db.query.lessonCategory.findFirst({
+                orderBy: (lessonCategory, { asc }) => [asc(lessonCategory.categoryType)],
+            });
+        }
+
+        return data ?? null;
+    } catch (error) {
+        console.error("[getFirstCategory] Database error:", error);
+        // Return null on error to prevent app crash
+        return null;
+    }
 });
 
 
@@ -766,7 +794,7 @@ export async function updatePaymentTransaction(transactionId: string, vatId?: st
 
 export const getLessonsOfCategoryById = cache(async (categoryId: string) => {
     const { userId } = await auth();
-    if (!userId) return [];
+    // Get systemStep for both authenticated and guest users (from cookie)
     const userSystemStep = await getUserSystemStep(userId);
     const data = await db.query.lessonCategory.findMany({
         where: and(

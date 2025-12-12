@@ -1,6 +1,4 @@
 import Image from "next/image";
-import { ClerkLoaded, ClerkLoading, SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/nextjs";
-import { Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
@@ -11,9 +9,8 @@ import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
 import { SystemStepTabs } from "@/components/system-step-tabs";
 import { SystemStepHandler } from "@/components/system-step-handler";
-import db from "@/db/drizzle";
-import { users } from "@/db/schemaSmarti";
-import { eq } from "drizzle-orm";
+import { MarketingAuthButtons } from "@/components/marketing-auth-buttons";
+import { getUserSystemStep } from "@/db/queries";
 
 export const metadata: Metadata = buildMetadata({
   title: "סמארטי | הכנה למבחני מחוננים ומצטיינים",
@@ -22,34 +19,10 @@ export const metadata: Metadata = buildMetadata({
   keywords: ["מבחני מחוננים", "סימולציות מחוננים", "הורי מחוננים"],
 });
 
-async function getCurrentSystemStep(userId: string | null): Promise<number> {
-  if (userId) {
-    const user = await db.query.users.findFirst({
-      where: eq(users.id, userId),
-      columns: { systemStep: true },
-    });
-    if (user?.systemStep && [1, 2, 3].includes(user.systemStep)) {
-      return user.systemStep;
-    }
-  }
-
-  const cookieValue = (await cookies()).get("systemStep")?.value;
-  const cookieNumber = cookieValue ? Number(cookieValue) : NaN;
-  if ([1, 2, 3].includes(cookieNumber)) {
-    return cookieNumber;
-  }
-  const currentMonth = new Date().getMonth() + 1;
-  if (currentMonth >= 12 || currentMonth <= 4) {
-    return 2;
-  } else {
-    return 1;
-  }
-
-}
-
 export default async function Home() {
   const { userId } = await auth();
-  const currentStep = await getCurrentSystemStep(userId);
+  // Get systemStep for both authenticated and guest users (from cookie or user record)
+  const currentStep = await getUserSystemStep(userId);
 
   return (
     <>
@@ -89,37 +62,18 @@ export default async function Home() {
           <SystemStepTabs isAuthenticated={!!userId} />
         </div> */}
 
-          <div className="flex flex-col items-center justify-center gap-y-3 max-w-[330px] w-full">
-            <ClerkLoading>
-              <Loader className="h-5 w-5 text-muted-foreground animate-spin" />
-            </ClerkLoading>
-            <ClerkLoaded>
-              <SignedOut>
-                <SignUpButton mode="modal" forceRedirectUrl="/learn">
-                  <Button size="lg" variant="secondary" className="w-full">
-                    בואו נלמד ביחד
-                  </Button>
-                </SignUpButton>
-              </SignedOut>
-              <SignedIn>
-                <Button variant="secondary" size="lg" className="w-full" asChild>
-                  <Link href="/learn">
-                    התחל ללמוד
-                  </Link>
-                </Button>
-              </SignedIn>
-            </ClerkLoaded>
-            {/* divider */}
-
-            {!userId ?
-              <>
-                <div className="w-full h-[1px] bg-slate-300 dark:bg-slate-700" />
-                <Button variant="primaryOutline" size="lg" className="w-full" asChild>
-                  <Link href="/learn">
-                    המשך כאורח 👨🏻‍💻
-                  </Link>
-                </Button></> : null}
-          </div>
+          <MarketingAuthButtons />
+          {/* divider */}
+          {!userId ? (
+            <>
+              <div className="w-full h-[1px] bg-slate-300 dark:bg-slate-700" />
+              <Button variant="primaryOutline" size="lg" className="w-full" asChild>
+                <Link href="/learn">
+                  המשך כאורח 👨🏻‍💻
+                </Link>
+              </Button>
+            </>
+          ) : null}
         </div>
         {/* <LottieJson/> */}
       </div>

@@ -1,13 +1,11 @@
 
-import { ClerkLoaded, ClerkLoading, SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import Image from "next/image";
-import { Loader } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ModeToggle } from "@/components/mode-toggle";
 import FeedbackButton from "@/components/feedbackButton";
 import { getSystemStep } from "@/actions/get-system-step";
 import { getSystemStepLabel } from "@/lib/utils";
+import { AuthButtons } from "@/components/auth-buttons";
 
 const HeaderPage = async () => {
   const currentStep = await getSystemStep();
@@ -50,29 +48,7 @@ const HeaderPage = async () => {
           )} */}
         </div>
         <div className="inline-flex gap-x-4 mt-2 ms:ml-0 ml-4">
-          <div className="mt-2">
-            <ClerkLoading>
-              <Loader className="h-5 w-5 text-muted-foreground animate-spin" />
-            </ClerkLoading>
-          </div>
-          <ClerkLoaded>
-            <SignedIn>
-              <div className="mt-1">
-                <UserButton />
-              </div>
-            </SignedIn>
-            <SignedOut>
-              <SignInButton
-                forceRedirectUrl="/learn"
-                signUpForceRedirectUrl="/learn"
-                mode="modal"
-              >
-                <Button variant="ghost">
-                  התחברות 👨🏻‍💻
-                </Button>
-              </SignInButton>
-            </SignedOut>
-          </ClerkLoaded>
+          <AuthButtons />
           <div className="hidden lg:flex">
             <ModeToggle />
           </div>

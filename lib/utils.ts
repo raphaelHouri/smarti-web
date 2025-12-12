@@ -118,6 +118,17 @@ export function getSystemStepLabel(step: number | null): string {
 }
 
 /**
+ * Get default system step based on current month
+ * Step 2 for December-April (months 12, 1, 2, 3, 4)
+ * Step 1 for other months
+ * @returns Default system step (1 or 2)
+ */
+export function getDefaultSystemStep(): 1 | 2 {
+  const currentMonth = new Date().getMonth() + 1;
+  return (currentMonth >= 12 || currentMonth <= 4) ? 2 : 1;
+}
+
+/**
  * Get system step from cookie (client-side only)
  * @returns System step (1, 2, or 3), defaults to 1
  */

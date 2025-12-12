@@ -7,6 +7,7 @@ import { users } from "@/db/schemaSmarti";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { getOrCreateUserSystemStats } from "@/db/queries";
+import { getDefaultSystemStep } from "@/lib/utils";
 
 function validateStep(step: number): 1 | 2 | 3 {
     if (![1, 2, 3].includes(step)) {
@@ -52,6 +53,31 @@ export async function setGuestSystemStep(step: number) {
     revalidatePath("/leaderboard");
     revalidatePath("/quests");
     revalidatePath("/settings");
+}
+
+/**
+ * Initialize systemStep cookie with default value if it doesn't exist
+ * This is a Server Action that can be called to ensure the cookie is set
+ */
+export async function initializeSystemStepCookie() {
+    const cookieValue = (await cookies()).get("systemStep")?.value;
+    const cookieNumber = cookieValue ? Number(cookieValue) : NaN;
+
+    // If cookie already exists and is valid, do nothing
+    if ([1, 2, 3].includes(cookieNumber)) {
+        return cookieNumber as 1 | 2 | 3;
+    }
+
+    // Calculate default based on current month
+    const defaultStep = getDefaultSystemStep();
+
+    // Set the cookie with the default value
+    (await cookies()).set("systemStep", String(defaultStep), {
+        path: "/",
+        maxAge: 60 * 60 * 24 * 365
+    });
+
+    return defaultStep;
 }
 
 
