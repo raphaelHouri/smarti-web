@@ -448,16 +448,16 @@ export const getFirstCategory = cache(async () => {
         }
 
         // Try to get category for current system step
-        // Note: Using the same pattern as getCategories which works
+        // Order by order field (ascending) to get the lowest order value first
         let data = await db.query.lessonCategory.findFirst({
             where: eq(lessonCategory.systemStep, userSystemStep),
-            orderBy: (lessonCategory, { asc }) => [asc(lessonCategory.categoryType)],
+            orderBy: (lessonCategory, { asc }) => [asc(lessonCategory.order), asc(lessonCategory.categoryType)],
         });
 
         // If no category found for current system step, try to get any category as fallback
         if (!data) {
             data = await db.query.lessonCategory.findFirst({
-                orderBy: (lessonCategory, { asc }) => [asc(lessonCategory.categoryType)],
+                orderBy: (lessonCategory, { asc }) => [asc(lessonCategory.order), asc(lessonCategory.categoryType)],
             });
         }
 

@@ -21,8 +21,7 @@ export const GuestModeSection = () => {
                 className="w-full flex items-center justify-center gap-2"
                 onClick={openRegisterModal}
             >
-                <TapAnimation size="sm" />
-                <UserPlus className="w-4 h-4" />
+                <TapAnimation size="md" />
                 הרשמה / התחברות
             </Button>
         </div>

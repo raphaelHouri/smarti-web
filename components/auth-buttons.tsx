@@ -26,8 +26,8 @@ export function AuthButtons() {
                         mode="modal"
                     >
                         <Button variant="ghost" className="flex items-center gap-2">
-                            <TapAnimation size="sm" />
-                            התחברות                         </Button>
+                        התחברות  <TapAnimation size="md" />
+                                                    </Button>
                     </SignInButton>
                 </SignedOut>
             </ClerkLoaded>
