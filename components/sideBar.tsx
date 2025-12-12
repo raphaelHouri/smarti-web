@@ -4,9 +4,10 @@ import { cn, getSystemStepLabel } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { SideBarItems } from "./sideBar-items";
-import { ClerkLoaded, ClerkLoading, UserButton } from "@clerk/nextjs";
+import { ClerkLoaded, ClerkLoading, UserButton, SignedIn, SignedOut } from "@clerk/nextjs";
 import { Loader } from "lucide-react";
 import { UserEmail } from "./user-email";
+import { GuestModeSection } from "./guest-mode-section";
 
 interface SideBarProps {
     className?: string;
@@ -75,12 +76,17 @@ export const SideBar = ({
                     <Loader className="h-5 w-5 text-muted-foreground animate-spin" />
                 </ClerkLoading>
                 <ClerkLoaded>
-                    <div className="flex items-center gap-2">
-                        <UserButton
-                            afterSignOutUrl="/"
-                        />
-                        <UserEmail />
-                    </div>
+                    <SignedIn>
+                        <div className="flex items-center gap-2">
+                            <UserButton
+                                afterSignOutUrl="/"
+                            />
+                            <UserEmail />
+                        </div>
+                    </SignedIn>
+                    <SignedOut>
+                        <GuestModeSection />
+                    </SignedOut>
                 </ClerkLoaded>
             </div>
         </div>

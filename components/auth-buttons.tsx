@@ -3,6 +3,7 @@
 import { ClerkLoaded, ClerkLoading, SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { TapAnimation } from "./tap-animation";
 
 export function AuthButtons() {
     return (
@@ -24,9 +25,9 @@ export function AuthButtons() {
                         signUpForceRedirectUrl="/learn"
                         mode="modal"
                     >
-                        <Button variant="ghost">
-                            התחברות 👨🏻‍💻
-                        </Button>
+                        <Button variant="ghost" className="flex items-center gap-2">
+                            <TapAnimation size="sm" />
+                            התחברות                         </Button>
                     </SignInButton>
                 </SignedOut>
             </ClerkLoaded>
