@@ -70,7 +70,7 @@ const ContactPage = async () => {
                         {/* Header Section */}
                         <div className="text-center mb-4">
                             <h1 className="text-2xl md:text-3xl font-bold text-neutral-800 dark:text-slate-200 mb-2">
-                                צור קשר עם סמארטי 📞
+                                צור קשר עם סמארטי
                             </h1>
                             <p className="text-muted-foreground text-base">
                                 אנחנו כאן כדי לעזור! צרו קשר איתנו בווצאפ בכל שאלה, בקשה או הערה.
@@ -109,6 +109,11 @@ const ContactPage = async () => {
                                         <MessageCircle className="w-5 h-5" />
                                         פתח שיחה בווצאפ
                                     </a>
+                                    <div className="text-sm text-gray-500 dark:text-gray-400 mt-4 flex flex-col items-center">
+                                        <span>
+                                            058-651-9423 &nbsp;—&nbsp; <span className="font-medium">ליצירת קשר בווצאפ בלבד</span>
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
