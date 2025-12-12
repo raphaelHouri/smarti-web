@@ -27,6 +27,7 @@ export function AuthButtons() {
                     >
                         <Button variant="ghost" className="flex items-center gap-2">
                             התחברות  <UserPlus className="w-4 h-4" />
+                        </Button>
                     </SignInButton>
                 </SignedOut>
             </ClerkLoaded>
