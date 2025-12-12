@@ -12,7 +12,7 @@ export const GuestModeSection = () => {
         <div className="flex flex-col gap-2">
             <div className="flex items-center justify-center px-2 py-1 rounded-md bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-300 dark:border-yellow-700">
                 <span className="text-xs font-medium text-yellow-800 dark:text-yellow-200">
-                    מצב אורח
+                    הינך מצב אורח
                 </span>
             </div>
             <Button
@@ -21,7 +21,7 @@ export const GuestModeSection = () => {
                 className="w-full flex items-center justify-center gap-2"
                 onClick={openRegisterModal}
             >
-                <TapAnimation size="md" />
+                <UserPlus className="w-4 h-4" />
                 הרשמה / התחברות
             </Button>
         </div>

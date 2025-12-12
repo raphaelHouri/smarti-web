@@ -1,7 +1,7 @@
 "use client";
 
 import { ClerkLoaded, ClerkLoading, SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
-import { Loader } from "lucide-react";
+import { Loader, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TapAnimation } from "./tap-animation";
 
@@ -26,8 +26,7 @@ export function AuthButtons() {
                         mode="modal"
                     >
                         <Button variant="ghost" className="flex items-center gap-2">
-                        התחברות  <TapAnimation size="md" />
-                                                    </Button>
+                            התחברות  <UserPlus className="w-4 h-4" />
                     </SignInButton>
                 </SignedOut>
             </ClerkLoaded>
