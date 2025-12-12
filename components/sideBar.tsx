@@ -18,8 +18,9 @@ interface SideBarProps {
 const sidebarItems = [
     { href: '/learn', label: 'למידה', iconSrc: '/learn.svg', registerOnly: false },
     { href: '/online-lesson', label: 'שיעורי אונליין', iconSrc: '/online-lesson.svg', registerOnly: false },
-    { href: '/practice', label: 'תרגול טעויות', iconSrc: '/practice.svg', registerOnly: true },
+    { href: '/practice', label: 'תרגול טעויות', iconSrc: '/improve.svg', registerOnly: true },
     { href: '/shop', label: 'חנות השירותים', iconSrc: '/shop.svg', registerOnly: true },
+    { href: '/shop/book', label: 'חוברות מבחנים', iconSrc: '/practice.svg', registerOnly: true },
     { href: '/leaderboard', label: 'לוח דירוגים', iconSrc: '/leaderboard.svg', registerOnly: true },
     { href: '/quests', label: 'שלבים', iconSrc: '/quests.svg', registerOnly: true },
     { href: '/settings', label: 'הגדרות', iconSrc: '/setting-profile.svg', registerOnly: true },
