@@ -222,6 +222,23 @@ const Quiz = ({
         return questionGroups.reduce((total, group) => total + group.time, 0);
     }, [mode, questionGroups]);
 
+    const renderCountdownTimer = () => {
+        if (!totalTime) return null;
+
+        return (
+            <div className="w-full flex justify-center">
+                <div className="relative px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500/10 to-pink-500/10 backdrop-blur-sm">
+                    <CountdownTimer
+                        initialTime={totalTime}
+                        onFinish={() => {
+                            OpenFinishLessonModal();
+                        }}
+                    />
+                </div>
+            </div>
+        );
+    };
+
 
 
 
@@ -304,9 +321,10 @@ const Quiz = ({
             >
                 {["quiz", "review", "summary"].includes(mode) && (
                     <div className="mb-2 flex items-center gap-2 justify-between">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 whitespace-nowrap">
                             תרגול: {lessonQueryParam ?? "אין תרגול"}
                         </span>
+                        {isMobile && renderCountdownTimer()}
 
                         <Button
                             variant="ghost"
@@ -507,25 +525,15 @@ const Quiz = ({
                 </div>}
             />
 
-            {totalTime && (
-                <div className="w-full flex justify-center">
-                    <div className="relative px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500/10 to-pink-500/10 backdrop-blur-sm">
-                        <CountdownTimer
-                            initialTime={totalTime}
-                            onFinish={() => {
-                                OpenFinishLessonModal();
-                            }}
-                        />
-                    </div>
-                </div>
-            )}
+            {!isMobile && renderCountdownTimer()}
             <div className="flex-1 mb-10">
                 {/* Side result grid – mobile position change */}
                 <div className="block xl:hidden mb-2">
                     {/* Mobile: show the grid above the question with expand/collapse */}
                     {mode !== "practiceMode" && renderResultGrid()}
                 </div>
-                <div className="h-full justify-center flex items-center">
+
+                <div className="h-auto justify-center flex items-center mt-8 md:mt">
                     <div className="lg:min-h-[300px] w-full xl:w-[800px]  2xl:w-[1000px] [@media(min-width:1750px)]:w-[1200px] lg:px-0 px-2 sm:px-6 flex flex-col gap-y-6">
 
                         <div

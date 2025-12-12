@@ -29,6 +29,7 @@ export const IsAdmin = async () => {
  * @returns true if user is in the whitelist, false otherwise
  */
 export const hasFullAccess = async (userId?: string | null): Promise<boolean> => {
+    console.log("fullAccessUserIds", userId);
     const userIdToCheck = userId ?? (await auth()).userId;
     if (!userIdToCheck) return false;
     return fullAccessUserIds.includes(userIdToCheck);

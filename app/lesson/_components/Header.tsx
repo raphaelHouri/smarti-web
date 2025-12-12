@@ -24,7 +24,7 @@ const Header = ({
             />
             <Progress value={percentage} />
 
-            <div className="ml-4">
+            <div className="ml-4 hidden sm:block">
                 <ModeToggle />
             </div>
             {feedback && (
