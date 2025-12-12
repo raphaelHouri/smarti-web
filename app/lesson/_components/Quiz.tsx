@@ -427,7 +427,7 @@ const Quiz = ({
     // FIX LETTER ACTIVE = 0
     if (mode === "summary") {
         return (
-            <>
+            <div className="flex flex-col min-h-screen">
                 <Confetti
                     width={width}
                     height={height}
@@ -466,7 +466,7 @@ const Quiz = ({
                     handleWatchAgain={handleWatchAgain}
                     handlePracticeAgain={handlePracticeAgain}
                 />
-            </>
+            </div>
         )
     }
 
@@ -492,8 +492,7 @@ const Quiz = ({
     }
 
     return (
-        <>
-
+        <div className="flex flex-col min-h-screen">
             <Header
                 percentage={progressPct /* UPDATED */}
                 feedback={<div>
@@ -630,7 +629,7 @@ const Quiz = ({
                 activeIndex={activeIndex}
                 total={total}
             />
-        </>
+        </div>
     );
 }
 
