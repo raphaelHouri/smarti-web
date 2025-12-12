@@ -173,19 +173,32 @@ const Quiz = ({
         };
         handleFinishApproval();
     }, [isFinishApproved, lessonId, userId, resultList, questionsMap, total, systemStep, startAt]);
+
     useEffect(() => {
         const handleUserEffect = async () => {
             if (userId && guest) {
-                // createUser
-                await getOrCreateUserFromGuest(initialLessonId);
+                // Extract categoryId from questionGroups (all groups in a lesson have the same categoryId)
+                const categoryId = questionGroups[0]?.categoryId;
+
+                // Create/update user with the correct categoryId (not lessonId!)
+                if (categoryId) {
+                    await getOrCreateUserFromGuest(categoryId);
+                } else {
+                    await getOrCreateUserFromGuest();
+                }
+
+                // Save quiz results
                 await addResultsToUser(lessonId, userId, resultList, questionsMap.map(q => q.questionId), startAt);
+
                 setGuest(false);
 
-            } else {
+                // No need to refresh - Clerk will redirect back to this page automatically
+            } else if (!userId) {
                 setGuest(true);
             }
         };
         handleUserEffect();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userId]);
     useEffect(() => {
         // Set grid expansion state based on mode: closed for quiz, open for review

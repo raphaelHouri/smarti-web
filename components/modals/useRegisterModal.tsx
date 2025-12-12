@@ -11,13 +11,18 @@ const RegisterModal = () => {
     const [isClient, setIsClient] = useState<boolean>(false)
     const { isOpen, close } = useRegisterModal();
     const { openSignUp, openSignIn } = useClerk();
+
     //Doing this to avoid hydration errors
     useEffect(() => {
         setIsClient(true);
     }, [])
+
     if (!isClient) {
         return null;
     }
+
+    // Get the current URL to redirect back after registration
+    const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
 
     //  isOpen and close are states from zustand
     return (
@@ -47,7 +52,11 @@ const RegisterModal = () => {
                             size="default"
                             className="w-full flex items-center justify-center gap-2"
                             onClick={() => {
-                                openSignUp()
+                                // Pass current URL as redirect URL so user returns to same page after registration
+                                openSignUp({
+                                    redirectUrl: currentUrl,
+                                    fallbackRedirectUrl: currentUrl
+                                });
                                 close()
                             }}>
                             <UserPlus className="w-5 h-5" />
@@ -58,7 +67,11 @@ const RegisterModal = () => {
                             size="default"
                             className="w-full flex items-center justify-center gap-2"
                             onClick={() => {
-                                openSignIn()
+                                // Pass current URL as redirect URL so user returns to same page after sign in
+                                openSignIn({
+                                    redirectUrl: currentUrl,
+                                    fallbackRedirectUrl: currentUrl
+                                });
                                 close()
                             }}>
                             <LogIn className="w-5 h-5" />
