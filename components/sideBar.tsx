@@ -70,7 +70,6 @@ export const SideBar = ({
                         href={item.href}
                         registerOnly={item.registerOnly}
                         onNavigate={onNavigate}
-                        external={item.external}
                     />
                 ))}
             </div>

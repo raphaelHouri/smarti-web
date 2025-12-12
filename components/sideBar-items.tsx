@@ -13,8 +13,7 @@ interface SideBarItemsProps {
     iconSrc: string,
     href: string,
     registerOnly: boolean,
-    onNavigate?: () => void,
-    external?: boolean
+    onNavigate?: () => void
 }
 
 export const SideBarItems = ({
@@ -22,8 +21,7 @@ export const SideBarItems = ({
     iconSrc,
     href,
     registerOnly,
-    onNavigate,
-    external = false
+    onNavigate
 }: SideBarItemsProps) => {
     //usePathname to manage the routes whether active or not
 
@@ -59,38 +57,6 @@ export const SideBarItems = ({
         );
     }
 
-    const buttonContent = (
-        <>
-            <span className="mr-2 ml-auto">{label}</span>
-            <Image
-                src={iconSrc}
-                alt="label"
-                height={32}
-                width={32}
-            />
-        </>
-    );
-
-    if (external) {
-        return (
-            <Button
-                variant="ghost"
-                className="justify-start h-[52px]"
-                asChild
-            >
-                <a 
-                    href={href} 
-                    className="dark:text-slate-200" 
-                    onClick={handleClick}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    {buttonContent}
-                </a>
-            </Button>
-        );
-    }
-
     return (
         <Button
             variant={active ? 'sidebarOutline' : 'ghost'}
@@ -98,7 +64,13 @@ export const SideBarItems = ({
             asChild
         >
             <Link href={href} className="dark:text-slate-200" onClick={handleClick}>
-                {buttonContent}
+                <span className="mr-2 ml-auto">{label}</span>
+                <Image
+                    src={iconSrc}
+                    alt="label"
+                    height={32}
+                    width={32}
+                />
             </Link>
         </Button>
     )
