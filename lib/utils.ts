@@ -3,6 +3,7 @@ import { twMerge } from "tailwind-merge"
 import React from "react"
 import { plans } from "@/db/schemaSmarti";
 import { getCoupon } from "@/db/queries";
+import { hasFullAccess } from "./admin";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -152,14 +153,17 @@ export function getSystemStepFromCookie(): number {
  * @param systemStep - Current system step (1, 2, or 3)
  * @returns true if user has Pro access, false otherwise
  */
-export function checkIsPro(
+export async function checkIsPro(
   userSubscription: Set<string> | null,
   systemStep: number
-): boolean {
+): Promise<boolean> {
   if (!userSubscription) {
     return false;
   }
-
+  const isFullAccess = await hasFullAccess();
+  if (isFullAccess) {
+    return true;
+  }
   // User has access to all systems
   if (userSubscription.has("all")) {
     return true;

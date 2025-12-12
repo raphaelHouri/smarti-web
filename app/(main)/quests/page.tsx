@@ -34,7 +34,7 @@ const QuestsPage = async () => {
 
     const { userId } = await auth();
     const systemStep = await getUserSystemStep(userId);
-    const isPro = checkIsPro(userSubscription, systemStep);
+    const isPro = await checkIsPro(userSubscription, systemStep);
 
 
 

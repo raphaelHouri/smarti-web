@@ -30,7 +30,7 @@ const LeaderBoardPage = async () => {
     const [userProgress, userSubscription, topTenUsers] = await Promise.all([userProgressData, userSubscriptionData, topTenUsersData])
     const { userId } = await auth();
     const systemStep = await getUserSystemStep(userId);
-    const isPro = checkIsPro(userSubscription, systemStep);
+    const isPro = await checkIsPro(userSubscription, systemStep);
 
     if (!userProgress || !userProgress.settings?.lessonCategoryId) {
         redirect("/learn");

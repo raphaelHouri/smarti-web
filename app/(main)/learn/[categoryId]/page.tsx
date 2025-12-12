@@ -31,7 +31,7 @@ const LearnPage = async ({
     // Get systemStep from user or cookie
     const { userId } = await auth();
     const systemStep = await getUserSystemStep(userId);
-    const isPro = checkIsPro(userSubscription, systemStep);
+    const isPro = await checkIsPro(userSubscription, systemStep);
 
     // יצירת מערך חדש עם שדה 'הושלם'
     const lessonsCategoryWithCompleted = lessonsCategory.map((lessonCategoryItem) => {

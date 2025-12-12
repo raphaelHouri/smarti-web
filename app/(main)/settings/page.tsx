@@ -51,7 +51,7 @@ const SettingsPage = async () => {
     }
 
     const systemStep = await getUserSystemStep(userId);
-    const isPro = checkIsPro(userSubscription, systemStep);
+    const isPro = await checkIsPro(userSubscription, systemStep);
 
     return (
         <div className="flex flex-row-reverse gap-[42px] px-6">
