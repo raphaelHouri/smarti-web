@@ -3,7 +3,7 @@ import FeedWrapper from "@/components/FeedWrapper";
 import StickyWrapper from "@/components/sticky-wrapper";
 import { UserProgress } from "@/components/UserProgress";
 import { getUserProgress, getUserSubscriptions, getUserSettingsById, getUserByAuthId, getUserSystemStep } from "@/db/queries"; // Add getUserSettingsById and getUserByAuthId
-import { checkIsPro } from "@/lib/utils";
+import { checkIsPro } from "@/lib/server-utils";
 import { redirect } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import SettingsAnimation from "./_components/lottie";

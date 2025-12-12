@@ -9,7 +9,7 @@ import QuestsSection from "../../quests/_components/quests";
 import { getCategories, getFirstCategory, getLessonCategoryById, getLessonCategoryWithLessonsById, getOrCreateUserFromGuest, getUserProgress, getUserSubscriptions, getUserSystemStep, type UserWithSettings } from "@/db/queries";
 import LessonCategoryPage from "../../courses/page";
 import FeedbackButton from "@/components/feedbackButton";
-import { checkIsPro } from "@/lib/utils";
+import { checkIsPro } from "@/lib/server-utils";
 import { auth } from "@clerk/nextjs/server";
 
 // כל הטקסטים, פרופס וכו' יתורגמו לעברית

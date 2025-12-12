@@ -2,7 +2,7 @@ import FeedWrapper from "@/components/FeedWrapper";
 import StickyWrapper from "@/components/sticky-wrapper";
 import { UserProgress } from "@/components/UserProgress";
 import { getUserProgress, getUserSubscriptions, getUserSystemStep } from "@/db/queries";
-import { checkIsPro } from "@/lib/utils";
+import { checkIsPro } from "@/lib/server-utils";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { Progress } from "@/components/ui/progress";
