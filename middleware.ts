@@ -2,7 +2,7 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { getDefaultSystemStep } from '@/lib/utils';
 
-const isPublicRoute = createRouteMatcher(["/", "/learn(.*)", "/lesson(.*)", "/courses", "/leaderboard", "/shop", "/policy", "/shop(.*)", "/book", "/online-lesson(.*)", "/api/pay(.*)", "/api/pay2(.*)", "/api/book(.*)", "/manifest(.*)", "/manifest.json"],)
+const isPublicRoute = createRouteMatcher(["/", "/learn(.*)", "/lesson(.*)", "/courses", "/leaderboard", "/shop", "/policy", "/shop(.*)", "/book", "/online-lesson(.*)", "/api/pay(.*)", "/api/pay2(.*)", "/api/book(.*)", "/contact(.*)", "/manifest(.*)", "/manifest.json"],)
 
 export default clerkMiddleware(async (auth, req) => {
     if (!isPublicRoute(req)) {
