@@ -24,7 +24,7 @@ const sidebarItems = [
     { href: '/leaderboard', label: 'לוח דירוגים', iconSrc: '/leaderboard.svg', registerOnly: true },
     { href: '/quests', label: 'שלבים', iconSrc: '/quests.svg', registerOnly: true },
     { href: '/settings', label: 'הגדרות', iconSrc: '/setting-profile.svg', registerOnly: true },
-    { href: '/contact?section=contact', label: 'צור קשר', iconSrc: '/whatsapp.svg', registerOnly: false },
+    { href: '/contact', label: 'צור קשר', iconSrc: '/whatsapp.svg', registerOnly: false },
 ];
 
 export const SideBar = ({

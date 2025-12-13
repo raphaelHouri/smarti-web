@@ -26,7 +26,12 @@ export const SideBarItems = ({
     //usePathname to manage the routes whether active or not
 
     const pathname = usePathname();
-    const active = pathname === href || (href === '/online-lesson' && pathname?.startsWith('/online-lesson'));
+    // Extract base path from href (remove query parameters)
+    const baseHref = href.split('?')[0];
+    const active = pathname === href ||
+        pathname === baseHref ||
+        (href === '/online-lesson' && pathname?.startsWith('/online-lesson')) ||
+        (baseHref === '/contact' && pathname?.startsWith('/contact'));
     const { open: OpenRegisterModal } = useRegisterModal();
     const { userId } = useAuth();
 

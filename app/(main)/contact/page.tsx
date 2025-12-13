@@ -31,12 +31,12 @@ interface ContactPageProps {
 const ContactPage = async ({ searchParams }: ContactPageProps) => {
     const { userId } = await auth();
     const params = await searchParams;
-    
+
     // Auto-redirect to WhatsApp group if section is directLinkGroup
     if (params.section === "directLinkGroup") {
-        redirect("https://chat.whatsapp.com/FThYvpNBjFkH5epoEOJ7P");
+        redirect("https://chat.whatsapp.com/FThYvpNBjFkH5epoEOJ7PH");
     }
-    
+
     const section = params.section === "group" ? "group" : "contact";
 
     const userProgressData = userId ? getUserProgress() : null;
