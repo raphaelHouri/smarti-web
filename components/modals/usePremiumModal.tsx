@@ -26,7 +26,7 @@ const PremiumModal = () => {
                 <DialogHeader>
                     <div className="items-center justify-center flex w-full mb-5">
                         <Image
-                            src="/mascot_sad.svg"
+                            src="/mascot.svg"
                             alt="Mascot"
                             height={80}
                             width={80}
