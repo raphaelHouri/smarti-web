@@ -329,12 +329,12 @@ export const addResultsToUser = cache(async (lessonId: string, userId: string, a
 
     const experienceDelta = answers.reduce(
         (acc, answer) => acc + (answer === "a" || answer != null ? 10 : 0),
-        0
+        5
     );
     const geniusScoreDelta = answers.reduce(
         (acc, answer, index) =>
             acc + (answer === "a" ? (index <= 1 ? 5 : 5 + Math.round(acc / 3)) : 0),
-        0
+        5
     );
 
     const existingStats = await db.query.userSystemStats.findFirst({
