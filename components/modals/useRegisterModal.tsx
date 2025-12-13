@@ -6,11 +6,14 @@ import { Button } from "../ui/button";
 import { useRegisterModal } from "@/store/use-register-modal";
 import { useAuth, useClerk } from "@clerk/nextjs";
 import { UserPlus, LogIn, ArrowRightFromLine } from "lucide-react";
+import { trackEvent } from "@/lib/posthog";
+import { useSystemStep } from "@/hooks/use-system-step";
 
 const RegisterModal = () => {
     const [isClient, setIsClient] = useState<boolean>(false)
     const { isOpen, close } = useRegisterModal();
     const { openSignUp, openSignIn } = useClerk();
+    const { step: systemStep } = useSystemStep();
 
     //Doing this to avoid hydration errors
     useEffect(() => {
@@ -52,6 +55,9 @@ const RegisterModal = () => {
                             size="default"
                             className="w-full flex items-center justify-center gap-2"
                             onClick={() => {
+                                trackEvent("sign_up_started", {
+                                    systemStep,
+                                });
                                 // Pass current URL as redirect URL so user returns to same page after registration
                                 openSignUp({
                                     redirectUrl: currentUrl,
@@ -67,6 +73,9 @@ const RegisterModal = () => {
                             size="default"
                             className="w-full flex items-center justify-center gap-2"
                             onClick={() => {
+                                trackEvent("sign_in_started", {
+                                    systemStep,
+                                });
                                 // Pass current URL as redirect URL so user returns to same page after sign in
                                 openSignIn({
                                     redirectUrl: currentUrl,

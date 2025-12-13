@@ -188,6 +188,16 @@ export default function PurchasePageShop({
         });
     }, []); // Only on mount
 
+    // Track books page view when category is books
+    useEffect(() => {
+        if (effectivePackageType === "book") {
+            trackEvent("books_page_viewed", {
+                systemStep,
+                category: selectedCategory,
+            });
+        }
+    }, [effectivePackageType, systemStep, selectedCategory]);
+
     // Track category change
     useEffect(() => {
         if (selectedCategory) {

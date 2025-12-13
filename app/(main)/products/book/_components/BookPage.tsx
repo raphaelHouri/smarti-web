@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { FC } from "react";
 import {
     BookOpen,
@@ -20,11 +20,24 @@ import { cn, getProductYear } from "@/lib/utils";
 import Link from "next/link";
 import FeedbackButton from "@/components/feedbackButton";
 import Image from "next/image";
+import { trackEvent } from "@/lib/posthog";
+import { useSystemStep } from "@/hooks/use-system-step";
 
 type BookPageProps = { product: any | null };
 const BookPage: FC<BookPageProps> = ({ product }) => {
-
+    const { step: systemStep } = useSystemStep();
     const dd = (product?.displayData ?? {}) as any;
+
+    useEffect(() => {
+        if (product?.id) {
+            trackEvent("product_details_viewed", {
+                systemStep,
+                productId: product.id,
+                productType: "book",
+                productName: product.name,
+            });
+        }
+    }, [product?.id, systemStep]);
     const title: string = dd.title ?? product?.name ?? "חוברת הכנה";
     const year: string = getProductYear();
     const stage: string = dd.stage ?? "שלב א'";

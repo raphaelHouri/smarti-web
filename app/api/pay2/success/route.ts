@@ -496,6 +496,17 @@ export async function GET(req: NextRequest) {
     bookIncluded: paymentTransaction.bookIncluded,
     paymentMethod: "credit_card", // Yaad payment gateway
   });
+
+  // Track payment completed
+  trackServerEvent(userId, "payment_completed", {
+    systemStep: paymentTransaction.plan?.systemStep,
+    transactionId,
+    amount,
+    planId: paymentTransaction.planId,
+    planType: paymentTransaction.plan?.packageType,
+    couponId: paymentTransaction.couponId || undefined,
+    bookIncluded: paymentTransaction.bookIncluded,
+  });
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? null;
   const planProductIds = paymentTransaction.plan.productsIds ?? [];
 
@@ -706,6 +717,20 @@ export async function GET(req: NextRequest) {
     }
     if (paymentTransaction.status != "fulfilled") {
       await updatePaymentTransaction(paymentTransaction.id, vat_id, "fulfilled");
+      
+      // Track purchase completed
+      trackServerEvent(userId, "purchase_completed", {
+        systemStep: paymentTransaction.plan?.systemStep,
+        transactionId: paymentTransaction.id,
+        amount,
+        planId: paymentTransaction.planId,
+        planName: paymentTransaction.plan.name,
+        planType: paymentTransaction.plan.packageType,
+        category: paymentTransaction.plan.packageType === "book" ? "books" : "system",
+        couponId: paymentTransaction.couponId || undefined,
+        bookIncluded: paymentTransaction.bookIncluded,
+        subscriptionsCreated: subscriptionArray.length,
+      });
     }
 
 

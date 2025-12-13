@@ -158,6 +158,19 @@ export async function GET(request: Request) {
   const inserted = await db.insert(paymentTransactions).values(transaction).returning({ id: paymentTransactions.id });
   const transactionId = inserted[0]?.id;
 
+  // Track checkout page view (when user initiates payment)
+  trackServerEvent(userId, "checkout_page_viewed", {
+    systemStep: plan.systemStep,
+    planId,
+    planName: plan.name,
+    planType: plan.packageType,
+    category: plan.packageType === "book" ? "books" : "system",
+    totalPrice: amount,
+    couponCode: couponCode || undefined,
+    bookIncluded,
+    transactionId,
+  });
+
   // Track purchase initiation
   trackServerEvent(userId, "purchase_initiated", {
     systemStep: plan.systemStep,

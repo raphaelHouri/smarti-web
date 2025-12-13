@@ -132,6 +132,13 @@ export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string, 
             // 3. Initialize user system stats for the current step
             await getOrCreateUserSystemStats(userId, cookieSystemStep);
 
+            // Track registration completion
+            const { trackServerEvent } = await import("@/lib/posthog-server");
+            trackServerEvent(userId, "registration_completed", {
+                systemStep: cookieSystemStep,
+                email: userEmail,
+            });
+
             if (returnUser) {
                 const newUserResult = await db.query.users.findFirst({
                     where: eq(users.id, userId),

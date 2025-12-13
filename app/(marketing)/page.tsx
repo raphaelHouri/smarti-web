@@ -11,6 +11,7 @@ import { SystemStepTabs } from "@/components/system-step-tabs";
 import { SystemStepHandler } from "@/components/system-step-handler";
 import { MarketingAuthButtons } from "@/components/marketing-auth-buttons";
 import { getUserSystemStep } from "@/db/queries";
+import { HomePageTracker } from "./_components/HomePageTracker";
 
 export const metadata: Metadata = buildMetadata({
   title: "סמארטי | הכנה למבחני מחוננים ומצטיינים",
@@ -26,6 +27,7 @@ export default async function Home() {
 
   return (
     <>
+      <HomePageTracker />
       <Suspense fallback={null}>
         <SystemStepHandler />
       </Suspense>

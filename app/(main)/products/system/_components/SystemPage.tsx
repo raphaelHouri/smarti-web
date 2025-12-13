@@ -1,16 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { FC } from "react";
 import { ArrowLeft, Award, Check, Rocket, Shield, Star, MonitorSmartphone, BarChart3, Calendar } from "lucide-react";
 import Link from "next/link";
 import { cn, getProductYear } from "@/lib/utils";
 import FeedbackButton from "@/components/feedbackButton";
+import { trackEvent } from "@/lib/posthog";
+import { useSystemStep } from "@/hooks/use-system-step";
 
 type SystemPageProps = { product: any | null };
 const SystemPage: FC<SystemPageProps> = ({ product }) => {
     const [isLoading] = useState(false);
+    const { step: systemStep } = useSystemStep();
     const dd = (product?.displayData ?? {}) as any;
+
+    useEffect(() => {
+        if (product?.id) {
+            trackEvent("product_details_viewed", {
+                systemStep,
+                productId: product.id,
+                productType: "system",
+                productName: product.name,
+            });
+        }
+    }, [product?.id, systemStep]);
     const title: string = dd.title ?? product?.name ?? "מערכת הכנה";
     const subtitle: string = product?.description ?? dd.subtitle ?? "תוכנית הכנה חודשית";
     const periodLabel: string = dd.periodLabel ?? "חודשי";
