@@ -208,7 +208,7 @@ const Quiz = ({
             setIsGridExpanded(true);
         } else if (mode === "summary") {
             // In summary mode, show grid on mobile (desktop shows it via !isMobile condition)
-            setIsGridExpanded(!isMobile);
+            setIsGridExpanded(true);
         }
     }, [mode, isMobile]);
     const progressPct = useMemo(
