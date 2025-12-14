@@ -29,7 +29,7 @@ const DEFAULT_KEYWORDS: string[] = [
 const DEFAULT_OPEN_GRAPH = {
     type: "website",
     locale: "he_IL",
-    siteName: "סמרטי",
+    siteName: "סמארטי",
 };
 
 export function buildMetadata(params: BuildMetadataParams): Metadata {

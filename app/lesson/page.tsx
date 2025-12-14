@@ -4,7 +4,7 @@ import { buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
     title: "סמארטי | הכנה למבחני מחוננים ומצטיינים",
-    description: "גשו לשיעורים ולתרגולים לפי המסלול האישי שלכם בסמרטי.",
+    description: "גשו לשיעורים ולתרגולים לפי המסלול האישי שלכם בסמארטי.",
     keywords: ["שיעורים", "תרגולים", "מסלול אישי"],
 });
 
