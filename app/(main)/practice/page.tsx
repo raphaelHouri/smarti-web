@@ -199,7 +199,7 @@ const PracticePage = async () => {
                                                 .map((topic, index) => (
                                                     <div
                                                         key={`${format}-${topic.topicType}-${index}`}
-                                                        className="flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md"
+                                                        className="flex items-center justify-between p-2   rounded-md"
                                                     >
                                                         <p className="font-medium text-neutral-700 dark:text-slate-200">
                                                             {topic.topicType || "נושא כללי"}
@@ -215,7 +215,7 @@ const PracticePage = async () => {
                                     <CardFooter className="p-4 border-t dark:border-gray-700 flex justify-end">
                                         <Button asChild className="bg-indigo-600 hover:bg-indigo-700 text-white">
                                             <Link href={`/practice/${data.categoryId}`}>
-                                                תרגל את כל שאלות {data.categoryType}
+                                                חזרו על שאלות {data.categoryType}
                                             </Link>
                                         </Button>
                                     </CardFooter>

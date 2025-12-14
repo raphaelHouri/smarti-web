@@ -30,6 +30,7 @@ export const SideBarItems = ({
     const baseHref = href.split('?')[0];
     const active = pathname === href ||
         pathname === baseHref ||
+        (href === '/learn' && pathname?.startsWith('/learn')) ||
         (href === '/online-lesson' && pathname?.startsWith('/online-lesson')) ||
         (baseHref === '/contact' && pathname?.startsWith('/contact'));
     const { open: OpenRegisterModal } = useRegisterModal();
