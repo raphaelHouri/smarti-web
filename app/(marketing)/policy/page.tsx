@@ -34,7 +34,7 @@ export default function PolicyPage() {
                         המייסדים (להלן &quot;היוצרים&quot; או/ו &quot;החברה&quot; או/ו &quot;השותפות&quot; או/ו &quot;בית ספר לחיים&quot;) מברכים את בחירתכם להשתמש באפליקציית &quot;הכנה למבחן מחוננים&quot; המופעלת על ידם בהתאם להוראות השימוש המפורטות בתקנון זה.
                     </p>
                     <p className="leading-relaxed">
-                        הכנה למבחן מחוננים הינה אפליקציה מציעה למשתמשיה פלטפורמה מקוונת, נוחה ובטוחה, לקבלת מידע בנוגע ללימודי תיאוריה לנהיגה וכיו&quot;ב(&quot;האפליקציה&quot; ו- &quot;התכנים&quot; בהתאמה). בנוסף, האפליקציה מעניקה למשתמשים אפשרות לרכישת מנוי לקבלת גישה למידע נוסף, מערכת למידה להכנה למבחן מחוננים (&quot;המוצרים&quot;)
+                        הכנה למבחן מחוננים הינה אפליקציה מציעה למשתמשיה פלטפורמה מקוונת, נוחה ובטוחה, לקבלת מידע בנוגע לתוכנית מחוננים ומצטיינים וכיו&quot;ב(&quot;האפליקציה&quot; ו- &quot;התכנים&quot; בהתאמה). בנוסף, האפליקציה מעניקה למשתמשים אפשרות לרכישת מנוי לקבלת גישה למידע נוסף, מערכת למידה להכנה למבחן מחוננים (&quot;המוצרים&quot;)
                     </p>
                     <p className="leading-relaxed">
                         תקנון ותנאי שימוש אלה מהווים הסכם מחייב בינך (״אתה״) לבין האפליקציה בנוגע לשימוש באפליקציה בכל טלפון סלולרי, טאבלט או מכשיר תקשורת אחר כדוגמת מחשב. כמו כן הם חלים על השימוש באפליקציה, בין באמצעות רשת האינטרנט ובין באמצעות כל רשת או אמצעי תקשורת אחר. קרא את תנאי השימוש בקפידה, שכן השימוש באפליקציה וביצוע פעולות בה מעידים על הסכמתך לתנאים הכלולים בתקנון ותנאי שימוש אלו (&quot;התקנון&quot;)
@@ -44,8 +44,8 @@ export default function PolicyPage() {
                     </p>
                     <p className="leading-relaxed">
                         להסרת פרטייך ממאגר החברה, יש לשלוח מייל לכתובת{" "}
-                        <a href="mailto:gifted.israel1@gmail.com" className="text-primary hover:underline">
-                            gifted.israel1@gmail.com
+                        <a href="mailto:contact@smarti-kids.co.il" className="text-primary hover:underline">
+                            contact@smarti-kids.co.il
                         </a>
                     </p>
                 </section>
@@ -303,8 +303,8 @@ export default function PolicyPage() {
                     <h2 className="text-2xl font-bold mt-8 mb-4">מחיקת מידע:</h2>
                     <p className="leading-relaxed">
                         אם הינך מעוניין למחוק את המידע אשר שמור עליך באפליקציה, עליך לשלוח פנייה לכתובת הדואר האלקטרוני{" "}
-                        <a href="mailto:gifted.israel1@gmail.com" className="text-primary hover:underline">
-                            gifted.israel1@gmail.com
+                        <a href="mailto:contact@smarti-kids.co.il" className="text-primary hover:underline">
+                            contact@smarti-kids.co.il
                         </a>
                         . הבקשה צריכה לכלול את פרטי המשתמש שאותו הינכם מעוניינים למחוק.
                     </p>
@@ -316,9 +316,9 @@ export default function PolicyPage() {
                         האפליקציה מקפידה על קיום הוראות החוק ומכבדת את זכותם של משתמשי האפליקציה ואחרים לפרטיות ולשם טוב. אם אתה סבור כי פורסם באפליקציה תוכן הפוגע בך מטעם כלשהו, נא פנה אלינו לפי הפרטים שלהלן ואנו נשתדל לטפל בפנייתך בכל ההקדם. פניות כאמור ניתן להעביר באמצעים הבאים:
                     </p>
                     <div className="space-y-2 pr-4 mt-4">
-                        <p><strong>כתובת:</strong> שדרות בן גוריון 13, אשקלון;</p>
-                        <p><strong>טלפון:</strong> <a href="tel:0737771133" className="text-primary hover:underline">073-7771133</a>;</p>
-                        <p><strong>דוא&quot;ל:</strong> <a href="mailto:gifted.israel1@gmail.com" className="text-primary hover:underline">gifted.israel1@gmail.com</a></p>
+                        <p><strong>כתובת:</strong> שחל 64 ירושלים</p>
+                        <p><strong>טלפון:</strong> <a href="tel:0586519423" className="text-primary hover:underline">073-7771133</a>;</p>
+                        <p><strong>דוא&quot;ל:</strong> <a href="mailto:contact@smarti-kids.co.il" className="text-primary hover:underline">contact@smarti-kids.co.il</a></p>
                     </div>
                 </section>
 
