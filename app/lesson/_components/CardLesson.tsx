@@ -84,7 +84,7 @@ const CardLesson = ({
 
                     <p className={cn(
                         "text-neutral-600 dark:text-neutral-300 text-sm lg:text-base",
-                        selected && "dark:text-black text-sky-500",
+                        selected && "dark:text-sky-500 text-sky-500",
                         selected && status === "correct" && "text-green-500",
                         selected && status === "wrong" && "text-rose-500"
                     )}>
