@@ -75,7 +75,7 @@ const CardLesson = ({
                     {isComprehensionType && <div />}
                     <div className={cn(
                         "lg:w-[30px] flex lg:h-[30px] w-[20px] h-[20px] items-center justify-center rounded-lg border-2 lg:text-[15px] text-xs font-semibold text-black dark:text-neutral-300 ml-2",
-                        selected && "dark:border-sky-400 dark:text-black border-sky-300 text-sky-500",
+                        selected && "dark:border-sky-400 dark:text-sky-500 border-sky-300 text-sky-500",
                         selected && status === "correct" && "dark:border-green-500 border-green-500 text-green-500",
                         selected && status === "wrong" && "dark:border-rose-500 border-rose-500 text-rose-500"
                     )}>
