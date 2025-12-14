@@ -5,8 +5,19 @@ import { useRegisterModal } from "@/store/use-register-modal";
 import { UserPlus } from "lucide-react";
 import { TapAnimation } from "./tap-animation";
 
-export const GuestModeSection = () => {
+interface GuestModeSectionProps {
+    onNavigate?: () => void;
+}
+
+export const GuestModeSection = ({ onNavigate }: GuestModeSectionProps) => {
     const { open: openRegisterModal } = useRegisterModal();
+
+    const handleClick = () => {
+        openRegisterModal();
+        if (onNavigate) {
+            onNavigate();
+        }
+    };
 
     return (
         <div className="flex flex-col gap-2">
@@ -19,7 +30,7 @@ export const GuestModeSection = () => {
                 variant="primary"
                 size="sm"
                 className="w-full flex items-center justify-center gap-2"
-                onClick={openRegisterModal}
+                onClick={handleClick}
             >
                 הרשמה / התחברות
                 <UserPlus className="w-4 h-4" />

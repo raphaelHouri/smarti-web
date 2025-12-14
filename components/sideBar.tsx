@@ -87,7 +87,7 @@ export const SideBar = ({
                         </div>
                     </SignedIn>
                     <SignedOut>
-                        <GuestModeSection />
+                        <GuestModeSection onNavigate={onNavigate} />
                     </SignedOut>
                 </ClerkLoaded>
             </div>
