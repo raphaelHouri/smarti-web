@@ -24,7 +24,7 @@ export default function PolicyPage() {
                     תקנון, תנאי שימוש ומדיניות פרטיות
                 </h1>
                 <p className="text-muted-foreground text-lg">
-                    ב-&quot;מחוננים - הכנה לשלב ב&quot;
+                    הכנה לתוכנית מחוננים
                 </p>
             </div>
 
