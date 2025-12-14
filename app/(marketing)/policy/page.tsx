@@ -317,7 +317,7 @@ export default function PolicyPage() {
                     </p>
                     <div className="space-y-2 pr-4 mt-4">
                         <p><strong>כתובת:</strong> שחל 64 ירושלים</p>
-                        <p><strong>טלפון:</strong> <a href="tel:0586519423" className="text-primary hover:underline">073-7771133</a>;</p>
+                        <p><strong>טלפון:</strong> <a href="tel:0586519423" className="text-primary hover:underline">0586519423</a>;</p>
                         <p><strong>דוא&quot;ל:</strong> <a href="mailto:contact@smarti-kids.co.il" className="text-primary hover:underline">contact@smarti-kids.co.il</a></p>
                     </div>
                 </section>
