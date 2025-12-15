@@ -96,7 +96,7 @@ const Footer = ({
                     )}
                 </div>
                 {mode === "summary" ? (
-                    <div className="w-full flex flex-col lg:flex-row items-center gap-4 lg:gap-6 justify-between">
+                    <div className="w-full flex flex-col lg:flex-row items-center gap-4 lg:gap-6 sm:justify-evenly justify-between">
                         {/* <Button
                             variant="default"
                             size={isMobile ? "sm" : "lg"}
