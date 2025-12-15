@@ -103,7 +103,7 @@ const LessonButton = ({
                     </div>
                 )}
                 {!isPremium && !isPro && (
-                    <div className={cn("absolute left-1/2 -translate-x-1/2 z-20 flex items-center justify-center rounded-full bg-green-100 border border-green-300 px-2 py-0.5 shadow-md hover:scale-110 transition-transform duration-200", isCompleted ? "-bottom-2" : "-top-2")}>
+                    <div className={cn("absolute left-1/2 -translate-x-1/2 z-20 flex items-center justify-center rounded-full bg-green-100 border border-green-300 px-2 py-0.5 shadow-md hover:scale-110 transition-transform duration-200", !locked && rightQuestions !== undefined && totalQuestions !== undefined ? "-top-2" : "-bottom-8")}>
                         <span className="text-xs font-bold text-green-700">
                             חינם
                         </span>
