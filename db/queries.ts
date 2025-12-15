@@ -879,7 +879,7 @@ export const getCategoriesForOnlineLessons = cache(async () => {
     }));
 });
 
-export const getLessonCategoryWithLessonsById = cache(async (categoryId: string) => {
+export const getLessonCategoryWithLessonsById = async (categoryId: string) => {
     const { userId } = await auth();
     if (!userId) return [];
     const userSystemStep = await getUserSystemStep(userId);
@@ -908,7 +908,7 @@ export const getLessonCategoryWithLessonsById = cache(async (categoryId: string)
             )
         )
         .orderBy(desc(userLessonResults.completedAt), desc(userLessonResults.createdAt));
-});
+};
 
 
 export const getUserProgress = cache(async () => {
