@@ -9,7 +9,7 @@ import { FeedbackShow } from "./feedbacks/show";
 import { QuestionEdit } from "./questions/edit";
 import { QuestionShow } from "./questions/show";
 import { QuestionList } from "./questions/list";
-import { MessageSquare, HelpCircle, Layers, BookOpen, ListTree, Ticket, Package, Building, Calendar, Users as UsersIcon, Settings, CreditCard, ClipboardCheck, AlertTriangle, Link as LinkIcon } from "lucide-react";
+import { MessageSquare, HelpCircle, Layers, BookOpen, ListTree, Ticket, Package, Building, Calendar, Users as UsersIcon, Settings, CreditCard, ClipboardCheck, AlertTriangle, Link as LinkIcon, FileText } from "lucide-react";
 import { LessonCategoryList } from "./lessonCategory/list";
 import { LessonCategoryEdit } from "./lessonCategory/edit";
 import { LessonCategoryCreate } from "./lessonCategory/create";
@@ -57,6 +57,10 @@ import { OnlineLessonList } from "./onlineLessons/list";
 import { OnlineLessonEdit } from "./onlineLessons/edit";
 import { OnlineLessonShow } from "./onlineLessons/show";
 import { OnlineLessonCreate } from "./onlineLessons/create";
+import { SystemConfigList } from "./systemConfig/list";
+import { SystemConfigEdit } from "./systemConfig/edit";
+import { SystemConfigShow } from "./systemConfig/show";
+import { SystemConfigCreate } from "./systemConfig/create";
 
 const dataProvider = simpleRestProvider("/api");
 
@@ -192,6 +196,15 @@ const App = () => {
                 recordRepresentation="title"
                 icon={LinkIcon}
                 show={OnlineLessonShow}
+            />
+            <Resource
+                name="systemConfig"
+                list={SystemConfigList}
+                edit={SystemConfigEdit}
+                create={SystemConfigCreate}
+                recordRepresentation="systemStep"
+                icon={FileText}
+                show={SystemConfigShow}
             />
             <CustomRoutes>
                 <Route path="/organization-analytics" element={<AnalyticsWrapper />} />
