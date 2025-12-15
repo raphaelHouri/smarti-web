@@ -102,6 +102,13 @@ const LessonButton = ({
                         <Crown className="h-3.5 w-3.5 text-amber-600" />
                     </div>
                 )}
+                {!isPremium && !isPro && (
+                    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center rounded-full bg-green-100 border border-green-300 px-2 py-0.5 shadow-md hover:scale-110 transition-transform duration-200">
+                        <span className="text-xs font-bold text-green-700">
+                            חינם
+                        </span>
+                    </div>
+                )}
                 <AnimatePresence>
                     {showTooltip && locked && (
                         <motion.div
