@@ -75,7 +75,7 @@ const Challenge = ({
                     <div>
                         <div className="flex items-center gap-2 mb-1">
                             <span className="font-semibold text-emerald-800 dark:text-emerald-100 text-lg">
-                                הסבר שאלה
+                                הסבר התשובה
                             </span>
                             <svg xmlns="http://www.w3.org/2000/svg" className="lucide lucide-info w-5 h-5 text-emerald-400 dark:text-emerald-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                 <circle cx="12" cy="12" r="10" />

@@ -71,7 +71,7 @@ export default async function Home() {
               <div className="w-full h-[1px] bg-slate-300 dark:bg-slate-700" />
               <Button variant="primaryOutline" size="lg" className="w-full" asChild>
                 <Link href="/learn">
-                  המשך כאורח 👨🏻‍💻
+                  המשך כאורח
                 </Link>
               </Button>
             </>
