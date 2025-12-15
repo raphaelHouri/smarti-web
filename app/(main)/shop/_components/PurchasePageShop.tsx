@@ -486,11 +486,11 @@ export default function PurchasePageShop({
                                                 <span className="text-4xl font-bold text-gray-900 dark:text-white">
                                                     {plan.price}
                                                 </span>
-                                                {plan.period && (
+                                                {/* {plan.period && (
                                                     <span className="text-gray-600 dark:text-gray-400">
                                                         /{plan.period}
                                                     </span>
-                                                )}
+                                                )} */}
                                             </>
                                         )}
                                     </div>
