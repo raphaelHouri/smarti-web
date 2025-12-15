@@ -449,9 +449,10 @@ export const userSystemStatsRelations = relations(userSystemStats, ({ one }) => 
 export const systemConfig = pgTable("system_config", {
     id: uuid("id").defaultRandom().primaryKey(),
     systemStep: integer("system_step").notNull(),
-    linkWhatsappGroup: text("link_whatsapp_group"),
+    linkWhatsappGroup: text("link_whatsapp_group").notNull(),
     examDate: timestamp("exam_date"),
-    numQuestion: integer("num_question"),
+    examEndDate: timestamp("exam_end_date"),
+    numQuestion: integer("num_question").notNull(),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
 });

@@ -578,8 +578,8 @@ export async function GET(req: NextRequest) {
     }
 
     if (paymentTransaction.bookIncluded) {
-      const planDisplayData = paymentTransaction.plan.displayData as { productBookId?: string } | null;
-      const productBookId = planDisplayData?.productBookId;
+      const productBookId = (paymentTransaction.plan.displayData as { addBookOption?: { productId?: string } } | null)?.addBookOption?.productId ?? "";
+
       if (!productBookId) {
         return new NextResponse("Product book not configured", { status: 500 });
       }

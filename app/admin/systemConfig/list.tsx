@@ -21,6 +21,9 @@ export const SystemConfigList = () => (
             <DataTable.Col source="examDate">
                 <DateField source="examDate" />
             </DataTable.Col>
+            <DataTable.Col source="examEndDate">
+                <DateField source="examEndDate" />
+            </DataTable.Col>
             <DataTable.NumberCol source="numQuestion" label="Number of Questions" />
             <DataTable.Col source="createdAt">
                 <DateField source="createdAt" />

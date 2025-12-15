@@ -26,6 +26,10 @@ export const SystemConfigEdit = () => (
                 source="examDate"
                 label="Exam Date"
             />
+            <DateInput
+                source="examEndDate"
+                label="Exam End Date"
+            />
             <NumberInput
                 source="numQuestion"
                 label="Number of Questions"
