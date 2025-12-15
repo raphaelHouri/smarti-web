@@ -3,7 +3,7 @@ import { cache } from "react";
 import db from "./drizzle";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { cookies } from "next/headers";
-import { lessonCategory, lessonQuestionGroups, lessons, questions, userLessonResults, users, userSettings, userWrongQuestions, onlineLessons, coupons, paymentTransactions, bookPurchases, subscriptions, ProductType, PaymentStatus, userSystemStats } from './schemaSmarti';
+import { lessonCategory, lessonQuestionGroups, lessons, questions, userLessonResults, users, userSettings, userWrongQuestions, onlineLessons, coupons, paymentTransactions, bookPurchases, subscriptions, ProductType, PaymentStatus, userSystemStats, systemConfig } from './schemaSmarti';
 import { and, asc, desc, eq, gt, inArray, isNotNull, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { hasFullAccess } from "@/lib/admin";
@@ -326,15 +326,21 @@ export const addResultsToUser = cache(async (lessonId: string, userId: string, a
             createdAt: new Date(),
         });
     }
-
+    const numOfQuestions = await db.query.systemConfig.findFirst({
+        where: eq(systemConfig.systemStep, userSystemStep),
+        columns: {
+            numQuestion: true,
+        },
+    });
+    const scorePoint = 5000 / (numOfQuestions?.numQuestion ?? 500);
     const experienceDelta = answers.reduce(
-        (acc, answer) => acc + (answer === "a" || answer != null ? 10 : 0),
-        5
+        (acc, answer) => acc + (answer === "a" || answer != null ? scorePoint : 0),
+        0
     );
     const geniusScoreDelta = answers.reduce(
         (acc, answer, index) =>
-            acc + (answer === "a" ? (index <= 1 ? 5 : 5 + Math.round(acc / 3)) : 0),
-        5
+            acc + (answer === "a" ? (15) : 0),
+        0
     );
 
     const existingStats = await db.query.userSystemStats.findFirst({
@@ -348,8 +354,8 @@ export const addResultsToUser = cache(async (lessonId: string, userId: string, a
         await db
             .update(userSystemStats)
             .set({
-                experience: existingStats.experience + experienceDelta,
-                geniusScore: existingStats.geniusScore + geniusScoreDelta,
+                experience: existingStats.experience + Math.ceil(experienceDelta),
+                geniusScore: existingStats.geniusScore + Math.ceil(geniusScoreDelta),
                 updatedAt: new Date(),
             })
             .where(eq(userSystemStats.id, existingStats.id));
@@ -358,8 +364,8 @@ export const addResultsToUser = cache(async (lessonId: string, userId: string, a
             id: crypto.randomUUID(),
             userId,
             systemStep: userSystemStep,
-            experience: experienceDelta,
-            geniusScore: geniusScoreDelta,
+            experience: Math.ceil(experienceDelta),
+            geniusScore: Math.ceil(geniusScoreDelta),
             createdAt: new Date(),
             updatedAt: new Date(),
         });
