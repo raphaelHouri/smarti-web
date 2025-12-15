@@ -18,6 +18,7 @@
     "generate-pwa-icons": "tsx ./scripts/generatePwaIcons.ts",
     "clerk:copyUsersToProd": "tsx ./scripts/copyUsersFromClerkDevToProd.ts",
     "clerk:copyUsersToProd:dry": "tsx ./scripts/copyUsersFromClerkDevToProd.ts --dry-run",
+    "test:book-convert": "tsx ./scripts/test-book-convert.ts",
     "typecheck": "tsc --noEmit",
     "precheck": "npm run lint && npm run typecheck",
     "ci-check": "npm run precheck && npm run vercel:pull:preview && npm run vercel:build"

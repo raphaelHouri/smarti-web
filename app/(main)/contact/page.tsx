@@ -53,7 +53,7 @@ const ContactPage = async ({ searchParams }: ContactPageProps) => {
 
     const whatsappMessage = encodeURIComponent("שלום, אשמח לקבל עזרה במערכת סמארטי...");
     const whatsappUrl = `https://wa.me/972586519423?text=${whatsappMessage}`;
-    const whatsappGroupUrl = "https://chat.whatsapp.com/FThYvpNBjFkH5epoEOJ7P";
+    const whatsappGroupUrl = "https://chat.whatsapp.com/FThYvpNBjFkH5epoEOJ7PH";
 
     return (
         <div className="flex flex-row-reverse gap-[42px] px-6">
