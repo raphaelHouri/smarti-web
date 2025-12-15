@@ -628,7 +628,8 @@ export async function GET(req: NextRequest) {
   const successHtml = buildSubscriptionsSuccessHtml(subscriptionArray);
   const response = new NextResponse(successHtml, { headers: { "content-type": "text/html; charset=utf-8" } });
   try {
-    if (paymentTransaction.plan.packageType === "book") {
+
+    if (paymentTransaction.status != "fulfilled" && paymentTransaction.status != "icount") {
       const companies = ["לא ידוע", "ישראכרט", "ויזה כאל", "דיינרס", "אמריקן אקספרס", "JCP", "ויזה לאומי"] as const;
       const issuerIndex = Number(req.nextUrl.searchParams.get("Issuer") ?? "0");
       const cardType = companies[isFinite(issuerIndex) ? issuerIndex : 0] ?? companies[0];
@@ -665,8 +666,6 @@ export async function GET(req: NextRequest) {
         });
         await resp.text();
       }
-    }
-    if (paymentTransaction.status != "fulfilled" && paymentTransaction.status != "icount") {
       await updatePaymentTransaction(paymentTransaction.id, vat_id, "icount");
     }
 
@@ -717,7 +716,7 @@ export async function GET(req: NextRequest) {
     }
     if (paymentTransaction.status != "fulfilled") {
       await updatePaymentTransaction(paymentTransaction.id, vat_id, "fulfilled");
-      
+
       // Track purchase completed
       trackServerEvent(userId, "purchase_completed", {
         systemStep: paymentTransaction.plan?.systemStep,
