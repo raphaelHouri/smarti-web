@@ -537,16 +537,19 @@ export const getPlan = cache(async (planId: string) => {
 type CouponLookup = { id: string } | { code: string };
 type CouponRecord = typeof coupons.$inferSelect;
 
-export const getCoupon = cache(async (lookup: CouponLookup): Promise<CouponRecord | null> => {
+export const getCoupon = cache(async (lookup: CouponLookup, systemStep?: number): Promise<CouponRecord | null> => {
     const coupon = await db.query.coupons.findFirst({
-        where: (coupon, { eq }) =>
-            "id" in lookup ? eq(coupon.id, lookup.id) : eq(coupon.code, lookup.code),
+        where: (coupon, { eq, and }) =>
+            and(
+                "id" in lookup ? eq(coupon.id, lookup.id) : eq(coupon.code, lookup.code),
+                systemStep ? eq(coupon.systemStep, systemStep) : undefined
+            ),
     });
     return coupon ?? null;
 });
 
 export const validateCoupon = async (code: string, systemStep?: number): Promise<{ valid: boolean; coupon: CouponRecord | null; error?: string }> => {
-    const coupon = await getCoupon({ code });
+    const coupon = await getCoupon({ code }, systemStep);
 
     if (!coupon) {
         return { valid: false, coupon: null, error: "קופון לא נמצא" };
