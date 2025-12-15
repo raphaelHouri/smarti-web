@@ -4,7 +4,7 @@ import db from "./drizzle";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { cookies } from "next/headers";
 import { lessonCategory, lessonQuestionGroups, lessons, questions, userLessonResults, users, userSettings, userWrongQuestions, onlineLessons, coupons, paymentTransactions, bookPurchases, subscriptions, ProductType, PaymentStatus, userSystemStats, systemConfig } from './schemaSmarti';
-import { and, asc, desc, eq, gt, inArray, isNotNull, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gt, inArray, isNotNull, lt, or, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { hasFullAccess } from "@/lib/admin";
 import { getDefaultSystemStep } from "@/lib/utils";
@@ -1271,6 +1271,165 @@ export const saveUserResult = cache(async (result: Array<"a" | "b" | "c" | "d" |
 });
 
 
+export type LeaderboardUser = {
+    id: string;
+    email: string;
+    experience: number;
+    avatar: string | null;
+};
+
+export type LeaderboardWindow = {
+    users: LeaderboardUser[];
+    userRank: number | null;
+    startRank: number;
+    totalUsers: number;
+};
+
+/**
+ * Efficient leaderboard helper:
+ * - Respects systemStep
+ * - If user is in top 10: returns top 10 users
+ * - Otherwise: returns a window of up to 11 users (5 above, user, 5 below)
+ */
+export const getLeaderboardWindowForUser = cache(async (): Promise<LeaderboardWindow> => {
+    const { userId } = await auth();
+    if (!userId) {
+        return {
+            users: [],
+            userRank: null,
+            startRank: 1,
+            totalUsers: 0,
+        };
+    }
+
+    const userSystemStep = await getUserSystemStep(userId);
+
+    const userStats = await db.query.userSystemStats.findFirst({
+        where: and(
+            eq(userSystemStats.userId, userId),
+            eq(userSystemStats.systemStep, userSystemStep),
+        ),
+    });
+
+    // If user has no stats yet, fall back to simple "top 10" view
+    if (!userStats) {
+        const topUsers = await db
+            .select({
+                id: users.id,
+                email: users.email,
+                experience: userSystemStats.experience,
+                avatar: userSettings.avatar,
+            })
+            .from(userSystemStats)
+            .innerJoin(users, eq(userSystemStats.userId, users.id))
+            .leftJoin(
+                userSettings,
+                and(
+                    eq(userSettings.userId, users.id),
+                    eq(userSettings.systemStep, userSystemStep),
+                ),
+            )
+            .where(eq(userSystemStats.systemStep, userSystemStep))
+            .orderBy(desc(userSystemStats.experience))
+            .limit(10);
+
+        const [{ count: totalUsers }] = await db
+            .select({
+                count: sql<number>`cast(count(*) as int)`,
+            })
+            .from(userSystemStats)
+            .where(eq(userSystemStats.systemStep, userSystemStep));
+
+        return {
+            users: topUsers,
+            userRank: null,
+            startRank: 1,
+            totalUsers,
+        };
+    }
+
+    // Compute rank using the same ordering as the window query:
+    // 1) Higher experience
+    // 2) For equal experience, lower userId comes first
+    const [{ count: higherCount }] = await db
+        .select({
+            count: sql<number>`cast(count(*) as int)`,
+        })
+        .from(userSystemStats)
+        .where(
+            and(
+                eq(userSystemStats.systemStep, userSystemStep),
+                or(
+                    gt(userSystemStats.experience, userStats.experience),
+                    and(
+                        eq(userSystemStats.experience, userStats.experience),
+                        lt(userSystemStats.userId, userId),
+                    ),
+                ),
+            ),
+        );
+
+    const userRank = higherCount + 1;
+
+    const [{ count: totalUsers }] = await db
+        .select({
+            count: sql<number>`cast(count(*) as int)`,
+        })
+        .from(userSystemStats)
+        .where(eq(userSystemStats.systemStep, userSystemStep));
+
+    let startRank: number;
+    let limit: number;
+
+    if (userRank <= 10) {
+        // User is in the top 10 – show top 10
+        startRank = 1;
+        limit = 10;
+    } else {
+        // User is in the middle/bottom – show 5 above + user + 5 below (up to 11)
+        startRank = Math.max(1, userRank - 5);
+        limit = 11;
+
+        // Do not run past the end of the leaderboard
+        if (startRank + limit - 1 > totalUsers) {
+            limit = totalUsers - startRank + 1;
+        }
+    }
+
+    const offset = startRank - 1;
+
+    const windowUsers = await db
+        .select({
+            id: users.id,
+            email: users.email,
+            experience: userSystemStats.experience,
+            avatar: userSettings.avatar,
+        })
+        .from(userSystemStats)
+        .innerJoin(users, eq(userSystemStats.userId, users.id))
+        .leftJoin(
+            userSettings,
+            and(
+                eq(userSettings.userId, users.id),
+                eq(userSettings.systemStep, userSystemStep),
+            ),
+        )
+        .where(eq(userSystemStats.systemStep, userSystemStep))
+        .orderBy(
+            desc(userSystemStats.experience),
+            asc(userSystemStats.userId),
+        )
+        .offset(offset)
+        .limit(limit);
+
+    return {
+        users: windowUsers,
+        userRank,
+        startRank,
+        totalUsers,
+    };
+});
+
 export const getTopUsers = cache(async () => {
     const { userId } = await auth();
     if (!userId) {
@@ -1286,7 +1445,13 @@ export const getTopUsers = cache(async () => {
         })
         .from(userSystemStats)
         .innerJoin(users, eq(userSystemStats.userId, users.id))
-        .leftJoin(userSettings, eq(userSettings.userId, users.id))
+        .leftJoin(
+            userSettings,
+            and(
+                eq(userSettings.userId, users.id),
+                eq(userSettings.systemStep, userSystemStep),
+            ),
+        )
         .where(eq(userSystemStats.systemStep, userSystemStep))
         .orderBy(desc(userSystemStats.experience))
         .limit(10);
