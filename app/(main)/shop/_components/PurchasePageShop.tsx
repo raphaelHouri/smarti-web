@@ -5,7 +5,7 @@ import {
     Package, Rocket, BookOpen, Video, Check, Star,
     Shield, Users, Award, Clock, HelpCircle, ArrowUp
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, parsePrice } from "@/lib/utils";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import FeedbackButton from "@/components/feedbackButton";
@@ -56,7 +56,8 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 function formatCurrency(amount: number): string {
-    return new Intl.NumberFormat(undefined, { style: "currency", currency: "ILS", maximumFractionDigits: 0 }).format(amount);
+    const formattedAmount = new Intl.NumberFormat(undefined, { style: "currency", currency: "ILS", maximumFractionDigits: 0 }).format(amount);
+    return formattedAmount;
 }
 
 function adaptPlans(records: ShopPlanRecord[], pkgType: PackageType): Plan[] {
@@ -264,10 +265,6 @@ export default function PurchasePageShop({
         }
     };
 
-    // Get base price number from formatted string
-    const parsePrice = (priceStr: string): number => {
-        return parseInt(priceStr.replace(/[^\d]/g, "")) || 0;
-    };
 
     const getTotalPrice = (plan: Plan): string => {
         let basePrice: number;
@@ -275,7 +272,7 @@ export default function PurchasePageShop({
         if (plan.category === "books") {
             basePrice = parsePrice(plan.price);
         } else if (plan.addBookOption && planBookOptions[plan.planType]) {
-            basePrice = parsePrice(plan.addBookOption.price);
+            basePrice = parsePrice(plan.addBookOption.price) + parsePrice(plan.price);
         } else {
             basePrice = parsePrice(plan.price);
         }

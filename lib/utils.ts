@@ -62,6 +62,15 @@ export function renderTextWithLTRFormulas(text: string): React.ReactNode[] {
   });
 }
 
+/**
+ * Parse a formatted price string (e.g., "₪120" or "120 ש״ח") and return the numeric value
+ * @param priceStr - The formatted price string
+ * @returns The numeric price value
+ */
+export function parsePrice(priceStr: string): number {
+  return parseInt(priceStr.replace(/[^\d]/g, "")) || 0;
+}
+
 export async function calculateAmount(
   plan: typeof plans.$inferSelect,
   couponId: string | null,
@@ -69,7 +78,10 @@ export async function calculateAmount(
 ) {
   let price = plan.price;
   if (bookIncluded) {
-    price += (plan.displayData as { bookPrice?: number } | null)?.bookPrice ?? 0;
+    const bookPriceStr = (plan.displayData as { addBookOption?: { price?: string; productId?: string } } | null)?.addBookOption?.price;
+    if (bookPriceStr) {
+      price += parsePrice(bookPriceStr);
+    }
   }
 
   if (couponId) {

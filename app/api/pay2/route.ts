@@ -122,8 +122,7 @@ export async function GET(request: Request) {
     if (plan.packageType === "book") {
       productBookId = plan.productsIds?.[0] ?? "";
     } else {
-      const planDisplayData = plan.displayData as { productBookId?: string } | null;
-      productBookId = planDisplayData?.productBookId || "";
+      productBookId = (plan.displayData as { addBookOption?: { productId?: string } } | null)?.addBookOption?.productId ?? "";
     }
     if (!productBookId) return NextResponse.json({ error: "product book not found" }, { status: 404 });
     const hasBookPurchase = await findBookPurchase(productBookId, userId);
