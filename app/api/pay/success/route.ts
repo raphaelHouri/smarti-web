@@ -93,7 +93,7 @@ async function handleLegacySuccess(req: NextRequest) {
     }
   </script>
   <h1 style="text-align:center;">תקלה ברכישה. שגיאה מספר: ${code}.</h1>
-  <div style="text-align:center"><button onClick="dispatchFail();" class="btn btn-primary">נסה שנית</button></div>
+  <div style="text-align:center"><button onClick="dispatchFail();" class="btn btn-primary">נסו שנית</button></div>
 </body>`;
     return new NextResponse(failHtml, contentType);
   }

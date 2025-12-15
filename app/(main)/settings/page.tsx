@@ -12,7 +12,6 @@ import QuestsSection from "../quests/_components/quests";
 import { ProfileSettingsForm } from "./_components/ProfileSettingsForm"; // Import the new form component
 import { auth } from "@clerk/nextjs/server";
 import FeedbackButton from "@/components/feedbackButton";
-import { ModeToggle } from "@/components/mode-toggle";
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
 
@@ -70,8 +69,8 @@ const SettingsPage = async () => {
             </StickyWrapper>
             <FeedWrapper>
                 <div className="w-full flex flex-col items-center" dir="rtl">
-                    <div className="flex flex-row items-start justify-end w-full mb-4 gap-2">
-                        <ModeToggle />
+                    <div className="flex flex-row items-start justify-end w-full mb-4">
+
                         <FeedbackButton screenName="settings" />
                     </div>
                     <SettingsAnimation />
@@ -79,7 +78,7 @@ const SettingsPage = async () => {
                         הגדרות ⚙️
                     </h1>
                     <p className="text-muted-foreground text-center text-lg mb-4">
-                        נהל את הפרופיל שלך, העדפות הלמידה ועוד.
+                        נהלו את הפרופיל שלכם, העדפות הלמידה ועוד.
                     </p>
                     <Separator className="mb-4 h-0.5 rounded-full" />
 

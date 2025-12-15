@@ -187,7 +187,7 @@ export default function CouponModal() {
                                     disabled={isSaving}
                                     className="text-xs"
                                 >
-                                    הסר
+                                    הסירו
                                 </Button>
                             </div>
                             <div className="space-y-2 bg-white/60 dark:bg-gray-800/60 p-3 rounded-lg">
@@ -309,7 +309,7 @@ export default function CouponModal() {
                                         {savedCoupon ? "מחליף..." : "שומר..."}
                                     </>
                                 ) : (
-                                    savedCoupon ? "החלף קופון" : "שמור קופון"
+                                    savedCoupon ? "החליפו קופון" : "שמרו קופון"
                                 )}
                             </Button>
                         )

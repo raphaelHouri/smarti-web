@@ -126,7 +126,7 @@ const PracticePage = async () => {
                         תרגול מביא לשלמות! 🏋️‍♂️
                     </h1>
                     <p className="text-muted-foreground text-center text-base sm:text-lg mb-4">
-                        חזרה על שאלות שטעית בהן ונסה שוב.
+                        חזרה על שאלות שטעית בהן ונסו שוב.
                     </p>
                     <Separator className="mb-6 h-0.5 rounded-full" />
 

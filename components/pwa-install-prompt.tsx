@@ -112,7 +112,7 @@ export function PWAInstallPrompt() {
                 <div className="flex-1">
                     <h3 className="font-semibold text-sm mb-1">התקן את האפליקציה</h3>
                     <p className="text-xs text-gray-600 dark:text-gray-400">
-                        התקן את סמארטי למכשיר שלך לגישה מהירה יותר
+                        התקינו את סמארטי למכשיר שלכם לגישה מהירה יותר
                     </p>
                 </div>
                 <div className="flex gap-2">

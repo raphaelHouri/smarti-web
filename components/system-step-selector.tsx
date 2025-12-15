@@ -34,7 +34,7 @@ export function SystemStepSelector({ currentStep, isAuthenticated }: SystemStepS
                 onChange={handleChange}
             >
                 <option value="" disabled>
-                    בחר
+                    בחרו
                 </option>
                 <option value={1}>שלב 1</option>
                 <option value={2}>שלב 2</option>

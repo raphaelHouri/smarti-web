@@ -63,7 +63,7 @@ const Footer = ({
         status === "none" && mode !== "review"
             ? "בדוק"
             : status === "wrong"
-                ? "נסה שוב"
+                ? "נסו שוב"
                 : mode === "review"
                     ? activeIndex !== undefined && total !== undefined && activeIndex === total - 1 ? "חזרה לדף הסיכום" : "המשך"
                     : activeIndex !== undefined && total !== undefined && activeIndex === total - 1
@@ -183,7 +183,7 @@ const Footer = ({
                             size={isMobile ? "sm" : "lg"}
                             onClick={onPrev}
                         >
-                            {isMobile ? "הסר מרשימה" : "הסר שאלה מרשימת התרגול החוזר"}
+                            {isMobile ? "הסירו מרשימה" : "הסירו שאלה מרשימת התרגול החוזר"}
                             <CheckCircle2 className="h-4 w-4 mr-2" />
                         </Button>
 

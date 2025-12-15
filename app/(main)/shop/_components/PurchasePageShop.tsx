@@ -774,7 +774,7 @@ export default function PurchasePageShop({
                             rel="noopener noreferrer"
                             className="px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg font-medium hover:from-purple-600 hover:to-blue-600 transition-all duration-200 shadow-md inline-flex items-center justify-center"
                         >
-                            צור קשר בווצאפ
+                            צרו קשר בווצאפ
                         </a>
                         <button
                             onClick={scrollToTop}

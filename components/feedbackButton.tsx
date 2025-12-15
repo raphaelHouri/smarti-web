@@ -26,7 +26,7 @@ const FeedbackButton: React.FC<FeedbackButtonProps> = ({ screenName, identifier 
 
     return (
         <Button onClick={handleClick} variant={"secondary"} size="sm" >
-            <span className="hidden sm:inline">כתוב לנו&nbsp;</span>משוב
+            <span className="hidden sm:inline">כתבו לנו&nbsp;</span>משוב
             <MessageSquarePlusIcon className="mr-2 h-4 w-4" />
 
         </Button>

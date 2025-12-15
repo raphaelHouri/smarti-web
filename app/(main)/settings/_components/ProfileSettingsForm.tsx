@@ -168,7 +168,7 @@ export function ProfileSettingsForm({
                         <span role="img" aria-label="user icon">👤</span> מידע אישי
                     </h2>
                     <FormDescription className="mb-4">
-                        עדכן פרטי פרופיל ציבורי.
+                        עדכנו פרטי פרופיל ציבורי.
                     </FormDescription>
                     <Separator className="my-4" />
                     <FormField
@@ -209,7 +209,7 @@ export function ProfileSettingsForm({
                         name="avatar"
                         render={({ field }) => (
                             <FormItem className="mt-6">
-                                <FormLabel>בחר אוואטר</FormLabel>
+                                <FormLabel>בחרו אוואטר</FormLabel>
                                 <FormControl>
                                     <AvatarSelector
                                         value={field.value}
@@ -218,7 +218,7 @@ export function ProfileSettingsForm({
                                     />
                                 </FormControl>
                                 <FormDescription>
-                                    בחר תמונת ייצוג.
+                                    בחרו תמונת ייצוג.
                                 </FormDescription>
                                 <FormMessage />
                             </FormItem>
@@ -232,7 +232,7 @@ export function ProfileSettingsForm({
                         <span role="img" aria-label="preferences icon">📚</span> העדפות למידה
                     </h2>
                     <FormDescription className="mb-4">
-                        התאם את הגדרות חוויית הלמידה שלך.
+                        התאימו את הגדרות חוויית הלמידה שלכם.
                     </FormDescription>
                     <Separator className="my-4" />
                     <FormField
@@ -299,7 +299,7 @@ export function ProfileSettingsForm({
                                 <Select onValueChange={field.onChange} value={field.value || ""}>
                                     <FormControl>
                                         <SelectTrigger disabled={isSavingGradeClass}>
-                                            <SelectValue placeholder="בחר כיתה" />
+                                            <SelectValue placeholder="בחרו כיתה" />
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
@@ -312,7 +312,7 @@ export function ProfileSettingsForm({
                                     </SelectContent>
                                 </Select>
                                 <FormDescription>
-                                    זה עוזר לנו להתאים את חוויית הלמידה שלך.
+                                    זה עוזר לנו להתאים את חוויית הלמידה שלכם.
                                 </FormDescription>
                                 <FormMessage />
                                 {isSavingGradeClass && <Loader2 className="h-4 w-4 animate-spin mt-2" />}
@@ -328,7 +328,7 @@ export function ProfileSettingsForm({
                                 <Select onValueChange={field.onChange} value={field.value || ""}>
                                     <FormControl>
                                         <SelectTrigger disabled={isSavingGender}>
-                                            <SelectValue placeholder="בחר מגדר (אופציונלי)" />
+                                            <SelectValue placeholder="בחרו מגדר (אופציונלי)" />
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>

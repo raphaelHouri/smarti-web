@@ -38,7 +38,7 @@ const FinishLessonModal = () => {
                     </DialogTitle>
                     {isRunning ? (
                         <DialogDescription className="text-center text-base">
-                            האם אתה בטוח שברצונך לסיים את התרגול?
+                            האם אתם בטוחים שברצונכם לסיים את התרגול?
                         </DialogDescription>
                     ) : <DialogDescription className="text-center text-base">
                         המשך לסיכום התרגול כדי לראות את התוצאות שלך!

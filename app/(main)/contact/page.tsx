@@ -144,7 +144,7 @@ const ContactPage = async ({ searchParams }: ContactPageProps) => {
                                                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg font-semibold text-sm transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
                                             >
                                                 <MessageCircle className="w-4 h-4" />
-                                                צור קשר בווצאפ
+                                                צרו קשר בווצאפ
                                             </a>
                                             <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                                                 058-651-9423
@@ -158,7 +158,7 @@ const ContactPage = async ({ searchParams }: ContactPageProps) => {
                                 {/* Header Section - Contact */}
                                 <div className="text-center mb-4">
                                     <h1 className="text-2xl md:text-3xl font-bold text-neutral-800 dark:text-slate-200 mb-2">
-                                        צור קשר עם סמארטי
+                                        צרו קשר עם סמארטי
                                     </h1>
                                     <p className="text-muted-foreground text-base">
                                         אנחנו כאן כדי לעזור! צרו קשר איתנו בווצאפ בכל שאלה, בקשה או הערה.
@@ -183,7 +183,7 @@ const ContactPage = async ({ searchParams }: ContactPageProps) => {
                                         </div>
                                         <div className="flex-1 text-center">
                                             <h2 className="text-xl md:text-2xl font-bold text-neutral-800 dark:text-slate-200 mb-2">
-                                                צור קשר בווצאפ
+                                                צרו קשר בווצאפ
                                             </h2>
                                             <p className="text-muted-foreground mb-4 text-base">
                                                 הדרך המהירה והנוחה ביותר לקבל תמיכה ותשובות לשאלות שלכם

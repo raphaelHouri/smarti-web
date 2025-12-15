@@ -119,7 +119,7 @@ const FeedbacksModal = () => {
                         <Image src="/mascot.svg" alt="קמע" height={80} width={80} />
                     </div>
                     <DialogTitle className="text-center font-bold text-2xl text-gray-800">
-                        המשוב שלך חשוב לנו!
+                        המשוב שלכם חשוב לנו!
                     </DialogTitle>
                     <DialogDescription className="text-center text-gray-600">
                         עזרו לנו להשתפר על ידי שיתוף המחשבות והחוויות שלכם מהמערכת.
@@ -135,7 +135,7 @@ const FeedbacksModal = () => {
                             render={({ field }) => (
                                 <FormItem className="text-center">
                                     <FormLabel className="block mb-2 font-medium text-gray-700">
-                                        איך היית מדרג/ת את החוויה שלך?
+                                        איך הייתם מדרגים את החוויה שלכם?
                                     </FormLabel>
                                     <FormControl>
                                         <div className="grid grid-cols-5 gap-4 justify-items-center">
