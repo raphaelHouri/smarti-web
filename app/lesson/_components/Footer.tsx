@@ -97,14 +97,14 @@ const Footer = ({
                 </div>
                 {mode === "summary" ? (
                     <div className="w-full flex flex-col lg:flex-row items-center gap-4 lg:gap-6 justify-between">
-                        <Button
+                        {/* <Button
                             variant="default"
                             size={isMobile ? "sm" : "lg"}
                             onClick={handlePracticeAgain}
                             className="w-full lg:w-auto"
                         >
                             <RotateCcwIcon className="h-4 w-4 lg:h-6 lg:w-10 ml-2" />
-                            תרגול מחדש                        </Button>
+                            תרגול מחדש                        </Button> */}
                         <Button
                             variant="default"
                             size={isMobile ? "sm" : "lg"}
