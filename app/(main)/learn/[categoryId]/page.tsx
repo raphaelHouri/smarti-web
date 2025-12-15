@@ -12,6 +12,7 @@ import FeedbackButton from "@/components/feedbackButton";
 import { checkIsPro } from "@/lib/server-utils";
 import { auth } from "@clerk/nextjs/server";
 import { LearnPageTracker } from "./_components/LearnPageTracker";
+import { ModeToggle } from "@/components/mode-toggle";
 
 // כל הטקסטים, פרופס וכו' יתורגמו לעברית
 
@@ -77,7 +78,8 @@ const LearnPage = async ({
         <div className="flex gap-[48px] px-2">
             <LearnPageTracker categoryId={categoryId} categoryType={categoryDetails.categoryType} />
             <FeedWrapper>
-                <div className="flex flex-row items-start justify-end ">
+                <div className="flex flex-row items-start justify-end gap-2">
+                    <ModeToggle />
                     <FeedbackButton screenName="learn" identifier={categoryDetails.categoryType} />
                 </div>
                 <LessonCategoryPage />

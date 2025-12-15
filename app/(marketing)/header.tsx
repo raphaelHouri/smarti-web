@@ -49,7 +49,7 @@ const HeaderPage = async () => {
         </div>
         <div className="inline-flex gap-x-4 mt-2 ms:ml-0 ml-4">
           <AuthButtons />
-          <div className="hidden lg:flex">
+          <div className="flex">
             <ModeToggle />
           </div>
           <div className="hidden sm:flex mt-1">

@@ -12,6 +12,7 @@ import QuestsSection from "../quests/_components/quests";
 import { ProfileSettingsForm } from "./_components/ProfileSettingsForm"; // Import the new form component
 import { auth } from "@clerk/nextjs/server";
 import FeedbackButton from "@/components/feedbackButton";
+import { ModeToggle } from "@/components/mode-toggle";
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
 
@@ -69,8 +70,8 @@ const SettingsPage = async () => {
             </StickyWrapper>
             <FeedWrapper>
                 <div className="w-full flex flex-col items-center" dir="rtl">
-                    <div className="flex flex-row items-start justify-end w-full mb-4">
-
+                    <div className="flex flex-row items-start justify-end w-full mb-4 gap-2">
+                        <ModeToggle />
                         <FeedbackButton screenName="settings" />
                     </div>
                     <SettingsAnimation />

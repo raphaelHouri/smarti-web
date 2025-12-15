@@ -8,6 +8,7 @@ import { ClerkLoaded, ClerkLoading, UserButton, SignedIn, SignedOut } from "@cle
 import { Loader } from "lucide-react";
 import { UserEmail } from "./user-email";
 import { GuestModeSection } from "./guest-mode-section";
+import { ModeToggle } from "./mode-toggle";
 
 interface SideBarProps {
     className?: string;
@@ -90,6 +91,7 @@ export const SideBar = ({
                         <GuestModeSection onNavigate={onNavigate} />
                     </SignedOut>
                 </ClerkLoaded>
+
             </div>
         </div>
     )
