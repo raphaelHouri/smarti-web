@@ -142,6 +142,19 @@ export async function GET(request: Request) {
   }
   const amount = await calculateAmount(plan, couponId, bookIncluded);
 
+  // If coupon provides 100% discount, redirect to free route (before creating transaction)
+  if (amount === 0 && couponId) {
+    const base = process.env.NEXT_PUBLIC_APP_URL ?? "";
+    const params = new URLSearchParams();
+    params.set("PlanId", planId);
+    params.set("UserId", userId);
+    if (couponCode) params.set("CouponCode", couponCode);
+    if (email) params.set("Email", email);
+    if (studentName) params.set("StudentName", studentName);
+    if (bookIncluded) params.set("bookIncluded", "True");
+    return NextResponse.redirect(`${base}/api/pay2/free?${params.toString()}`, { status: 302 });
+  }
+
   const transaction: typeof paymentTransactions.$inferInsert = {
     userId,
     planId,

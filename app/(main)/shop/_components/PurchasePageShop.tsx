@@ -627,6 +627,7 @@ export default function PurchasePageShop({
                                                 // Track plan selection
                                                 const originalPrice = getOriginalPrice(plan);
                                                 const discountedPrice = calculatePriceWithCoupon(originalPrice);
+                                                const isFreePurchase = savedCoupon && discountedPrice === 0;
 
                                                 trackEvent("plan_selected", {
                                                     systemStep,
@@ -641,6 +642,7 @@ export default function PurchasePageShop({
                                                     couponCode: savedCoupon?.code,
                                                     couponType: savedCoupon?.type,
                                                     discountValue: savedCoupon?.value,
+                                                    isFreePurchase,
                                                 });
 
                                                 if (plan.category === "books") {
@@ -651,7 +653,10 @@ export default function PurchasePageShop({
                                                     const base = process.env.NEXT_PUBLIC_APP_URL ?? "";
                                                     const userIdParam = userId ? `&UserId=${encodeURIComponent(userId)}` : "";
                                                     const couponParam = savedCoupon ? `&CouponCode=${encodeURIComponent(savedCoupon.code)}` : "";
-                                                    const url = `${base}/api/pay?PlanId=${encodeURIComponent(plan.id)}${couponParam}${userIdParam}`;
+
+                                                    // Use free route if coupon provides 100% discount
+                                                    const route = isFreePurchase ? "/api/pay2/free" : "/api/pay2";
+                                                    const url = `${base}${route}?PlanId=${encodeURIComponent(plan.id)}${couponParam}${userIdParam}`;
                                                     window.open(url, "_self");
                                                 }
                                             };

@@ -74,7 +74,8 @@ export default function BookPurchaseModal() {
         const base = process.env.NEXT_PUBLIC_APP_URL ?? "";
         const couponParam = savedCoupon ? `&CouponCode=${encodeURIComponent(savedCoupon.code)}` : "";
         const userIdParam = userId ? `&UserId=${encodeURIComponent(userId)}` : "";
-        const url = `${base}/api/pay?StudentName=${encodeURIComponent(studentName)}&Email=${encodeURIComponent(email)}&PlanId=${encodeURIComponent(effectivePlanId)}&bookIncluded=True${couponParam}${userIdParam}`;
+        // Use pay2 route (consistent with shop page) - it will handle free vs paid based on coupon
+        const url = `${base}/api/pay2?StudentName=${encodeURIComponent(studentName)}&Email=${encodeURIComponent(email)}&PlanId=${encodeURIComponent(effectivePlanId)}&bookIncluded=True${couponParam}${userIdParam}`;
         close();
         window.open(url, "_self");
     };
