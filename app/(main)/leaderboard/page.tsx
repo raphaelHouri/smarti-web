@@ -12,6 +12,7 @@ import { AnimatedTooltip } from "@/components/animated-tooltip";
 import PromoSection from "../learn/_components/promo";
 import QuestsSection from "../quests/_components/quests";
 import FeedbackButton from "@/components/feedbackButton";
+import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
 
@@ -77,21 +78,48 @@ const LeaderBoardPage = async () => {
                     <Separator className="mb-4 h-0.5 rounded-full" />
                     {leaderboardWindow.users.map((userDetail, index) => {
                         const place = leaderboardWindow.startRank + index;
+                        const isCurrentUser = userDetail.id === userId;
 
                         return (
                             <div
                                 key={userDetail.id}
-                                className="items-center justify-center px-4
-                    flex w-full p-2 hover:bg-gray-200/50 dark:hover:bg-accent rounded-xl cursor-pointer"
+                                className={cn(
+                                    "items-center justify-center px-4 flex w-full p-2 rounded-xl cursor-pointer transition-all",
+                                    isCurrentUser
+                                        ? "bg-gradient-to-r from-purple-500/20 to-pink-500/20 dark:from-purple-500/30 dark:to-pink-500/30 border-2 border-purple-500 dark:border-purple-400 shadow-lg scale-[1.02]"
+                                        : "hover:bg-gray-200/50 dark:hover:bg-accent"
+                                )}
                             >
-                                <p className="font-bold text-slate-700 mr-4 dark:text-slate-200">{place}</p>
-                                <Avatar className="border bg-slate-100 h-8 w-8 mr-6 cursor-pointer">
+                                <p className={cn(
+                                    "font-bold mr-4",
+                                    isCurrentUser
+                                        ? "text-purple-700 dark:text-purple-300 text-lg"
+                                        : "text-slate-700 dark:text-slate-200"
+                                )}>
+                                    {place}
+                                </p>
+                                <Avatar className={cn(
+                                    "border h-8 w-8 mr-6 cursor-pointer",
+                                    isCurrentUser
+                                        ? "border-purple-500 dark:border-purple-400 ring-2 ring-purple-300 dark:ring-purple-600"
+                                        : "bg-slate-100"
+                                )}>
                                     <AvatarImage className="object-cover" src={userDetail.avatar || "/default-avatar.png"} />
                                 </Avatar>
-                                <p className="font-bold text-neutral-800 flex-1 dark:text-slate-200">
+                                <p className={cn(
+                                    "font-bold flex-1",
+                                    isCurrentUser
+                                        ? "text-purple-800 dark:text-purple-200 text-lg"
+                                        : "text-neutral-800 dark:text-slate-200"
+                                )}>
                                     {userDetail.email.split("@")[0]}
+                                    {isCurrentUser && <span className="ml-2 text-sm">(אתה)</span>}
                                 </p>
-                                <p className="text-muted-foreground dark:text-slate-200">
+                                <p className={cn(
+                                    isCurrentUser
+                                        ? "text-purple-700 dark:text-purple-300 font-semibold"
+                                        : "text-muted-foreground dark:text-slate-200"
+                                )}>
                                     <span className="inline-flex items-center gap-1">
                                         <img src="/stars.svg" alt="נקודות" width={20} height={20} className="inline-block" />
                                         {userDetail.experience}
