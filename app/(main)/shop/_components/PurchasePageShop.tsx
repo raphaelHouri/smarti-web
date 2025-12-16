@@ -579,7 +579,7 @@ export default function PurchasePageShop({
                                                     <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
                                                         חוברת הכנה להדפסה(PDF)                                                    </p>
                                                     <Link
-                                                        href={plan.productId ? `/products/book/${plan.productId}` : "/products/book"}
+                                                        href={plan.productId ? `/products/book/${plan.addBookOption.productId}` : "/products/book"}
                                                         className="group inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/20 dark:hover:from-green-900/30 dark:hover:to-emerald-900/30 text-green-700 dark:text-green-300 hover:text-green-800 dark:hover:text-green-200 font-semibold text-xs rounded-lg border border-green-200 dark:border-green-800 hover:border-green-300 dark:hover:border-green-700 transition-all duration-200 shadow-sm hover:shadow-md"
                                                     >
                                                         <BookOpen className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
