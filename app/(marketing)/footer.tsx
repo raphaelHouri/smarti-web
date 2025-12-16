@@ -14,7 +14,7 @@ const FooterPage = () => {
             href="/policy"
             className="inline-flex items-center text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:underline underline-offset-4 transition-all duration-200"
           >
-            מדיניות פרטיות
+            תנאי שימוש ופרטיות
           </Link>
         </div>
       </div>

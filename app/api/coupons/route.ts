@@ -50,6 +50,13 @@ export async function POST(req: Request) {
         if (typeof sanitized.maxUses !== 'number') {
             return NextResponse.json({ error: "Max Uses is required and must be a number" }, { status: 400 });
         }
+        if (sanitized.systemStep === undefined || sanitized.systemStep === null || Number.isNaN(Number(sanitized.systemStep))) {
+            return NextResponse.json({ error: "System Step is required and must be a number" }, { status: 400 });
+        }
+        const systemStep = Number(sanitized.systemStep);
+        if (systemStep < 1 || systemStep > 3) {
+            return NextResponse.json({ error: "System Step must be between 1 and 3" }, { status: 400 });
+        }
 
         // Determine coupon type
         const couponType = sanitized.couponType || sanitized.type || 'percentage';
@@ -67,6 +74,7 @@ export async function POST(req: Request) {
             uses: 0, // Initialize uses to 0
             planId: sanitized.planId,
             organizationYearId: sanitized.organizationYearId,
+            systemStep,
         };
 
         const data = await db.insert(coupons).values(values).returning()

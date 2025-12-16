@@ -30,6 +30,7 @@ export const CouponShow = () => (
                 <span> - </span>
                 <TextField source="year" />
             </ReferenceField>
+            <NumberField source="systemStep" label="System Step" />
             <DateField source="createdAt" />
         </SimpleShowLayout>
     </Show>
