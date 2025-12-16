@@ -1506,10 +1506,15 @@ export const getAllWrongQuestionsWithDetails = async () => {
         return [];
     }
 
+    const systemStep = await getUserSystemStep(userId);
+
     // Fetch all userWrongQuestions for the current user
     // Explicitly select only the columns we need from questions (excluding category_id)
     const wrongQuestionsWithDetails = await db.query.userWrongQuestions.findMany({
-        where: eq(userWrongQuestions.userId, userId),
+        where: and(
+            eq(userWrongQuestions.userId, userId),
+            eq(userWrongQuestions.systemStep, systemStep),
+        ),
         with: {
             question: {
                 columns: {
