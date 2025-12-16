@@ -14,6 +14,7 @@ import { auth } from "@clerk/nextjs/server";
 import FeedbackButton from "@/components/feedbackButton";
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
+import { ModeToggle } from "@/components/mode-toggle";
 
 export const metadata: Metadata = buildMetadata({
     title: "סמארטי | הכנה למבחני מחוננים ומצטיינים",
@@ -71,6 +72,7 @@ const SettingsPage = async () => {
                 <div className="w-full flex flex-col items-center" dir="rtl">
                     <div className="flex flex-row items-start justify-end w-full mb-4">
 
+                        <ModeToggle />
                         <FeedbackButton screenName="settings" />
                     </div>
                     <SettingsAnimation />
