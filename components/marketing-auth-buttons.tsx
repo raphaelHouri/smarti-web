@@ -5,6 +5,7 @@ import { Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { trackEvent } from "@/lib/posthog";
 
 export function MarketingAuthButtons() {
     const [mounted, setMounted] = useState(false);
@@ -30,7 +31,18 @@ export function MarketingAuthButtons() {
             <ClerkLoaded>
                 <SignedOut>
                     <SignUpButton mode="modal" forceRedirectUrl="/learn">
-                        <Button size="lg" variant="secondary" className="w-full">
+                        <Button
+                            size="lg"
+                            variant="secondary"
+                            className="w-full"
+                            onClick={(e) => {
+                                // Track the event - event will bubble to SignUpButton
+                                trackEvent("marketing_signup_cta_clicked", {
+                                    location: "marketing_hero",
+                                });
+                                // Don't prevent default or stop propagation - let Clerk handle it
+                            }}
+                        >
                             בואו נלמד ביחד
                         </Button>
                     </SignUpButton>
