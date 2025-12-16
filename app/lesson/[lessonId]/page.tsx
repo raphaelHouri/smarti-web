@@ -12,8 +12,7 @@ const LessonIdPage = async ({
     const { lessonId } = await params;
     const quizDataByLessonId = getQuizDataByLessonId(lessonId);
 
-
-    const [{ questionGroups, questionsDict, userPreviousAnswers }] = await Promise.all([quizDataByLessonId]);
+    const [{ questionGroups, questionsDict, userPreviousAnswers, numQuestion }] = await Promise.all([quizDataByLessonId]);
 
 
 
@@ -28,6 +27,7 @@ const LessonIdPage = async ({
             questionGroups={questionGroups}
             questionsDict={questionsDict}
             userPreviousAnswers={userPreviousAnswers}
+            systemNumQuestions={numQuestion ?? undefined}
         />
     );
 }

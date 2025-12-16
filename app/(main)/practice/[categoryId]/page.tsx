@@ -12,8 +12,7 @@ const PracticeCategoryIdPage = async ({
     const { categoryId } = await params;
     const quizDataByCategoryId = getUserWrongQuestionsByCategoryId(categoryId);
 
-
-    const [{ questionGroups: rawQuestionGroups, questionsDict, userPreviousAnswers }] = await Promise.all([quizDataByCategoryId]);
+    const [{ questionGroups: rawQuestionGroups, questionsDict, userPreviousAnswers, numQuestion }] = await Promise.all([quizDataByCategoryId]);
 
     // Normalize API shape: ensure `categoryId` exists (fallback from `category`)
     const questionGroups = (rawQuestionGroups as any[]).map((g) => ({
@@ -33,6 +32,7 @@ const PracticeCategoryIdPage = async ({
             questionGroups={questionGroups}
             questionsDict={questionsDict}
             userPreviousAnswers={userPreviousAnswers}
+            systemNumQuestions={numQuestion ?? undefined}
         />
     );
 }

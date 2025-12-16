@@ -108,6 +108,15 @@ const Footer = ({
                         <Button
                             variant="default"
                             size={isMobile ? "sm" : "lg"}
+                            onClick={() => router.push("/practice")}
+                            className="w-full lg:w-auto"
+                        >
+                            <RotateCcwIcon className="h-4 w-4 lg:h-6 lg:w-10 ml-2" />
+                            תרגול טעויות
+                        </Button>
+                        <Button
+                            variant="default"
+                            size={isMobile ? "sm" : "lg"}
                             onClick={handleWatchAgain}
                             className="w-full lg:w-auto flex items-center justify-center"
                         >

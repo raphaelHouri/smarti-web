@@ -45,6 +45,8 @@ interface QuizProps {
     questionGroups: (typeof lessonQuestionGroups.$inferSelect & { categoryType: string, categoryId: string })[],
     questionsDict: { [q: string]: typeof questions.$inferSelect };
     userPreviousAnswers: ("a" | "b" | "c" | "d" | null)[] | null;
+    // Total number of questions configured for this system step (from `systemConfig.numQuestion`)
+    systemNumQuestions?: number;
 }
 
 const Quiz = ({
@@ -52,7 +54,8 @@ const Quiz = ({
     initialCoins,
     questionGroups,
     questionsDict,
-    userPreviousAnswers = null
+    userPreviousAnswers = null,
+    systemNumQuestions,
 }: QuizProps) => {
     const [coins, setCoins] = useState(initialCoins);
     const [status, setStatus] = useState<"correct" | "wrong" | "none">("none")
@@ -216,6 +219,30 @@ const Quiz = ({
             return ((activeIndex + (!!selectedOption ? 1 : 0)) / total) * 100
         },
         [activeIndex, total, selectedOption]
+    );
+
+    // Match scoring logic with server (`addResultsToUser` in `queries.ts` 328–344)
+    const scorePoint = useMemo(
+        () => 5000 / (systemNumQuestions ?? 500),
+        [systemNumQuestions]
+    );
+
+    const experienceDelta = useMemo(
+        () =>
+            resultList.reduce(
+                (acc, answer) => acc + (answer === "a" || answer != null ? scorePoint : 0),
+                0
+            ),
+        [resultList, scorePoint]
+    );
+
+    const geniusScoreDelta = useMemo(
+        () =>
+            resultList.reduce(
+                (acc, answer) => acc + (answer === "a" ? 15 : 0),
+                0
+            ),
+        [resultList]
     );
     const totalTime = useMemo(() => {
         if (mode !== "quiz") return null; // Only calculate in quiz mode
@@ -466,11 +493,11 @@ const Quiz = ({
                     <div className="flex flex-row items-center  sm:gap-x-6 gap-x-3 w-full max-w-xs sm:max-w-md">
                         <ResultCard
                             variant="stars"
-                            value={resultList.reduce((acc, answer) => acc + (answer === 'a' || answer != null ? 10 : 0), 0)}
+                            value={Math.ceil(experienceDelta)}
                         />
                         <ResultCard
                             variant="coins"
-                            value={resultList.reduce((acc, answer, index) => acc + (answer === 'a' ? (index <= 1 ? 5 : 5 + Math.round(acc / 3)) : 0), 0)}
+                            value={Math.ceil(geniusScoreDelta)}
                         />
                     </div>
                     <div className="mb-2">

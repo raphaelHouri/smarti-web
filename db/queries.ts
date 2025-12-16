@@ -1031,6 +1031,16 @@ async function getLessonQuestionGroupsWithFirstQuestionCategorySingleQuery(lesso
 export const getQuizDataByLessonId = cache(async (lessonId: string) => {
     const { userId } = await auth();
     const userSystemStep = await getUserSystemStep(userId);
+
+    // Fetch configured number of questions for this system step (for consistent scoring)
+    const numOfQuestionsConfig = await db.query.systemConfig.findFirst({
+        where: eq(systemConfig.systemStep, userSystemStep),
+        columns: {
+            numQuestion: true,
+        },
+    });
+    const numQuestion = numOfQuestionsConfig?.numQuestion ?? null;
+
     let userPreviousAnswers = null;
     if (userId) {
         const result = await db.query.userLessonResults.findFirst({
@@ -1093,6 +1103,7 @@ export const getQuizDataByLessonId = cache(async (lessonId: string) => {
         questionGroups: questionGroups,
         questionsDict,
         userPreviousAnswers: userPreviousAnswers as Array<"a" | "b" | "c" | "d" | null> | null,
+        numQuestion,
     };
 });
 
@@ -1103,10 +1114,20 @@ export const getUserWrongQuestionsByCategoryId = cache(async (categoryId: string
         return {
             questionGroups: [],
             questionsDict: {},
-            userPreviousAnswers: null
+            userPreviousAnswers: null,
+            numQuestion: null,
         };
     }
     const userSystemStep = await getUserSystemStep(userId);
+
+    // Fetch configured number of questions for this system step (for consistent scoring)
+    const numOfQuestionsConfig = await db.query.systemConfig.findFirst({
+        where: eq(systemConfig.systemStep, userSystemStep),
+        columns: {
+            numQuestion: true,
+        },
+    });
+    const numQuestion = numOfQuestionsConfig?.numQuestion ?? null;
 
     // Fetch all user wrong questions for the given category using the stored lessonCategoryId
     const wrongQuestions = await db.query.userWrongQuestions.findMany({
@@ -1167,7 +1188,8 @@ export const getUserWrongQuestionsByCategoryId = cache(async (categoryId: string
     return {
         questionsDict,
         questionGroups,
-        userPreviousAnswers: null
+        userPreviousAnswers: null,
+        numQuestion,
     };
 });
 export const removeQuestionsWrongByQuestionId = cache(async (questionId: string) => {
