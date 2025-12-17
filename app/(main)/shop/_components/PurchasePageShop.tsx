@@ -293,7 +293,8 @@ export default function PurchasePageShop({
         if (plan.category === "books") {
             return parsePrice(plan.price);
         } else if (plan.addBookOption && planBookOptions[plan.planType]) {
-            return parsePrice(plan.addBookOption.price + plan.price);
+            // Sum the numeric values of plan price and book price, don't concatenate strings
+            return parsePrice(plan.addBookOption.price) + parsePrice(plan.price);
         } else {
             return parsePrice(plan.price);
         }
