@@ -293,7 +293,7 @@ export default function PurchasePageShop({
         if (plan.category === "books") {
             return parsePrice(plan.price);
         } else if (plan.addBookOption && planBookOptions[plan.planType]) {
-            return parsePrice(plan.addBookOption.price);
+            return parsePrice(plan.addBookOption.price + plan.price);
         } else {
             return parsePrice(plan.price);
         }
@@ -477,11 +477,11 @@ export default function PurchasePageShop({
                                                         <span className="text-4xl font-bold text-gray-900 dark:text-white">
                                                             {getTotalPrice(plan)}
                                                         </span>
-                                                        {plan.period && (
+                                                        {/* {plan.period && (
                                                             <span className="text-gray-600 dark:text-gray-400">
                                                                 /{plan.period}
                                                             </span>
-                                                        )}
+                                                        )} */}
                                                     </div>
                                                 </div>
                                             );
