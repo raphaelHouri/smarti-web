@@ -202,7 +202,7 @@ export default function PurchasePageShop({
             if (pricingSection) {
                 pricingSection.scrollIntoView({ behavior: "smooth", block: "start" });
             }
-        }, 400); // small delay so layout is ready
+        }, 1000); // small delay so layout is ready
 
         return () => clearTimeout(timer);
     }, []);
