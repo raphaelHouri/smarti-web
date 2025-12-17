@@ -1296,6 +1296,7 @@ export const saveUserResult = cache(async (result: Array<"a" | "b" | "c" | "d" |
 
 export type LeaderboardUser = {
     id: string;
+    name: string;
     email: string;
     experience: number;
     avatar: string | null;
@@ -1339,6 +1340,7 @@ export const getLeaderboardWindowForUser = cache(async (): Promise<LeaderboardWi
         const topUsers = await db
             .select({
                 id: users.id,
+                name: users.name,
                 email: users.email,
                 experience: userSystemStats.experience,
                 avatar: userSettings.avatar,
@@ -1424,6 +1426,7 @@ export const getLeaderboardWindowForUser = cache(async (): Promise<LeaderboardWi
     const windowUsers = await db
         .select({
             id: users.id,
+            name: users.name,
             email: users.email,
             experience: userSystemStats.experience,
             avatar: userSettings.avatar,

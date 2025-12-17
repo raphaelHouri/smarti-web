@@ -121,7 +121,7 @@ const LeaderBoardPage = async () => {
                                             : "text-neutral-800 dark:text-slate-200"
                                     )}
                                 >
-                                    {userDetail.email.split("@")[0]}
+                                    {userDetail.name != "משתמש אורח" ? userDetail.name : userDetail.email.split("@")[0]}
                                     {isCurrentUser && <span className="ml-2 text-sm">(אתה)</span>}
                                 </p>
                                 <p
