@@ -195,6 +195,18 @@ export default function PurchasePageShop({
         });
     }, []); // Only on mount
 
+    // Smoothly scroll to the pricing section shortly after page load
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            const pricingSection = document.getElementById("pricing");
+            if (pricingSection) {
+                pricingSection.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+        }, 400); // small delay so layout is ready
+
+        return () => clearTimeout(timer);
+    }, []);
+
     // Track books page view when category is books
     useEffect(() => {
         if (effectivePackageType === "book") {
