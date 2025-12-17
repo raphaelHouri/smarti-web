@@ -26,7 +26,7 @@ export type ProductType = typeof productTypeValues[number]
 export const productTypeEnum = pgEnum("productType", productTypeValues)
 
 export const packageTypeEnum = pgEnum("packageType", ["system", "book"])
-export const couponTypeEnum = pgEnum("couponType", ["percentage", "fixed"])
+export const couponTypeEnum = pgEnum("couponType", ["percentage", "fixed", "free"])
 
 export const products = pgTable("products", {
     id: uuid("id").primaryKey(),

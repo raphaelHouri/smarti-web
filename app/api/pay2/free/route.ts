@@ -116,7 +116,7 @@ export async function GET(request: Request) {
 
     // Check if coupon is valid for this plan
     if (coupon.planId && coupon.planId !== planId) {
-        return NextResponse.json({ error: "coupon not valid for this plan" }, { status: 400 });
+        return NextResponse.json({ error: "הקופון לא תקף לתכנית זו" }, { status: 400 });
     }
 
     // Check book purchase if needed

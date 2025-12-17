@@ -71,6 +71,51 @@ export function parsePrice(priceStr: string): number {
   return parseInt(priceStr.replace(/[^\d]/g, "")) || 0;
 }
 
+export type SimpleCoupon = {
+  type: "percentage" | "fixed" | "free";
+  value: number;
+  planId?: string | null;
+};
+
+/**
+ * Apply coupon logic to a base price for a specific plan.
+ * This function is pure and shared between client and server to keep pricing logic in sync.
+ */
+export function applyCouponToPrice(
+  basePrice: number,
+  coupon: SimpleCoupon | null | undefined,
+  planId: string
+): number {
+  if (!coupon) return basePrice;
+
+  let price = basePrice;
+
+  switch (coupon.type) {
+    case "percentage":
+      price -= Math.round((price * coupon.value) / 100);
+      break;
+
+    case "fixed":
+      if (coupon.planId && coupon.planId === planId) {
+        price = price - coupon.value;
+      }
+      // If coupon is for another plan, leave price as basePrice (no effect)
+      break;
+
+    case "free":
+      if (coupon.planId && coupon.planId === planId) {
+        price = 0;
+      }
+      // If coupon is for another plan, leave price as basePrice (no effect)
+      break;
+
+    default:
+      break;
+  }
+
+  return Math.max(price, 0);
+}
+
 export async function calculateAmount(
   plan: typeof plans.$inferSelect,
   couponId: string | null,
@@ -84,23 +129,24 @@ export async function calculateAmount(
     }
   }
 
-  if (couponId) {
-    const coupon = await getCoupon({ id: couponId });
-    if (coupon) {
-      switch (coupon.type) {
-        case "percentage":
-          price -= Math.round((price * coupon.value) / 100);
-          break;
-        case "fixed":
-          price = coupon.value;
-          break;
-        default:
-          break;
-      }
-    }
+  if (!couponId) {
+    return Math.max(price, 0);
   }
 
-  return Math.max(price, 0);
+  const coupon = await getCoupon({ id: couponId });
+  if (!coupon) {
+    return Math.max(price, 0);
+  }
+
+  return applyCouponToPrice(
+    price,
+    {
+      type: coupon.type as SimpleCoupon["type"],
+      value: coupon.value,
+      planId: coupon.planId,
+    },
+    plan.id,
+  );
 }
 
 /**

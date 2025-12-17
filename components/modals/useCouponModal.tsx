@@ -13,7 +13,7 @@ import { getUserCoupon, validateAndSaveCoupon, removeUserCoupon, validateCouponC
 type Coupon = {
     id: string;
     code: string;
-    type: "percentage" | "fixed";
+    type: "percentage" | "fixed" | "free";
     value: number;
     validFrom: Date | string;
     validUntil: Date | string;
@@ -140,6 +140,8 @@ export default function CouponModal() {
     const formatDiscount = (coupon: Coupon) => {
         if (coupon.type === "percentage") {
             return `${coupon.value}%`;
+        } else if (coupon.type === "free") {
+            return "100%";
         } else {
             return `₪${coupon.value}`;
         }

@@ -5,7 +5,7 @@ import {
     Package, Rocket, BookOpen, Video, Check, Star,
     Shield, Users, Award, Clock, HelpCircle, ArrowUp
 } from "lucide-react";
-import { cn, parsePrice } from "@/lib/utils";
+import { cn, parsePrice, applyCouponToPrice, type SimpleCoupon } from "@/lib/utils";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import FeedbackButton from "@/components/feedbackButton";
@@ -130,7 +130,13 @@ export default function PurchasePageShop({
 
     const [selectedCategory, setSelectedCategory] = useState<Category>(initialCategory);
     const [planBookOptions, setPlanBookOptions] = useState<Record<string, boolean>>({});
-    const [savedCoupon, setSavedCoupon] = useState<{ id: string; code: string; type: "percentage" | "fixed"; value: number } | null>(null);
+    const [savedCoupon, setSavedCoupon] = useState<{
+        id: string;
+        code: string;
+        type: SimpleCoupon["type"];
+        value: number;
+        planId?: string | null;
+    } | null>(null);
 
     // Sync with route params when they change
     useEffect(() => {
@@ -254,15 +260,17 @@ export default function PurchasePageShop({
         }));
     };
 
-    // Calculate price with coupon discount
-    const calculatePriceWithCoupon = (basePrice: number): number => {
+    // Calculate price with coupon discount using the shared helper to match server logic
+    const calculatePriceWithCoupon = (basePrice: number, planId: string): number => {
         if (!savedCoupon) return basePrice;
 
-        if (savedCoupon.type === "percentage") {
-            return Math.max(0, basePrice - Math.round((basePrice * savedCoupon.value) / 100));
-        } else {
-            return Math.max(0, basePrice - savedCoupon.value);
-        }
+        const couponForCalc: SimpleCoupon = {
+            type: savedCoupon.type,
+            value: savedCoupon.value,
+            planId: savedCoupon.planId,
+        };
+
+        return applyCouponToPrice(basePrice, couponForCalc, planId);
     };
 
 
@@ -277,7 +285,7 @@ export default function PurchasePageShop({
             basePrice = parsePrice(plan.price);
         }
 
-        const discountedPrice = calculatePriceWithCoupon(basePrice);
+        const discountedPrice = calculatePriceWithCoupon(basePrice, plan.id);
         return formatCurrency(discountedPrice);
     };
 
@@ -448,7 +456,7 @@ export default function PurchasePageShop({
                                     <div className="mb-4">
                                         {savedCoupon && (() => {
                                             const originalPrice = getOriginalPrice(plan);
-                                            const discountedPrice = calculatePriceWithCoupon(originalPrice);
+                                            const discountedPrice = calculatePriceWithCoupon(originalPrice, plan.id);
                                             const hasDiscount = discountedPrice < originalPrice;
 
                                             return (
@@ -626,7 +634,7 @@ export default function PurchasePageShop({
                                             const onClick = () => {
                                                 // Track plan selection
                                                 const originalPrice = getOriginalPrice(plan);
-                                                const discountedPrice = calculatePriceWithCoupon(originalPrice);
+                                                const discountedPrice = calculatePriceWithCoupon(originalPrice, plan.id);
                                                 const isFreePurchase = savedCoupon && discountedPrice === 0;
 
                                                 trackEvent("plan_selected", {
