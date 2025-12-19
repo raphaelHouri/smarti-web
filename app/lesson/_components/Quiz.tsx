@@ -31,6 +31,7 @@ import { usePreventBackNavigation } from "@/hooks/use-prevent-back-navigation";
 import { useCoinsModal } from "@/store/use-coins";
 import { trackEvent } from "@/lib/posthog";
 import { useSystemStep } from "@/hooks/use-system-step";
+import RankingAnimation from "./RankingAnimation";
 
 const optionsSchema = z.object({
     a: z.string(),
@@ -73,6 +74,9 @@ const Quiz = ({
     const [isGridExpanded, setIsGridExpanded] = useState(false)
     const { userId } = useAuth();
     const [startAt, setStartAt] = useState<Date | null>(null);
+    const [previousRank, setPreviousRank] = useState<number | null>(null);
+    const [newRank, setNewRank] = useState<number | null>(null);
+    const [totalUsers, setTotalUsers] = useState<number>(0);
     const isMobile = useMedia("(max-width:1024px)");
     const isReallyMobile = useMedia("(max-width:640px)");
     const questionsMap = questionGroups.flatMap((categoryValue, index1) =>
@@ -146,7 +150,39 @@ const Quiz = ({
     useEffect(() => {
         const handleFinishApproval = async () => {
             if (isFinishApproved && userId) {
+                // Fetch ranking before updating results
+                let prevRank: number | null = null;
+                let totalUsersCount = 0;
+                try {
+                    const rankingResponse = await fetch("/api/user-ranking");
+                    if (rankingResponse.ok) {
+                        const rankingData = await rankingResponse.json();
+                        prevRank = rankingData.userRank;
+                        totalUsersCount = rankingData.totalUsers || 0;
+                        setPreviousRank(prevRank);
+                        setTotalUsers(totalUsersCount);
+                    }
+                } catch (error) {
+                    console.error("Error fetching previous ranking:", error);
+                }
+
                 await addResultsToUser(lessonId, userId, resultList, questionsMap.map(q => q.questionId), startAt);
+
+                // Fetch new ranking after updating results
+                try {
+                    // Small delay to ensure database is updated
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    const rankingResponse = await fetch("/api/user-ranking");
+                    if (rankingResponse.ok) {
+                        const rankingData = await rankingResponse.json();
+                        setNewRank(rankingData.userRank);
+                        if (rankingData.totalUsers) {
+                            setTotalUsers(rankingData.totalUsers);
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error fetching new ranking:", error);
+                }
 
                 // Track lesson completion
                 const answeredQuestions = resultList.filter(answer => answer !== null).length;
@@ -531,6 +567,14 @@ const Quiz = ({
                             value={Math.ceil(geniusScoreDelta)}
                         />
                     </div>
+                    {userId && previousRank !== null && newRank !== null && (
+                        <RankingAnimation
+                            previousRank={previousRank}
+                            newRank={newRank}
+                            totalUsers={totalUsers}
+                            className="mb-4"
+                        />
+                    )}
                     <div className="mb-2">
                         {renderResultGrid()}
                     </div>
