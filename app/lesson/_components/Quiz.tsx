@@ -21,6 +21,7 @@ import { useFinishLessonModal } from "@/store/use-finish-lesson-modal";
 import { useRegisterModal } from "@/store/use-register-modal";
 import { useAuth } from "@clerk/nextjs";
 import { addResultsToUser, getOrCreateUserFromGuest, removeQuestionsWrongByQuestionId } from "@/db/queries";
+import { getUserRanking } from "@/actions/user-ranking";
 import { Button } from "@/components/ui/button";
 import CountdownTimer from "./CountdownTimer";
 import { ChevronDown, ChevronUp, Clock, Settings, AlarmClockOff } from "lucide-react";
@@ -77,6 +78,7 @@ const Quiz = ({
     const [previousRank, setPreviousRank] = useState<number | null>(null);
     const [newRank, setNewRank] = useState<number | null>(null);
     const [totalUsers, setTotalUsers] = useState<number>(0);
+    const [isTooltipOpen, setIsTooltipOpen] = useState(false);
     const isMobile = useMedia("(max-width:1024px)");
     const isReallyMobile = useMedia("(max-width:640px)");
     const questionsMap = questionGroups.flatMap((categoryValue, index1) =>
@@ -151,17 +153,10 @@ const Quiz = ({
         const handleFinishApproval = async () => {
             if (isFinishApproved && userId) {
                 // Fetch ranking before updating results
-                let prevRank: number | null = null;
-                let totalUsersCount = 0;
                 try {
-                    const rankingResponse = await fetch("/api/user-ranking");
-                    if (rankingResponse.ok) {
-                        const rankingData = await rankingResponse.json();
-                        prevRank = rankingData.userRank;
-                        totalUsersCount = rankingData.totalUsers || 0;
-                        setPreviousRank(prevRank);
-                        setTotalUsers(totalUsersCount);
-                    }
+                    const rankingData = await getUserRanking();
+                    setPreviousRank(rankingData.userRank);
+                    setTotalUsers(rankingData.totalUsers || 0);
                 } catch (error) {
                     console.error("Error fetching previous ranking:", error);
                 }
@@ -172,13 +167,10 @@ const Quiz = ({
                 try {
                     // Small delay to ensure database is updated
                     await new Promise(resolve => setTimeout(resolve, 500));
-                    const rankingResponse = await fetch("/api/user-ranking");
-                    if (rankingResponse.ok) {
-                        const rankingData = await rankingResponse.json();
-                        setNewRank(rankingData.userRank);
-                        if (rankingData.totalUsers) {
-                            setTotalUsers(rankingData.totalUsers);
-                        }
+                    const rankingData = await getUserRanking();
+                    setNewRank(rankingData.userRank);
+                    if (rankingData.totalUsers) {
+                        setTotalUsers(rankingData.totalUsers);
                     }
                 } catch (error) {
                     console.error("Error fetching new ranking:", error);
@@ -297,9 +289,12 @@ const Quiz = ({
                 <div className="w-full flex justify-center">
                     <div className="relative px-5 py-3 rounded-xl bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-orange-500/20 backdrop-blur-sm border-2 border-purple-400/30 shadow-lg hover:shadow-purple-500/20 transition-all duration-300 hover:scale-105">
                         <TooltipProvider>
-                            <Tooltip>
+                            <Tooltip open={isTooltipOpen} onOpenChange={setIsTooltipOpen}>
                                 <TooltipTrigger asChild>
-                                    <div className="flex flex-row items-center gap-2.5 text-sm font-medium cursor-pointer group">
+                                    <div
+                                        className="flex flex-row items-center gap-2.5 text-sm font-medium cursor-pointer group"
+                                        onClick={() => setIsTooltipOpen(!isTooltipOpen)}
+                                    >
                                         <span className="bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
                                             ללא טיימר
                                         </span>

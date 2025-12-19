@@ -1,16 +1,20 @@
+"use server";
+
 import { auth } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
 import { getUserSystemStep } from "@/db/queries";
-import { db } from "@/db";
-import { userSystemStats, users } from "@/db/schemaSmarti";
-import { eq, and, or, gt, lt, desc, asc } from "drizzle-orm";
+import db from "@/db/drizzle";
+import { userSystemStats } from "@/db/schemaSmarti";
+import { eq, and, or, gt, lt } from "drizzle-orm";
 import { sql } from "drizzle-orm";
 
-export async function GET() {
+export async function getUserRanking() {
     try {
         const { userId } = await auth();
         if (!userId) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+            return {
+                userRank: null,
+                totalUsers: 0,
+            };
         }
 
         const userSystemStep = await getUserSystemStep(userId);
@@ -24,10 +28,10 @@ export async function GET() {
         });
 
         if (!userStats) {
-            return NextResponse.json({
+            return {
                 userRank: null,
                 totalUsers: 0,
-            });
+            };
         }
 
         // Calculate user's rank
@@ -59,16 +63,16 @@ export async function GET() {
             .from(userSystemStats)
             .where(eq(userSystemStats.systemStep, userSystemStep));
 
-        return NextResponse.json({
+        return {
             userRank,
             totalUsers,
-        });
+        };
     } catch (error) {
         console.error("Error fetching user ranking:", error);
-        return NextResponse.json(
-            { error: "Internal server error" },
-            { status: 500 }
-        );
+        return {
+            userRank: null,
+            totalUsers: 0,
+        };
     }
 }
 
