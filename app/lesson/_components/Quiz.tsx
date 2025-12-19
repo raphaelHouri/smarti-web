@@ -23,7 +23,7 @@ import { useAuth } from "@clerk/nextjs";
 import { addResultsToUser, getOrCreateUserFromGuest, removeQuestionsWrongByQuestionId } from "@/db/queries";
 import { Button } from "@/components/ui/button";
 import CountdownTimer from "./CountdownTimer";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Clock, Settings } from "lucide-react";
 import FeedbackButton from "@/components/feedbackButton";
 import { useExitModal } from "@/store/use-exit-modal";
 import { usePreventBackNavigation } from "@/hooks/use-prevent-back-navigation";
@@ -47,6 +47,7 @@ interface QuizProps {
     userPreviousAnswers: ("a" | "b" | "c" | "d" | null)[] | null;
     // Total number of questions configured for this system step (from `systemConfig.numQuestion`)
     systemNumQuestions?: number;
+    lessonClock?: boolean;
 }
 
 const Quiz = ({
@@ -56,6 +57,7 @@ const Quiz = ({
     questionsDict,
     userPreviousAnswers = null,
     systemNumQuestions,
+    lessonClock = true,
 }: QuizProps) => {
     const [coins, setCoins] = useState(initialCoins);
     const [status, setStatus] = useState<"correct" | "wrong" | "none">("none")
@@ -251,6 +253,21 @@ const Quiz = ({
 
     const renderCountdownTimer = () => {
         if (!totalTime) return null;
+
+        // If lessonClock is disabled, show icon with message instead
+        if (!lessonClock) {
+            return (
+                <div className="w-full flex justify-center">
+                    <div className="relative px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500/10 to-pink-500/10 backdrop-blur-sm border border-purple-500/20">
+                        <div className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
+                            <Clock className="w-4 h-4 text-purple-500" />
+                            <span>להחזרת השעון עדכנו את ההגדרה בהגדרות</span>
+                            <Settings className="w-4 h-4 text-purple-500" />
+                        </div>
+                    </div>
+                </div>
+            );
+        }
 
         return (
             <div className="w-full flex justify-center">
