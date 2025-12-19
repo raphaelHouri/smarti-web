@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { useState, useTransition, useEffect, useMemo, useCallback, useLayoutEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import useWindowSize from 'react-use/lib/useWindowSize'
 import Confetti from 'react-confetti'
 import Header from "./Header";
@@ -33,6 +34,8 @@ import { useCoinsModal } from "@/store/use-coins";
 import { trackEvent } from "@/lib/posthog";
 import { useSystemStep } from "@/hooks/use-system-step";
 import RankingAnimation from "./RankingAnimation";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { TrendingUp } from "lucide-react";
 
 const optionsSchema = z.object({
     a: z.string(),
@@ -79,6 +82,8 @@ const Quiz = ({
     const [newRank, setNewRank] = useState<number | null>(null);
     const [totalUsers, setTotalUsers] = useState<number>(0);
     const [isTooltipOpen, setIsTooltipOpen] = useState(false);
+    const [showRankingModal, setShowRankingModal] = useState(false);
+    const [showRankingSummary, setShowRankingSummary] = useState(false);
     const isMobile = useMedia("(max-width:1024px)");
     const isReallyMobile = useMedia("(max-width:640px)");
     const questionsMap = questionGroups.flatMap((categoryValue, index1) =>
@@ -153,8 +158,11 @@ const Quiz = ({
         const handleFinishApproval = async () => {
             if (isFinishApproved && userId) {
                 // Fetch ranking before updating results
+                let prevRank: number | null = null;
                 try {
                     const rankingData = await getUserRanking();
+                    console.log("Previous ranking:", rankingData);
+                    prevRank = rankingData.userRank;
                     setPreviousRank(rankingData.userRank);
                     setTotalUsers(rankingData.totalUsers || 0);
                 } catch (error) {
@@ -165,12 +173,18 @@ const Quiz = ({
 
                 // Fetch new ranking after updating results
                 try {
-                    // Small delay to ensure database is updated
-                    await new Promise(resolve => setTimeout(resolve, 500));
+                    // Longer delay to ensure database is updated
+                    await new Promise(resolve => setTimeout(resolve, 1000));
                     const rankingData = await getUserRanking();
+                    console.log("New ranking:", rankingData);
                     setNewRank(rankingData.userRank);
                     if (rankingData.totalUsers) {
                         setTotalUsers(rankingData.totalUsers);
+                    }
+
+                    // Show ranking modal if ranking improved
+                    if (prevRank !== null && rankingData.userRank !== null && rankingData.userRank < prevRank) {
+                        setShowRankingModal(true);
                     }
                 } catch (error) {
                     console.error("Error fetching new ranking:", error);
@@ -542,6 +556,24 @@ const Quiz = ({
                     numberOfPieces={1000}
                     tweenDuration={10000}
                 />
+                {/* Ranking Animation Modal */}
+                <Dialog open={showRankingModal} onOpenChange={() => { }}>
+                    <DialogContent
+                        className="max-w-2xl p-0 border-0 bg-transparent shadow-none [&>button]:hidden"
+                        onInteractOutside={(e) => e.preventDefault()}
+                        onEscapeKeyDown={(e) => e.preventDefault()}
+                    >
+                        <RankingAnimation
+                            previousRank={previousRank}
+                            newRank={newRank}
+                            totalUsers={totalUsers}
+                            onClose={() => {
+                                setShowRankingModal(false);
+                                setShowRankingSummary(true);
+                            }}
+                        />
+                    </DialogContent>
+                </Dialog>
                 <div className="flex flex-col gap-y-8 items-center justify-center h-full max-w-xl mx-auto px-2 sm:px-4">
                     <CelebrateJson />
                     <div className="space-y-4 text-center animate-fade-in pt-12 sm:pt-20">
@@ -562,13 +594,48 @@ const Quiz = ({
                             value={Math.ceil(geniusScoreDelta)}
                         />
                     </div>
-                    {userId && previousRank !== null && newRank !== null && (
-                        <RankingAnimation
-                            previousRank={previousRank}
-                            newRank={newRank}
-                            totalUsers={totalUsers}
-                            className="mb-4"
-                        />
+                    {/* Ranking Summary Bar - Clickable to reopen animation */}
+                    {userId && showRankingSummary && previousRank !== null && newRank !== null && newRank < previousRank && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5 }}
+                            onClick={() => setShowRankingModal(true)}
+                            className="w-full bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/30 dark:to-green-900/30 border-2 border-emerald-400 dark:border-emerald-300 rounded-xl p-4 mb-4 cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
+                        >
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="bg-emerald-500 dark:bg-emerald-400 rounded-full p-2">
+                                        <TrendingUp className="w-5 h-5 text-white" />
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-emerald-800 dark:text-emerald-100">
+                                            עלית בדירוג!
+                                        </p>
+                                        <p className="text-sm text-emerald-700 dark:text-emerald-300">
+                                            מיקום #{previousRank} → #{newRank}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">
+                                        +{previousRank - newRank}
+                                    </p>
+                                    <p className="text-xs text-emerald-600 dark:text-emerald-400">
+                                        מקומות
+                                    </p>
+                                    <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1 opacity-70">
+                                        לחץ לצפייה שוב
+                                    </p>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                    {/* Debug info - remove in production */}
+                    {process.env.NODE_ENV === 'development' && userId && (
+                        <div className="text-xs text-muted-foreground p-2 bg-gray-100 dark:bg-gray-800 rounded">
+                            Debug: previousRank={previousRank?.toString() ?? 'null'}, newRank={newRank?.toString() ?? 'null'}, totalUsers={totalUsers}
+                        </div>
                     )}
                     <div className="mb-2">
                         {renderResultGrid()}
