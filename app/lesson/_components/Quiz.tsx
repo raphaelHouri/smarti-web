@@ -22,7 +22,8 @@ import { useFinishLessonModal } from "@/store/use-finish-lesson-modal";
 import { useRegisterModal } from "@/store/use-register-modal";
 import { useAuth } from "@clerk/nextjs";
 import { addResultsToUser, getOrCreateUserFromGuest, removeQuestionsWrongByQuestionId } from "@/db/queries";
-import { getUserRanking } from "@/actions/user-ranking";
+// TODO: Uncomment when ready to re-enable ranking animation
+// import { getUserRanking } from "@/actions/user-ranking";
 import { Button } from "@/components/ui/button";
 import CountdownTimer from "./CountdownTimer";
 import { ChevronDown, ChevronUp, Clock, Settings, AlarmClockOff } from "lucide-react";
@@ -33,9 +34,10 @@ import { usePreventBackNavigation } from "@/hooks/use-prevent-back-navigation";
 import { useCoinsModal } from "@/store/use-coins";
 import { trackEvent } from "@/lib/posthog";
 import { useSystemStep } from "@/hooks/use-system-step";
-import RankingAnimation from "./RankingAnimation";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { TrendingUp } from "lucide-react";
+// TODO: Uncomment when ready to re-enable ranking animation
+// import RankingAnimation from "./RankingAnimation";
+// import { Dialog, DialogContent } from "@/components/ui/dialog";
+// import { TrendingUp } from "lucide-react";
 
 const optionsSchema = z.object({
     a: z.string(),
@@ -78,9 +80,12 @@ const Quiz = ({
     const [isGridExpanded, setIsGridExpanded] = useState(false)
     const { userId } = useAuth();
     const [startAt, setStartAt] = useState<Date | null>(null);
-    const [previousRank, setPreviousRank] = useState<number | null>(null);
-    const [newRank, setNewRank] = useState<number | null>(null);
-    const [totalUsers, setTotalUsers] = useState<number>(0);
+    // TODO: Uncomment when ready to re-enable ranking animation
+    // const [previousRank, setPreviousRank] = useState<number | null>(null);
+    // const [newRank, setNewRank] = useState<number | null>(null);
+    // const [totalUsers, setTotalUsers] = useState<number>(0);
+    // const [showRankingModal, setShowRankingModal] = useState(false);
+    // const [showRankingSummary, setShowRankingSummary] = useState(false);
     const [isTooltipOpen, setIsTooltipOpen] = useState(false);
     const [showRankingModal, setShowRankingModal] = useState(false);
     const [showRankingSummary, setShowRankingSummary] = useState(false);
@@ -157,38 +162,40 @@ const Quiz = ({
     useEffect(() => {
         const handleFinishApproval = async () => {
             if (isFinishApproved && userId) {
-                // Fetch ranking before updating results
-                let prevRank: number | null = null;
-                try {
-                    const rankingData = await getUserRanking();
-                    console.log("Previous ranking:", rankingData);
-                    prevRank = rankingData.userRank;
-                    setPreviousRank(rankingData.userRank);
-                    setTotalUsers(rankingData.totalUsers || 0);
-                } catch (error) {
-                    console.error("Error fetching previous ranking:", error);
-                }
+                // TODO: Uncomment when ready to re-enable ranking animation
+                // // Fetch ranking before updating results
+                // let prevRank: number | null = null;
+                // try {
+                //     const rankingData = await getUserRanking();
+                //     console.log("Previous ranking:", rankingData);
+                //     prevRank = rankingData.userRank;
+                //     setPreviousRank(rankingData.userRank);
+                //     setTotalUsers(rankingData.totalUsers || 0);
+                // } catch (error) {
+                //     console.error("Error fetching previous ranking:", error);
+                // }
 
                 await addResultsToUser(lessonId, userId, resultList, questionsMap.map(q => q.questionId), startAt);
 
-                // Fetch new ranking after updating results
-                try {
-                    // Longer delay to ensure database is updated
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                    const rankingData = await getUserRanking();
-                    console.log("New ranking:", rankingData);
-                    setNewRank(rankingData.userRank);
-                    if (rankingData.totalUsers) {
-                        setTotalUsers(rankingData.totalUsers);
-                    }
-
-                    // Show ranking modal if ranking improved
-                    if (prevRank !== null && rankingData.userRank !== null && rankingData.userRank < prevRank) {
-                        setShowRankingModal(true);
-                    }
-                } catch (error) {
-                    console.error("Error fetching new ranking:", error);
-                }
+                // TODO: Uncomment when ready to re-enable ranking animation
+                // // Fetch new ranking after updating results
+                // try {
+                //     // Longer delay to ensure database is updated
+                //     await new Promise(resolve => setTimeout(resolve, 1000));
+                //     const rankingData = await getUserRanking();
+                //     console.log("New ranking:", rankingData);
+                //     setNewRank(rankingData.userRank);
+                //     if (rankingData.totalUsers) {
+                //         setTotalUsers(rankingData.totalUsers);
+                //     }
+                //
+                //     // Show ranking modal if ranking improved
+                //     if (prevRank !== null && rankingData.userRank !== null && rankingData.userRank < prevRank) {
+                //         setShowRankingModal(true);
+                //     }
+                // } catch (error) {
+                //     console.error("Error fetching new ranking:", error);
+                // }
 
                 // Track lesson completion
                 const answeredQuestions = resultList.filter(answer => answer !== null).length;
@@ -556,8 +563,9 @@ const Quiz = ({
                     numberOfPieces={1000}
                     tweenDuration={10000}
                 />
+                {/* TODO: Uncomment when ready to re-enable ranking animation */}
                 {/* Ranking Animation Modal */}
-                <Dialog open={showRankingModal} onOpenChange={() => { }}>
+                {/* <Dialog open={showRankingModal} onOpenChange={() => { }}>
                     <DialogContent
                         className="max-w-2xl p-0 border-0 bg-transparent shadow-none [&>button]:hidden"
                         onInteractOutside={(e) => e.preventDefault()}
@@ -573,7 +581,7 @@ const Quiz = ({
                             }}
                         />
                     </DialogContent>
-                </Dialog>
+                </Dialog> */}
                 <div className="flex flex-col gap-y-8 items-center justify-center h-full max-w-xl mx-auto px-2 sm:px-4">
                     <CelebrateJson />
                     <div className="space-y-4 text-center animate-fade-in pt-12 sm:pt-20">
@@ -594,8 +602,9 @@ const Quiz = ({
                             value={Math.ceil(geniusScoreDelta)}
                         />
                     </div>
+                    {/* TODO: Uncomment when ready to re-enable ranking animation */}
                     {/* Ranking Summary Bar - Clickable to reopen animation */}
-                    {userId && showRankingSummary && previousRank !== null && newRank !== null && newRank < previousRank && (
+                    {/* {userId && showRankingSummary && previousRank !== null && newRank !== null && newRank < previousRank && (
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -630,13 +639,14 @@ const Quiz = ({
                                 </div>
                             </div>
                         </motion.div>
-                    )}
+                    )} */}
+                    {/* TODO: Uncomment when ready to re-enable ranking animation */}
                     {/* Debug info - remove in production */}
-                    {process.env.NODE_ENV === 'development' && userId && (
+                    {/* {process.env.NODE_ENV === 'development' && userId && (
                         <div className="text-xs text-muted-foreground p-2 bg-gray-100 dark:bg-gray-800 rounded">
-                            Debug: previousRank={previousRank?.toString() ?? 'null'}, newRank={newRank?.toString() ?? 'null'}, totalUsers={totalUsers}
+                            Debug: previousRank={'previousRank'}, newRank={'newRank'}, totalUsers={'totalUsers'}
                         </div>
-                    )}
+                    )} */}
                     <div className="mb-2">
                         {renderResultGrid()}
                     </div>
