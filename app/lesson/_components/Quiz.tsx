@@ -259,18 +259,21 @@ const Quiz = ({
         if (!lessonClock) {
             return (
                 <div className="w-full flex justify-center">
-                    <div className="relative px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500/10 to-pink-500/10 backdrop-blur-sm border border-purple-500/20">
+                    <div className="relative px-5 py-3 rounded-xl bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-orange-500/20 backdrop-blur-sm border-2 border-purple-400/30 shadow-lg hover:shadow-purple-500/20 transition-all duration-300 hover:scale-105">
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
-                                    <div className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400 cursor-pointer">
-                                        <AlarmClockOff className="w-4 h-4 text-purple-500" />
+                                    <div className="flex flex-row items-center gap-2.5 text-sm font-medium cursor-pointer group">
+                                        <span className="bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
+                                            ללא טיימר
+                                        </span>
+                                        <AlarmClockOff className="w-5 h-5 text-purple-500 dark:text-purple-400 group-hover:text-pink-500 dark:group-hover:text-pink-400 transition-colors duration-200" />
                                     </div>
                                 </TooltipTrigger>
-                                <TooltipContent>
-                                    <div className="flex items-center gap-2">
-                                        <span>להחזרת השעון עדכנו את ההגדרה בהגדרות</span>
-                                        <Settings className="w-4 h-4" />
+                                <TooltipContent className="bg-gradient-to-r from-purple-600 to-pink-600 border-purple-400/50 shadow-xl">
+                                    <div className="flex items-center gap-2.5 text-white">
+                                        <span className="font-medium">להחזרת השעון עדכנו את ההגדרה בהגדרות</span>
+                                        <Settings className="w-4 h-4 text-white/90" />
                                     </div>
                                 </TooltipContent>
                             </Tooltip>
