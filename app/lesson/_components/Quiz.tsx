@@ -95,6 +95,7 @@ const Quiz = ({
     const [showQuestSummary, setShowQuestSummary] = useState(false);
     const [isQuestModalAutoClose, setIsQuestModalAutoClose] = useState(true);
     const [isTooltipOpen, setIsTooltipOpen] = useState(false);
+    const hasSavedResults = useRef(false);
     const isMobile = useMedia("(max-width:1024px)");
     const isReallyMobile = useMedia("(max-width:640px)");
     const questionsMap = questionGroups.flatMap((categoryValue, index1) =>
@@ -168,6 +169,14 @@ const Quiz = ({
     useEffect(() => {
         const handleFinishApproval = async () => {
             if (isFinishApproved && userId) {
+                // Prevent multiple executions
+                if (hasSavedResults.current) {
+                    return;
+                }
+
+                // Mark as saved immediately to prevent re-execution
+                hasSavedResults.current = true;
+
                 // Fetch experience before updating results
                 let prevExp = 0;
                 try {
@@ -232,6 +241,13 @@ const Quiz = ({
         };
         handleFinishApproval();
     }, [isFinishApproved, lessonId, userId, resultList, questionsMap, total, systemStep, startAt]);
+
+    // Reset the ref when starting a new lesson/practice
+    useEffect(() => {
+        if (mode === "quiz" && !isFinishApproved) {
+            hasSavedResults.current = false;
+        }
+    }, [mode, isFinishApproved]);
 
     useEffect(() => {
         const handleUserEffect = async () => {
@@ -598,6 +614,7 @@ const Quiz = ({
                         <QuestCompletionAnimation
                             previousExperience={previousExperience}
                             newExperience={newExperience}
+                            experienceDelta={experienceDelta}
                             autoClose={isQuestModalAutoClose}
                             onClose={() => {
                                 setShowQuestModal(false);
@@ -698,10 +715,10 @@ const Quiz = ({
                                 </div>
                                 <div className="text-right">
                                     <p className="text-xl sm:text-2xl font-bold text-amber-700 dark:text-amber-300">
-                                        +{newExperience - previousExperience}
+                                        +{Math.ceil(experienceDelta)}
                                     </p>
                                     <p className="text-xs text-amber-600 dark:text-amber-400">
-                                        נקודות
+                                        כוכבים
                                     </p>
                                     <p className="text-[10px] sm:text-xs text-amber-600 dark:text-amber-400 mt-0.5 sm:mt-1 opacity-70">
                                         לחצו לצפייה שוב

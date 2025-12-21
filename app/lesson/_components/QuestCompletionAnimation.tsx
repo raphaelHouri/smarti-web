@@ -11,6 +11,7 @@ import QuestIcon from "@/components/QuestIcon";
 interface QuestCompletionAnimationProps {
     previousExperience: number;
     newExperience: number;
+    experienceDelta: number;
     className?: string;
     onClose?: () => void;
     autoClose?: boolean;
@@ -19,6 +20,7 @@ interface QuestCompletionAnimationProps {
 export default function QuestCompletionAnimation({
     previousExperience,
     newExperience,
+    experienceDelta,
     className,
     onClose,
     autoClose = true,
@@ -168,7 +170,7 @@ export default function QuestCompletionAnimation({
                     >
                         <div className="text-center">
                             <p className="text-lg sm:text-2xl font-bold text-amber-600 dark:text-amber-400">
-                                +{newExperience - previousExperience}
+                                +{Math.ceil(experienceDelta)}
                             </p>
                             <p className="text-xs sm:text-sm text-amber-600 dark:text-amber-400">
                                 כוכבים חדשים
