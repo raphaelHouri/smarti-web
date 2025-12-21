@@ -33,9 +33,14 @@ import { usePreventBackNavigation } from "@/hooks/use-prevent-back-navigation";
 import { useCoinsModal } from "@/store/use-coins";
 import { trackEvent } from "@/lib/posthog";
 import { useSystemStep } from "@/hooks/use-system-step";
+import { quests } from "@/constants";
 // import RankingAnimation from "./RankingAnimation";
 // import { Dialog, DialogContent } from "@/components/ui/dialog";
 // import { TrendingUp } from "lucide-react";
+import QuestCompletionAnimation from "./QuestCompletionAnimation";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { getUserExperience } from "@/actions/user-experience";
+import { Award } from "lucide-react";
 
 const optionsSchema = z.object({
     a: z.string(),
@@ -84,6 +89,11 @@ const Quiz = ({
     // const [showRankingModal, setShowRankingModal] = useState(false);
     // const [showRankingSummary, setShowRankingSummary] = useState(false);
     // const [isRankingModalAutoClose, setIsRankingModalAutoClose] = useState(true);
+    const [previousExperience, setPreviousExperience] = useState<number>(0);
+    const [newExperience, setNewExperience] = useState<number>(0);
+    const [showQuestModal, setShowQuestModal] = useState(false);
+    const [showQuestSummary, setShowQuestSummary] = useState(false);
+    const [isQuestModalAutoClose, setIsQuestModalAutoClose] = useState(true);
     const [isTooltipOpen, setIsTooltipOpen] = useState(false);
     const isMobile = useMedia("(max-width:1024px)");
     const isReallyMobile = useMedia("(max-width:640px)");
@@ -158,45 +168,38 @@ const Quiz = ({
     useEffect(() => {
         const handleFinishApproval = async () => {
             if (isFinishApproved && userId) {
-                // Ranking code commented out
-                // // Fetch ranking before updating results
-                // let prevRank: number | null = null;
-                // try {
-                //     const rankingData = await getUserRanking();
-                //     console.log("Previous ranking:", rankingData);
-                //     prevRank = rankingData.userRank;
-                //     setPreviousRank(rankingData.userRank);
-                //     setTotalUsers(rankingData.totalUsers || 0);
-                // } catch (error) {
-                //     console.error("Error fetching previous ranking:", error);
-                // }
+                // Fetch experience before updating results
+                let prevExp = 0;
+                try {
+                    const expData = await getUserExperience();
+                    prevExp = expData.experience;
+                    setPreviousExperience(expData.experience);
+                } catch (error) {
+                    console.error("Error fetching previous experience:", error);
+                }
 
                 await addResultsToUser(lessonId, userId, resultList, questionsMap.map(q => q.questionId), startAt);
 
-                // Ranking code commented out
-                // // Fetch new ranking after updating results
-                // try {
-                //     // Longer delay to ensure database is updated
-                //     await new Promise(resolve => setTimeout(resolve, 1000));
-                //     const rankingData = await getUserRanking();
-                //     console.log("New ranking:", rankingData);
-                //     setNewRank(rankingData.userRank);
-                //     if (rankingData.totalUsers) {
-                //         setTotalUsers(rankingData.totalUsers);
-                //     }
+                // Fetch new experience after updating results
+                try {
+                    // Delay to ensure database is updated
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    const expData = await getUserExperience();
+                    setNewExperience(expData.experience);
 
-                //     // Show ranking modal if ranking improved
-                //     const rankingImproved = prevRank !== null && rankingData.userRank !== null && rankingData.userRank < prevRank;
+                    // Check if quest step was completed
+                    const questCompleted = prevExp < expData.experience &&
+                        quests.some(q => prevExp < q.value && expData.experience >= q.value);
 
-                //     if (rankingImproved) {
-                //         setPreviousRank(prevRank);
-                //         setNewRank(rankingData.userRank);
-                //         setIsRankingModalAutoClose(true); // Auto-close when opened automatically
-                //         setShowRankingModal(true);
-                //     }
-                // } catch (error) {
-                //     console.error("Error fetching new ranking:", error);
-                // }
+                    if (questCompleted) {
+                        setPreviousExperience(prevExp);
+                        setNewExperience(expData.experience);
+                        setIsQuestModalAutoClose(true);
+                        setShowQuestModal(true);
+                    }
+                } catch (error) {
+                    console.error("Error fetching new experience:", error);
+                }
 
                 // Track lesson completion
                 const answeredQuestions = resultList.filter(answer => answer !== null).length;
@@ -564,6 +567,47 @@ const Quiz = ({
                     numberOfPieces={1000}
                     tweenDuration={10000}
                 />
+                {/* Quest Completion Animation Modal */}
+                <Dialog open={showQuestModal} onOpenChange={(open) => {
+                    if (!open) {
+                        setShowQuestModal(false);
+                    }
+                }}>
+                    <DialogContent
+                        className={cn(
+                            "max-w-2xl w-[95vw] sm:w-full p-0 border-0 bg-transparent shadow-none",
+                            isQuestModalAutoClose && "[&>button]:hidden"
+                        )}
+                        onInteractOutside={(e) => {
+                            // Allow closing by clicking outside only if not auto-closing
+                            if (!isQuestModalAutoClose) {
+                                setShowQuestModal(false);
+                            } else {
+                                e.preventDefault();
+                            }
+                        }}
+                        onEscapeKeyDown={(e) => {
+                            // Allow closing with Escape key only if not auto-closing
+                            if (!isQuestModalAutoClose) {
+                                setShowQuestModal(false);
+                            } else {
+                                e.preventDefault();
+                            }
+                        }}
+                    >
+                        <QuestCompletionAnimation
+                            previousExperience={previousExperience}
+                            newExperience={newExperience}
+                            autoClose={isQuestModalAutoClose}
+                            onClose={() => {
+                                setShowQuestModal(false);
+                                if (isQuestModalAutoClose) {
+                                    setShowQuestSummary(true);
+                                }
+                            }}
+                        />
+                    </DialogContent>
+                </Dialog>
                 {/* Ranking Animation Modal - Commented out */}
                 {/* <Dialog open={showRankingModal} onOpenChange={(open) => {
                     if (!open) {
@@ -626,6 +670,46 @@ const Quiz = ({
                             value={Math.ceil(geniusScoreDelta)}
                         />
                     </div>
+                    {/* Quest Completion Summary Bar */}
+                    {userId && showQuestSummary && previousExperience > 0 && newExperience > previousExperience && quests.some(q => previousExperience < q.value && newExperience >= q.value) && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5 }}
+                            onClick={() => {
+                                setIsQuestModalAutoClose(false); // Don't auto-close when opened manually
+                                setShowQuestModal(true);
+                            }}
+                            className="w-full bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/30 dark:to-yellow-900/30 border-2 border-amber-400 dark:border-amber-300 rounded-xl p-2 sm:p-4 lg:mb-4 cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
+                        >
+                            <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-2 sm:gap-3">
+                                    <div className="bg-amber-500 dark:bg-amber-400 rounded-full p-1.5 sm:p-2">
+                                        <Award className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-amber-800 dark:text-amber-100 text-sm sm:text-base">
+                                            עלית שלב!
+                                        </p>
+                                        <p className="text-xs sm:text-sm text-amber-700 dark:text-amber-300">
+                                            {quests.find(q => previousExperience < q.value && newExperience >= q.value)?.title}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-xl sm:text-2xl font-bold text-amber-700 dark:text-amber-300">
+                                        +{newExperience - previousExperience}
+                                    </p>
+                                    <p className="text-xs text-amber-600 dark:text-amber-400">
+                                        נקודות
+                                    </p>
+                                    <p className="text-[10px] sm:text-xs text-amber-600 dark:text-amber-400 mt-0.5 sm:mt-1 opacity-70">
+                                        לחצו לצפייה שוב
+                                    </p>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
                     {/* Ranking Summary Bar - Commented out */}
                     {/* {userId && showRankingSummary && previousRank !== null && newRank !== null && newRank < previousRank && (
                         <motion.div
