@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { Award, Sparkles } from "lucide-react";
+import { Award, Sparkles, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import { quests } from "@/constants";
@@ -55,6 +55,16 @@ export default function QuestCompletionAnimation({
     return (
         <div className={cn("w-full max-w-md mx-auto", className)}>
             <div className="relative bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 dark:from-amber-950/30 dark:via-yellow-950/30 dark:to-orange-950/30 rounded-xl sm:rounded-2xl p-3 sm:p-6 border-2 border-amber-300 dark:border-amber-700 shadow-xl overflow-hidden">
+                {/* Close Button - Always visible in the card */}
+                {onClose && (
+                    <button
+                        onClick={onClose}
+                        className="absolute top-2 left-2 sm:top-3 sm:left-3 z-20 rounded-full p-1.5 sm:p-2 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800 border border-amber-200 dark:border-amber-700 shadow-md transition-all hover:scale-110"
+                        aria-label="סגור"
+                    >
+                        <X className="w-4 h-4 sm:w-5 sm:h-5 text-amber-700 dark:text-amber-300" />
+                    </button>
+                )}
                 {/* Celebration particles */}
                 <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl">
                     {Array.from({ length: 12 }).map((_, i) => {
@@ -123,7 +133,7 @@ export default function QuestCompletionAnimation({
                         className="text-center space-y-2 sm:space-y-3"
                     >
                         <p className="text-base sm:text-xl font-semibold text-amber-800 dark:text-amber-200">
-                            {completedQuest.title}
+                            {completedQuest.title?.replace("צברו", "צברתם מעל") ?? completedQuest.title}
                         </p>
                         <div className="flex items-center justify-center gap-2">
                             <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500" />
@@ -140,7 +150,7 @@ export default function QuestCompletionAnimation({
                 {/* Experience Display */}
                 <div className="flex items-center justify-between gap-2 sm:gap-4 relative z-10">
                     <div className="flex flex-col items-center">
-                        <span className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">נקודות קודמות</span>
+                        <span className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">כוכבים שהיו</span>
                         <span className="text-lg sm:text-2xl font-bold text-neutral-600 dark:text-neutral-400">
                             {previousExperience}
                         </span>
@@ -161,13 +171,13 @@ export default function QuestCompletionAnimation({
                                 +{newExperience - previousExperience}
                             </p>
                             <p className="text-xs sm:text-sm text-amber-600 dark:text-amber-400">
-                                נקודות
+                                כוכבים חדשים
                             </p>
                         </div>
                     </motion.div>
 
                     <div className="flex flex-col items-center">
-                        <span className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">נקודות חדשות</span>
+                        <span className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">כמות כוכבים כוללת</span>
                         <span className="text-lg sm:text-2xl font-bold text-amber-600 dark:text-amber-400">
                             {newExperience}
                         </span>

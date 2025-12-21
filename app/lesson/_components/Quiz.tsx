@@ -576,7 +576,7 @@ const Quiz = ({
                     <DialogContent
                         className={cn(
                             "max-w-2xl w-[95vw] sm:w-full p-0 border-0 bg-transparent shadow-none",
-                            isQuestModalAutoClose && "[&>button]:hidden"
+                            "[&>button]:hidden" // Always hide DialogContent's default close button, we use custom one
                         )}
                         onInteractOutside={(e) => {
                             // Allow closing by clicking outside only if not auto-closing
