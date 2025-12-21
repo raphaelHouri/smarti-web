@@ -368,7 +368,9 @@ const Quiz = ({
                     <CountdownTimer
                         initialTime={totalTime}
                         onFinish={() => {
-                            OpenFinishLessonModal();
+                            const unansweredCount = resultList.filter(answer => answer === null).length;
+                            const hasUnanswered = unansweredCount > 0;
+                            OpenFinishLessonModal(hasUnanswered);
                         }}
                     />
                 </div>
@@ -404,7 +406,11 @@ const Quiz = ({
         } else {
             if (mode === "review") setMode("summary");
             if (mode === "practiceMode") OpenPracticeModal();
-            else OpenFinishLessonModal();
+            else {
+                const unansweredCount = resultList.filter(answer => answer === null).length;
+                const hasUnanswered = unansweredCount > 0;
+                OpenFinishLessonModal(hasUnanswered);
+            }
         }
     };
 
