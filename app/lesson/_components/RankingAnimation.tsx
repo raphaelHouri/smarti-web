@@ -75,23 +75,18 @@ export default function RankingAnimation({
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
+            transition={{ duration: 0.3 }}
             className={cn("w-full max-w-md mx-auto", className)}
         >
             <div className="relative bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 dark:from-purple-950/30 dark:via-pink-950/30 dark:to-orange-950/30 rounded-xl sm:rounded-2xl p-3 sm:p-6 border-2 border-purple-200 dark:border-purple-800 shadow-xl">
                 {/* Header */}
                 <div className="flex items-center justify-center gap-2 sm:gap-3 mb-2 sm:mb-4">
                     <motion.div
-                        initial={{ scale: 0, rotate: -180 }}
-                        animate={{ scale: 1, rotate: 0 }}
-                        transition={{
-                            type: "spring",
-                            stiffness: 200,
-                            damping: 15,
-                            delay: 0.5,
-                        }}
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ duration: 0.3, type: "spring", stiffness: 300 }}
                     >
                         <Trophy className="w-5 h-5 sm:w-8 sm:h-8 text-yellow-500 fill-yellow-500" />
                     </motion.div>
@@ -125,14 +120,12 @@ export default function RankingAnimation({
                                         key={rank}
                                         layout
                                         initial={{
-                                            opacity: wasUserRank ? 1 : 0.4,
-                                            y: getInitialY(),
-                                            scale: wasUserRank ? 1.05 : 1,
+                                            opacity: 0.6,
+                                            scale: 0.95,
                                         }}
                                         animate={{
-                                            opacity: isUserRank ? 1 : isInRange ? 0.7 : 0.4,
-                                            y: 0,
-                                            scale: isUserRank ? 1.05 : 1,
+                                            opacity: isUserRank ? 1 : isInRange ? 0.8 : 0.5,
+                                            scale: isUserRank ? 1.02 : 1,
                                         }}
                                         exit={{
                                             opacity: 0,
@@ -140,17 +133,14 @@ export default function RankingAnimation({
                                         transition={{
                                             layout: {
                                                 type: "spring",
-                                                stiffness: 400,
-                                                damping: 35,
-                                                delay: wasUserRank ? 0.8 : 0,
+                                                stiffness: 500,
+                                                damping: 40,
                                             },
                                             opacity: {
-                                                duration: 0.4,
-                                                delay: wasUserRank ? 0.8 : 0.2,
+                                                duration: 0.3,
                                             },
                                             scale: {
                                                 duration: 0.3,
-                                                delay: isUserRank ? 1.2 : 0,
                                             },
                                         }}
                                         className={cn(
@@ -173,11 +163,12 @@ export default function RankingAnimation({
                                             )}
                                             initial={false}
                                             animate={{
-                                                scale: isUserRank ? [1, 1.3, 1] : 1,
+                                                scale: isUserRank ? 1.1 : 1,
                                             }}
                                             transition={{
-                                                duration: 0.6,
-                                                delay: isUserRank ? 1.2 : 0,
+                                                duration: 0.3,
+                                                type: "spring",
+                                                stiffness: 300,
                                             }}
                                         >
                                             {rank}
@@ -188,12 +179,12 @@ export default function RankingAnimation({
                                                 <motion.div
                                                     initial={false}
                                                     animate={{
-                                                        scale: isUserRank ? [1, 1.1, 1] : 1,
-                                                        rotate: isUserRank ? [0, 5, -5, 0] : 0,
+                                                        scale: isUserRank ? 1.05 : 1,
                                                     }}
                                                     transition={{
-                                                        duration: 0.6,
-                                                        delay: isUserRank ? 1.2 : 0,
+                                                        duration: 0.3,
+                                                        type: "spring",
+                                                        stiffness: 300,
                                                     }}
                                                 >
                                                     <Avatar
@@ -223,9 +214,9 @@ export default function RankingAnimation({
                                                     {isUserRank && (
                                                         <motion.span
                                                             className="ml-1 sm:ml-2 text-xs sm:text-sm"
-                                                            initial={{ opacity: 0, x: -10 }}
-                                                            animate={{ opacity: 1, x: 0 }}
-                                                            transition={{ delay: 1.4 }}
+                                                            initial={{ opacity: 0 }}
+                                                            animate={{ opacity: 1 }}
+                                                            transition={{ duration: 0.3 }}
                                                         >
                                                             (עלית!)
                                                         </motion.span>
@@ -240,11 +231,10 @@ export default function RankingAnimation({
                                                     )}
                                                     initial={false}
                                                     animate={{
-                                                        scale: isUserRank ? [1, 1.1, 1] : 1,
+                                                        scale: isUserRank ? 1.05 : 1,
                                                     }}
                                                     transition={{
-                                                        duration: 0.5,
-                                                        delay: isUserRank ? 1.5 : 0,
+                                                        duration: 0.3,
                                                     }}
                                                 >
                                                     <img
@@ -289,9 +279,9 @@ export default function RankingAnimation({
                         <span className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">מיקום קודם</span>
                         <motion.span
                             className="text-lg sm:text-2xl font-bold text-red-600 dark:text-red-400"
-                            initial={{ scale: 1 }}
-                            animate={{ scale: [1, 1.2, 1] }}
-                            transition={{ duration: 0.5 }}
+                            initial={{ opacity: 0.7 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.3 }}
                         >
                             #{previousRank}
                         </motion.span>
@@ -299,13 +289,12 @@ export default function RankingAnimation({
 
                     <motion.div
                         className="flex items-center gap-1 sm:gap-2"
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
                         transition={{
+                            duration: 0.3,
                             type: "spring",
-                            stiffness: 200,
-                            damping: 15,
-                            delay: 1.5,
+                            stiffness: 300,
                         }}
                     >
                         <TrendingUp className="w-4 h-4 sm:w-6 sm:h-6 text-green-500" />
@@ -318,13 +307,12 @@ export default function RankingAnimation({
                         <span className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">מיקום חדש</span>
                         <motion.span
                             className="text-lg sm:text-2xl font-bold text-green-600 dark:text-green-400"
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
                             transition={{
+                                duration: 0.3,
                                 type: "spring",
-                                stiffness: 200,
-                                damping: 15,
-                                delay: 1.2,
+                                stiffness: 300,
                             }}
                         >
                             #{newRank}
@@ -335,25 +323,25 @@ export default function RankingAnimation({
                 {/* Celebration particles */}
                 {isAnimating && (
                     <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl">
-                        {Array.from({ length: 20 }).map((_, i) => (
+                        {Array.from({ length: 12 }).map((_, i) => (
                             <motion.div
                                 key={i}
                                 className="absolute w-2 h-2 bg-yellow-400 rounded-full"
                                 initial={{
                                     x: "50%",
                                     y: "50%",
-                                    opacity: 1,
+                                    opacity: 0,
                                     scale: 0,
                                 }}
                                 animate={{
-                                    x: `${50 + (Math.random() - 0.5) * 200}%`,
-                                    y: `${50 + (Math.random() - 0.5) * 200}%`,
-                                    opacity: [1, 1, 0],
+                                    x: `${50 + (Math.random() - 0.5) * 150}%`,
+                                    y: `${50 + (Math.random() - 0.5) * 150}%`,
+                                    opacity: [0, 1, 0],
                                     scale: [0, 1, 0],
                                 }}
                                 transition={{
-                                    duration: 2,
-                                    delay: 1 + i * 0.1,
+                                    duration: 1.2,
+                                    delay: i * 0.05,
                                     ease: "easeOut",
                                 }}
                             />

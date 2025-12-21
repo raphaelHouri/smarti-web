@@ -658,7 +658,7 @@ const Quiz = ({
                                         מקומות
                                     </p>
                                     <p className="text-[10px] sm:text-xs text-emerald-600 dark:text-emerald-400 mt-0.5 sm:mt-1 opacity-70">
-                                        לחץ לצפייה שוב
+                                        לחצו לצפייה שוב
                                     </p>
                                 </div>
                             </div>
