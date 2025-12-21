@@ -22,8 +22,7 @@ import { useFinishLessonModal } from "@/store/use-finish-lesson-modal";
 import { useRegisterModal } from "@/store/use-register-modal";
 import { useAuth } from "@clerk/nextjs";
 import { addResultsToUser, getOrCreateUserFromGuest, removeQuestionsWrongByQuestionId } from "@/db/queries";
-// TODO: Uncomment when ready to re-enable ranking animation
-// import { getUserRanking } from "@/actions/user-ranking";
+import { getUserRanking } from "@/actions/user-ranking";
 import { Button } from "@/components/ui/button";
 import CountdownTimer from "./CountdownTimer";
 import { ChevronDown, ChevronUp, Clock, Settings, AlarmClockOff } from "lucide-react";
@@ -34,10 +33,9 @@ import { usePreventBackNavigation } from "@/hooks/use-prevent-back-navigation";
 import { useCoinsModal } from "@/store/use-coins";
 import { trackEvent } from "@/lib/posthog";
 import { useSystemStep } from "@/hooks/use-system-step";
-// TODO: Uncomment when ready to re-enable ranking animation
-// import RankingAnimation from "./RankingAnimation";
-// import { Dialog, DialogContent } from "@/components/ui/dialog";
-// import { TrendingUp } from "lucide-react";
+import RankingAnimation from "./RankingAnimation";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { TrendingUp } from "lucide-react";
 
 const optionsSchema = z.object({
     a: z.string(),
@@ -80,15 +78,13 @@ const Quiz = ({
     const [isGridExpanded, setIsGridExpanded] = useState(false)
     const { userId } = useAuth();
     const [startAt, setStartAt] = useState<Date | null>(null);
-    // TODO: Uncomment when ready to re-enable ranking animation
-    // const [previousRank, setPreviousRank] = useState<number | null>(null);
-    // const [newRank, setNewRank] = useState<number | null>(null);
-    // const [totalUsers, setTotalUsers] = useState<number>(0);
-    // const [showRankingModal, setShowRankingModal] = useState(false);
-    // const [showRankingSummary, setShowRankingSummary] = useState(false);
-    const [isTooltipOpen, setIsTooltipOpen] = useState(false);
+    const [previousRank, setPreviousRank] = useState<number | null>(null);
+    const [newRank, setNewRank] = useState<number | null>(null);
+    const [totalUsers, setTotalUsers] = useState<number>(0);
     const [showRankingModal, setShowRankingModal] = useState(false);
     const [showRankingSummary, setShowRankingSummary] = useState(false);
+    const [isRankingModalAutoClose, setIsRankingModalAutoClose] = useState(true);
+    const [isTooltipOpen, setIsTooltipOpen] = useState(false);
     const isMobile = useMedia("(max-width:1024px)");
     const isReallyMobile = useMedia("(max-width:640px)");
     const questionsMap = questionGroups.flatMap((categoryValue, index1) =>
@@ -162,40 +158,43 @@ const Quiz = ({
     useEffect(() => {
         const handleFinishApproval = async () => {
             if (isFinishApproved && userId) {
-                // TODO: Uncomment when ready to re-enable ranking animation
-                // // Fetch ranking before updating results
-                // let prevRank: number | null = null;
-                // try {
-                //     const rankingData = await getUserRanking();
-                //     console.log("Previous ranking:", rankingData);
-                //     prevRank = rankingData.userRank;
-                //     setPreviousRank(rankingData.userRank);
-                //     setTotalUsers(rankingData.totalUsers || 0);
-                // } catch (error) {
-                //     console.error("Error fetching previous ranking:", error);
-                // }
+                // Fetch ranking before updating results
+                let prevRank: number | null = null;
+                try {
+                    const rankingData = await getUserRanking();
+                    console.log("Previous ranking:", rankingData);
+                    prevRank = rankingData.userRank;
+                    setPreviousRank(rankingData.userRank);
+                    setTotalUsers(rankingData.totalUsers || 0);
+                } catch (error) {
+                    console.error("Error fetching previous ranking:", error);
+                }
 
                 await addResultsToUser(lessonId, userId, resultList, questionsMap.map(q => q.questionId), startAt);
 
-                // TODO: Uncomment when ready to re-enable ranking animation
-                // // Fetch new ranking after updating results
-                // try {
-                //     // Longer delay to ensure database is updated
-                //     await new Promise(resolve => setTimeout(resolve, 1000));
-                //     const rankingData = await getUserRanking();
-                //     console.log("New ranking:", rankingData);
-                //     setNewRank(rankingData.userRank);
-                //     if (rankingData.totalUsers) {
-                //         setTotalUsers(rankingData.totalUsers);
-                //     }
-                //
-                //     // Show ranking modal if ranking improved
-                //     if (prevRank !== null && rankingData.userRank !== null && rankingData.userRank < prevRank) {
-                //         setShowRankingModal(true);
-                //     }
-                // } catch (error) {
-                //     console.error("Error fetching new ranking:", error);
-                // }
+                // Fetch new ranking after updating results
+                try {
+                    // Longer delay to ensure database is updated
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    const rankingData = await getUserRanking();
+                    console.log("New ranking:", rankingData);
+                    setNewRank(rankingData.userRank);
+                    if (rankingData.totalUsers) {
+                        setTotalUsers(rankingData.totalUsers);
+                    }
+
+                    // Show ranking modal if ranking improved
+                    const rankingImproved = prevRank !== null && rankingData.userRank !== null && rankingData.userRank < prevRank;
+
+                    if (rankingImproved) {
+                        setPreviousRank(prevRank);
+                        setNewRank(rankingData.userRank);
+                        setIsRankingModalAutoClose(true); // Auto-close when opened automatically
+                        setShowRankingModal(true);
+                    }
+                } catch (error) {
+                    console.error("Error fetching new ranking:", error);
+                }
 
                 // Track lesson completion
                 const answeredQuestions = resultList.filter(answer => answer !== null).length;
@@ -563,26 +562,49 @@ const Quiz = ({
                     numberOfPieces={1000}
                     tweenDuration={10000}
                 />
-                {/* TODO: Uncomment when ready to re-enable ranking animation */}
                 {/* Ranking Animation Modal */}
-                {/* <Dialog open={showRankingModal} onOpenChange={() => { }}>
+                <Dialog open={showRankingModal} onOpenChange={(open) => {
+                    if (!open) {
+                        setShowRankingModal(false);
+                    }
+                }}>
                     <DialogContent
-                        className="max-w-2xl p-0 border-0 bg-transparent shadow-none [&>button]:hidden"
-                        onInteractOutside={(e) => e.preventDefault()}
-                        onEscapeKeyDown={(e) => e.preventDefault()}
+                        className={cn(
+                            "max-w-2xl w-[95vw] sm:w-full p-0 border-0 bg-transparent shadow-none",
+                            isRankingModalAutoClose && "[&>button]:hidden"
+                        )}
+                        onInteractOutside={(e) => {
+                            // Allow closing by clicking outside only if not auto-closing
+                            if (!isRankingModalAutoClose) {
+                                setShowRankingModal(false);
+                            } else {
+                                e.preventDefault();
+                            }
+                        }}
+                        onEscapeKeyDown={(e) => {
+                            // Allow closing with Escape key only if not auto-closing
+                            if (!isRankingModalAutoClose) {
+                                setShowRankingModal(false);
+                            } else {
+                                e.preventDefault();
+                            }
+                        }}
                     >
                         <RankingAnimation
                             previousRank={previousRank}
                             newRank={newRank}
                             totalUsers={totalUsers}
+                            autoClose={isRankingModalAutoClose}
                             onClose={() => {
                                 setShowRankingModal(false);
-                                setShowRankingSummary(true);
+                                if (isRankingModalAutoClose) {
+                                    setShowRankingSummary(true);
+                                }
                             }}
                         />
                     </DialogContent>
-                </Dialog> */}
-                <div className="flex flex-col gap-y-8 items-center justify-center h-full max-w-xl mx-auto px-2 sm:px-4">
+                </Dialog>
+                <div className="flex flex-col sm:gap-y-4 gap-y-2 items-center justify-center h-full max-w-xl mx-auto px-2 sm:px-4">
                     <CelebrateJson />
                     <div className="space-y-4 text-center animate-fade-in pt-12 sm:pt-20">
                         <h1 className="text-xl sm:text-2xl lg:text-4xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
@@ -602,51 +624,46 @@ const Quiz = ({
                             value={Math.ceil(geniusScoreDelta)}
                         />
                     </div>
-                    {/* TODO: Uncomment when ready to re-enable ranking animation */}
                     {/* Ranking Summary Bar - Clickable to reopen animation */}
-                    {/* {userId && showRankingSummary && previousRank !== null && newRank !== null && newRank < previousRank && (
+                    {userId && showRankingSummary && previousRank !== null && newRank !== null && newRank < previousRank && (
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5 }}
-                            onClick={() => setShowRankingModal(true)}
-                            className="w-full bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/30 dark:to-green-900/30 border-2 border-emerald-400 dark:border-emerald-300 rounded-xl p-4 mb-4 cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
+                            onClick={() => {
+                                setIsRankingModalAutoClose(false); // Don't auto-close when opened manually
+                                setShowRankingModal(true);
+                            }}
+                            className="w-full bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/30 dark:to-green-900/30 border-2 border-emerald-400 dark:border-emerald-300 rounded-xl p-2 sm:p-4 lg:mb-4 cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
                         >
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div className="bg-emerald-500 dark:bg-emerald-400 rounded-full p-2">
-                                        <TrendingUp className="w-5 h-5 text-white" />
+                            <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-2 sm:gap-3">
+                                    <div className="bg-emerald-500 dark:bg-emerald-400 rounded-full p-1.5 sm:p-2">
+                                        <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                                     </div>
                                     <div>
-                                        <p className="font-bold text-emerald-800 dark:text-emerald-100">
+                                        <p className="font-bold text-emerald-800 dark:text-emerald-100 text-sm sm:text-base">
                                             עלית בדירוג!
                                         </p>
-                                        <p className="text-sm text-emerald-700 dark:text-emerald-300">
-                                            מיקום #{previousRank} → #{newRank}
+                                        <p className="text-xs sm:text-sm text-emerald-700 dark:text-emerald-300">
+                                            #{previousRank} → #{newRank}
                                         </p>
                                     </div>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">
+                                    <p className="text-xl sm:text-2xl font-bold text-emerald-700 dark:text-emerald-300">
                                         +{previousRank - newRank}
                                     </p>
                                     <p className="text-xs text-emerald-600 dark:text-emerald-400">
                                         מקומות
                                     </p>
-                                    <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1 opacity-70">
+                                    <p className="text-[10px] sm:text-xs text-emerald-600 dark:text-emerald-400 mt-0.5 sm:mt-1 opacity-70">
                                         לחץ לצפייה שוב
                                     </p>
                                 </div>
                             </div>
                         </motion.div>
-                    )} */}
-                    {/* TODO: Uncomment when ready to re-enable ranking animation */}
-                    {/* Debug info - remove in production */}
-                    {/* {process.env.NODE_ENV === 'development' && userId && (
-                        <div className="text-xs text-muted-foreground p-2 bg-gray-100 dark:bg-gray-800 rounded">
-                            Debug: previousRank={'previousRank'}, newRank={'newRank'}, totalUsers={'totalUsers'}
-                        </div>
-                    )} */}
+                    )}
                     <div className="mb-2">
                         {renderResultGrid()}
                     </div>

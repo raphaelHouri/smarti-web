@@ -125,9 +125,14 @@ const Footer = ({
                         </Button>
                         <Button
                             className="w-full lg:w-auto"
-                            onClick={() => router.back()}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                router.push("/learn");
+                            }}
                             size={isMobile ? "sm" : "lg"}
                             variant="secondary"
+                            type="button"
                         >
                             חזרה לתרגולים
                         </Button>

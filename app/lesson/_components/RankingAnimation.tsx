@@ -14,6 +14,7 @@ interface RankingAnimationProps {
     totalUsers: number;
     className?: string;
     onClose?: () => void;
+    autoClose?: boolean;
 }
 
 export default function RankingAnimation({
@@ -22,6 +23,7 @@ export default function RankingAnimation({
     totalUsers,
     className,
     onClose,
+    autoClose = true,
 }: RankingAnimationProps) {
     const [isAnimating, setIsAnimating] = useState(false);
     const [hasImproved, setHasImproved] = useState(false);
@@ -29,24 +31,22 @@ export default function RankingAnimation({
 
     // Only show animation if ranking improved
     useEffect(() => {
-        console.log("RankingAnimation - previousRank:", previousRank, "newRank:", newRank);
         if (previousRank !== null && newRank !== null && newRank < previousRank) {
-            console.log("Ranking improved! Showing animation");
             setHasImproved(true);
             setIsAnimating(true);
 
-            // Auto-close after 3 seconds
-            const timer = setTimeout(() => {
-                if (onClose) {
-                    onClose();
-                }
-            }, 3000); // 3 seconds as requested
+            // Auto-close after 3 seconds only if autoClose is enabled
+            if (autoClose) {
+                const timer = setTimeout(() => {
+                    if (onClose) {
+                        onClose();
+                    }
+                }, 3000);
 
-            return () => clearTimeout(timer);
-        } else if (previousRank !== null && newRank !== null) {
-            console.log("Ranking did not improve or stayed the same");
+                return () => clearTimeout(timer);
+            }
         }
-    }, [previousRank, newRank, onClose]);
+    }, [previousRank, newRank, onClose, autoClose]);
 
     if (!hasImproved || previousRank === null || newRank === null) {
         return null;
@@ -80,9 +80,9 @@ export default function RankingAnimation({
             transition={{ duration: 0.5, delay: 0.3 }}
             className={cn("w-full max-w-md mx-auto", className)}
         >
-            <div className="relative bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 dark:from-purple-950/30 dark:via-pink-950/30 dark:to-orange-950/30 rounded-2xl p-6 border-2 border-purple-200 dark:border-purple-800 shadow-xl">
+            <div className="relative bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 dark:from-purple-950/30 dark:via-pink-950/30 dark:to-orange-950/30 rounded-xl sm:rounded-2xl p-3 sm:p-6 border-2 border-purple-200 dark:border-purple-800 shadow-xl">
                 {/* Header */}
-                <div className="flex items-center justify-center gap-3 mb-4">
+                <div className="flex items-center justify-center gap-2 sm:gap-3 mb-2 sm:mb-4">
                     <motion.div
                         initial={{ scale: 0, rotate: -180 }}
                         animate={{ scale: 1, rotate: 0 }}
@@ -93,16 +93,16 @@ export default function RankingAnimation({
                             delay: 0.5,
                         }}
                     >
-                        <Trophy className="w-8 h-8 text-yellow-500 fill-yellow-500" />
+                        <Trophy className="w-5 h-5 sm:w-8 sm:h-8 text-yellow-500 fill-yellow-500" />
                     </motion.div>
-                    <h3 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                    <h3 className="text-base sm:text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                         עלית בדירוג! 🎉
                     </h3>
                 </div>
 
                 {/* Leaderboard Animation */}
-                <div className="relative mb-6 min-h-[300px]">
-                    <div className="space-y-2 relative">
+                <div className="relative mb-3 sm:mb-6 min-h-[180px] sm:min-h-[300px]">
+                    <div className="space-y-1 sm:space-y-2 relative">
                         <AnimatePresence mode="popLayout">
                             {allRanks.map((rank) => {
                                 const isUserRank = rank === newRank;
@@ -154,7 +154,7 @@ export default function RankingAnimation({
                                             },
                                         }}
                                         className={cn(
-                                            "items-center justify-center px-4 flex w-full p-3 rounded-xl transition-all relative z-10",
+                                            "items-center justify-center px-2 sm:px-4 flex w-full p-1.5 sm:p-3 rounded-lg sm:rounded-xl transition-all relative z-10",
                                             isUserRank
                                                 ? "bg-emerald-50 dark:bg-emerald-900/30 border-2 border-emerald-400 dark:border-emerald-300 shadow-lg"
                                                 : wasUserRank
@@ -164,9 +164,9 @@ export default function RankingAnimation({
                                     >
                                         <motion.p
                                             className={cn(
-                                                "font-bold mr-4 min-w-[2rem] text-center",
+                                                "font-bold mr-2 sm:mr-4 min-w-[1.5rem] sm:min-w-[2rem] text-center text-sm sm:text-base",
                                                 isUserRank
-                                                    ? "text-emerald-700 dark:text-emerald-300 text-lg"
+                                                    ? "text-emerald-700 dark:text-emerald-300 sm:text-lg"
                                                     : wasUserRank
                                                         ? "text-red-600 dark:text-red-400"
                                                         : "text-slate-700 dark:text-slate-200"
@@ -198,7 +198,7 @@ export default function RankingAnimation({
                                                 >
                                                     <Avatar
                                                         className={cn(
-                                                            "border h-10 w-10 mr-4",
+                                                            "border h-7 w-7 sm:h-10 sm:w-10 mr-2 sm:mr-4",
                                                             isUserRank
                                                                 ? "border-emerald-400 dark:border-emerald-300 ring-2 ring-emerald-200 dark:ring-emerald-500"
                                                                 : "border-red-300 dark:border-red-600"
@@ -213,16 +213,16 @@ export default function RankingAnimation({
                                                 </motion.div>
                                                 <p
                                                     className={cn(
-                                                        "font-bold flex-1",
+                                                        "font-bold flex-1 text-sm sm:text-base",
                                                         isUserRank
-                                                            ? "text-emerald-800 dark:text-emerald-100 text-lg"
+                                                            ? "text-emerald-800 dark:text-emerald-100 sm:text-lg"
                                                             : "text-red-700 dark:text-red-300"
                                                     )}
                                                 >
                                                     אתה
                                                     {isUserRank && (
                                                         <motion.span
-                                                            className="ml-2 text-sm"
+                                                            className="ml-1 sm:ml-2 text-xs sm:text-sm"
                                                             initial={{ opacity: 0, x: -10 }}
                                                             animate={{ opacity: 1, x: 0 }}
                                                             transition={{ delay: 1.4 }}
@@ -233,10 +233,10 @@ export default function RankingAnimation({
                                                 </p>
                                                 <motion.div
                                                     className={cn(
-                                                        "flex items-center gap-1",
+                                                        "flex items-center gap-0.5 sm:gap-1",
                                                         isUserRank
-                                                            ? "text-emerald-700 dark:text-emerald-300 font-semibold"
-                                                            : "text-red-600 dark:text-red-400"
+                                                            ? "text-emerald-700 dark:text-emerald-300 font-semibold text-xs sm:text-sm"
+                                                            : "text-red-600 dark:text-red-400 text-xs"
                                                     )}
                                                     initial={false}
                                                     animate={{
@@ -250,28 +250,28 @@ export default function RankingAnimation({
                                                     <img
                                                         src="/stars.svg"
                                                         alt="נקודות"
-                                                        width={20}
-                                                        height={20}
-                                                        className="inline-block"
+                                                        width={16}
+                                                        height={16}
+                                                        className="inline-block sm:w-5 sm:h-5"
                                                     />
-                                                    <span>---</span>
+                                                    <span className="text-xs">---</span>
                                                 </motion.div>
                                             </>
                                         ) : (
                                             <>
-                                                <div className="h-10 w-10 mr-4 rounded-full bg-gray-200 dark:bg-gray-700" />
-                                                <p className="font-bold flex-1 text-neutral-600 dark:text-slate-400 text-sm">
+                                                <div className="h-7 w-7 sm:h-10 sm:w-10 mr-2 sm:mr-4 rounded-full bg-gray-200 dark:bg-gray-700" />
+                                                <p className="font-bold flex-1 text-neutral-600 dark:text-slate-400 text-xs sm:text-sm">
                                                     משתמש אחר
                                                 </p>
-                                                <div className="flex items-center gap-1 text-muted-foreground text-sm">
+                                                <div className="flex items-center gap-0.5 sm:gap-1 text-muted-foreground text-xs">
                                                     <img
                                                         src="/stars.svg"
                                                         alt="נקודות"
-                                                        width={16}
-                                                        height={16}
-                                                        className="inline-block opacity-50"
+                                                        width={14}
+                                                        height={14}
+                                                        className="inline-block opacity-50 sm:w-4 sm:h-4"
                                                     />
-                                                    <span>---</span>
+                                                    <span className="text-xs">---</span>
                                                 </div>
                                             </>
                                         )}
@@ -283,12 +283,12 @@ export default function RankingAnimation({
                 </div>
 
                 {/* Rank Display */}
-                <Separator className="mb-4" />
-                <div className="flex items-center justify-between">
+                <Separator className="mb-2 sm:mb-4" />
+                <div className="flex items-center justify-between gap-2 sm:gap-4">
                     <div className="flex flex-col items-center">
-                        <span className="text-sm text-muted-foreground mb-1">מיקום קודם</span>
+                        <span className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">מיקום קודם</span>
                         <motion.span
-                            className="text-2xl font-bold text-red-600 dark:text-red-400"
+                            className="text-lg sm:text-2xl font-bold text-red-600 dark:text-red-400"
                             initial={{ scale: 1 }}
                             animate={{ scale: [1, 1.2, 1] }}
                             transition={{ duration: 0.5 }}
@@ -298,7 +298,7 @@ export default function RankingAnimation({
                     </div>
 
                     <motion.div
-                        className="flex items-center gap-2"
+                        className="flex items-center gap-1 sm:gap-2"
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         transition={{
@@ -308,16 +308,16 @@ export default function RankingAnimation({
                             delay: 1.5,
                         }}
                     >
-                        <TrendingUp className="w-6 h-6 text-green-500" />
-                        <span className="text-lg font-semibold text-green-600 dark:text-green-400">
+                        <TrendingUp className="w-4 h-4 sm:w-6 sm:h-6 text-green-500" />
+                        <span className="text-sm sm:text-lg font-semibold text-green-600 dark:text-green-400">
                             +{rankChange} מקומות
                         </span>
                     </motion.div>
 
                     <div className="flex flex-col items-center">
-                        <span className="text-sm text-muted-foreground mb-1">מיקום חדש</span>
+                        <span className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">מיקום חדש</span>
                         <motion.span
-                            className="text-2xl font-bold text-green-600 dark:text-green-400"
+                            className="text-lg sm:text-2xl font-bold text-green-600 dark:text-green-400"
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             transition={{
