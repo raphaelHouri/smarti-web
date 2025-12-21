@@ -131,10 +131,17 @@ const Quiz = ({
     const { open: openExitModal } = useExitModal();
     const { step: systemStep } = useSystemStep();
 
+    // Function to check for unanswered questions and open exit modal with tip
+    const handleExitAttempt = useCallback(() => {
+        const unansweredCount = resultList.filter(answer => answer === null).length;
+        const hasUnanswered = unansweredCount > 0;
+        openExitModal(hasUnanswered);
+    }, [resultList, openExitModal]);
+
     // Prevent back navigation during quiz mode
     usePreventBackNavigation({
         enabled: mode === "quiz",
-        onBackAttempt: openExitModal,
+        onBackAttempt: handleExitAttempt,
     });
     useLayoutEffect(() => {
         if (lessonId == 'practiceMode') {
@@ -807,6 +814,7 @@ const Quiz = ({
         <div className="flex flex-col min-h-screen">
             <Header
                 percentage={progressPct /* UPDATED */}
+                onExit={mode === "quiz" ? handleExitAttempt : undefined}
                 feedback={<div>
                     <FeedbackButton
                         screenName={mode}

@@ -8,18 +8,21 @@ import { ReactNode } from "react";
 interface HeaderProps {
     percentage: number;
     feedback?: ReactNode;
+    onExit?: () => void;
 }
 
 const Header = ({
     percentage,
-    feedback
+    feedback,
+    onExit
 }: HeaderProps) => {
     const { open } = useExitModal();
+    const handleExit = onExit || (() => open());
     return (
         <div className="lg:pt-[50px] pt-[20px] max-w-[1140px] xl:pr-48 2xl:pr-0 
         items-center justify-between mx-auto px-10 flex gap-x-7 w-full">
             <X
-                onClick={open} //Todo:Add exit modal
+                onClick={handleExit}
                 className="text-slate-500 hover:opacity-75 transition cursor-pointer w-16 h-16 sm:w-6 sm:h-6"
             />
             <Progress value={percentage} />
