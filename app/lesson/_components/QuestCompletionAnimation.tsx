@@ -117,9 +117,6 @@ export default function QuestCompletionAnimation({
                             className="sm:w-[150px] sm:h-[150px]"
                             loop={true}
                         />
-                        <div className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3 size-8 sm:size-10 rounded-full bg-amber-500 dark:bg-amber-400 ring-2 ring-amber-200 dark:ring-amber-600 grid place-items-center shadow-lg">
-                            <Award className="w-4 h-4 sm:w-6 sm:h-6 text-white fill-white" />
-                        </div>
                     </motion.div>
                     <h3 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
                         עלית שלב! 🎉
