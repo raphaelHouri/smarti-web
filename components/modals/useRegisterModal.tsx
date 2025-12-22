@@ -26,10 +26,23 @@ const RegisterModal = () => {
 
     // Get the current URL to redirect back after registration
     const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
+    const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+
+    // Track modal close/cancel
+    const handleClose = (open: boolean) => {
+        if (!open && isOpen) {
+            // Modal is being closed
+            trackEvent("register_modal_closed", {
+                systemStep,
+                source: currentPath,
+            });
+        }
+        close();
+    };
 
     //  isOpen and close are states from zustand
     return (
-        <Dialog open={isOpen} onOpenChange={close}>
+        <Dialog open={isOpen} onOpenChange={handleClose}>
             <DialogContent className="max-w-md mx-auto">
                 <DialogHeader>
                     <div className="items-center justify-center flex w-full mb-5">
@@ -57,6 +70,9 @@ const RegisterModal = () => {
                             onClick={() => {
                                 trackEvent("sign_up_started", {
                                     systemStep,
+                                    source: currentPath,
+                                    location: "register_modal",
+                                    redirectUrl: currentUrl,
                                 });
                                 // Pass current URL as redirect URL so user returns to same page after registration
                                 openSignUp({
@@ -75,6 +91,9 @@ const RegisterModal = () => {
                             onClick={() => {
                                 trackEvent("sign_in_started", {
                                     systemStep,
+                                    source: currentPath,
+                                    location: "register_modal",
+                                    redirectUrl: currentUrl,
                                 });
                                 // Pass current URL as redirect URL so user returns to same page after sign in
                                 openSignIn({
@@ -91,6 +110,10 @@ const RegisterModal = () => {
                             size="default"
                             className="w-full flex items-center justify-center gap-2"
                             onClick={() => {
+                                trackEvent("register_modal_cancelled", {
+                                    systemStep,
+                                    source: currentPath,
+                                });
                                 close();
                             }}>
                             המשך בלי הרשמה

@@ -8,6 +8,7 @@ import { and, asc, desc, eq, gt, inArray, isNotNull, lt, or, sql } from "drizzle
 import { revalidatePath } from "next/cache";
 import { hasFullAccess } from "@/lib/admin";
 import { getDefaultSystemStep } from "@/lib/utils";
+import { trackServerEvent } from "@/lib/posthog-server";
 
 export type LessonWithResults =
     typeof lessons.$inferSelect & {
@@ -133,10 +134,12 @@ export const getOrCreateUserFromGuest = cache(async (lessonCategoryId?: string, 
             await getOrCreateUserSystemStats(userId, cookieSystemStep);
 
             // Track registration completion
-            const { trackServerEvent } = await import("@/lib/posthog-server");
             trackServerEvent(userId, "registration_completed", {
                 systemStep: cookieSystemStep,
                 email: userEmail,
+                name: user.firstName || null,
+                lessonCategoryId: newLessonCategoryId,
+                createdAt: new Date().toISOString(),
             });
 
             if (returnUser) {

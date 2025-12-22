@@ -4,8 +4,13 @@ import { ClerkLoaded, ClerkLoading, SignedIn, SignedOut, SignInButton, UserButto
 import { Loader, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TapAnimation } from "./tap-animation";
+import { trackEvent } from "@/lib/posthog";
+import { useSystemStep } from "@/hooks/use-system-step";
 
 export function AuthButtons() {
+    const { step: systemStep } = useSystemStep();
+    const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+
     return (
         <>
             <div className="mt-2">
@@ -25,7 +30,18 @@ export function AuthButtons() {
                         signUpForceRedirectUrl="/learn"
                         mode="modal"
                     >
-                        <Button variant="ghost" className="flex items-center gap-2">
+                        <Button 
+                            variant="ghost" 
+                            className="flex items-center gap-2"
+                            onClick={() => {
+                                trackEvent("sign_in_started", {
+                                    systemStep,
+                                    source: currentPath,
+                                    location: "header",
+                                    redirectUrl: "/learn",
+                                });
+                            }}
+                        >
                             התחברות  <UserPlus className="w-4 h-4" />
                         </Button>
                     </SignInButton>

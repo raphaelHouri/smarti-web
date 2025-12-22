@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { FC } from "react";
 import {
     BookOpen,
@@ -26,18 +26,21 @@ import { useSystemStep } from "@/hooks/use-system-step";
 type BookPageProps = { product: any | null };
 const BookPage: FC<BookPageProps> = ({ product }) => {
     const { step: systemStep } = useSystemStep();
+    const hasTracked = useRef(false);
     const dd = (product?.displayData ?? {}) as any;
 
     useEffect(() => {
-        if (product?.id) {
+        // Only track once per page load
+        if (!hasTracked.current && product?.id) {
             trackEvent("product_details_viewed", {
                 systemStep,
                 productId: product.id,
                 productType: "book",
                 productName: product.name,
             });
+            hasTracked.current = true;
         }
-    }, [product?.id, systemStep]);
+    }, [product?.id, systemStep, product?.name]);
     const title: string = dd.title ?? product?.name ?? "חוברת הכנה";
     const year: string = getProductYear();
     const stage: string = dd.stage ?? "שלב א'";

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import db from "@/db/drizzle";
-import { lessons, lessonQuestionGroups, lessonCategory } from "@/db/schemaSmarti";
+import { lessons, lessonQuestionGroups, lessonCategory, questions } from "@/db/schemaSmarti";
 import { IsAdmin } from "@/lib/admin";
 import { InferInsertModel, and, eq, inArray } from 'drizzle-orm';
 import * as XLSX from 'xlsx';
@@ -135,7 +135,7 @@ export async function POST(req: NextRequest) {
     if (allQuestionIds.length > 0) {
         try {
             // Lazy import to avoid circular import of schema in some environments
-            const { questions } = await import('@/db/schemaSmarti');
+
             const uniqueIds = Array.from(new Set(allQuestionIds));
             const chunks: string[][] = [];
             const size = 500;

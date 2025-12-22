@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import {
     Package, Rocket, BookOpen, Video, Check, Star,
     Shield, Users, Award, Clock, HelpCircle, ArrowUp
@@ -137,6 +137,7 @@ export default function PurchasePageShop({
         value: number;
         planId?: string | null;
     } | null>(null);
+    const hasTrackedPageView = useRef(false);
 
     // Sync with route params when they change
     useEffect(() => {
@@ -186,14 +187,17 @@ export default function PurchasePageShop({
         loadCoupon();
     }, [loadCoupon]);
 
-    // Track shop page view on mount
+    // Track shop page view once per page load
     useEffect(() => {
-        trackEvent("shop_page_viewed", {
-            systemStep,
-            category: selectedCategory,
-            packageType: effectivePackageType,
-        });
-    }, []); // Only on mount
+        if (!hasTrackedPageView.current) {
+            trackEvent("shop_page_viewed", {
+                systemStep,
+                category: selectedCategory,
+                packageType: effectivePackageType,
+            });
+            hasTrackedPageView.current = true;
+        }
+    }, [systemStep, selectedCategory, effectivePackageType]);
 
     // Smoothly scroll to the pricing section shortly after page load
     useEffect(() => {
@@ -207,38 +211,6 @@ export default function PurchasePageShop({
         return () => clearTimeout(timer);
     }, []);
 
-    // Track books page view when category is books
-    useEffect(() => {
-        if (effectivePackageType === "book") {
-            trackEvent("books_page_viewed", {
-                systemStep,
-                category: selectedCategory,
-            });
-        }
-    }, [effectivePackageType, systemStep, selectedCategory]);
-
-    // Track category change
-    useEffect(() => {
-        if (selectedCategory) {
-            trackEvent("shop_category_changed", {
-                systemStep,
-                category: selectedCategory,
-                packageType: effectivePackageType,
-            });
-        }
-    }, [selectedCategory, systemStep, effectivePackageType]);
-
-    // Track coupon applied when coupon is loaded
-    useEffect(() => {
-        if (savedCoupon) {
-            trackEvent("coupon_applied", {
-                systemStep,
-                couponCode: savedCoupon.code,
-                couponType: savedCoupon.type,
-                discountValue: savedCoupon.value,
-            });
-        }
-    }, [savedCoupon, systemStep]);
 
     // Listen for coupon updates from CouponModal
     useEffect(() => {
@@ -321,11 +293,22 @@ export default function PurchasePageShop({
     const handleCategoryChange = (category: Category) => {
         setSelectedCategory(category);
         const packageType: PackageType = category === "books" ? "book" : "system";
+
+        // Track category change on click
         trackEvent("shop_category_changed", {
             systemStep,
             category,
             packageType,
         });
+
+        // Track books page view when user clicks to switch to books
+        if (category === "books") {
+            trackEvent("books_page_viewed", {
+                systemStep,
+                category,
+            });
+        }
+
         router.push(`/shop/${packageType}`, { scroll: false });
     };
 
@@ -631,6 +614,16 @@ export default function PurchasePageShop({
                                             signUpForceRedirectUrl={`/shop/${effectivePackageType}`}
                                         >
                                             <button
+                                                onClick={() => {
+                                                    trackEvent("sign_in_started", {
+                                                        systemStep,
+                                                        source: `/shop/${effectivePackageType}`,
+                                                        location: "shop_plan_card",
+                                                        planId: plan.id,
+                                                        planName: plan.name,
+                                                        redirectUrl: `/shop/${effectivePackageType}`,
+                                                    });
+                                                }}
                                                 className={cn(
                                                     "w-full py-3 rounded-lg font-medium transition-all duration-200 mt-auto",
                                                     plan.badge === "Most Popular"

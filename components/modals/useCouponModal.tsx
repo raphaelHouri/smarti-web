@@ -9,6 +9,8 @@ import { useRouter } from "next/navigation";
 import { Loader2, CheckCircle2, XCircle, Tag, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getUserCoupon, validateAndSaveCoupon, removeUserCoupon, validateCouponCode } from "@/actions/user-coupon";
+import { trackEvent } from "@/lib/posthog";
+import { useSystemStep } from "@/hooks/use-system-step";
 
 type Coupon = {
     id: string;
@@ -26,6 +28,7 @@ export default function CouponModal() {
     const { isOpen, close } = useCouponModal();
     const { userId } = useAuth();
     const router = useRouter();
+    const { step: systemStep } = useSystemStep();
     const [couponCode, setCouponCode] = useState("");
     const [isValidating, setIsValidating] = useState(false);
     const [validationResult, setValidationResult] = useState<{ valid: boolean; coupon: Coupon | null; error?: string } | null>(null);
@@ -97,6 +100,15 @@ export default function CouponModal() {
                 setSavedCoupon(result.coupon);
                 setCouponCode("");
                 setValidationResult(null);
+
+                // Track coupon applied on click
+                trackEvent("coupon_applied", {
+                    systemStep,
+                    couponCode: result.coupon.code,
+                    couponType: result.coupon.type,
+                    discountValue: result.coupon.value,
+                });
+
                 // Dispatch custom event to notify PurchasePageShop to reload coupon
                 window.dispatchEvent(new CustomEvent('couponUpdated', { detail: { coupon: result.coupon } }));
                 // Also refresh the router to ensure server-side cache is cleared

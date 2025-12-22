@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { FC } from "react";
 import { ArrowLeft, Award, Check, Rocket, Shield, Star, MonitorSmartphone, BarChart3, Calendar } from "lucide-react";
 import Link from "next/link";
@@ -13,18 +13,21 @@ type SystemPageProps = { product: any | null };
 const SystemPage: FC<SystemPageProps> = ({ product }) => {
     const [isLoading] = useState(false);
     const { step: systemStep } = useSystemStep();
+    const hasTracked = useRef(false);
     const dd = (product?.displayData ?? {}) as any;
 
     useEffect(() => {
-        if (product?.id) {
+        // Only track once per page load
+        if (!hasTracked.current && product?.id) {
             trackEvent("product_details_viewed", {
                 systemStep,
                 productId: product.id,
                 productType: "system",
                 productName: product.name,
             });
+            hasTracked.current = true;
         }
-    }, [product?.id, systemStep]);
+    }, [product?.id, systemStep, product?.name]);
     const title: string = dd.title ?? product?.name ?? "מערכת הכנה";
     const subtitle: string = product?.description ?? dd.subtitle ?? "תוכנית הכנה חודשית";
     const periodLabel: string = dd.periodLabel ?? "חודשי";
