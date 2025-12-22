@@ -44,14 +44,14 @@ const FinishLessonModal = () => {
                         המשך לסיכום התרגול כדי לראות את התוצאות שלך!
                     </DialogDescription>}
                     {isRunning && hasUnansweredQuestions && (
-                        <div className="mt-4 space-y-3">
-                            <div className="p-3 bg-blue-50 dark:bg-blue-950/30 border-2 border-blue-300 dark:border-blue-700 rounded-lg">
-                                <p className="text-sm text-blue-800 dark:text-blue-200 text-center font-semibold">
-                                    💡 יש לכם עוד שאלות שלא סומנו
+                        <div className="mt-4 space-y-2.5">
+                            <div className="p-2.5 bg-blue-50/80 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800/50 rounded-lg shadow-sm">
+                                <p className="text-xs text-blue-700 dark:text-blue-300 text-center font-medium leading-relaxed">
+                                    ✏️ יש לכם עוד שאלות שלא סומנו
                                 </p>
                             </div>
-                            <div className="p-4 bg-amber-50 dark:bg-amber-950/30 border-2 border-amber-300 dark:border-amber-700 rounded-lg">
-                                <p className="text-sm text-amber-800 dark:text-amber-200 text-center font-medium">
+                            <div className="p-3 bg-amber-50/80 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/50 rounded-lg shadow-sm">
+                                <p className="text-xs text-amber-700 dark:text-amber-300 text-center font-normal leading-relaxed">
                                     💡 טיפ חשוב: בסוף המבחן חשוב לסמן גם שאלות שאינכם יודעים או לא הספקתם. ישנו סיכוי שהמזל ישחק לטובתכם!
                                 </p>
                             </div>
