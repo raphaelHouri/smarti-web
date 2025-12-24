@@ -344,14 +344,14 @@ const Quiz = ({
                                         onClick={() => setIsTooltipOpen(!isTooltipOpen)}
                                     >
                                         <span className="bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
-                                            ללא טיימר
+                                            ללא זמנים
                                         </span>
                                         <AlarmClockOff className="w-5 h-5 text-purple-500 dark:text-purple-400 group-hover:text-pink-500 dark:group-hover:text-pink-400 transition-colors duration-200" />
                                     </div>
                                 </TooltipTrigger>
                                 <TooltipContent className="bg-gradient-to-r from-purple-600 to-pink-600 border-purple-400/50 shadow-xl">
                                     <div className="flex items-center gap-2.5 text-white">
-                                        <span className="font-medium">להחזרת השעון עדכנו את ההגדרה בהגדרות</span>
+                                        <span className="font-medium">להחזרת מגבלת זמנים, ניתן לבצע במסך ההגדרות</span>
                                         <Settings className="w-4 h-4 text-white/90" />
                                     </div>
                                 </TooltipContent>

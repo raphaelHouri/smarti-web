@@ -43,7 +43,7 @@ export default function QuestCompletionAnimation({
                     if (onClose) {
                         onClose();
                     }
-                }, 3000);
+                }, 5000);
 
                 return () => clearTimeout(timer);
             }

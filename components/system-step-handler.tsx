@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
 import { setGuestSystemStep, setUserSystemStep, initializeSystemStepCookie } from "@/actions/user-system-step";
 
 export function SystemStepHandler() {
     const searchParams = useSearchParams();
     const router = useRouter();
+    const pathname = usePathname();
     const { isSignedIn } = useAuth();
     const stepParam = searchParams.get("step");
     const hasProcessed = useRef(false);
@@ -35,9 +36,9 @@ export function SystemStepHandler() {
                         }
                         // Server action already calls revalidatePath(), refresh router
                         router.refresh();
-                        // Remove query param after setting the step
+                        // Remove query param after setting the step, but preserve current path
                         setTimeout(() => {
-                            router.replace("/");
+                            router.replace(pathname);
                         }, 100);
                     } catch (error) {
                         console.error("Failed to set system step:", error);
@@ -47,7 +48,7 @@ export function SystemStepHandler() {
                 void setStep();
             }
         }
-    }, [stepParam, isSignedIn, router]);
+    }, [stepParam, isSignedIn, router, pathname]);
 
     return null;
 }
