@@ -904,7 +904,7 @@ export const getLessonCategoryWithLessonsById = cache(async (categoryId: string)
         .innerJoin(lessons, eq(lessons.id, userLessonResults.lessonId))
         .where(
             and(
-                // eq(userLessonResults.userId, userId),      // <-- filter by THIS user
+                eq(userLessonResults.userId, userId),
                 eq(lessons.lessonCategoryId, categoryId),
                 eq(userLessonResults.systemStep, userSystemStep),
                 eq(lessons.systemStep, userSystemStep),
