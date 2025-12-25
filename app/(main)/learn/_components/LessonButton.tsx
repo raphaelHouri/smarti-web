@@ -110,7 +110,7 @@ const LessonButton = ({
                     </div>
                 )}
                 <AnimatePresence>
-                    {showTooltip && locked && (
+                    {showTooltip && locked && !isPremium && (
                         <motion.div
                             initial={{ opacity: 0, y: 20, scale: 0.6 }}
                             animate={{
