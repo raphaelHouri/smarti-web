@@ -69,7 +69,7 @@ export default function RootLayout({
     <ClerkProvider
       localization={customHeIL}
       afterSignOutUrl="/"
-      afterSignUpUrl="/courses"
+      afterSignUpUrl="/"
 
 
     // appearance={{

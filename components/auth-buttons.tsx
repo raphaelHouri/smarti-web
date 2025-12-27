@@ -42,12 +42,12 @@ export function AuthButtons() {
                 </SignedIn>
                 <SignedOut>
                     <SignInButton
-                        forceRedirectUrl="/learn"
-                        signUpForceRedirectUrl="/learn"
+                        forceRedirectUrl="/"
+                        signUpForceRedirectUrl="/"
                         mode="modal"
                     >
-                        <Button 
-                            variant="ghost" 
+                        <Button
+                            variant="ghost"
                             className="flex items-center gap-2"
                             onClick={() => {
                                 trackEvent("sign_in_started", {
