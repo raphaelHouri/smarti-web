@@ -6,15 +6,20 @@ import { Progress } from "@/components/ui/progress";
 import { useRegisterModal } from "@/store/use-register-modal";
 import { useAuth } from "@clerk/nextjs";
 import QuestIcon from "@/components/QuestIcon";
+import { useEffect, useState } from "react";
 
 type Props = {
     experience: number
 }
 
 const QuestsSection = ({ experience }: Props) => {
+    const [mounted, setMounted] = useState(false);
     const { open: OpenRegisterModal } = useRegisterModal();
     const { userId } = useAuth();
 
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     return (
         <div className="border-2 rounded-xl p-4 pb-4 mb-6 space-y-4 ">
@@ -23,7 +28,7 @@ const QuestsSection = ({ experience }: Props) => {
                 <h3 className="text-lg font-bold">
                     שלבים
                 </h3>
-                {!userId ? (
+                {mounted && !userId ? (
                     <Button
                         onClick={OpenRegisterModal}
                         variant="primaryOutline"
@@ -31,15 +36,26 @@ const QuestsSection = ({ experience }: Props) => {
                         className="mb-2"
                     >
                         צפייה                    </Button>
-                ) : <Link href="/quests">
+                ) : mounted && userId ? (
+                    <Link href="/quests">
+                        <Button
+                            variant="primaryOutline"
+                            size="sm"
+                            className="mb-2"
+                        >
+                            צפייה
+                        </Button>
+                    </Link>
+                ) : (
                     <Button
                         variant="primaryOutline"
                         size="sm"
                         className="mb-2"
+                        disabled
                     >
                         צפייה
                     </Button>
-                </Link>}
+                )}
 
             </div>
             <ul className="w=full">
