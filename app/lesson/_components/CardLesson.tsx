@@ -1,7 +1,7 @@
 
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { useCallback } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { useKey } from "react-use";
 
 interface CardLessonProps {
@@ -31,6 +31,10 @@ const CardLesson = ({
     status,
     isAnswered
 }: CardLessonProps) => {
+    const [imageKey, setImageKey] = useState(0);
+    const [imageSrc, setImageSrc] = useState(text);
+    const [hasErrored, setHasErrored] = useState(false);
+
     const handleClick = useCallback(() => {
         if (disabled) return;
         onClick();
@@ -43,6 +47,37 @@ const CardLesson = ({
     const isWrongAnswer = (mode === "review" || mode === "practiceMode") && selected && cardId !== "a";
     const isComprehensionType = type === "COMPREHENSION";
     const isShapesType = type === "SHAPES";
+
+    // Reset image when text changes (new question) - forces fresh load
+    useEffect(() => {
+        if (isShapesType && text.startsWith("http")) {
+            setImageSrc(text);
+            setImageKey(prev => prev + 1); // Force re-render with new key
+            setHasErrored(false); // Reset error state for new image
+        }
+    }, [text, isShapesType]);
+
+    const handleImageError = useCallback((e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+        // Prevent infinite retry loops - only retry once
+        if (hasErrored) {
+            console.warn(`Image failed to load after retry: ${text}`);
+            return;
+        }
+
+        // The error event is triggered when:
+        // 1. Network request fails (404, CORS, timeout, etc.)
+        // 2. Image format is invalid
+        // 3. Service worker cache returns corrupted data (PWA issue)
+        // 4. Image URL is malformed
+
+        setHasErrored(true);
+
+        // Retry with cache-busting parameter to bypass service worker cache
+        const separator = text.includes('?') ? '&' : '?';
+        const cacheBustedUrl = `${text}${separator}t=${Date.now()}`;
+        setImageSrc(cacheBustedUrl);
+        setImageKey(prev => prev + 1); // Force component remount
+    }, [text, hasErrored]);
 
 
     return (
@@ -62,10 +97,14 @@ const CardLesson = ({
             {isShapesType && text.startsWith("http") ? (
                 <div className="relative aspect-square mb-4 max-h-[80px] lg:max-h-[150px] w-full">
                     <Image
-                        src={text}
+                        key={`${id}-${cardId}-${imageKey}`}
+                        src={imageSrc}
                         fill
                         alt={text}
                         className="object-contain"
+                        unoptimized={!text.includes('firebasestorage.googleapis.com')}
+                        onError={handleImageError}
+                        loading="lazy"
                     />
                 </div>
             ) : (
