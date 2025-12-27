@@ -1,7 +1,7 @@
 "use client";
 
 import { ClerkLoaded, ClerkLoading, SignedIn, SignedOut, SignUpButton } from "@clerk/nextjs";
-import { Loader } from "lucide-react";
+import { Loader, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -52,9 +52,14 @@ export function MarketingAuthButtons() {
                     </SignUpButton>
                 </SignedOut>
                 <SignedIn>
-                    <Button variant="secondary" size="lg" className="w-full" asChild>
-                        <Link href="/learn">
-                            התחל ללמוד
+                    <Button
+                        variant="secondary"
+                        size="lg"
+                        className="w-full group relative animate-bounce-few overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-100"
+                        asChild
+                    >
+                        <Link href="/learn" className="flex items-center justify-center gap-2">
+                            <span>התחל ללמוד</span>
                         </Link>
                     </Button>
                 </SignedIn>

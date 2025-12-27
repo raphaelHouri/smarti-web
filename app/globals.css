@@ -623,3 +623,27 @@ body,
 .animate-float-gentle {
   animation: float-gentle 8s ease-in-out infinite;
 }
+
+/* Bounce a few times animation - bounces 4 times then stops */
+@keyframes bounce-few {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  12.5%,
+  37.5%,
+  62.5%,
+  87.5% {
+    transform: translateY(-15%);
+  }
+  25%,
+  50%,
+  75% {
+    transform: translateY(0);
+  }
+}
+
+.animate-bounce-few {
+  animation: bounce-few 3s ease-in-out;
+  animation-iteration-count: 3;
+}
