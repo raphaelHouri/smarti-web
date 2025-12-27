@@ -6,9 +6,25 @@ import { Button } from "@/components/ui/button";
 import { TapAnimation } from "./tap-animation";
 import { trackEvent } from "@/lib/posthog";
 import { useSystemStep } from "@/hooks/use-system-step";
+import { useEffect, useState } from "react";
 
 export function AuthButtons() {
+    const [mounted, setMounted] = useState(false);
     const { step: systemStep } = useSystemStep();
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    // Prevent hydration mismatch by not rendering Clerk components until mounted
+    if (!mounted) {
+        return (
+            <div className="mt-2">
+                <Loader className="h-5 w-5 text-muted-foreground animate-spin" />
+            </div>
+        );
+    }
+
     const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
 
     return (
