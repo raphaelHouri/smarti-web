@@ -34,6 +34,7 @@ import { useCoinsModal } from "@/store/use-coins";
 import { trackEvent } from "@/lib/posthog";
 import { useSystemStep } from "@/hooks/use-system-step";
 import { quests } from "@/constants";
+import { useCountdownStore } from "@/store/use-countdown-timer";
 // import RankingAnimation from "./RankingAnimation";
 // import { Dialog, DialogContent } from "@/components/ui/dialog";
 // import { TrendingUp } from "lucide-react";
@@ -149,6 +150,16 @@ const Quiz = ({
         }
     }, []);
     useMount(() => {
+        // Reset finish modal state when starting a new quiz (only if not showing previous answers)
+        if (!userPreviousAnswers) {
+            clearApprove();
+            // Reset countdown timer state to prevent immediate finish
+            // Stop the timer first, then it will be properly initialized when CountdownTimer component mounts
+            // const { setIsRunning, setTimeLeft } = useCountdownStore.getState();
+            // setIsRunning(false);
+            // setTimeLeft(0);
+        }
+
         if (userPreviousAnswers) {
             setMode("summary")
             setResultList([...userPreviousAnswers])
@@ -175,6 +186,12 @@ const Quiz = ({
     })
     useEffect(() => {
         const handleFinishApproval = async () => {
+            // Only process finish approval if we're actually in quiz mode
+            // This prevents premature completion when state persists from previous sessions
+            if (mode !== "quiz" && mode !== "practiceMode") {
+                return;
+            }
+
             if (isFinishApproved && userId) {
                 // Prevent multiple executions
                 if (hasSavedResults.current) {
@@ -247,7 +264,7 @@ const Quiz = ({
             }
         };
         handleFinishApproval();
-    }, [isFinishApproved, lessonId, userId, resultList, questionsMap, total, systemStep, startAt]);
+    }, [isFinishApproved, mode, lessonId, userId, resultList, questionsMap, total, systemStep, startAt]);
 
     // Reset the ref when starting a new lesson/practice
     useEffect(() => {
