@@ -5,7 +5,7 @@ import { PWAInstallButton } from "@/components/pwa-install-button";
 
 const FooterPage = () => {
   return (
-    <footer className="hidden lg:block border-t-2 border-slate-200 dark:border-slate-800 w-full bg-slate-50/50 dark:bg-slate-950/50 backdrop-blur-sm">
+    <footer className="block border-t-2 border-slate-200 dark:border-slate-800 w-full bg-slate-50/50 dark:bg-slate-950/50 backdrop-blur-sm">
       <div className="max-w-screen-lg mx-auto py-6 px-4">
         {/* Original footer style (no system step selector) */}
 
