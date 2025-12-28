@@ -34,7 +34,6 @@ import { useCoinsModal } from "@/store/use-coins";
 import { trackEvent } from "@/lib/posthog";
 import { useSystemStep } from "@/hooks/use-system-step";
 import { quests } from "@/constants";
-import { useCountdownStore } from "@/store/use-countdown-timer";
 // import RankingAnimation from "./RankingAnimation";
 // import { Dialog, DialogContent } from "@/components/ui/dialog";
 // import { TrendingUp } from "lucide-react";
@@ -150,16 +149,6 @@ const Quiz = ({
         }
     }, []);
     useMount(() => {
-        // Reset finish modal state when starting a new quiz (only if not showing previous answers)
-        if (!userPreviousAnswers) {
-            clearApprove();
-            // Reset countdown timer state to prevent immediate finish
-            // Stop the timer first, then it will be properly initialized when CountdownTimer component mounts
-            // const { setIsRunning, setTimeLeft } = useCountdownStore.getState();
-            // setIsRunning(false);
-            // setTimeLeft(0);
-        }
-
         if (userPreviousAnswers) {
             setMode("summary")
             setResultList([...userPreviousAnswers])
