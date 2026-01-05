@@ -19,7 +19,7 @@ const testData = {
     vat_id: '123456789',
     email: 'test@example.com',
     StudentName: 'יוסי כהן',
-    productType: 'bookStep3', // Optional: bookStep1, bookStep2, bookStep3
+    productType: 'bookStep2', // Optional: bookStep1, bookStep2, bookStep3
     userId: 'user_test123', // Optional
 };
 
@@ -34,11 +34,11 @@ async function testBookConvert() {
         formData.append('vat_id', testData.vat_id);
         formData.append('email', testData.email);
         formData.append('StudentName', testData.StudentName);
-        
+
         if (testData.productType) {
             formData.append('productType', testData.productType);
         }
-        
+
         if (testData.userId) {
             formData.append('userId', testData.userId);
         }

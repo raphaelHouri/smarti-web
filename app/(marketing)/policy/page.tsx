@@ -300,6 +300,31 @@ export default function PolicyPage() {
                 </section>
 
                 <section className="space-y-4">
+                    <h2 className="text-2xl font-bold mt-8 mb-4">מדיניות החזרת מוצרים והחזרים כספיים:</h2>
+                    <p className="leading-relaxed">
+                        המוצרים הנמכרים באתר Smarti הם ספרים מודפסים (מוצרים פיזיים) הנשלחים ללקוח.
+                    </p>
+                    <p className="leading-relaxed">
+                        בהתאם לחוק הגנת הצרכן בישראל, ניתן לבטל עסקה ולהחזיר מוצר בתוך 14 ימים מיום קבלת המוצר, ובלבד שהמוצר לא נעשה בו שימוש, לא נפתח, לא נכתב ולא נפגע, והוא מוחזר באריזתו המקורית ובמצב חדש.
+                    </p>
+                    <p className="leading-relaxed">
+                        לאחר קבלת המוצר ובדיקתו, יינתן החזר כספי באמצעי התשלום המקורי בתוך עד 7 ימי עסקים, בניכוי דמי משלוח, ככל שנגבו.
+                    </p>
+                    <p className="leading-relaxed">
+                        לא ניתן להחזיר מוצרים שנעשה בהם שימוש, נפתחו, נכתבו או נפגעו.
+                    </p>
+                    <p className="leading-relaxed">
+                        במקרה של פגם במוצר או טעות במשלוח, ניתן לפנות לשירות הלקוחות בתוך 48 שעות מקבלת המוצר לצורך טיפול והחלפה.
+                    </p>
+                    <p className="leading-relaxed">
+                        לפניות בנושא החזרות והחזרים כספיים ניתן ליצור קשר בדוא״ל:{" "}
+                        <a href="mailto:contact@smarti-kids.co.il" className="text-primary hover:underline">
+                            📧 contact@smarti-kids.co.il
+                        </a>
+                    </p>
+                </section>
+
+                <section className="space-y-4">
                     <h2 className="text-2xl font-bold mt-8 mb-4">מחיקת מידע:</h2>
                     <p className="leading-relaxed">
                         אם הינך מעוניין למחוק את המידע אשר שמור עליך באפליקציה, עליך לשלוח פנייה לכתובת הדואר האלקטרוני{" "}
