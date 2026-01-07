@@ -11,31 +11,42 @@ export const metadata: Metadata = buildMetadata({
 });
 
 const LearnPage = async () => {
-
-    const userData = await getOrCreateUserFromGuest();
-
-
-    const [user] = await Promise.all([userData]);
+    try {
+        const user = await getOrCreateUserFromGuest();
 
 
 
 
 
-    // For guests or users without a saved category, redirect to first category
-    if (!user || !user.settings?.lessonCategoryId) {
-        const firstCategory = await getFirstCategory();
-        if (!firstCategory || !firstCategory.id) {
-            // If no categories exist at all, show loading page
-            return <LoadingPage />;
+        // For guests or users without a saved category, redirect to first category
+        if (!user || !user.settings?.lessonCategoryId) {
+            const firstCategory = await getFirstCategory();
+            if (!firstCategory || !firstCategory.id) {
+                // If no categories exist at all, show loading page
+                return <LoadingPage />;
+            }
+            redirect(`/learn/${firstCategory.id}`);
         }
-        redirect(`/learn/${firstCategory.id}`);
-    }
-    // For authenticated users with a saved category, redirect to that category
-    if (user.settings.lessonCategoryId) {
-        redirect(`/learn/${user.settings.lessonCategoryId}`);
-    }
-    return <LoadingPage />
 
+        // For authenticated users with a saved category, redirect to that category
+        if (user.settings.lessonCategoryId) {
+            redirect(`/learn/${user.settings.lessonCategoryId}`);
+        }
+        return <LoadingPage />;
+    } catch (error) {
+        console.error("[LearnPage] Error loading page:", error);
+        // On error, try to redirect to first category as fallback
+        try {
+            const firstCategory = await getFirstCategory();
+            if (firstCategory?.id) {
+                redirect(`/learn/${firstCategory.id}`);
+            }
+        } catch (fallbackError) {
+            console.error("[LearnPage] Fallback error:", fallbackError);
+        }
+        // If all else fails, show loading page
+        return <LoadingPage />;
+    }
 }
 
 export default LearnPage;

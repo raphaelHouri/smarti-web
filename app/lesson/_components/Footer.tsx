@@ -130,7 +130,7 @@ const Footer = ({
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                router.push(userCategoryId ? `/learn/${userCategoryId}` : "/");
+                                router.push(userCategoryId ? `/learn/${userCategoryId}` : "/learn");
                             }}
                             size={isMobile ? "sm" : "lg"}
                             variant="secondary"

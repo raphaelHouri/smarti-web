@@ -1,5 +1,3 @@
-import { toast } from "sonner";
-
 const LoadingPage = () => {
 	return (
 		<div className="items-center justify-center flex flex-col
