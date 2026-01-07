@@ -11,7 +11,7 @@ import { Loader2 } from "lucide-react";
 const FinishLessonModal = () => {
     const [isClient, setIsClient] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const { isOpen, close, approve, hasUnansweredQuestions } = useFinishLessonModal();
+    const { isOpen, close, approve, hasUnansweredQuestions, isApproved } = useFinishLessonModal();
     const { isRunning } = useCountdownStore();
 
     //Doing this to avoid hydration errors
@@ -25,6 +25,19 @@ const FinishLessonModal = () => {
             setIsLoading(false);
         }
     }, [isOpen]);
+
+    // Close modal after approval processing (when mode changes to summary)
+    // This allows the loading state to be visible before closing
+    useEffect(() => {
+        if (isApproved && isLoading) {
+            // Wait a bit to show the loading state, then close
+            // The Quiz component will handle the actual transition to summary
+            const timer = setTimeout(() => {
+                close();
+            }, 800); // Small delay to show loading state
+            return () => clearTimeout(timer);
+        }
+    }, [isApproved, isLoading, close]);
 
     if (!isClient) {
         return null;
