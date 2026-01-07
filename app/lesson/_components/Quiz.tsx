@@ -38,7 +38,7 @@ import { quests } from "@/constants";
 // import { Dialog, DialogContent } from "@/components/ui/dialog";
 // import { TrendingUp } from "lucide-react";
 import QuestCompletionAnimation from "./QuestCompletionAnimation";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { getUserExperience } from "@/actions/user-experience";
 import { Award } from "lucide-react";
 
@@ -630,6 +630,7 @@ const Quiz = ({
                             }
                         }}
                     >
+                        <DialogTitle className="sr-only">Quest Completion</DialogTitle>
                         <QuestCompletionAnimation
                             previousExperience={previousExperience}
                             newExperience={newExperience}
