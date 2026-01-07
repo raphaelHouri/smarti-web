@@ -6,9 +6,11 @@ import { Button } from "../ui/button";
 import { useFinishLessonModal } from "@/store/use-finish-lesson-modal";
 import { useCountdownStore } from "@/store/use-countdown-timer";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 const FinishLessonModal = () => {
     const [isClient, setIsClient] = useState<boolean>(false)
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const { isOpen, close, approve, hasUnansweredQuestions } = useFinishLessonModal();
     const { isRunning } = useCountdownStore();
 
@@ -16,6 +18,14 @@ const FinishLessonModal = () => {
     useEffect(() => {
         setIsClient(true);
     }, [])
+
+    // Reset loading when modal closes
+    useEffect(() => {
+        if (!isOpen) {
+            setIsLoading(false);
+        }
+    }, [isOpen]);
+
     if (!isClient) {
         return null;
     }
@@ -75,10 +85,19 @@ const FinishLessonModal = () => {
                                     size="default"
                                     className="w-full"
                                     onClick={() => {
+                                        setIsLoading(true);
                                         approve(); // This now closes the modal too
                                     }}
+                                    disabled={isLoading}
                                 >
-                                    לסיום תרגול
+                                    {isLoading ? (
+                                        <>
+                                            <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                                            מעבד...
+                                        </>
+                                    ) : (
+                                        "לסיום תרגול"
+                                    )}
                                 </Button>
                             </>
                         ) : (
@@ -87,10 +106,19 @@ const FinishLessonModal = () => {
                                 size="default"
                                 className="w-full"
                                 onClick={() => {
+                                    setIsLoading(true);
                                     approve(); // This now closes the modal too
                                 }}
+                                disabled={isLoading}
                             >
-                                המשך לסיכום
+                                {isLoading ? (
+                                    <>
+                                        <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                                        מעבד...
+                                    </>
+                                ) : (
+                                    "המשך לסיכום"
+                                )}
                             </Button>
                         )}
                     </div>
