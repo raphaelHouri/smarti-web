@@ -376,6 +376,8 @@ const Quiz = ({
                     <CountdownTimer
                         initialTime={totalTime}
                         onFinish={() => {
+                            // Don't open modal if already approved or not in quiz mode
+                            if (isFinishApproved || mode !== "quiz") return;
                             const unansweredCount = resultList.filter(answer => answer === null).length;
                             const hasUnanswered = unansweredCount > 0;
                             OpenFinishLessonModal(hasUnanswered);
@@ -415,6 +417,8 @@ const Quiz = ({
             if (mode === "review") setMode("summary");
             if (mode === "practiceMode") OpenPracticeModal();
             else {
+                // Don't open modal if already approved or not in quiz mode
+                if (isFinishApproved || mode !== "quiz") return;
                 const unansweredCount = resultList.filter(answer => answer === null).length;
                 const hasUnanswered = unansweredCount > 0;
                 OpenFinishLessonModal(hasUnanswered);

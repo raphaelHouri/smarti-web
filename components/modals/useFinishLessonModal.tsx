@@ -75,8 +75,7 @@ const FinishLessonModal = () => {
                                     size="default"
                                     className="w-full"
                                     onClick={() => {
-                                        close();
-                                        approve();
+                                        approve(); // This now closes the modal too
                                     }}
                                 >
                                     לסיום תרגול
@@ -88,8 +87,7 @@ const FinishLessonModal = () => {
                                 size="default"
                                 className="w-full"
                                 onClick={() => {
-                                    close();
-                                    approve();
+                                    approve(); // This now closes the modal too
                                 }}
                             >
                                 המשך לסיכום
