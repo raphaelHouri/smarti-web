@@ -24,7 +24,7 @@ const LearnPage = async () => {
     // For guests or users without a saved category, redirect to first category
     if (!user || !user.settings?.lessonCategoryId) {
         const firstCategory = await getFirstCategory();
-        if (!firstCategory) {
+        if (!firstCategory || !firstCategory.id) {
             // If no categories exist at all, show loading page
             return <LoadingPage />;
         }
