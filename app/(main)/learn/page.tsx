@@ -31,7 +31,7 @@ const LearnPage = async () => {
     if (user.settings.lessonCategoryId) {
         redirect(`/learn/${user.settings.lessonCategoryId}`);
     }
-    return <LoadingPage />;
+    return <LearnPage />;
 
 }
 
