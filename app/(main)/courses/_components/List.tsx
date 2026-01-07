@@ -22,7 +22,7 @@ export const List = ({
     const pathname = usePathname();
 
     // Robustly extract `/learn/<id>` from the current path, if prop not given
-    lessonCategoryId = useMemo(() => {
+    const resolvedLessonCategoryId = useMemo(() => {
         if (lessonCategoryId) return lessonCategoryId;
         const m = pathname.match(/^\/learn\/([^\/?#]+)/);
         return m?.[1]; // undefined if not on /learn/<id>
@@ -31,7 +31,7 @@ export const List = ({
     const onClick = (id: string) => {
         if (pending) return;
         //suppose ID is already active then we throw to existing learn page
-        if (id === lessonCategoryId) {
+        if (id === resolvedLessonCategoryId) {
             return router.push(`/learn/${id}`);
         }
         startTransition(() => {
@@ -54,7 +54,7 @@ export const List = ({
                     imageSrc={lessonCategory.imageSrc}
                     disabled={pending}
                     onClick={onClick}
-                    active={lessonCategory.id === lessonCategoryId}
+                    active={lessonCategory.id === resolvedLessonCategoryId}
                 />
             ))}
         </div>
