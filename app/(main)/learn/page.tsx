@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { Suspense, type ReactNode } from "react";
 import LoadingPage from "./loading";
 import { getFirstCategory, getOrCreateUserFromGuest } from "@/db/queries";
 import type { Metadata } from "next";
@@ -10,7 +11,9 @@ export const metadata: Metadata = buildMetadata({
     keywords: ["תרגול אונליין", "מסלולי למידה", "מחוננים כיתה ב-ג"],
 });
 
-const LearnPage = async () => {
+// Separate async component that handles redirect logic
+// Suspense will show LoadingPage while this async component completes
+async function LearnRedirect(): Promise<ReactNode> {
     try {
         const user = await getOrCreateUserFromGuest();
 
@@ -22,17 +25,23 @@ const LearnPage = async () => {
         if (!user || !user.settings?.lessonCategoryId) {
             const firstCategory = await getFirstCategory();
             if (!firstCategory || !firstCategory.id) {
-                // If no categories exist at all, show loading page
-                return <LoadingPage />;
+                // If no categories exist at all, redirect to marketing page
+                redirect("/learn");
+                return null;
             }
             redirect(`/learn/${firstCategory.id}`);
+            return null;
         }
 
         // For authenticated users with a saved category, redirect to that category
         if (user.settings.lessonCategoryId) {
             redirect(`/learn/${user.settings.lessonCategoryId}`);
+            return null;
         }
-        return <LoadingPage />;
+
+        // Fallback: redirect to marketing page
+        redirect("/");
+        return null;
     } catch (error) {
         console.error("[LearnPage] Error loading page:", error);
         // On error, try to redirect to first category as fallback
@@ -40,13 +49,23 @@ const LearnPage = async () => {
             const firstCategory = await getFirstCategory();
             if (firstCategory?.id) {
                 redirect(`/learn/${firstCategory.id}`);
+                return null;
             }
         } catch (fallbackError) {
             console.error("[LearnPage] Fallback error:", fallbackError);
         }
-        // If all else fails, show loading page
-        return <LoadingPage />;
+        // If all else fails, redirect to marketing page
+        redirect("/learn");
+        return null;
     }
+}
+
+const LearnPage = () => {
+    return (
+        <Suspense fallback={<LoadingPage />}>
+            <LearnRedirect />
+        </Suspense>
+    );
 }
 
 export default LearnPage;
