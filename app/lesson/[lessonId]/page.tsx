@@ -30,6 +30,7 @@ const LessonIdPage = async ({
             userPreviousAnswers={userPreviousAnswers}
             systemNumQuestions={numQuestion ?? undefined}
             lessonClock={lessonClock}
+            userCategoryId={userSettings?.lessonCategoryId ?? undefined}
         />
     );
 }

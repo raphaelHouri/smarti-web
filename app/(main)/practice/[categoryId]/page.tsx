@@ -38,6 +38,7 @@ const PracticeCategoryIdPage = async ({
             userPreviousAnswers={userPreviousAnswers}
             systemNumQuestions={numQuestion ?? undefined}
             lessonClock={lessonClock}
+            userCategoryId={userSettings?.lessonCategoryId ?? undefined}
         />
     );
 }

@@ -23,6 +23,7 @@ interface FooterProps {
     handlePracticeAgain?: () => void;
     activeIndex?: number;       // current question index (0-based)
     total?: number;             // total questions
+    userCategoryId?: string;    // categoryId for navigation
 }
 
 const Footer = ({
@@ -36,6 +37,7 @@ const Footer = ({
     handlePracticeAgain,
     activeIndex,
     total,
+    userCategoryId,
 }: FooterProps) => {
     const router = useRouter();
     const isMobile = useMedia("(max-width:1024px)");
@@ -128,7 +130,7 @@ const Footer = ({
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                router.push("/learn");
+                                router.push(userCategoryId ? `/learn/${userCategoryId}` : "/learn");
                             }}
                             size={isMobile ? "sm" : "lg"}
                             variant="secondary"

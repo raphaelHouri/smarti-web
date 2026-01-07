@@ -59,6 +59,7 @@ interface QuizProps {
     // Total number of questions configured for this system step (from `systemConfig.numQuestion`)
     systemNumQuestions?: number;
     lessonClock?: boolean;
+    userCategoryId?: string; // User's lessonCategoryId from settings
 }
 
 const Quiz = ({
@@ -69,6 +70,7 @@ const Quiz = ({
     userPreviousAnswers = null,
     systemNumQuestions,
     lessonClock = true,
+    userCategoryId,
 }: QuizProps) => {
     const [coins, setCoins] = useState(initialCoins);
     const [status, setStatus] = useState<"correct" | "wrong" | "none">("none")
@@ -951,6 +953,7 @@ const Quiz = ({
                 handleWatchAgain={handleWatchAgain}
                 activeIndex={activeIndex}
                 total={total}
+                userCategoryId={userCategoryId}
             />
         </div>
     );
