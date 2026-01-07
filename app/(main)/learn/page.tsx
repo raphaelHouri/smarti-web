@@ -12,10 +12,7 @@ export const metadata: Metadata = buildMetadata({
 
 const LearnPage = async () => {
 
-    const userData = await getOrCreateUserFromGuest();
-
-
-    const [user] = await Promise.all([userData]);
+    const user = await getOrCreateUserFromGuest();
 
 
 
@@ -34,7 +31,7 @@ const LearnPage = async () => {
     if (user.settings.lessonCategoryId) {
         redirect(`/learn/${user.settings.lessonCategoryId}`);
     }
-    return <LoadingPage />
+    return <LoadingPage />;
 
 }
 
