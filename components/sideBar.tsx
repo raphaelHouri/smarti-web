@@ -1,14 +1,15 @@
-// reusable component
+"use client";
 
 import { cn, getSystemStepLabel } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { SideBarItems } from "./sideBar-items";
-import { ClerkLoaded, ClerkLoading, UserButton, SignedIn, SignedOut } from "@clerk/nextjs";
+import { ClerkLoaded, ClerkLoading, UserButton, SignedIn, SignedOut, useAuth } from "@clerk/nextjs";
 import { Loader } from "lucide-react";
 import { UserEmail } from "./user-email";
 import { GuestModeSection } from "./guest-mode-section";
 import { ModeToggle } from "./mode-toggle";
+import { shouldShowAuthButtons, shouldShowMenuItem } from "@/lib/restricted-users";
 
 interface SideBarProps {
     className?: string;
@@ -34,6 +35,8 @@ export const SideBar = ({
     onNavigate
 }: SideBarProps) => {
     const systemStepLabel = getSystemStepLabel(systemStep);
+    const { userId } = useAuth();
+    const canShowAuthButtons = shouldShowAuthButtons(userId);
 
     return (
         <div className={cn("flex h-full lg:w-[256px] lg:fixed right-0 top-0 px-4 border-l-2 flex-col overflow-hidden", className)}>
@@ -63,36 +66,39 @@ export const SideBar = ({
                 </div>
             </Link>
             <div className="flex flex-col flex-1 gap-y-4 overflow-y-auto min-h-0">
-                {sidebarItems.map((item, index) => (
-                    <SideBarItems
-                        key={index}
-                        label={item.label}
-                        iconSrc={item.iconSrc}
-                        href={item.href}
-                        registerOnly={item.registerOnly}
-                        onNavigate={onNavigate}
-                    />
-                ))}
+                {sidebarItems
+                    .filter((item) => shouldShowMenuItem(item.href, userId))
+                    .map((item, index) => (
+                        <SideBarItems
+                            key={index}
+                            label={item.label}
+                            iconSrc={item.iconSrc}
+                            href={item.href}
+                            registerOnly={item.registerOnly}
+                            onNavigate={onNavigate}
+                        />
+                    ))}
             </div>
-            <div className="py-2 flex-shrink-0 flex flex-col gap-2">
-                <ClerkLoading>
-                    <Loader className="h-5 w-5 text-muted-foreground animate-spin" />
-                </ClerkLoading>
-                <ClerkLoaded>
-                    <SignedIn>
-                        <div className="flex items-center gap-2">
-                            <UserButton
-                                afterSignOutUrl="/"
-                            />
-                            <UserEmail />
-                        </div>
-                    </SignedIn>
-                    <SignedOut>
-                        <GuestModeSection onNavigate={onNavigate} />
-                    </SignedOut>
-                </ClerkLoaded>
-
-            </div>
+            {canShowAuthButtons && (
+                <div className="py-2 flex-shrink-0 flex flex-col gap-2">
+                    <ClerkLoading>
+                        <Loader className="h-5 w-5 text-muted-foreground animate-spin" />
+                    </ClerkLoading>
+                    <ClerkLoaded>
+                        <SignedIn>
+                            <div className="flex items-center gap-2">
+                                <UserButton
+                                    afterSignOutUrl="/"
+                                />
+                                <UserEmail />
+                            </div>
+                        </SignedIn>
+                        <SignedOut>
+                            <GuestModeSection onNavigate={onNavigate} />
+                        </SignedOut>
+                    </ClerkLoaded>
+                </div>
+            )}
         </div>
     )
 }

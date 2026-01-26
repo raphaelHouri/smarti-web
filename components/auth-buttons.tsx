@@ -1,20 +1,27 @@
 "use client";
 
-import { ClerkLoaded, ClerkLoading, SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import { ClerkLoaded, ClerkLoading, SignedIn, SignedOut, SignInButton, UserButton, useAuth } from "@clerk/nextjs";
 import { Loader, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TapAnimation } from "./tap-animation";
 import { trackEvent } from "@/lib/posthog";
 import { useSystemStep } from "@/hooks/use-system-step";
 import { useEffect, useState } from "react";
+import { shouldShowAuthButtons } from "@/lib/restricted-users";
 
 export function AuthButtons() {
     const [mounted, setMounted] = useState(false);
     const { step: systemStep } = useSystemStep();
+    const { userId } = useAuth();
 
     useEffect(() => {
         setMounted(true);
     }, []);
+
+    // Check if user is restricted - don't show auth buttons for restricted users
+    if (!shouldShowAuthButtons(userId)) {
+        return null;
+    }
 
     // Prevent hydration mismatch by not rendering Clerk components until mounted
     if (!mounted) {

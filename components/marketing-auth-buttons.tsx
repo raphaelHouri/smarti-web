@@ -1,16 +1,18 @@
 "use client";
 
-import { ClerkLoaded, ClerkLoading, SignedIn, SignedOut, SignUpButton } from "@clerk/nextjs";
+import { ClerkLoaded, ClerkLoading, SignedIn, SignedOut, SignUpButton, useAuth } from "@clerk/nextjs";
 import { Loader, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { trackEvent } from "@/lib/posthog";
 import { useSystemStep } from "@/hooks/use-system-step";
+import { shouldShowAuthButtons } from "@/lib/restricted-users";
 
 export function MarketingAuthButtons() {
     const [mounted, setMounted] = useState(false);
     const { step: systemStep } = useSystemStep();
+    const { userId } = useAuth();
 
     useEffect(() => {
         setMounted(true);
@@ -31,7 +33,7 @@ export function MarketingAuthButtons() {
                 <Loader className="h-5 w-5 text-muted-foreground animate-spin" />
             </ClerkLoading>
             <ClerkLoaded>
-                <SignedOut>
+                {!shouldShowAuthButtons(userId) ? null : <SignedOut>
                     <SignUpButton mode="modal" forceRedirectUrl="/learn">
                         <Button
                             size="lg"
@@ -50,7 +52,7 @@ export function MarketingAuthButtons() {
                             בואו נלמד ביחד
                         </Button>
                     </SignUpButton>
-                </SignedOut>
+                </SignedOut>}
                 <SignedIn>
                     <Button
                         variant="secondary"

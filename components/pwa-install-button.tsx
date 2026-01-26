@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { Download } from "lucide-react";
+import { useAuth } from "@clerk/nextjs";
+import { useSearchParams } from "next/navigation";
+import { shouldShowPWAPrompt } from "@/lib/restricted-users";
 
 interface BeforeInstallPromptEvent extends Event {
     prompt: () => Promise<void>;
@@ -12,6 +15,19 @@ interface BeforeInstallPromptEvent extends Event {
 export function PWAInstallButton() {
     const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
     const [isInstalled, setIsInstalled] = useState(false);
+    const { userId } = useAuth();
+    const searchParams = useSearchParams();
+    const storeParam = searchParams.get("store");
+
+    // Hide PWA install button when accessed from mobile app (store=ios or store=android)
+    if (storeParam === "ios" || storeParam === "android") {
+        return null;
+    }
+
+    // Check if user is restricted - don't show download button for restricted users
+    if (!shouldShowPWAPrompt(userId)) {
+        return null;
+    }
 
     useEffect(() => {
         // Check if app is already installed

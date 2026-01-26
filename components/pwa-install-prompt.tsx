@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { Download, X } from "lucide-react";
+import { useAuth } from "@clerk/nextjs";
+import { shouldShowPWAPrompt } from "@/lib/restricted-users";
 
 interface BeforeInstallPromptEvent extends Event {
     prompt: () => Promise<void>;
@@ -13,8 +15,14 @@ export function PWAInstallPrompt() {
     const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
     const [showInstallPrompt, setShowInstallPrompt] = useState(false);
     const [isInstalled, setIsInstalled] = useState(false);
+    const { userId } = useAuth();
 
     useEffect(() => {
+        // Check if user is restricted - don't set up event listeners for restricted users
+        if (!shouldShowPWAPrompt(userId)) {
+            return;
+        }
+
         // Check if app is already installed
         if (window.matchMedia("(display-mode: standalone)").matches) {
             setIsInstalled(true);
@@ -62,7 +70,7 @@ export function PWAInstallPrompt() {
             window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
             window.removeEventListener("appinstalled", handleAppInstalled);
         };
-    }, [deferredPrompt]);
+    }, [deferredPrompt, userId]);
 
     const handleInstallClick = async () => {
         if (!deferredPrompt) {
@@ -91,6 +99,12 @@ export function PWAInstallPrompt() {
         // Store dismissal in localStorage to not show again for a while
         localStorage.setItem("pwa-install-dismissed", Date.now().toString());
     };
+
+    // Check if user is restricted - don't show PWA prompt for restricted users
+    // This check happens AFTER all hooks are called to follow Rules of Hooks
+    if (!shouldShowPWAPrompt(userId)) {
+        return null;
+    }
 
     // Don't show if already installed or if user dismissed recently
     if (isInstalled || !showInstallPrompt || !deferredPrompt) {

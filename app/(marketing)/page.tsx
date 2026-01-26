@@ -9,6 +9,7 @@ import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
 import { SystemStepTabs } from "@/components/system-step-tabs";
 import { SystemStepHandler } from "@/components/system-step-handler";
+import { AndroidStoreHandler } from "@/components/android-store-handler";
 import { MarketingAuthButtons } from "@/components/marketing-auth-buttons";
 import { getUserSystemStep } from "@/db/queries";
 import { HomePageTracker } from "./_components/HomePageTracker";
@@ -30,6 +31,7 @@ export default async function Home() {
       <HomePageTracker />
       <Suspense fallback={null}>
         <SystemStepHandler />
+        <AndroidStoreHandler />
       </Suspense>
       <div className="max-w-[998px] mx-auto flex-1 w-full flex flex-col lg:flex-row items-center justify-center p-2 gap-2 relative" dir="rtl">
 

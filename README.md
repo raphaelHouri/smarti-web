@@ -30,6 +30,13 @@ ICOUNT_PASS=
 # Mailgun
 MAILGUM_TOKEN=api:key-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
+# Store Auto-Login (optional)
+# Credentials for automatic login when ?store=android or ?store=ios query parameter is present
+ANDROID_STORE_EMAIL=
+ANDROID_STORE_PASSWORD=
+IOS_STORE_EMAIL=
+IOS_STORE_PASSWORD=
+
 # Node envs
 NEXT_ENV=development
 ```

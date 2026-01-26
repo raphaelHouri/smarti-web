@@ -19,6 +19,7 @@ import { Tag } from "lucide-react";
 import { getUserCoupon } from "@/actions/user-coupon";
 import { trackEvent } from "@/lib/posthog";
 import { useSystemStep } from "@/hooks/use-system-step";
+import { shouldShowAuthButtons } from "@/lib/restricted-users";
 
 type Category = "system" | "books";
 
@@ -110,6 +111,7 @@ export default function PurchasePageShop({
     };
 }) {
     const { userId } = useAuth();
+    const canShowAuthButtons = shouldShowAuthButtons(userId);
     const bookPurchaseModal = useBookPurchaseModal();
     const couponModal = useCouponModal();
     const router = useRouter();
@@ -607,7 +609,7 @@ export default function PurchasePageShop({
                                     )}
 
                                     {/* Button */}
-                                    {!userId ? (
+                                    {!userId && canShowAuthButtons ? (
                                         <SignInButton
                                             mode="modal"
                                             forceRedirectUrl={`/shop/${effectivePackageType}`}
@@ -634,6 +636,19 @@ export default function PurchasePageShop({
                                                 התחל עכשיו
                                             </button>
                                         </SignInButton>
+                                    ) : !userId && !canShowAuthButtons ? (
+                                        // Restricted user - show alternative button that doesn't require auth
+                                        <button
+                                            disabled
+                                            className={cn(
+                                                "w-full py-3 rounded-lg font-medium transition-all duration-200 mt-auto opacity-50 cursor-not-allowed",
+                                                plan.badge === "Most Popular"
+                                                    ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white"
+                                                    : "bg-gray-900 dark:bg-gray-700 text-white"
+                                            )}
+                                        >
+                                            התחל עכשיו
+                                        </button>
                                     ) : (
                                         (() => {
 
