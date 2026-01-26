@@ -12,7 +12,7 @@ const FooterPage = () => {
         {/* Footer Content */}
         <div className="w-full flex items-center justify-center gap-6">
           {/* PWA Install Button */}
-          <PWAInstallButton />
+          {/* <PWAInstallButton /> */}
 
           {/* Privacy Policy Link */}
           <Link

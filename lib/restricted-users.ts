@@ -7,6 +7,7 @@
  */
 export const RESTRICTED_USER_IDS: readonly string[] = [
     "user_3856qGVJPcgdZ9fZbFVsPWxaPZ7",
+    "user_38mmuRyPuRvxp28mpn2V4SeAawt"
 ] as const;
 
 /**

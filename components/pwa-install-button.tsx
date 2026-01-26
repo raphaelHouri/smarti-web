@@ -19,17 +19,17 @@ export function PWAInstallButton() {
     const searchParams = useSearchParams();
     const storeParam = searchParams.get("store");
 
-    // Hide PWA install button when accessed from mobile app (store=ios or store=android)
-    if (storeParam === "ios" || storeParam === "android") {
-        return null;
-    }
-
-    // Check if user is restricted - don't show download button for restricted users
-    if (!shouldShowPWAPrompt(userId)) {
-        return null;
-    }
-
     useEffect(() => {
+        // Check if user is restricted - don't set up event listeners for restricted users
+        if (!shouldShowPWAPrompt(userId)) {
+            return;
+        }
+
+        // Hide PWA install button when accessed from mobile app
+        if (storeParam === "ios" || storeParam === "android") {
+            return;
+        }
+
         // Check if app is already installed
         if (window.matchMedia("(display-mode: standalone)").matches) {
             setIsInstalled(true);
@@ -73,7 +73,7 @@ export function PWAInstallButton() {
             window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
             window.removeEventListener("appinstalled", handleAppInstalled);
         };
-    }, [deferredPrompt]);
+    }, [deferredPrompt, userId, storeParam]);
 
     const handleInstallClick = async () => {
         if (!deferredPrompt) {
@@ -95,6 +95,15 @@ export function PWAInstallButton() {
         // Clear the deferredPrompt
         setDeferredPrompt(null);
     };
+
+    // Move early returns AFTER all hooks to follow Rules of Hooks
+    if (storeParam === "ios" || storeParam === "android") {
+        return null;
+    }
+
+    if (!shouldShowPWAPrompt(userId)) {
+        return null;
+    }
 
     // Don't show if already installed or if no deferred prompt
     if (isInstalled || !deferredPrompt) {
