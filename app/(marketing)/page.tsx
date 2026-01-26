@@ -4,21 +4,15 @@ import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import { Suspense } from "react";
 import { cookies } from "next/headers";
-import dynamic from "next/dynamic";
 // LottieJson is a client component that already lazy-loads lottie-react.
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
 import { SystemStepTabs } from "@/components/system-step-tabs";
 import { SystemStepHandler } from "@/components/system-step-handler";
+import { AndroidStoreHandlerWrapper } from "@/components/android-store-handler-wrapper";
 import { MarketingAuthButtons } from "@/components/marketing-auth-buttons";
 import { getUserSystemStep } from "@/db/queries";
 import { HomePageTracker } from "./_components/HomePageTracker";
-
-// Dynamically import AndroidStoreHandler with SSR disabled to avoid hydration issues
-const AndroidStoreHandler = dynamic(
-  () => import("@/components/android-store-handler").then((mod) => ({ default: mod.AndroidStoreHandler })),
-  { ssr: false }
-);
 
 export const metadata: Metadata = buildMetadata({
   title: "סמארטי | הכנה למבחני מחוננים ומצטיינים",
@@ -38,7 +32,7 @@ export default async function Home() {
       <Suspense fallback={null}>
         <SystemStepHandler />
       </Suspense>
-      <AndroidStoreHandler />
+      <AndroidStoreHandlerWrapper />
       <div className="max-w-[998px] mx-auto flex-1 w-full flex flex-col lg:flex-row items-center justify-center p-2 gap-2 relative" dir="rtl">
 
         {/* container to hold image */}
