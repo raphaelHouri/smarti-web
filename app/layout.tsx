@@ -69,9 +69,7 @@ export default function RootLayout({
     <ClerkProvider
       localization={customHeIL}
       afterSignOutUrl="/"
-      afterSignUpUrl="/"
-
-
+      signInFallbackRedirectUrl="/"
     // appearance={{
     //   baseTheme:neobrutalism
     // }}
