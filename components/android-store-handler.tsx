@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useEffect, useRef } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useAuth, useClerk } from "@clerk/nextjs";
 
 /**
@@ -24,23 +24,17 @@ import { useAuth, useClerk } from "@clerk/nextjs";
  * 2. If not configured (404) → immediately return null (no processing)
  * 3. Remove query parameter from URL
  * 4. Continue normally without errors
+ * 
+ * Note: This component should be dynamically imported with ssr: false to avoid hydration issues
  */
 export function AndroidStoreHandler() {
+    const searchParams = useSearchParams();
     const router = useRouter();
     const pathname = usePathname();
     const { isSignedIn, isLoaded } = useAuth();
     const clerk = useClerk();
-    const [storeParam, setStoreParam] = useState<string | null>(null);
+    const storeParam = searchParams.get("store");
     const hasProcessed = useRef(false);
-
-    // Read search params from URL on client side to avoid hydration issues
-    useEffect(() => {
-        if (typeof window === "undefined") return;
-        
-        const params = new URLSearchParams(window.location.search);
-        const store = params.get("store");
-        setStoreParam(store);
-    }, []);
 
     useEffect(() => {
         // Early exit conditions - don't process if:
@@ -49,9 +43,7 @@ export function AndroidStoreHandler() {
         // 3. Clerk SDK not loaded
         // 4. Clerk client not available
         // 5. Already processed this request
-        // 6. Store param not yet loaded from URL
         if (
-            !storeParam ||
             (storeParam !== "android" && storeParam !== "ios") ||
             isSignedIn ||
             !isLoaded ||
