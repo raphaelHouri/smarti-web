@@ -3,7 +3,7 @@ import { desc, relations, sql } from "drizzle-orm";
 
 // Declare tables used in references FIRST
 export const organizationInfo = pgTable("organization_info", {
-    id: uuid("id").primaryKey(),
+    id: uuid("id").defaultRandom().primaryKey(),
     name: text("name").notNull(),
     contactEmail: text("contact_email"),
     address: text("address"),
