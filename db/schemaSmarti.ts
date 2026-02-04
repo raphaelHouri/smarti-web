@@ -13,7 +13,7 @@ export const organizationInfo = pgTable("organization_info", {
 });
 
 export const organizationYears = pgTable("organization_years", {
-    id: uuid("id").primaryKey(),
+    id: uuid("id").defaultRandom().primaryKey(),
     organizationId: uuid("organization_id").references(() => organizationInfo.id, { onDelete: "cascade" }).notNull(),
     year: integer("year").notNull(),
     notes: text("notes"),

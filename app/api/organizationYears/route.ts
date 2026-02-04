@@ -3,6 +3,7 @@ import db from "@/db/drizzle";
 import { organizationYears } from "@/db/schemaSmarti";
 import { IsAdmin } from "@/lib/admin";
 import { sanitizeDates } from "@/lib/api/sanitize";
+import { v4 as uuidv4 } from 'uuid';
 
 export async function GET() {
     if (!IsAdmin()) {
@@ -18,7 +19,10 @@ export async function POST(req: Request) {
     }
     const body = await req.json();
     const insertPayload = sanitizeDates(body);
-    const data = await db.insert(organizationYears).values(insertPayload).returning()
+    const data = await db.insert(organizationYears).values({
+        id: uuidv4(),
+        ...insertPayload
+    }).returning()
 
 
     return NextResponse.json(data[0]);

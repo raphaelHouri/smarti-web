@@ -38,6 +38,7 @@ import { OrganizationInfoCreate } from "./organizationInfo/create";
 import { OrganizationYearsList } from "./organizationYears/list";
 import { OrganizationYearsEdit } from "./organizationYears/edit";
 import { OrganizationYearsShow } from "./organizationYears/show";
+import { OrganizationYearsCreate } from "./organizationYears/create";
 import { UsersList } from "./users/list";
 import { UsersEdit } from "./users/edit";
 import { UsersShow } from "./users/show";
@@ -144,6 +145,7 @@ const App = () => {
                 name="organizationYears"
                 list={OrganizationYearsList}
                 edit={OrganizationYearsEdit}
+                create={OrganizationYearsCreate}
                 recordRepresentation="year"
                 icon={Calendar}
                 show={OrganizationYearsShow}
