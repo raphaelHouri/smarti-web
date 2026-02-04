@@ -18,6 +18,7 @@ export const CouponCreate = () => (
                 choices={[
                     { id: 'percentage', name: 'Percentage' },
                     { id: 'fixed', name: 'Fixed Amount' },
+                    { id: 'free', name: 'Free' },
                 ]}
                 defaultValue="percentage"
                 required

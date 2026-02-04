@@ -65,7 +65,7 @@ export async function POST(req: Request) {
         const values = {
             id: crypto.randomUUID(),
             code: sanitized.code.trim(),
-            type: couponType as 'percentage' | 'fixed',
+            type: couponType as 'percentage' | 'fixed' | 'free',
             value: sanitized.value,
             validFrom: sanitized.validFrom,
             validUntil: sanitized.validUntil,
