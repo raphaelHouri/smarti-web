@@ -5,7 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TrendingUp, TrendingDown, Users, Award, BookOpen, Target, Activity, BarChart3, Home, ChevronLeft } from 'lucide-react';
-import { useUser } from "@clerk/nextjs";
+import { useUser, ClerkLoaded, ClerkLoading } from "@clerk/nextjs";
+import { Loader } from "lucide-react";
 import Link from "next/link";
 import { Bar } from 'react-chartjs-2';
 import {
@@ -81,7 +82,7 @@ export default function OrganizationAnalyticsPage() {
     const [organizationUsers, setOrganizationUsers] = useState<UserPerformance[]>([]);
     const [selectedUser, setSelectedUser] = useState<UserPerformance | null>(null);
     const [loadingUsers, setLoadingUsers] = useState(false);
-    const { user, isLoaded: userLoaded } = useUser();
+    const { user } = useUser();
 
     useEffect(() => {
         fetchAnalytics();
@@ -202,21 +203,29 @@ export default function OrganizationAnalyticsPage() {
                         <ChevronLeft className="h-4 w-4 text-slate-400 group-hover:text-blue-500 transition-colors" />
                     </Link>
 
-                    {userLoaded && user ? (
+                    <ClerkLoading>
                         <div className="flex items-center gap-3 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm">
-                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold text-sm shadow-md shadow-blue-500/20">
-                                {(user.firstName && user.firstName[0]) || (user.emailAddresses && user.emailAddresses[0]?.emailAddress?.[0]?.toUpperCase()) || '?'}
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">
-                                    {user.firstName || ''} {user.lastName || ''}
-                                </span>
-                                <span className="text-xs text-slate-500">
-                                    {user.emailAddresses && user.emailAddresses[0]?.emailAddress}
-                                </span>
-                            </div>
+                            <Loader className="h-5 w-5 text-blue-500 animate-spin" />
+                            <span className="text-sm text-slate-500">טוען...</span>
                         </div>
-                    ) : null}
+                    </ClerkLoading>
+                    <ClerkLoaded>
+                        {user && (
+                            <div className="flex items-center gap-3 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm">
+                                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold text-sm shadow-md shadow-blue-500/20">
+                                    {(user.firstName && user.firstName[0]) || (user.emailAddresses && user.emailAddresses[0]?.emailAddress?.[0]?.toUpperCase()) || '?'}
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+                                        {user.firstName || ''} {user.lastName || ''}
+                                    </span>
+                                    <span className="text-xs text-slate-500">
+                                        {user.emailAddresses && user.emailAddresses[0]?.emailAddress}
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+                    </ClerkLoaded>
                 </div>
 
                 {/* Header Section */}
