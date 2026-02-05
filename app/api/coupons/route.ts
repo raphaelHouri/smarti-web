@@ -38,9 +38,16 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Plan ID is required" }, { status: 400 });
         }
 
-        if (!sanitized.value || typeof sanitized.value !== 'number') {
+        // Determine coupon type early to handle value validation
+        const couponType = sanitized.couponType || sanitized.type || 'percentage';
+
+        // For free coupons, value can be 0 or omitted (will be set to 0)
+        if (couponType === 'free') {
+            sanitized.value = sanitized.value ?? 0;
+        } else if (sanitized.value === undefined || sanitized.value === null || typeof sanitized.value !== 'number') {
             return NextResponse.json({ error: "Value is required and must be a number" }, { status: 400 });
         }
+
         if (!sanitized.validFrom) {
             return NextResponse.json({ error: "Valid From date is required" }, { status: 400 });
         }
@@ -57,9 +64,6 @@ export async function POST(req: Request) {
         if (systemStep < 1 || systemStep > 3) {
             return NextResponse.json({ error: "System Step must be between 1 and 3" }, { status: 400 });
         }
-
-        // Determine coupon type
-        const couponType = sanitized.couponType || sanitized.type || 'percentage';
 
         // Explicitly construct the values object with all required fields
         const values = {
