@@ -4,10 +4,7 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { TrendingUp, TrendingDown, Users, Award, BookOpen, Target, Activity, BarChart3, Home, ChevronLeft } from 'lucide-react';
-import { useUser, ClerkLoaded, ClerkLoading } from "@clerk/nextjs";
-import { Loader } from "lucide-react";
-import Link from "next/link";
+import { TrendingUp, TrendingDown, Users, Award, BookOpen, Target, Activity, BarChart3 } from 'lucide-react';
 import { Bar } from 'react-chartjs-2';
 import {
     Chart as ChartJS,
@@ -82,7 +79,6 @@ export default function OrganizationAnalyticsPage() {
     const [organizationUsers, setOrganizationUsers] = useState<UserPerformance[]>([]);
     const [selectedUser, setSelectedUser] = useState<UserPerformance | null>(null);
     const [loadingUsers, setLoadingUsers] = useState(false);
-    const { user } = useUser();
 
     useEffect(() => {
         fetchAnalytics();
@@ -192,42 +188,6 @@ export default function OrganizationAnalyticsPage() {
     return (
         <div className="min-h-screen bg-gradient-to-b from-white to-slate-50 dark:from-slate-950 dark:to-slate-900" dir="rtl">
             <div className="container mx-auto p-8 space-y-8">
-                {/* Top Bar with User Info */}
-                <div className="flex items-center justify-between">
-                    <Link
-                        href="/"
-                        className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm hover:border-blue-300 hover:shadow-md transition-all duration-200 group"
-                    >
-                        <Home className="h-4 w-4 text-slate-500 group-hover:text-blue-500 transition-colors" />
-                        <span className="text-sm font-medium text-slate-600 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">חזרה לדף הבית</span>
-                        <ChevronLeft className="h-4 w-4 text-slate-400 group-hover:text-blue-500 transition-colors" />
-                    </Link>
-
-                    <ClerkLoading>
-                        <div className="flex items-center gap-3 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm">
-                            <Loader className="h-5 w-5 text-blue-500 animate-spin" />
-                            <span className="text-sm text-slate-500">טוען...</span>
-                        </div>
-                    </ClerkLoading>
-                    <ClerkLoaded>
-                        {user && (
-                            <div className="flex items-center gap-3 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm">
-                                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold text-sm shadow-md shadow-blue-500/20">
-                                    {(user.firstName && user.firstName[0]) || (user.emailAddresses && user.emailAddresses[0]?.emailAddress?.[0]?.toUpperCase()) || '?'}
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">
-                                        {user.firstName || ''} {user.lastName || ''}
-                                    </span>
-                                    <span className="text-xs text-slate-500">
-                                        {user.emailAddresses && user.emailAddresses[0]?.emailAddress}
-                                    </span>
-                                </div>
-                            </div>
-                        )}
-                    </ClerkLoaded>
-                </div>
-
                 {/* Header Section */}
                 <div className="relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 p-8 shadow-sm border border-slate-200/80 dark:border-slate-800">
                     <div className="absolute inset-0 bg-gradient-to-br from-blue-50/40 via-transparent to-cyan-50/30 dark:from-blue-950/20 dark:to-cyan-950/10"></div>
