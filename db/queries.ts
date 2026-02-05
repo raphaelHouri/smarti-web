@@ -644,6 +644,34 @@ export const saveUserCoupon = async (userId: string, couponId: string, systemSte
         return { success: false, error: validation.error ?? "קופון לא תקף" };
     }
 
+    // Check organization membership if coupon is organization-specific
+    if (coupon.organizationYearId) {
+        const currentUser = await db.query.users.findFirst({
+            where: eq(users.id, userId),
+        });
+
+        // If user already belongs to a DIFFERENT organization, prevent coupon use
+        if (currentUser?.organizationYearId && currentUser.organizationYearId !== coupon.organizationYearId) {
+            return { success: false, error: "קופון זה מיועד לארגון אחר" };
+        }
+
+        // Auto-assign user to organization year if user doesn't have one yet
+        if (currentUser && !currentUser.organizationYearId) {
+            await db.update(users)
+                .set({ organizationYearId: coupon.organizationYearId })
+                .where(eq(users.id, userId));
+
+            // Track organization assignment
+            trackServerEvent(userId, "user_assigned_to_organization", {
+                organizationYearId: coupon.organizationYearId,
+                couponId: coupon.id,
+                couponCode: coupon.code,
+                systemStep: systemStep,
+                assignmentMethod: "auto_coupon",
+            });
+        }
+    }
+
     // Get or create user settings for this system step
     const existingSettings = await db.query.userSettings.findFirst({
         where: and(
