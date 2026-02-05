@@ -15,6 +15,7 @@ interface SideBarProps {
     className?: string;
     systemStep?: number;
     onNavigate?: () => void;
+    hasManaged?: boolean;
 }
 
 const sidebarItems = [
@@ -32,7 +33,8 @@ const sidebarItems = [
 export const SideBar = ({
     className,
     systemStep = 1,
-    onNavigate
+    onNavigate,
+    hasManaged = false
 }: SideBarProps) => {
     const systemStepLabel = getSystemStepLabel(systemStep);
     const { userId } = useAuth();
@@ -66,6 +68,15 @@ export const SideBar = ({
                 </div>
             </Link>
             <div className="flex flex-col flex-1 gap-y-4 overflow-y-auto min-h-0">
+                {hasManaged && (
+                    <SideBarItems
+                        label="דשבורד מנהלים"
+                        iconSrc="/leaderboard.svg"
+                        href="/admin/organization-analytics"
+                        registerOnly={true}
+                        onNavigate={onNavigate}
+                    />
+                )}
                 {sidebarItems
                     .filter((item) => shouldShowMenuItem(item.href, userId))
                     .map((item, index) => (

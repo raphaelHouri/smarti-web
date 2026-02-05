@@ -4,8 +4,10 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { TrendingUp, TrendingDown, Users, Award, BookOpen, Target, Activity, BarChart3 } from 'lucide-react';
+import { TrendingUp, TrendingDown, Users, Award, BookOpen, Target, Activity, BarChart3, Home } from 'lucide-react';
 import { Bar } from 'react-chartjs-2';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -207,6 +209,16 @@ export default function OrganizationAnalyticsPage() {
                                 </div>
                             </div>
                             <div className="flex gap-3">
+                                <Link href="/learn">
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm rounded-xl hover:border-blue-300 hover:shadow-md transition-all duration-200"
+                                    >
+                                        <Home className="h-4 w-4" />
+                                    </Button>
+                                </Link>
+
                                 <Select value={selectedOrg} onValueChange={setSelectedOrg}>
                                     <SelectTrigger className="w-[220px] bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm rounded-xl hover:border-blue-300 hover:shadow-md transition-all duration-200">
                                         <SelectValue placeholder="בחר ארגון" />

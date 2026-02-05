@@ -11,7 +11,11 @@ import { SideBar } from "./sideBar";
 import { MenuIcon } from "lucide-react";
 import { useSystemStep } from "@/hooks/use-system-step";
 
-export const MobileSideBar = () => {
+interface MobileSideBarProps {
+  hasManaged?: boolean;
+}
+
+export const MobileSideBar = ({ hasManaged = false }: MobileSideBarProps) => {
   const [open, setOpen] = useState(false);
   // Automatically updates when systemStep changes via Next.js revalidation
   const { step: systemStep } = useSystemStep();
@@ -22,7 +26,7 @@ export const MobileSideBar = () => {
         <MenuIcon className="text-white" />
       </SheetTrigger>
       <SheetContent className='p-0 z-[100]' side="right">
-        <SideBar systemStep={systemStep} onNavigate={() => setOpen(false)} />
+        <SideBar systemStep={systemStep} onNavigate={() => setOpen(false)} hasManaged={hasManaged} />
       </SheetContent>
     </Sheet>
   )
