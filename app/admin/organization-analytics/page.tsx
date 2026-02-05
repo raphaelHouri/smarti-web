@@ -113,13 +113,13 @@ export default function OrganizationAnalyticsPage() {
     );
 
     const allYears = Array.from(new Set(
-        analytics.flatMap(org => org.years.map(y => y.year))
+        analytics.flatMap(org => (org.years || []).map(y => y.year))
     )).sort((a, b) => b - a);
 
     // Build year select options based on current org selection
     const availableYearOptions = (
         selectedOrg === 'all'
-            ? analytics.flatMap(org => org.years.map(y => ({ id: y.yearId, year: y.year })))
+            ? analytics.flatMap(org => (org.years || []).map(y => ({ id: y.yearId, year: y.year })))
             : (analytics.find(org => org.organizationId === selectedOrg)?.years || []).map(y => ({ id: y.yearId, year: y.year }))
     )
         // unique by id
@@ -132,11 +132,11 @@ export default function OrganizationAnalyticsPage() {
     const selectedOrgData = analytics.find(org => org.organizationId === selectedOrg);
     const filteredYears = selectedOrg === 'all'
         ? allYears
-        : selectedOrgData?.years.map(y => y.year) || [];
+        : (selectedOrgData?.years || []).map(y => y.year);
 
     // Helper to filter years per org based on selectedYear (by yearId)
     const getOrgYears = (org: OrganizationAnalytics) => (
-        selectedYear === 'all' ? org.years : org.years.filter(y => y.yearId === selectedYear)
+        selectedYear === 'all' ? (org.years || []) : (org.years || []).filter(y => y.yearId === selectedYear)
     );
 
     const fetchOrganizationUsers = async () => {
@@ -481,7 +481,7 @@ export default function OrganizationAnalyticsPage() {
                                                         .sort((a, b) => a.year - b.year)
                                                         .map(year => {
                                                             const value = (year as any)[metric];
-                                                            const maxValue = Math.max(...selectedOrgData.years.map((y: any) => y[metric]));
+                                                            const maxValue = Math.max(...(selectedOrgData.years || []).map((y: any) => y[metric]));
                                                             const height = maxValue > 0 ? (value / maxValue) * 100 : 0;
 
                                                             return (
@@ -531,15 +531,15 @@ export default function OrganizationAnalyticsPage() {
                                     </div>
                                 </CardHeader>
                                 <CardContent className="p-6">
-                                    <Tabs defaultValue={`year-${org.years[0]?.yearId}`}>
+                                    <Tabs defaultValue={org.years?.length > 0 ? `year-${org.years[0].yearId}` : undefined}>
                                         <TabsList className="mb-6 bg-slate-100/80 dark:bg-slate-800/50 p-1 rounded-lg border border-slate-200/50 dark:border-slate-700">
-                                            {org.years.map(year => (
+                                            {(org.years || []).map(year => (
                                                 <TabsTrigger key={year.yearId} value={`year-${year.yearId}`} className="rounded-md data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-sm data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400">
                                                     {year.year}
                                                 </TabsTrigger>
                                             ))}
                                         </TabsList>
-                                        {org.years.map(year => (
+                                        {(org.years || []).map(year => (
                                             <TabsContent key={year.yearId} value={`year-${year.yearId}`}>
                                                 <div className="grid gap-5 md:grid-cols-2">
                                                     <Card className="border border-slate-200/80 dark:border-slate-800 shadow-sm rounded-xl overflow-hidden">
@@ -673,7 +673,7 @@ export default function OrganizationAnalyticsPage() {
                                                             <td className="p-4">
                                                                 <div className="flex items-center gap-3">
                                                                     <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold text-sm shadow-md shadow-blue-500/20">
-                                                                        {user.firstName[0]}{user.lastName[0]}
+                                                                        {user.firstName?.[0] || ''}{user.lastName?.[0] || ''}
                                                                     </div>
                                                                     <div>
                                                                         <div className="font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
@@ -960,7 +960,7 @@ function UserMistakesModal({
                 <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 px-6 py-5 bg-gradient-to-r from-blue-50/50 via-white to-cyan-50/50 dark:from-blue-950/20 dark:via-slate-900 dark:to-cyan-950/20">
                     <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/25">
-                            {user.firstName[0]}{user.lastName[0]}
+                            {user.firstName?.[0] || ''}{user.lastName?.[0] || ''}
                         </div>
                         <div>
                             <div className="text-lg font-bold text-slate-900 dark:text-white">{user.firstName} {user.lastName}</div>
