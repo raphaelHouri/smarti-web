@@ -189,6 +189,29 @@ export default function OrganizationAnalyticsPage() {
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-white to-slate-50 dark:from-slate-950 dark:to-slate-900" dir="rtl">
+            {/* Top Navigation Bar */}
+            <div className="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800 shadow-sm">
+                <div className="container mx-auto px-8 py-4">
+                    <div className="flex items-center justify-between">
+                        <Link href="/learn">
+                            <Button
+                                variant="primaryOutline"
+                                className="flex items-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-950/30 hover:border-blue-300 dark:hover:border-blue-700 transition-all"
+                            >
+                                <Home className="h-4 w-4" />
+                                <span className="font-medium">חזרה לדף הבית</span>
+                            </Button>
+                        </Link>
+                        <div className="flex items-center gap-2">
+                            <div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg shadow-md shadow-blue-500/20">
+                                <BarChart3 className="h-5 w-5 text-white" />
+                            </div>
+                            <h1 className="text-xl font-bold text-slate-900 dark:text-white">דשבורד מנהלים</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div className="container mx-auto p-8 space-y-8">
                 {/* Header Section */}
                 <div className="relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 p-8 shadow-sm border border-slate-200/80 dark:border-slate-800">
@@ -209,15 +232,6 @@ export default function OrganizationAnalyticsPage() {
                                 </div>
                             </div>
                             <div className="flex gap-3">
-                                <Link href="/learn">
-                                    <Button
-                                        variant="outline"
-                                        size="icon"
-                                        className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm rounded-xl hover:border-blue-300 hover:shadow-md transition-all duration-200"
-                                    >
-                                        <Home className="h-4 w-4" />
-                                    </Button>
-                                </Link>
 
                                 <Select value={selectedOrg} onValueChange={setSelectedOrg}>
                                     <SelectTrigger className="w-[220px] bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm rounded-xl hover:border-blue-300 hover:shadow-md transition-all duration-200">
