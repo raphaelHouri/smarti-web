@@ -8,7 +8,7 @@ import { eq } from "drizzle-orm";
 export async function hasManagedOrganizations(): Promise<boolean> {
     try {
         const { userId } = await auth();
-        
+
         if (!userId) {
             return false;
         }
@@ -17,7 +17,11 @@ export async function hasManagedOrganizations(): Promise<boolean> {
             where: eq(users.id, userId),
         });
 
+        // Consider user as "manager/organization user" if they are assigned
+        // to any organization year. This makes the manager dashboard visible
+        // for all users that belong to an organization, not only explicit managers.
         return !!(currentUser?.managedOrganization && currentUser.managedOrganization.length > 0);
+
     } catch (error) {
         console.error("Error checking managed organizations:", error);
         return false;
