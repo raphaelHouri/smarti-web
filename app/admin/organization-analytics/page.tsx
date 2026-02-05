@@ -81,7 +81,7 @@ export default function OrganizationAnalyticsPage() {
     const [organizationUsers, setOrganizationUsers] = useState<UserPerformance[]>([]);
     const [selectedUser, setSelectedUser] = useState<UserPerformance | null>(null);
     const [loadingUsers, setLoadingUsers] = useState(false);
-    const { user } = useUser();
+    const { user, isLoaded: userLoaded } = useUser();
 
     useEffect(() => {
         fetchAnalytics();
@@ -202,21 +202,21 @@ export default function OrganizationAnalyticsPage() {
                         <ChevronLeft className="h-4 w-4 text-slate-400 group-hover:text-blue-500 transition-colors" />
                     </Link>
 
-                    {user && (
+                    {userLoaded && user ? (
                         <div className="flex items-center gap-3 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm">
                             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold text-sm shadow-md shadow-blue-500/20">
-                                {user.firstName?.[0] || user.emailAddresses?.[0]?.emailAddress?.[0]?.toUpperCase() || '?'}
+                                {(user.firstName && user.firstName[0]) || (user.emailAddresses && user.emailAddresses[0]?.emailAddress?.[0]?.toUpperCase()) || '?'}
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">
-                                    {user.firstName} {user.lastName}
+                                    {user.firstName || ''} {user.lastName || ''}
                                 </span>
                                 <span className="text-xs text-slate-500">
-                                    {user.emailAddresses?.[0]?.emailAddress}
+                                    {user.emailAddresses && user.emailAddresses[0]?.emailAddress}
                                 </span>
                             </div>
                         </div>
-                    )}
+                    ) : null}
                 </div>
 
                 {/* Header Section */}
@@ -723,8 +723,8 @@ export default function OrganizationAnalyticsPage() {
                                                             <td className="p-4 text-right font-semibold text-blue-600 dark:text-blue-400">{user.totalQuestions}</td>
                                                             <td className="p-4 text-right">
                                                                 <span className={`inline-block px-3 py-1.5 rounded-lg text-sm font-bold ${user.averageScore >= 80 ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' :
-                                                                        user.averageScore >= 60 ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400' :
-                                                                            'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
+                                                                    user.averageScore >= 60 ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400' :
+                                                                        'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
                                                                     }`}>
                                                                     {user.averageScore.toFixed(1)}%
                                                                 </span>
