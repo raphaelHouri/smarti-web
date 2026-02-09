@@ -1002,7 +1002,7 @@ function UserMistakesModal({
                 </div>
                 <div className="px-6 py-5">
                     <Tabs defaultValue="overview" key={user.id} dir="rtl">
-                        <TabsList className="mb-5 bg-slate-100/80 dark:bg-slate-800/50 p-1 rounded-lg border border-slate-200/50 dark:border-slate-700 flex-row-reverse justify-end">
+                        <TabsList className="mb-5 bg-slate-100/80 dark:bg-slate-800/50 p-1 rounded-lg border border-slate-200/50 dark:border-slate-700 flex-row justify-end">
                             <TabsTrigger value="overview" className="rounded-md data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-sm data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400">סקירה כללית</TabsTrigger>
                             <TabsTrigger value="details" className="rounded-md data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-sm data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400">פרטים</TabsTrigger>
                         </TabsList>
