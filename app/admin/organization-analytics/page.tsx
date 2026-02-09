@@ -474,23 +474,20 @@ export default function OrganizationAnalyticsPage() {
                                             </div>
                                         </div>
                                         <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
-                                            <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider mb-2">שנים פעילות</p>
+                                            <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider mb-2">קופונים לפי שנה</p>
                                             <div className="flex flex-wrap gap-1.5 items-center">
                                                 {getOrgYears(org).map(year => (
-                                                    <div key={year.yearId} className="flex items-center gap-1.5">
-                                                        <span className="px-2.5 py-1 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/30 dark:to-cyan-900/30 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800 rounded-md text-xs font-medium">
-                                                            {year.year}
-                                                        </span>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            className="h-6 w-6 p-0 hover:bg-blue-100 dark:hover:bg-blue-900/40"
-                                                            onClick={() => setSelectedCouponYear({ yearId: year.yearId, year: year.year, orgName: org.organizationName, organizationId: org.organizationId })}
-                                                            title="צפה בקופונים"
-                                                        >
-                                                            <Ticket className="h-3 w-3 text-blue-600 dark:text-blue-400" />
-                                                        </Button>
-                                                    </div>
+                                                    <Button
+                                                        key={year.yearId}
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="h-auto px-2.5 py-1 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/30 dark:to-cyan-900/30 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/40 hover:border-blue-200 dark:hover:border-blue-700 transition-all"
+                                                        onClick={() => setSelectedCouponYear({ yearId: year.yearId, year: year.year, orgName: org.organizationName, organizationId: org.organizationId })}
+                                                        title={`צפה בקופונים לשנה ${year.year}`}
+                                                    >
+                                                        <span className="text-xs font-medium mr-1.5">{year.year}</span>
+                                                        <Ticket className="h-3 w-3" />
+                                                    </Button>
                                                 ))}
                                             </div>
                                         </div>
