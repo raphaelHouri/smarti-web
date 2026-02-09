@@ -664,13 +664,36 @@ export const getCouponSummaryByOrganizationYear = async (organizationYearId: str
         orderBy: [desc(subscriptions.createdAt)],
     });
 
-    // Build users array from subscriptions
-    const couponUsers = couponSubscriptions.map(sub => ({
-        email: sub.user?.email || '',
-        name: sub.user?.name || 'Unknown',
-        saveDate: sub.createdAt?.toISOString().split('T')[0] || '',
-        redeemDate: sub.createdAt?.toISOString().split('T')[0] || null,
-    }));
+    // Build users array from subscriptions, deduplicating by userId (keep most recent redemption)
+    const userMap = new Map<string, {
+        email: string;
+        name: string;
+        saveDate: string;
+        redeemDate: string | null;
+        createdAt: Date | null;
+    }>();
+
+    couponSubscriptions.forEach(sub => {
+        const userId = sub.user?.id || '';
+        if (!userId) return;
+
+        const existing = userMap.get(userId);
+        const currentDate = sub.createdAt?.toISOString().split('T')[0] || '';
+
+        // If user not in map, or this subscription is more recent, update
+        if (!existing || !existing.createdAt || (sub.createdAt && (!existing.createdAt || sub.createdAt > existing.createdAt))) {
+            userMap.set(userId, {
+                email: sub.user?.email || '',
+                name: sub.user?.name || 'Unknown',
+                saveDate: currentDate,
+                redeemDate: currentDate || null,
+                createdAt: sub.createdAt,
+            });
+        }
+    });
+
+    // Convert to final array format (remove createdAt field)
+    const couponUsers = Array.from(userMap.values()).map(({ createdAt, ...rest }) => rest);
 
     // Map coupon type enum to Hebrew
     const couponTypeMap: Record<string, string> = {
