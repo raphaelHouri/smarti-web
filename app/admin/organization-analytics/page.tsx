@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TrendingUp, TrendingDown, Users, Award, BookOpen, Target, Activity, BarChart3, Home } from 'lucide-react';
-import { Bar } from 'react-chartjs-2';
+import { Bar, Doughnut } from 'react-chartjs-2';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,6 +13,7 @@ import {
     CategoryScale,
     LinearScale,
     BarElement,
+    ArcElement,
     Title as ChartTitle,
     Tooltip as ChartTooltip,
     Legend as ChartLegend,
@@ -22,7 +23,7 @@ import {
 } from 'chart.js';
 
 // Register Chart.js components once at module scope
-ChartJS.register(CategoryScale, LinearScale, BarElement, ChartTitle, ChartTooltip, ChartLegend);
+ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, ChartTitle, ChartTooltip, ChartLegend);
 
 interface YearAnalytics {
     yearId: string;
@@ -71,6 +72,74 @@ interface UserPerformance {
     correctAnswers: number;
     averageScore: number;
 }
+
+interface CouponUser {
+    email: string;
+    name: string;
+    saveDate: string;
+    redeemDate: string | null;
+}
+
+interface CouponsSummary {
+    couponCode: string;
+    expiryDate: string;
+    couponType: string;
+    maxCoupons: number;
+    savedCoupons: number;
+    redeemedCoupons: number;
+    notRedeemedCoupons: number;
+    users: CouponUser[];
+}
+
+// Mock coupons data generator - creates mock data for any organization
+const getMockCouponsForOrg = (orgId: string): CouponsSummary => {
+    // Use orgId hash to generate consistent mock data per organization
+    const hash = orgId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const variants = [
+        {
+            couponCode: 'SUMMER2024',
+            expiryDate: '2024-12-31',
+            couponType: 'הנחה אחוזית',
+            maxCoupons: 100,
+            savedCoupons: 75,
+            redeemedCoupons: 45,
+            notRedeemedCoupons: 30,
+            users: [
+                { email: 'user1@example.com', name: 'יוסי כהן', saveDate: '2024-06-15', redeemDate: '2024-07-20' },
+                { email: 'user2@example.com', name: 'שרה לוי', saveDate: '2024-06-18', redeemDate: null },
+                { email: 'user3@example.com', name: 'דוד אברהם', saveDate: '2024-07-01', redeemDate: '2024-07-15' },
+            ],
+        },
+        {
+            couponCode: 'WINTER2024',
+            expiryDate: '2025-03-31',
+            couponType: 'הנחה קבועה',
+            maxCoupons: 50,
+            savedCoupons: 42,
+            redeemedCoupons: 28,
+            notRedeemedCoupons: 14,
+            users: [
+                { email: 'user4@example.com', name: 'מיכל דוד', saveDate: '2024-08-10', redeemDate: '2024-08-25' },
+                { email: 'user5@example.com', name: 'אלון ישראלי', saveDate: '2024-08-15', redeemDate: null },
+            ],
+        },
+        {
+            couponCode: 'SPRING2024',
+            expiryDate: '2024-11-30',
+            couponType: 'הנחה אחוזית',
+            maxCoupons: 80,
+            savedCoupons: 60,
+            redeemedCoupons: 40,
+            notRedeemedCoupons: 20,
+            users: [
+                { email: 'user6@example.com', name: 'רותם כהן', saveDate: '2024-05-10', redeemDate: '2024-06-05' },
+                { email: 'user7@example.com', name: 'עמית לוי', saveDate: '2024-05-15', redeemDate: null },
+                { email: 'user8@example.com', name: 'נועה ישראלי', saveDate: '2024-05-20', redeemDate: '2024-06-10' },
+            ],
+        },
+    ];
+    return variants[hash % variants.length];
+};
 
 export default function OrganizationAnalyticsPage() {
     const [managedOrganizations, setManagedOrganizations] = useState<ManagedOrganization[]>([]);
@@ -411,6 +480,7 @@ export default function OrganizationAnalyticsPage() {
                                                 ))}
                                             </div>
                                         </div>
+                                        <CouponsSection coupons={getMockCouponsForOrg(org.organizationId)} />
                                     </CardContent>
                                 </Card>
                             ))}
@@ -758,6 +828,156 @@ export default function OrganizationAnalyticsPage() {
                         )}
                     </TabsContent>
                 </Tabs>
+            </div>
+        </div>
+    );
+}
+
+function CouponsSection({ coupons }: { coupons: CouponsSummary }) {
+    const chartData: ChartData<'doughnut'> = {
+        labels: ['קופונים מקסימלי', 'קופונים שנשמרו', 'קופונים שמומשו', 'קופונים שלא מומשו'],
+        datasets: [
+            {
+                data: [
+                    coupons.maxCoupons,
+                    coupons.savedCoupons,
+                    coupons.redeemedCoupons,
+                    coupons.notRedeemedCoupons,
+                ],
+                backgroundColor: [
+                    'rgba(239, 68, 68, 0.7)',   // red-500
+                    'rgba(234, 179, 8, 0.7)',   // yellow-500
+                    'rgba(34, 197, 94, 0.7)',    // green-500
+                    'rgba(148, 163, 184, 0.7)', // slate-400
+                ],
+                borderColor: [
+                    'rgb(239, 68, 68)',   // red-500
+                    'rgb(234, 179, 8)',   // yellow-500
+                    'rgb(34, 197, 94)',   // green-500
+                    'rgb(148, 163, 184)', // slate-400
+                ],
+                borderWidth: 2,
+            },
+        ],
+    };
+
+    const chartOptions: ChartOptions<'doughnut'> = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false,
+            },
+            tooltip: {
+                rtl: true,
+                textDirection: 'rtl',
+            },
+        },
+    };
+
+    return (
+        <div className="pt-4 border-t border-slate-100 dark:border-slate-800" dir="rtl">
+            <div className="space-y-4">
+                {/* Header */}
+                <div>
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">קופונים</h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">סיכום מצב הקופונים לארגון</p>
+                </div>
+
+                {/* Coupon Details */}
+                <div className="p-3 bg-slate-50/50 dark:bg-slate-800/30 rounded-lg border border-slate-100 dark:border-slate-800">
+                    <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2 uppercase tracking-wide">פרטי הקופון</p>
+                    <div className="grid grid-cols-3 gap-2 text-xs">
+                        <div>
+                            <span className="text-slate-500 dark:text-slate-400">קוד הקופון:</span>
+                            <span className="font-semibold text-slate-900 dark:text-white mr-1">{coupons.couponCode}</span>
+                        </div>
+                        <div>
+                            <span className="text-slate-500 dark:text-slate-400">תוקף הקופון:</span>
+                            <span className="font-semibold text-slate-900 dark:text-white mr-1">{coupons.expiryDate}</span>
+                        </div>
+                        <div>
+                            <span className="text-slate-500 dark:text-slate-400">סוג הקופון:</span>
+                            <span className="font-semibold text-slate-900 dark:text-white mr-1">{coupons.couponType}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Status Metrics with Chart */}
+                <div className="p-3 bg-slate-50/50 dark:bg-slate-800/30 rounded-lg border border-slate-100 dark:border-slate-800">
+                    <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-3 uppercase tracking-wide">סטטוס קופונים</p>
+                    <div className="flex items-center gap-4">
+                        <div className="flex-1 space-y-2">
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs text-slate-600 dark:text-slate-400">קופונים מקסימלי</span>
+                                <span className="font-bold text-red-600 dark:text-red-400">{coupons.maxCoupons}</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs text-slate-600 dark:text-slate-400">קופונים שנשמרו</span>
+                                <span className="font-bold text-yellow-600 dark:text-yellow-400">{coupons.savedCoupons}</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs text-slate-600 dark:text-slate-400">קופונים שמומשו</span>
+                                <span className="font-bold text-green-600 dark:text-green-400">{coupons.redeemedCoupons}</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs text-slate-600 dark:text-slate-400">קופונים שלא מומשו</span>
+                                <span className="font-bold text-slate-600 dark:text-slate-400">{coupons.notRedeemedCoupons}</span>
+                            </div>
+                        </div>
+                        <div className="w-24 h-24">
+                            <Doughnut data={chartData} options={chartOptions} />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Users Table */}
+                {coupons.users.length > 0 && (
+                    <div>
+                        <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2 uppercase tracking-wide">טבלת משתמשים ששמרו את הקופון</p>
+                        <div className="overflow-x-auto rounded-lg border border-slate-100 dark:border-slate-800">
+                            <table className="w-full text-right text-xs" dir="rtl">
+                                <thead className="bg-slate-50 dark:bg-slate-800/50">
+                                    <tr className="border-b border-slate-200 dark:border-slate-700">
+                                        <th className="text-right p-2 font-semibold text-slate-700 dark:text-slate-300">אימייל</th>
+                                        <th className="text-right p-2 font-semibold text-slate-700 dark:text-slate-300">שם</th>
+                                        <th className="text-right p-2 font-semibold text-slate-700 dark:text-slate-300">תאריך שמירה</th>
+                                        <th className="text-right p-2 font-semibold text-slate-700 dark:text-slate-300">תאריך מימוש</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {coupons.users.map((user, idx) => (
+                                        <tr
+                                            key={idx}
+                                            className={`border-b border-slate-100 dark:border-slate-800 ${idx % 2 === 0 ? 'bg-white dark:bg-slate-900' : 'bg-slate-50/30 dark:bg-slate-800/20'
+                                                }`}
+                                        >
+                                            <td className="p-2 text-slate-600 dark:text-slate-400">{user.email}</td>
+                                            <td className="p-2 font-medium text-slate-900 dark:text-white">{user.name}</td>
+                                            <td className="p-2 text-slate-600 dark:text-slate-400">{user.saveDate}</td>
+                                            <td className="p-2 text-slate-600 dark:text-slate-400">
+                                                {user.redeemDate || <span className="text-slate-400 italic">לא מומש</span>}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
+
+                {/* Explanations Block */}
+                <div className="p-3 bg-slate-50/30 dark:bg-slate-800/20 rounded-lg border border-slate-100 dark:border-slate-800">
+                    <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">הסברים</p>
+                    <ul className="space-y-1 text-[10px] text-slate-500 dark:text-slate-400 list-disc list-inside">
+                        <li><strong>תוקף הקופון:</strong> התאריך האחרון שבו ניתן להשתמש בקופון</li>
+                        <li><strong>סוג הקופון:</strong> סוג ההנחה שהקופון מספק (אחוזית או קבועה)</li>
+                        <li><strong>קופונים מקסימלי:</strong> המספר המקסימלי של קופונים שניתן לחלק</li>
+                        <li><strong>קופונים שנשמרו:</strong> מספר הקופונים שמשתמשים שמרו לעצמם</li>
+                        <li><strong>קופונים שמומשו:</strong> מספר הקופונים שנוצלו בפועל</li>
+                        <li><strong>קופונים שלא מומשו:</strong> קופונים שנשמרו אך עדיין לא נוצלו</li>
+                    </ul>
+                </div>
             </div>
         </div>
     );
