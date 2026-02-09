@@ -265,8 +265,8 @@ export default function OrganizationAnalyticsPage() {
                     </div>
                 </div>
 
-                <Tabs defaultValue="overview" className="space-y-8">
-                    <TabsList className="bg-white dark:bg-slate-900 p-1.5 border border-slate-200 dark:border-slate-800 w-full justify-start h-auto rounded-xl shadow-sm gap-1">
+                <Tabs defaultValue="overview" className="space-y-8" dir="rtl">
+                    <TabsList className="bg-white dark:bg-slate-900 p-1.5 border border-slate-200 dark:border-slate-800 w-full flex-row justify-end h-auto rounded-xl shadow-sm gap-1">
                         <TabsTrigger value="overview" className="rounded-lg px-4 py-2.5 text-slate-600 font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:shadow-blue-500/25 hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200">סקירה כללית</TabsTrigger>
                         <TabsTrigger value="performance" className="rounded-lg px-4 py-2.5 text-slate-600 font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:shadow-blue-500/25 hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200">ביצועים</TabsTrigger>
                         <TabsTrigger value="trends" className="rounded-lg px-4 py-2.5 text-slate-600 font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:shadow-blue-500/25 hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200">מגמות</TabsTrigger>
@@ -557,8 +557,8 @@ export default function OrganizationAnalyticsPage() {
                                     </div>
                                 </CardHeader>
                                 <CardContent className="p-6">
-                                    <Tabs defaultValue={org.years?.length > 0 ? `year-${org.years[0].yearId}` : undefined}>
-                                        <TabsList className="mb-6 bg-slate-100/80 dark:bg-slate-800/50 p-1 rounded-lg border border-slate-200/50 dark:border-slate-700">
+                                    <Tabs defaultValue={org.years?.length > 0 ? `year-${org.years[0].yearId}` : undefined} dir="rtl">
+                                        <TabsList className="mb-6 bg-slate-100/80 dark:bg-slate-800/50 p-1 rounded-lg border border-slate-200/50 dark:border-slate-700 flex-row-reverse justify-end">
                                             {(org.years || []).map(year => (
                                                 <TabsTrigger key={year.yearId} value={`year-${year.yearId}`} className="rounded-md data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-sm data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400">
                                                     {year.year}
@@ -677,7 +677,7 @@ export default function OrganizationAnalyticsPage() {
                                     </CardHeader>
                                     <CardContent className="p-0">
                                         <div className="overflow-x-auto">
-                                            <table className="w-full">
+                                            <table className="w-full text-right" dir="rtl">
                                                 <thead className="bg-slate-50/80 dark:bg-slate-800/50">
                                                     <tr className="border-b border-slate-200 dark:border-slate-700">
                                                         <th className="text-right p-4 font-semibold text-slate-700 dark:text-slate-300 text-sm">משתמש</th>
@@ -711,7 +711,7 @@ export default function OrganizationAnalyticsPage() {
                                                                     </div>
                                                                 </div>
                                                             </td>
-                                                            <td className="p-4 text-sm text-slate-500">{user.email}</td>
+                                                            <td className="p-4 text-sm text-slate-500 text-right">{user.email}</td>
                                                             <td className="p-4 text-right font-semibold text-slate-700 dark:text-slate-300">{user.experience}</td>
                                                             <td className="p-4 text-right font-semibold text-blue-600 dark:text-blue-400">{user.geniusScore}</td>
                                                             <td className="p-4 text-right font-semibold text-cyan-600 dark:text-cyan-400">{user.totalLessons}</td>
@@ -1001,8 +1001,8 @@ function UserMistakesModal({
                     </button>
                 </div>
                 <div className="px-6 py-5">
-                    <Tabs defaultValue="overview" key={user.id}>
-                        <TabsList className="mb-5 bg-slate-100/80 dark:bg-slate-800/50 p-1 rounded-lg border border-slate-200/50 dark:border-slate-700">
+                    <Tabs defaultValue="overview" key={user.id} dir="rtl">
+                        <TabsList className="mb-5 bg-slate-100/80 dark:bg-slate-800/50 p-1 rounded-lg border border-slate-200/50 dark:border-slate-700 flex-row-reverse justify-end">
                             <TabsTrigger value="overview" className="rounded-md data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-sm data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400">סקירה כללית</TabsTrigger>
                             <TabsTrigger value="details" className="rounded-md data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-sm data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400">פרטים</TabsTrigger>
                         </TabsList>
@@ -1127,7 +1127,7 @@ function UserMistakesModal({
                                 </div>
                             ) : (
                                 <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
-                                    <table className="w-full">
+                                    <table className="w-full text-right" dir="rtl">
                                         <thead className="bg-slate-50 dark:bg-slate-800/50">
                                             <tr className="border-b border-slate-200 dark:border-slate-700">
                                                 <th className="text-right p-4 font-semibold text-slate-700 dark:text-slate-300 text-sm">קטגוריה</th>
@@ -1140,8 +1140,8 @@ function UserMistakesModal({
                                                 .sort((a, b) => b.wrongCount - a.wrongCount)
                                                 .map((row, idx) => (
                                                     <tr key={idx} className={`border-b border-slate-100 dark:border-slate-800 ${idx % 2 === 0 ? 'bg-white dark:bg-slate-900' : 'bg-slate-50/30 dark:bg-slate-800/20'}`}>
-                                                        <td className="p-4 text-sm text-slate-600 dark:text-slate-400">{row.categoryType || row.categoryId || 'ללא קטגוריה'}</td>
-                                                        <td className="p-4 text-sm text-slate-900 dark:text-slate-200 font-medium">{row.topicType}</td>
+                                                        <td className="p-4 text-sm text-slate-600 dark:text-slate-400 text-right">{row.categoryType || row.categoryId || 'ללא קטגוריה'}</td>
+                                                        <td className="p-4 text-sm text-slate-900 dark:text-slate-200 font-medium text-right">{row.topicType}</td>
                                                         <td className="p-4 text-right">
                                                             <span className="font-bold text-blue-600 dark:text-blue-400">{row.wrongCount}</span>
                                                         </td>
