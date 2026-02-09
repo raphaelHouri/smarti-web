@@ -8,6 +8,7 @@ import { TrendingUp, TrendingDown, Users, Award, BookOpen, Target, Activity, Bar
 import { Bar, Doughnut } from 'react-chartjs-2';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { getCouponSummary } from '@/actions/get-coupon-summary';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -1407,21 +1408,23 @@ function CouponsModal({
             setLoading(true);
             setError(null);
             try {
-                const response = await fetch(`/api/organization-analytics/${organizationId}/coupons?organizationYearId=${yearId}`);
-                if (!response.ok) {
-                    if (response.status === 404) {
+                const result = await getCouponSummary(organizationId, yearId);
+                if (result.error) {
+                    if (result.error === "No coupon found for this organization year") {
                         setError("לא נמצא קופון לשנה זו");
+                    } else if (result.error === "Unauthorized" || result.error === "Forbidden") {
+                        setError("אין הרשאה לצפות בנתונים");
                     } else {
                         setError("שגיאה בטעינת נתוני הקופונים");
                     }
-                    setLoading(false);
-                    return;
+                    setCoupons(null);
+                } else {
+                    setCoupons(result.couponSummary);
                 }
-                const data = await response.json();
-                setCoupons(data);
             } catch (err) {
                 console.error('Failed to fetch coupons:', err);
                 setError("שגיאה בטעינת נתוני הקופונים");
+                setCoupons(null);
             } finally {
                 setLoading(false);
             }
