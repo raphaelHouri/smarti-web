@@ -617,20 +617,79 @@ export const getUserSavedCoupon = async (userId: string, systemStep: number): Pr
         return null;
     }
 
-    // Validate the saved coupon is still valid
-    const validation = await validateCoupon(coupon.code, systemStep);
-    if (!validation.valid) {
-        // Clear invalid coupon
-        await db.update(userSettings)
-            .set({ savedCouponId: null })
-            .where(and(
-                eq(userSettings.userId, userId),
-                eq(userSettings.systemStep, systemStep)
-            ));
+    return coupon;
+};
+
+export interface CouponSummary {
+    couponCode: string;
+    expiryDate: string;
+    couponType: string;
+    maxCoupons: number;
+    savedCoupons: number;
+    redeemedCoupons: number;
+    notRedeemedCoupons: number;
+    users: Array<{
+        email: string;
+        name: string;
+        saveDate: string;
+        redeemDate: string | null;
+    }>;
+}
+
+export const getCouponSummaryByOrganizationYear = async (organizationYearId: string): Promise<CouponSummary | null> => {
+    // Find the most relevant coupon for this organization year (latest active coupon)
+    const coupon = await db.query.coupons.findFirst({
+        where: and(
+            eq(coupons.organizationYearId, organizationYearId),
+            eq(coupons.isActive, true)
+        ),
+        orderBy: [desc(coupons.createdAt)],
+    });
+
+    if (!coupon) {
         return null;
     }
 
-    return coupon;
+    // Get all subscriptions that used this coupon
+    const couponSubscriptions = await db.query.subscriptions.findMany({
+        where: eq(subscriptions.couponId, coupon.id),
+        with: {
+            user: {
+                columns: {
+                    id: true,
+                    email: true,
+                    name: true,
+                },
+            },
+        },
+        orderBy: [desc(subscriptions.createdAt)],
+    });
+
+    // Build users array from subscriptions
+    const couponUsers = couponSubscriptions.map(sub => ({
+        email: sub.user?.email || '',
+        name: sub.user?.name || 'Unknown',
+        saveDate: sub.createdAt?.toISOString().split('T')[0] || '',
+        redeemDate: sub.createdAt?.toISOString().split('T')[0] || null,
+    }));
+
+    // Map coupon type enum to Hebrew
+    const couponTypeMap: Record<string, string> = {
+        'percentage': 'הנחה אחוזית',
+        'fixed': 'הנחה קבועה',
+        'free': 'חינם',
+    };
+
+    return {
+        couponCode: coupon.code,
+        expiryDate: coupon.validUntil.toISOString().split('T')[0],
+        couponType: couponTypeMap[coupon.type] || coupon.type,
+        maxCoupons: coupon.maxUses,
+        savedCoupons: couponUsers.length, // Total users who have this coupon
+        redeemedCoupons: coupon.uses,
+        notRedeemedCoupons: coupon.maxUses - coupon.uses,
+        users: couponUsers,
+    };
 };
 
 export const saveUserCoupon = async (userId: string, couponId: string, systemStep: number): Promise<{ success: boolean; error?: string }> => {

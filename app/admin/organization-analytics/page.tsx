@@ -91,8 +91,9 @@ interface CouponsSummary {
     users: CouponUser[];
 }
 
-// Mock coupons data generator - creates mock data for any organization year
-const getMockCouponsForYear = (yearId: string): CouponsSummary => {
+// DEPRECATED: Mock coupons data generator - no longer used, replaced with real API data
+// Kept for reference only
+/* const getMockCouponsForYear = (yearId: string): CouponsSummary => {
     // Use yearId hash to generate consistent mock data per organization year
     const hash = yearId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
     const variants = [
@@ -139,7 +140,7 @@ const getMockCouponsForYear = (yearId: string): CouponsSummary => {
         },
     ];
     return variants[hash % variants.length];
-};
+}; */
 
 export default function OrganizationAnalyticsPage() {
     const [managedOrganizations, setManagedOrganizations] = useState<ManagedOrganization[]>([]);
@@ -150,7 +151,7 @@ export default function OrganizationAnalyticsPage() {
     const [organizationUsers, setOrganizationUsers] = useState<UserPerformance[]>([]);
     const [selectedUser, setSelectedUser] = useState<UserPerformance | null>(null);
     const [loadingUsers, setLoadingUsers] = useState(false);
-    const [selectedCouponYear, setSelectedCouponYear] = useState<{ yearId: string, year: number, orgName: string } | null>(null);
+    const [selectedCouponYear, setSelectedCouponYear] = useState<{ yearId: string, year: number, orgName: string, organizationId: string } | null>(null);
 
     useEffect(() => {
         fetchAnalytics();
@@ -483,7 +484,7 @@ export default function OrganizationAnalyticsPage() {
                                                             variant="ghost"
                                                             size="sm"
                                                             className="h-6 w-6 p-0 hover:bg-blue-100 dark:hover:bg-blue-900/40"
-                                                            onClick={() => setSelectedCouponYear({ yearId: year.yearId, year: year.year, orgName: org.organizationName })}
+                                                            onClick={() => setSelectedCouponYear({ yearId: year.yearId, year: year.year, orgName: org.organizationName, organizationId: org.organizationId })}
                                                             title="צפה בקופונים"
                                                         >
                                                             <Ticket className="h-3 w-3 text-blue-600 dark:text-blue-400" />
@@ -845,6 +846,7 @@ export default function OrganizationAnalyticsPage() {
                     yearId={selectedCouponYear.yearId}
                     year={selectedCouponYear.year}
                     organizationName={selectedCouponYear.orgName}
+                    organizationId={selectedCouponYear.organizationId}
                     onClose={() => setSelectedCouponYear(null)}
                 />
             )}
@@ -857,21 +859,18 @@ function CouponsSection({ coupons }: { coupons: CouponsSummary }) {
     const redeemedUsers = coupons.users.filter(user => user.redeemDate !== null);
 
     const chartData: ChartData<'doughnut'> = {
-        labels: ['קופונים מקסימלי', 'קופונים שמומשו', 'קופונים שלא מומשו'],
+        labels: ['קופונים שמומשו', 'קופונים שלא מומשו'],
         datasets: [
             {
                 data: [
-                    coupons.maxCoupons,
                     coupons.redeemedCoupons,
                     coupons.notRedeemedCoupons,
                 ],
                 backgroundColor: [
-                    'rgba(239, 68, 68, 0.7)',   // red-500
                     'rgba(34, 197, 94, 0.7)',    // green-500
                     'rgba(148, 163, 184, 0.7)', // slate-400
                 ],
                 borderColor: [
-                    'rgb(239, 68, 68)',   // red-500
                     'rgb(34, 197, 94)',   // green-500
                     'rgb(148, 163, 184)', // slate-400
                 ],
@@ -924,13 +923,10 @@ function CouponsSection({ coupons }: { coupons: CouponsSummary }) {
 
                 {/* Status Metrics with Chart */}
                 <div className="p-3 bg-slate-50/50 dark:bg-slate-800/30 rounded-lg border border-slate-100 dark:border-slate-800">
-                    <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-3 uppercase tracking-wide">סטטוס קופונים</p>
+                    <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2 uppercase tracking-wide">סטטוס קופונים</p>
+                    <p className="text-sm font-bold text-slate-900 dark:text-white mb-3">סך הכל שימושים אפשריים: {coupons.maxCoupons}</p>
                     <div className="flex items-center gap-4">
                         <div className="flex-1 space-y-2">
-                            <div className="flex items-center justify-between">
-                                <span className="text-xs text-slate-600 dark:text-slate-400">קופונים מקסימלי</span>
-                                <span className="font-bold text-red-600 dark:text-red-400">{coupons.maxCoupons}</span>
-                            </div>
                             <div className="flex items-center justify-between">
                                 <span className="text-xs text-slate-600 dark:text-slate-400">קופונים שמומשו</span>
                                 <span className="font-bold text-green-600 dark:text-green-400">{coupons.redeemedCoupons}</span>
@@ -1393,14 +1389,46 @@ function CouponsModal({
     yearId,
     year,
     organizationName,
+    organizationId,
     onClose,
 }: {
     yearId: string;
     year: number;
     organizationName: string;
+    organizationId: string;
     onClose: () => void;
 }) {
-    const coupons = getMockCouponsForYear(yearId);
+    const [coupons, setCoupons] = useState<CouponsSummary | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchCoupons = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                const response = await fetch(`/api/organization-analytics/${organizationId}/coupons?organizationYearId=${yearId}`);
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        setError("לא נמצא קופון לשנה זו");
+                    } else {
+                        setError("שגיאה בטעינת נתוני הקופונים");
+                    }
+                    setLoading(false);
+                    return;
+                }
+                const data = await response.json();
+                setCoupons(data);
+            } catch (err) {
+                console.error('Failed to fetch coupons:', err);
+                setError("שגיאה בטעינת נתוני הקופונים");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCoupons();
+    }, [yearId, organizationId]);
 
     return (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
@@ -1423,7 +1451,23 @@ function CouponsModal({
                     </button>
                 </div>
                 <div className="px-6 py-5">
-                    <CouponsSection coupons={coupons} />
+                    {loading ? (
+                        <div className="flex items-center justify-center py-16">
+                            <div className="text-center space-y-4">
+                                <div className="animate-spin rounded-full h-10 w-10 border-2 border-blue-500 border-t-transparent mx-auto"></div>
+                                <p className="text-base text-slate-500">טוען נתוני קופונים...</p>
+                            </div>
+                        </div>
+                    ) : error ? (
+                        <div className="flex flex-col items-center justify-center py-16">
+                            <div className="p-5 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/30 dark:to-cyan-950/30 rounded-2xl mb-5">
+                                <Ticket className="h-12 w-12 text-blue-500" />
+                            </div>
+                            <p className="text-lg font-medium text-slate-600 dark:text-slate-400">{error}</p>
+                        </div>
+                    ) : coupons ? (
+                        <CouponsSection coupons={coupons} />
+                    ) : null}
                 </div>
             </div>
         </div>
