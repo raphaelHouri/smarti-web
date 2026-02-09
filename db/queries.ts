@@ -641,7 +641,6 @@ export const getCouponSummaryByOrganizationYear = async (organizationYearId: str
     const coupon = await db.query.coupons.findFirst({
         where: and(
             eq(coupons.organizationYearId, organizationYearId),
-            eq(coupons.isActive, true)
         ),
         orderBy: [desc(coupons.createdAt)],
     });
