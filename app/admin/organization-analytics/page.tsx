@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { TrendingUp, TrendingDown, Users, Award, BookOpen, Target, Activity, BarChart3, Home } from 'lucide-react';
+import { TrendingUp, TrendingDown, Users, Award, BookOpen, Target, Activity, BarChart3, Home, Ticket } from 'lucide-react';
 import { Bar, Doughnut } from 'react-chartjs-2';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -91,10 +91,10 @@ interface CouponsSummary {
     users: CouponUser[];
 }
 
-// Mock coupons data generator - creates mock data for any organization
-const getMockCouponsForOrg = (orgId: string): CouponsSummary => {
-    // Use orgId hash to generate consistent mock data per organization
-    const hash = orgId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+// Mock coupons data generator - creates mock data for any organization year
+const getMockCouponsForYear = (yearId: string): CouponsSummary => {
+    // Use yearId hash to generate consistent mock data per organization year
+    const hash = yearId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
     const variants = [
         {
             couponCode: 'SUMMER2024',
@@ -150,6 +150,7 @@ export default function OrganizationAnalyticsPage() {
     const [organizationUsers, setOrganizationUsers] = useState<UserPerformance[]>([]);
     const [selectedUser, setSelectedUser] = useState<UserPerformance | null>(null);
     const [loadingUsers, setLoadingUsers] = useState(false);
+    const [selectedCouponYear, setSelectedCouponYear] = useState<{ yearId: string, year: number, orgName: string } | null>(null);
 
     useEffect(() => {
         fetchAnalytics();
@@ -472,15 +473,25 @@ export default function OrganizationAnalyticsPage() {
                                         </div>
                                         <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
                                             <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider mb-2">שנים פעילות</p>
-                                            <div className="flex flex-wrap gap-1.5">
+                                            <div className="flex flex-wrap gap-1.5 items-center">
                                                 {getOrgYears(org).map(year => (
-                                                    <span key={year.yearId} className="px-2.5 py-1 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/30 dark:to-cyan-900/30 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800 rounded-md text-xs font-medium">
-                                                        {year.year}
-                                                    </span>
+                                                    <div key={year.yearId} className="flex items-center gap-1.5">
+                                                        <span className="px-2.5 py-1 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/30 dark:to-cyan-900/30 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800 rounded-md text-xs font-medium">
+                                                            {year.year}
+                                                        </span>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            className="h-6 w-6 p-0 hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                                                            onClick={() => setSelectedCouponYear({ yearId: year.yearId, year: year.year, orgName: org.organizationName })}
+                                                            title="צפה בקופונים"
+                                                        >
+                                                            <Ticket className="h-3 w-3 text-blue-600 dark:text-blue-400" />
+                                                        </Button>
+                                                    </div>
                                                 ))}
                                             </div>
                                         </div>
-                                        <CouponsSection coupons={getMockCouponsForOrg(org.organizationId)} />
                                     </CardContent>
                                 </Card>
                             ))}
@@ -829,30 +840,38 @@ export default function OrganizationAnalyticsPage() {
                     </TabsContent>
                 </Tabs>
             </div>
+            {selectedCouponYear && (
+                <CouponsModal
+                    yearId={selectedCouponYear.yearId}
+                    year={selectedCouponYear.year}
+                    organizationName={selectedCouponYear.orgName}
+                    onClose={() => setSelectedCouponYear(null)}
+                />
+            )}
         </div>
     );
 }
 
 function CouponsSection({ coupons }: { coupons: CouponsSummary }) {
+    // Filter users to only show redeemed ones
+    const redeemedUsers = coupons.users.filter(user => user.redeemDate !== null);
+
     const chartData: ChartData<'doughnut'> = {
-        labels: ['קופונים מקסימלי', 'קופונים שנשמרו', 'קופונים שמומשו', 'קופונים שלא מומשו'],
+        labels: ['קופונים מקסימלי', 'קופונים שמומשו', 'קופונים שלא מומשו'],
         datasets: [
             {
                 data: [
                     coupons.maxCoupons,
-                    coupons.savedCoupons,
                     coupons.redeemedCoupons,
                     coupons.notRedeemedCoupons,
                 ],
                 backgroundColor: [
                     'rgba(239, 68, 68, 0.7)',   // red-500
-                    'rgba(234, 179, 8, 0.7)',   // yellow-500
                     'rgba(34, 197, 94, 0.7)',    // green-500
                     'rgba(148, 163, 184, 0.7)', // slate-400
                 ],
                 borderColor: [
                     'rgb(239, 68, 68)',   // red-500
-                    'rgb(234, 179, 8)',   // yellow-500
                     'rgb(34, 197, 94)',   // green-500
                     'rgb(148, 163, 184)', // slate-400
                 ],
@@ -913,10 +932,6 @@ function CouponsSection({ coupons }: { coupons: CouponsSummary }) {
                                 <span className="font-bold text-red-600 dark:text-red-400">{coupons.maxCoupons}</span>
                             </div>
                             <div className="flex items-center justify-between">
-                                <span className="text-xs text-slate-600 dark:text-slate-400">קופונים שנשמרו</span>
-                                <span className="font-bold text-yellow-600 dark:text-yellow-400">{coupons.savedCoupons}</span>
-                            </div>
-                            <div className="flex items-center justify-between">
                                 <span className="text-xs text-slate-600 dark:text-slate-400">קופונים שמומשו</span>
                                 <span className="font-bold text-green-600 dark:text-green-400">{coupons.redeemedCoupons}</span>
                             </div>
@@ -932,21 +947,20 @@ function CouponsSection({ coupons }: { coupons: CouponsSummary }) {
                 </div>
 
                 {/* Users Table */}
-                {coupons.users.length > 0 && (
+                {redeemedUsers.length > 0 && (
                     <div>
-                        <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2 uppercase tracking-wide">טבלת משתמשים ששמרו את הקופון</p>
+                        <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2 uppercase tracking-wide">טבלת משתמשים שמומשו את הקופון</p>
                         <div className="overflow-x-auto rounded-lg border border-slate-100 dark:border-slate-800">
                             <table className="w-full text-right text-xs" dir="rtl">
                                 <thead className="bg-slate-50 dark:bg-slate-800/50">
                                     <tr className="border-b border-slate-200 dark:border-slate-700">
                                         <th className="text-right p-2 font-semibold text-slate-700 dark:text-slate-300">אימייל</th>
                                         <th className="text-right p-2 font-semibold text-slate-700 dark:text-slate-300">שם</th>
-                                        <th className="text-right p-2 font-semibold text-slate-700 dark:text-slate-300">תאריך שמירה</th>
                                         <th className="text-right p-2 font-semibold text-slate-700 dark:text-slate-300">תאריך מימוש</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {coupons.users.map((user, idx) => (
+                                    {redeemedUsers.map((user, idx) => (
                                         <tr
                                             key={idx}
                                             className={`border-b border-slate-100 dark:border-slate-800 ${idx % 2 === 0 ? 'bg-white dark:bg-slate-900' : 'bg-slate-50/30 dark:bg-slate-800/20'
@@ -954,10 +968,7 @@ function CouponsSection({ coupons }: { coupons: CouponsSummary }) {
                                         >
                                             <td className="p-2 text-slate-600 dark:text-slate-400">{user.email}</td>
                                             <td className="p-2 font-medium text-slate-900 dark:text-white">{user.name}</td>
-                                            <td className="p-2 text-slate-600 dark:text-slate-400">{user.saveDate}</td>
-                                            <td className="p-2 text-slate-600 dark:text-slate-400">
-                                                {user.redeemDate || <span className="text-slate-400 italic">לא מומש</span>}
-                                            </td>
+                                            <td className="p-2 text-slate-600 dark:text-slate-400">{user.redeemDate}</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -973,7 +984,6 @@ function CouponsSection({ coupons }: { coupons: CouponsSummary }) {
                         <li><strong>תוקף הקופון:</strong> התאריך האחרון שבו ניתן להשתמש בקופון</li>
                         <li><strong>סוג הקופון:</strong> סוג ההנחה שהקופון מספק (אחוזית או קבועה)</li>
                         <li><strong>קופונים מקסימלי:</strong> המספר המקסימלי של קופונים שניתן לחלק</li>
-                        <li><strong>קופונים שנשמרו:</strong> מספר הקופונים שמשתמשים שמרו לעצמם</li>
                         <li><strong>קופונים שמומשו:</strong> מספר הקופונים שנוצלו בפועל</li>
                         <li><strong>קופונים שלא מומשו:</strong> קופונים שנשמרו אך עדיין לא נוצלו</li>
                     </ul>
@@ -1373,6 +1383,47 @@ function UserMistakesModal({
                             )}
                         </TabsContent>
                     </Tabs>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function CouponsModal({
+    yearId,
+    year,
+    organizationName,
+    onClose,
+}: {
+    yearId: string;
+    year: number;
+    organizationName: string;
+    onClose: () => void;
+}) {
+    const coupons = getMockCouponsForYear(yearId);
+
+    return (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+            <div className="w-full max-w-4xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-h-[85vh] overflow-y-auto border border-slate-200 dark:border-slate-800" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 px-6 py-5 bg-gradient-to-r from-blue-50/50 via-white to-cyan-50/50 dark:from-blue-950/20 dark:via-slate-900 dark:to-cyan-950/20">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/25">
+                            <Ticket className="h-6 w-6" />
+                        </div>
+                        <div>
+                            <div className="text-lg font-bold text-slate-900 dark:text-white">{organizationName}</div>
+                            <div className="text-sm text-slate-500">שנה {year} - קופונים</div>
+                        </div>
+                    </div>
+                    <button
+                        className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                        onClick={onClose}
+                    >
+                        סגור
+                    </button>
+                </div>
+                <div className="px-6 py-5">
+                    <CouponsSection coupons={coupons} />
                 </div>
             </div>
         </div>
