@@ -1261,96 +1261,98 @@ function MistakesPanel({ organizationId, selectedYearId }: { organizationId: str
 
     return (
         <div className="space-y-5">
-            {Object.entries(byCategory).map(([categoryId, items]) => {
-                const title = (
-                    data.find(d => (d.categoryId ?? 'uncategorized') === categoryId)?.categoryType
-                ) || (categoryId === 'uncategorized' ? 'ללא קטגוריה' : categoryId);
-                const topItems = [...items].sort((a, b) => b.wrongCount - a.wrongCount).slice(0, 12);
-                const labels: string[] = Array.from(topItems.map(i => i.topicType));
-                const values: number[] = Array.from(topItems.map(i => i.wrongCount));
-                // Blue/Cyan gradient palette
-                const backgroundPalette = [
-                    'rgba(59, 130, 246, 0.7)',   // blue-500
-                    'rgba(6, 182, 212, 0.7)',    // cyan-500
-                    'rgba(99, 102, 241, 0.7)',   // indigo-500
-                    'rgba(14, 165, 233, 0.7)',   // sky-500
-                    'rgba(37, 99, 235, 0.7)',    // blue-600
-                    'rgba(8, 145, 178, 0.7)',    // cyan-600
-                    'rgba(79, 70, 229, 0.7)',    // indigo-600
-                    'rgba(2, 132, 199, 0.7)',    // sky-600
-                    'rgba(96, 165, 250, 0.7)',   // blue-400
-                    'rgba(34, 211, 238, 0.7)',   // cyan-400
-                    'rgba(129, 140, 248, 0.7)', // indigo-400
-                    'rgba(56, 189, 248, 0.7)',   // sky-400
-                ];
-                const borderPalette = [
-                    'rgb(59, 130, 246)',
-                    'rgb(6, 182, 212)',
-                    'rgb(99, 102, 241)',
-                    'rgb(14, 165, 233)',
-                    'rgb(37, 99, 235)',
-                    'rgb(8, 145, 178)',
-                    'rgb(79, 70, 229)',
-                    'rgb(2, 132, 199)',
-                    'rgb(96, 165, 250)',
-                    'rgb(34, 211, 238)',
-                    'rgb(129, 140, 248)',
-                    'rgb(56, 189, 248)',
-                ];
-                const backgroundColor = values.map((_, i) => backgroundPalette[i % backgroundPalette.length]);
-                const borderColor = values.map((_, i) => borderPalette[i % borderPalette.length]);
-                const datasets: ChartDataset<'bar'>[] = [
-                    {
-                        label: 'תשובות שגויות',
-                        data: values,
-                        backgroundColor,
-                        borderColor,
-                        borderWidth: 1,
-                        borderRadius: 6,
-                    },
-                ];
-                const chartData: ChartData<'bar'> = { labels, datasets };
-                const chartOptions: ChartOptions<'bar'> = {
-                    indexAxis: 'x',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        title: { display: false },
-                    },
-                    scales: {
-                        x: {
-                            beginAtZero: true,
-                            ticks: { precision: 0 },
-                            grid: { display: false },
+            {Object.entries(byCategory)
+                .filter(([categoryId]) => categoryId !== 'uncategorized')
+                .map(([categoryId, items]) => {
+                    const title = (
+                        data.find(d => (d.categoryId ?? 'uncategorized') === categoryId)?.categoryType
+                    ) || (categoryId === 'uncategorized' ? 'ללא קטגוריה' : categoryId);
+                    const topItems = [...items].sort((a, b) => b.wrongCount - a.wrongCount).slice(0, 12);
+                    const labels: string[] = Array.from(topItems.map(i => i.topicType));
+                    const values: number[] = Array.from(topItems.map(i => i.wrongCount));
+                    // Blue/Cyan gradient palette
+                    const backgroundPalette = [
+                        'rgba(59, 130, 246, 0.7)',   // blue-500
+                        'rgba(6, 182, 212, 0.7)',    // cyan-500
+                        'rgba(99, 102, 241, 0.7)',   // indigo-500
+                        'rgba(14, 165, 233, 0.7)',   // sky-500
+                        'rgba(37, 99, 235, 0.7)',    // blue-600
+                        'rgba(8, 145, 178, 0.7)',    // cyan-600
+                        'rgba(79, 70, 229, 0.7)',    // indigo-600
+                        'rgba(2, 132, 199, 0.7)',    // sky-600
+                        'rgba(96, 165, 250, 0.7)',   // blue-400
+                        'rgba(34, 211, 238, 0.7)',   // cyan-400
+                        'rgba(129, 140, 248, 0.7)', // indigo-400
+                        'rgba(56, 189, 248, 0.7)',   // sky-400
+                    ];
+                    const borderPalette = [
+                        'rgb(59, 130, 246)',
+                        'rgb(6, 182, 212)',
+                        'rgb(99, 102, 241)',
+                        'rgb(14, 165, 233)',
+                        'rgb(37, 99, 235)',
+                        'rgb(8, 145, 178)',
+                        'rgb(79, 70, 229)',
+                        'rgb(2, 132, 199)',
+                        'rgb(96, 165, 250)',
+                        'rgb(34, 211, 238)',
+                        'rgb(129, 140, 248)',
+                        'rgb(56, 189, 248)',
+                    ];
+                    const backgroundColor = values.map((_, i) => backgroundPalette[i % backgroundPalette.length]);
+                    const borderColor = values.map((_, i) => borderPalette[i % borderPalette.length]);
+                    const datasets: ChartDataset<'bar'>[] = [
+                        {
+                            label: 'תשובות שגויות',
+                            data: values,
+                            backgroundColor,
+                            borderColor,
+                            borderWidth: 1,
+                            borderRadius: 6,
                         },
-                        y: {
-                            grid: { color: 'rgba(148, 163, 184, 0.1)' },
+                    ];
+                    const chartData: ChartData<'bar'> = { labels, datasets };
+                    const chartOptions: ChartOptions<'bar'> = {
+                        indexAxis: 'x',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            title: { display: false },
                         },
-                    },
-                };
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                ticks: { precision: 0 },
+                                grid: { display: false },
+                            },
+                            y: {
+                                grid: { color: 'rgba(148, 163, 184, 0.1)' },
+                            },
+                        },
+                    };
 
-                return (
-                    <Card key={categoryId} className="border border-slate-200/80 dark:border-slate-800 shadow-sm rounded-xl bg-white dark:bg-slate-900 overflow-hidden">
-                        <CardHeader className="bg-gradient-to-r from-blue-50/50 via-white to-cyan-50/50 dark:from-blue-950/20 dark:via-slate-900 dark:to-cyan-950/20 border-b border-slate-100 dark:border-slate-800">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg shadow-sm shadow-blue-500/20">
-                                    <Target className="h-4 w-4 text-white" />
+                    return (
+                        <Card key={categoryId} className="border border-slate-200/80 dark:border-slate-800 shadow-sm rounded-xl bg-white dark:bg-slate-900 overflow-hidden">
+                            <CardHeader className="bg-gradient-to-r from-blue-50/50 via-white to-cyan-50/50 dark:from-blue-950/20 dark:via-slate-900 dark:to-cyan-950/20 border-b border-slate-100 dark:border-slate-800">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg shadow-sm shadow-blue-500/20">
+                                        <Target className="h-4 w-4 text-white" />
+                                    </div>
+                                    <div>
+                                        <CardTitle className="text-lg font-bold text-slate-900 dark:text-white">טעויות - {title}</CardTitle>
+                                        <CardDescription className="text-slate-500 text-sm">נושאי טעויות נפוצים בקטגוריה זו</CardDescription>
+                                    </div>
                                 </div>
-                                <div>
-                                    <CardTitle className="text-lg font-bold text-slate-900 dark:text-white">טעויות - {title}</CardTitle>
-                                    <CardDescription className="text-slate-500 text-sm">נושאי טעויות נפוצים בקטגוריה זו</CardDescription>
+                            </CardHeader>
+                            <CardContent className="p-5">
+                                <div className="h-56">
+                                    <Bar data={chartData} options={chartOptions} />
                                 </div>
-                            </div>
-                        </CardHeader>
-                        <CardContent className="p-5">
-                            <div className="h-56">
-                                <Bar data={chartData} options={chartOptions} />
-                            </div>
-                        </CardContent>
-                    </Card>
-                );
-            })}
+                            </CardContent>
+                        </Card>
+                    );
+                })}
         </div>
     );
 }
@@ -1508,45 +1510,47 @@ function UserMistakesModal({
                                             </Card>
                                         );
                                     })()}
-                                    {entries.map(([categoryId, items]) => {
-                                        const title = (
-                                            data.find(d => (d.categoryId ?? 'uncategorized') === categoryId)?.categoryType
-                                        ) || (categoryId === 'uncategorized' ? 'ללא קטגוריה' : categoryId);
-                                        const topItems = [...items].sort((a, b) => b.wrongCount - a.wrongCount).slice(0, 10);
-                                        const labels: string[] = Array.from(topItems.map(i => i.topicType));
-                                        const values: number[] = Array.from(topItems.map(i => i.wrongCount));
-                                        const backgroundColor = values.map((_, i) => backgroundPalette[i % backgroundPalette.length]);
-                                        const borderColor = values.map((_, i) => borderPalette[i % borderPalette.length]);
-                                        const datasets: ChartDataset<'bar'>[] = [{
-                                            label: 'תשובות שגויות',
-                                            data: values,
-                                            backgroundColor,
-                                            borderColor,
-                                            borderWidth: 1,
-                                            borderRadius: 6,
-                                        }];
-                                        const chartData: ChartData<'bar'> = { labels, datasets };
-                                        const chartOptions: ChartOptions<'bar'> = {
-                                            indexAxis: 'x',
-                                            responsive: true,
-                                            maintainAspectRatio: false,
-                                            plugins: { legend: { display: false }, title: { display: false } },
-                                            scales: { x: { beginAtZero: true, ticks: { precision: 0 }, grid: { display: false } }, y: { grid: { color: 'rgba(148, 163, 184, 0.1)' } } },
-                                        };
-                                        return (
-                                            <Card key={categoryId} className="border border-slate-200/80 dark:border-slate-800 shadow-sm rounded-xl overflow-hidden">
-                                                <CardHeader className="bg-slate-50/50 dark:bg-slate-800/30 border-b border-slate-100 dark:border-slate-800 py-4">
-                                                    <CardTitle className="text-base font-semibold text-slate-800 dark:text-slate-200">טעויות - {title}</CardTitle>
-                                                    <CardDescription className="text-slate-500 text-sm">נושאים נפוצים בקטגוריה זו</CardDescription>
-                                                </CardHeader>
-                                                <CardContent className="p-5">
-                                                    <div className="h-40">
-                                                        <Bar data={chartData} options={chartOptions} />
-                                                    </div>
-                                                </CardContent>
-                                            </Card>
-                                        );
-                                    })}
+                                    {entries
+                                        .filter(([categoryId]) => categoryId !== 'uncategorized')
+                                        .map(([categoryId, items]) => {
+                                            const title = (
+                                                data.find(d => (d.categoryId ?? 'uncategorized') === categoryId)?.categoryType
+                                            ) || (categoryId === 'uncategorized' ? 'ללא קטגוריה' : categoryId);
+                                            const topItems = [...items].sort((a, b) => b.wrongCount - a.wrongCount).slice(0, 10);
+                                            const labels: string[] = Array.from(topItems.map(i => i.topicType));
+                                            const values: number[] = Array.from(topItems.map(i => i.wrongCount));
+                                            const backgroundColor = values.map((_, i) => backgroundPalette[i % backgroundPalette.length]);
+                                            const borderColor = values.map((_, i) => borderPalette[i % borderPalette.length]);
+                                            const datasets: ChartDataset<'bar'>[] = [{
+                                                label: 'תשובות שגויות',
+                                                data: values,
+                                                backgroundColor,
+                                                borderColor,
+                                                borderWidth: 1,
+                                                borderRadius: 6,
+                                            }];
+                                            const chartData: ChartData<'bar'> = { labels, datasets };
+                                            const chartOptions: ChartOptions<'bar'> = {
+                                                indexAxis: 'x',
+                                                responsive: true,
+                                                maintainAspectRatio: false,
+                                                plugins: { legend: { display: false }, title: { display: false } },
+                                                scales: { x: { beginAtZero: true, ticks: { precision: 0 }, grid: { display: false } }, y: { grid: { color: 'rgba(148, 163, 184, 0.1)' } } },
+                                            };
+                                            return (
+                                                <Card key={categoryId} className="border border-slate-200/80 dark:border-slate-800 shadow-sm rounded-xl overflow-hidden">
+                                                    <CardHeader className="bg-slate-50/50 dark:bg-slate-800/30 border-b border-slate-100 dark:border-slate-800 py-4">
+                                                        <CardTitle className="text-base font-semibold text-slate-800 dark:text-slate-200">טעויות - {title}</CardTitle>
+                                                        <CardDescription className="text-slate-500 text-sm">נושאים נפוצים בקטגוריה זו</CardDescription>
+                                                    </CardHeader>
+                                                    <CardContent className="p-5">
+                                                        <div className="h-40">
+                                                            <Bar data={chartData} options={chartOptions} />
+                                                        </div>
+                                                    </CardContent>
+                                                </Card>
+                                            );
+                                        })}
                                 </div>
                             )}
                         </TabsContent>
