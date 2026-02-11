@@ -341,7 +341,7 @@ export default function OrganizationAnalyticsPage() {
                     <TabsList className="bg-white dark:bg-slate-900 p-1.5 border border-slate-200 dark:border-slate-800 w-full flex-row justify-end h-auto rounded-xl shadow-sm gap-1">
                         <TabsTrigger value="overview" className="rounded-lg px-4 py-2.5 text-slate-600 font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:shadow-blue-500/25 hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200">סקירה כללית</TabsTrigger>
                         <TabsTrigger value="performance" className="rounded-lg px-4 py-2.5 text-slate-600 font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:shadow-blue-500/25 hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200">ביצועים</TabsTrigger>
-                        <TabsTrigger value="trends" className="rounded-lg px-4 py-2.5 text-slate-600 font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:shadow-blue-500/25 hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200">מגמות</TabsTrigger>
+                        <TabsTrigger value="trends" className="rounded-lg px-4 py-2.5 text-slate-600 font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:shadow-blue-500/25 hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200">ניהול קופונים</TabsTrigger>
                         <TabsTrigger value="detailed" className="rounded-lg px-4 py-2.5 text-slate-600 font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:shadow-blue-500/25 hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200">תצוגה מפורטת</TabsTrigger>
                         <TabsTrigger value="mistakes" className="rounded-lg px-4 py-2.5 text-slate-600 font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:shadow-blue-500/25 hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200">טעויות</TabsTrigger>
                         <TabsTrigger value="users" className="rounded-lg px-4 py-2.5 text-slate-600 font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:shadow-blue-500/25 hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200">משתמשים</TabsTrigger>
@@ -559,65 +559,11 @@ export default function OrganizationAnalyticsPage() {
                     </TabsContent>
 
                     <TabsContent value="trends" className="space-y-6">
-                        {selectedOrg !== 'all' && selectedOrgData ? (
-                            <Card className="border border-slate-200/80 dark:border-slate-800 shadow-sm bg-white dark:bg-slate-900 rounded-xl overflow-hidden">
-                                <CardHeader className="bg-gradient-to-r from-blue-50/50 via-white to-cyan-50/50 dark:from-blue-950/20 dark:via-slate-900 dark:to-cyan-950/20 border-b border-slate-100 dark:border-slate-800 pb-4">
-                                    <div className="flex items-center gap-3">
-                                        <div className="p-2.5 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg shadow-md shadow-blue-500/20">
-                                            <TrendingUp className="h-5 w-5 text-white" />
-                                        </div>
-                                        <div>
-                                            <CardTitle className="text-xl font-bold text-slate-900 dark:text-white">מגמות ביצועים - {selectedOrgData.organizationName}</CardTitle>
-                                            <CardDescription className="text-slate-500">מעקב אחר התקדמות וצמיחה לאורך זמן</CardDescription>
-                                        </div>
-                                    </div>
-                                </CardHeader>
-                                <CardContent className="p-6">
-                                    <div className="space-y-6">
-                                        {['averageScore', 'totalLessons', 'activeUsers'].map(metric => (
-                                            <div key={metric} className="p-5 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-800/20 hover:border-blue-200 dark:hover:border-blue-800 transition-colors">
-                                                <h3 className="font-semibold text-sm mb-5 text-slate-700 dark:text-slate-300 flex items-center gap-2 uppercase tracking-wide">
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500"></span>
-                                                    {metric === 'averageScore' ? 'ממוצע ציון %' :
-                                                        metric === 'totalLessons' ? 'סה״כ שיעורים' :
-                                                            'משתמשים פעילים'}
-                                                </h3>
-                                                <div className="flex items-end gap-3 h-44">
-                                                    {getOrgYears(selectedOrgData)
-                                                        .sort((a, b) => a.year - b.year)
-                                                        .map(year => {
-                                                            const value = (year as any)[metric];
-                                                            const maxValue = Math.max(...(selectedOrgData.years || []).map((y: any) => y[metric]));
-                                                            const height = maxValue > 0 ? (value / maxValue) * 100 : 0;
-
-                                                            return (
-                                                                <div key={year.yearId} className="flex-1 flex flex-col items-center group">
-                                                                    <div
-                                                                        className="w-full bg-gradient-to-t from-blue-500 to-cyan-400 rounded-t-lg flex items-end justify-center transition-all hover:from-blue-600 hover:to-cyan-500 relative shadow-sm shadow-blue-500/20"
-                                                                        style={{ height: `${Math.max(height, 8)}%` }}
-                                                                    >
-                                                                        <span className="absolute -top-7 text-xs font-bold text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity bg-white dark:bg-slate-800 px-2 py-0.5 rounded shadow-sm">{value}</span>
-                                                                    </div>
-                                                                    <span className="text-xs font-medium text-slate-500 mt-3 pt-2 border-t border-slate-200 dark:border-slate-700 w-full text-center">{year.year}</span>
-                                                                </div>
-                                                            );
-                                                        })}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ) : (
-                            <Card className="border border-slate-200/80 dark:border-slate-800 shadow-sm rounded-xl bg-white dark:bg-slate-900">
-                                <CardContent className="flex flex-col items-center justify-center py-20">
-                                    <div className="p-5 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/30 dark:to-cyan-950/30 rounded-2xl mb-5">
-                                        <TrendingUp className="h-12 w-12 text-blue-500" />
-                                    </div>
-                                    <p className="text-lg font-medium text-slate-600 dark:text-slate-400">אנא בחר ארגון ספציפי כדי לצפות במגמות</p>
-                                </CardContent>
-                            </Card>
-                        )}
+                        <CouponsManagementPanel
+                            selectedOrgId={selectedOrg}
+                            selectedYearId={selectedYear}
+                            analytics={analytics}
+                        />
                     </TabsContent>
 
                     <TabsContent value="detailed" className="space-y-6">
@@ -849,6 +795,185 @@ export default function OrganizationAnalyticsPage() {
                 />
             )}
         </div>
+    );
+}
+
+function CouponsManagementPanel({
+    selectedOrgId,
+    selectedYearId,
+    analytics,
+}: {
+    selectedOrgId: string;
+    selectedYearId: string;
+    analytics: OrganizationAnalytics[];
+}) {
+    const org = analytics.find(o => o.organizationId === selectedOrgId);
+
+    const [activeYearId, setActiveYearId] = useState<string | null>(null);
+    const [coupons, setCoupons] = useState<CouponsSummary | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    // Determine default active year based on main page selection or latest year
+    useEffect(() => {
+        if (!org || !org.years || org.years.length === 0) {
+            setActiveYearId(null);
+            return;
+        }
+
+        const yearsSorted = [...org.years].sort((a, b) => b.year - a.year);
+
+        if (selectedYearId && selectedYearId !== 'all') {
+            const match = yearsSorted.find(y => y.yearId === selectedYearId);
+            setActiveYearId(match ? match.yearId : yearsSorted[0]?.yearId ?? null);
+        } else {
+            setActiveYearId(yearsSorted[0]?.yearId ?? null);
+        }
+    }, [org, selectedYearId]);
+
+    // Fetch coupons when active year changes
+    useEffect(() => {
+        if (!org || !activeYearId) {
+            return;
+        }
+
+        const fetchCoupons = async () => {
+            setLoading(true);
+            setError(null);
+            setCoupons(null);
+
+            try {
+                const result = await getCouponSummary(org.organizationId, activeYearId);
+                if (result.error) {
+                    if (result.error === "No coupon found for this organization year") {
+                        setError("לא נמצא קופון לשנה זו");
+                    } else if (result.error === "Unauthorized" || result.error === "Forbidden") {
+                        setError("אין הרשאה לצפות בנתונים");
+                    } else {
+                        setError("שגיאה בטעינת נתוני הקופונים");
+                    }
+                    setCoupons(null);
+                } else {
+                    setCoupons(result.couponSummary);
+                }
+            } catch (err) {
+                console.error("Failed to fetch coupons:", err);
+                setError("שגיאה בטעינת נתוני הקופונים");
+                setCoupons(null);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCoupons();
+    }, [org, activeYearId]);
+
+    // If no specific organization selected
+    if (!selectedOrgId || selectedOrgId === "all") {
+        return (
+            <Card className="border border-slate-200/80 dark:border-slate-800 shadow-sm rounded-xl bg-white dark:bg-slate-900">
+                <CardContent className="flex flex-col items-center justify-center py-20">
+                    <div className="p-5 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/30 dark:to-cyan-950/30 rounded-2xl mb-5">
+                        <Ticket className="h-12 w-12 text-blue-500" />
+                    </div>
+                    <p className="text-lg font-medium text-slate-600 dark:text-slate-400">
+                        אנא בחר ארגון ספציפי כדי לנהל קופונים
+                    </p>
+                </CardContent>
+            </Card>
+        );
+    }
+
+    if (!org) {
+        return (
+            <Card className="border border-slate-200/80 dark:border-slate-800 shadow-sm rounded-xl bg-white dark:bg-slate-900">
+                <CardContent className="flex flex-col items-center justify-center py-20">
+                    <p className="text-lg font-medium text-slate-600 dark:text-slate-400">
+                        לא נמצאו נתונים עבור ארגון זה
+                    </p>
+                </CardContent>
+            </Card>
+        );
+    }
+
+    const years = (org.years || []).slice().sort((a, b) => b.year - a.year);
+    const activeYear = years.find(y => y.yearId === activeYearId) ?? years[0];
+
+    return (
+        <Card className="border border-slate-200/80 dark:border-slate-800 shadow-sm bg-white dark:bg-slate-900 rounded-xl overflow-hidden">
+            <CardHeader className="bg-gradient-to-r from-blue-50/50 via-white to-cyan-50/50 dark:from-blue-950/20 dark:via-slate-900 dark:to-cyan-950/20 border-b border-slate-100 dark:border-slate-800 pb-4">
+                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2.5 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg shadow-md shadow-blue-500/20">
+                            <Ticket className="h-5 w-5 text-white" />
+                        </div>
+                        <div>
+                            <CardTitle className="text-xl font-bold text-slate-900 dark:text-white">
+                                ניהול קופונים - {org.organizationName}
+                            </CardTitle>
+                            <CardDescription className="text-slate-500">
+                                צפייה והבנה של שימוש בקופונים לפי שנה
+                            </CardDescription>
+                        </div>
+                    </div>
+                    {years.length > 0 && (
+                        <div className="flex items-center gap-2">
+                            <span className="text-xs text-slate-500 dark:text-slate-400">בחר שנה:</span>
+                            <Select
+                                value={activeYearId ?? undefined}
+                                onValueChange={setActiveYearId}
+                            >
+                                <SelectTrigger className="w-[140px] bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm rounded-xl hover:border-blue-300 hover:shadow-md transition-all duration-200">
+                                    <SelectValue placeholder="בחר שנה" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {years.map(y => (
+                                        <SelectItem key={y.yearId} value={y.yearId}>
+                                            {y.year}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
+                </div>
+            </CardHeader>
+            <CardContent className="p-6">
+                {loading ? (
+                    <div className="flex items-center justify-center py-16">
+                        <div className="text-center space-y-4">
+                            <div className="animate-spin rounded-full h-10 w-10 border-2 border-blue-500 border-t-transparent mx-auto"></div>
+                            <p className="text-base text-slate-500">טוען נתוני קופונים...</p>
+                        </div>
+                    </div>
+                ) : error ? (
+                    <div className="flex flex-col items-center justify-center py-16">
+                        <div className="p-5 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/30 dark:to-cyan-950/30 rounded-2xl mb-5">
+                            <Ticket className="h-12 w-12 text-blue-500" />
+                        </div>
+                        <p className="text-lg font-medium text-slate-600 dark:text-slate-400">
+                            {error}
+                        </p>
+                    </div>
+                ) : coupons ? (
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <p className="text-sm text-slate-600 dark:text-slate-400">
+                                שנה נבחרת:{" "}
+                                <span className="font-semibold text-slate-900 dark:text-white">
+                                    {activeYear?.year}
+                                </span>
+                            </p>
+                        </div>
+                        <CouponsSection coupons={coupons} />
+                    </div>
+                ) : (
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                        אין נתוני קופונים לשנה שנבחרה.
+                    </p>
+                )}
+            </CardContent>
+        </Card>
     );
 }
 
