@@ -342,6 +342,8 @@ export default function OrganizationAnalyticsPage() {
                         <TabsTrigger value="overview" className="rounded-lg px-4 py-2.5 text-slate-600 font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:shadow-blue-500/25 hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200">סקירה כללית</TabsTrigger>
                         <TabsTrigger value="trends" className="rounded-lg px-4 py-2.5 text-slate-600 font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:shadow-blue-500/25 hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200">ניהול קופונים</TabsTrigger>
                         <TabsTrigger value="detailed" className="rounded-lg px-4 py-2.5 text-slate-600 font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:shadow-blue-500/25 hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200">תצוגה מפורטת</TabsTrigger>
+                        <TabsTrigger value="mistakes" className="rounded-lg px-4 py-2.5 text-slate-600 font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:shadow-blue-500/25 hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200">טעויות</TabsTrigger>
+                        <TabsTrigger value="users" className="rounded-lg px-4 py-2.5 text-slate-600 font-medium data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:shadow-blue-500/25 hover:text-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200">משתמשים</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="overview" className="space-y-8">
@@ -1590,6 +1592,402 @@ function CouponsModal({
                     ) : coupons ? (
                         <CouponsSection coupons={coupons} />
                     ) : null}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function MistakesPanel({ organizationId, selectedYearId }: { organizationId: string; selectedYearId: string }) {
+    const [loading, setLoading] = useState(true);
+    const [data, setData] = useState<{ categoryId: string | null; categoryType: string | null; topicType: string; wrongCount: number }[]>([]);
+
+    useEffect(() => {
+        const run = async () => {
+            setLoading(true);
+            try {
+                const params = new URLSearchParams();
+                if (selectedYearId && selectedYearId !== 'all') params.append('organizationYearId', selectedYearId);
+                const res = await fetch(`/api/organization-analytics/${organizationId}/mistakes?${params.toString()}`);
+                if (res.ok) {
+                    const json = await res.json();
+                    setData(json.data || []);
+                } else {
+                    setData([]);
+                }
+            } catch {
+                setData([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+        run();
+    }, [organizationId, selectedYearId]);
+
+    if (loading) return (
+        <Card className="border border-slate-200/80 dark:border-slate-800 shadow-sm rounded-xl bg-white dark:bg-slate-900">
+            <CardContent className="flex items-center justify-center py-16">
+                <div className="text-center space-y-4">
+                    <div className="animate-spin rounded-full h-10 w-10 border-2 border-blue-500 border-t-transparent mx-auto"></div>
+                    <p className="text-base text-slate-500">טוען נתוני טעויות...</p>
+                </div>
+            </CardContent>
+        </Card>
+    );
+
+    if (!data.length) return (
+        <Card className="border border-slate-200/80 dark:border-slate-800 shadow-sm rounded-xl bg-white dark:bg-slate-900">
+            <CardContent className="flex flex-col items-center justify-center py-16">
+                <div className="p-5 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/30 dark:to-cyan-950/30 rounded-2xl mb-5">
+                    <Target className="h-12 w-12 text-blue-500" />
+                </div>
+                <p className="text-lg font-medium text-slate-600 dark:text-slate-400">אין נתוני טעויות</p>
+            </CardContent>
+        </Card>
+    );
+
+    // Group by categoryId then topicType
+    const byCategory = data.reduce((acc: Record<string, { topicType: string; wrongCount: number }[]>, row) => {
+        const key = row.categoryId ?? 'uncategorized';
+        if (!acc[key]) acc[key] = [];
+        acc[key].push({ topicType: row.topicType, wrongCount: row.wrongCount });
+        return acc;
+    }, {});
+
+    return (
+        <div className="space-y-5">
+            {Object.entries(byCategory).map(([categoryId, items]) => {
+                const title = (
+                    data.find(d => (d.categoryId ?? 'uncategorized') === categoryId)?.categoryType
+                ) || (categoryId === 'uncategorized' ? 'ללא קטגוריה' : categoryId);
+                const topItems = [...items].sort((a, b) => b.wrongCount - a.wrongCount).slice(0, 12);
+                const labels: string[] = Array.from(topItems.map(i => i.topicType));
+                const values: number[] = Array.from(topItems.map(i => i.wrongCount));
+                // Blue/Cyan gradient palette
+                const backgroundPalette = [
+                    'rgba(59, 130, 246, 0.7)',   // blue-500
+                    'rgba(6, 182, 212, 0.7)',    // cyan-500
+                    'rgba(99, 102, 241, 0.7)',   // indigo-500
+                    'rgba(14, 165, 233, 0.7)',   // sky-500
+                    'rgba(37, 99, 235, 0.7)',    // blue-600
+                    'rgba(8, 145, 178, 0.7)',    // cyan-600
+                    'rgba(79, 70, 229, 0.7)',    // indigo-600
+                    'rgba(2, 132, 199, 0.7)',    // sky-600
+                    'rgba(96, 165, 250, 0.7)',   // blue-400
+                    'rgba(34, 211, 238, 0.7)',   // cyan-400
+                    'rgba(129, 140, 248, 0.7)', // indigo-400
+                    'rgba(56, 189, 248, 0.7)',   // sky-400
+                ];
+                const borderPalette = [
+                    'rgb(59, 130, 246)',
+                    'rgb(6, 182, 212)',
+                    'rgb(99, 102, 241)',
+                    'rgb(14, 165, 233)',
+                    'rgb(37, 99, 235)',
+                    'rgb(8, 145, 178)',
+                    'rgb(79, 70, 229)',
+                    'rgb(2, 132, 199)',
+                    'rgb(96, 165, 250)',
+                    'rgb(34, 211, 238)',
+                    'rgb(129, 140, 248)',
+                    'rgb(56, 189, 248)',
+                ];
+                const backgroundColor = values.map((_, i) => backgroundPalette[i % backgroundPalette.length]);
+                const borderColor = values.map((_, i) => borderPalette[i % borderPalette.length]);
+                const datasets: ChartDataset<'bar'>[] = [
+                    {
+                        label: 'תשובות שגויות',
+                        data: values,
+                        backgroundColor,
+                        borderColor,
+                        borderWidth: 1,
+                        borderRadius: 6,
+                    },
+                ];
+                const chartData: ChartData<'bar'> = { labels, datasets };
+                const chartOptions: ChartOptions<'bar'> = {
+                    indexAxis: 'x',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: false },
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 },
+                            grid: { display: false },
+                        },
+                        y: {
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' },
+                        },
+                    },
+                };
+
+                return (
+                    <Card key={categoryId} className="border border-slate-200/80 dark:border-slate-800 shadow-sm rounded-xl bg-white dark:bg-slate-900 overflow-hidden">
+                        <CardHeader className="bg-gradient-to-r from-blue-50/50 via-white to-cyan-50/50 dark:from-blue-950/20 dark:via-slate-900 dark:to-cyan-950/20 border-b border-slate-100 dark:border-slate-800">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg shadow-sm shadow-blue-500/20">
+                                    <Target className="h-4 w-4 text-white" />
+                                </div>
+                                <div>
+                                    <CardTitle className="text-lg font-bold text-slate-900 dark:text-white">טעויות - {title}</CardTitle>
+                                    <CardDescription className="text-slate-500 text-sm">נושאי טעויות נפוצים בקטגוריה זו</CardDescription>
+                                </div>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="p-5">
+                            <div className="h-56">
+                                <Bar data={chartData} options={chartOptions} />
+                            </div>
+                        </CardContent>
+                    </Card>
+                );
+            })}
+        </div>
+    );
+}
+
+function UserMistakesModal({
+    user,
+    onClose,
+    organizationId,
+    selectedYearId,
+}: {
+    user: { id: string; firstName: string; lastName: string; username: string };
+    onClose: () => void;
+    organizationId: string;
+    selectedYearId: string;
+}) {
+    const [loading, setLoading] = useState(true);
+    const [data, setData] = useState<{ categoryId: string | null; categoryType: string | null; topicType: string; wrongCount: number }[]>([]);
+
+    useEffect(() => {
+        const run = async () => {
+            setLoading(true);
+            try {
+                const params = new URLSearchParams();
+                if (selectedYearId && selectedYearId !== 'all') params.append('organizationYearId', selectedYearId);
+                const res = await fetch(`/api/organization-analytics/${organizationId}/users/${user.id}/mistakes?${params.toString()}`);
+                if (res.ok) {
+                    const json = await res.json();
+                    setData(json.data || []);
+                } else {
+                    setData([]);
+                }
+            } catch {
+                setData([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+        run();
+    }, [organizationId, user.id, selectedYearId]);
+
+    const grouped = data.reduce((acc: Record<string, { topicType: string; wrongCount: number }[]>, row) => {
+        const key = row.categoryId ?? 'uncategorized';
+        if (!acc[key]) acc[key] = [];
+        acc[key].push({ topicType: row.topicType, wrongCount: row.wrongCount });
+        return acc;
+    }, {});
+
+    const entries = Object.entries(grouped);
+
+    // Blue/Cyan palette for charts
+    const backgroundPalette = [
+        'rgba(59, 130, 246, 0.7)',
+        'rgba(6, 182, 212, 0.7)',
+        'rgba(99, 102, 241, 0.7)',
+        'rgba(14, 165, 233, 0.7)',
+        'rgba(37, 99, 235, 0.7)',
+        'rgba(8, 145, 178, 0.7)',
+        'rgba(79, 70, 229, 0.7)',
+    ];
+    const borderPalette = [
+        'rgb(59, 130, 246)',
+        'rgb(6, 182, 212)',
+        'rgb(99, 102, 241)',
+        'rgb(14, 165, 233)',
+        'rgb(37, 99, 235)',
+        'rgb(8, 145, 178)',
+        'rgb(79, 70, 229)',
+    ];
+
+    return (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+            <div className="w-full max-w-4xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-h-[85vh] overflow-y-auto border border-slate-200 dark:border-slate-800" onClick={(e) => e.stopPropagation()}>
+                <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 px-6 py-5 bg-gradient-to-r from-blue-50/50 via-white to-cyan-50/50 dark:from-blue-950/20 dark:via-slate-900 dark:to-cyan-950/20">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/25">
+                            {user.firstName?.[0] || ''}{user.lastName?.[0] || ''}
+                        </div>
+                        <div>
+                            <div className="text-lg font-bold text-slate-900 dark:text-white">{user.firstName} {user.lastName}</div>
+                            <div className="text-sm text-slate-500">@{user.username}</div>
+                        </div>
+                    </div>
+                    <button
+                        className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                        onClick={onClose}
+                    >
+                        סגור
+                    </button>
+                </div>
+                <div className="px-6 py-5">
+                    <Tabs defaultValue="overview" key={user.id} dir="rtl">
+                        <TabsList className="mb-5 bg-slate-100/80 dark:bg-slate-800/50 p-1 rounded-lg border border-slate-200/50 dark:border-slate-700 flex-row justify-end">
+                            <TabsTrigger value="overview" className="rounded-md data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-sm data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400">סקירה כללית</TabsTrigger>
+                            <TabsTrigger value="details" className="rounded-md data-[state=active]:bg-white dark:data-[state=active]:bg-slate-700 data-[state=active]:shadow-sm data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400">פרטים</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="overview">
+                            {loading ? (
+                                <div className="flex items-center justify-center py-16">
+                                    <div className="text-center space-y-4">
+                                        <div className="animate-spin rounded-full h-10 w-10 border-2 border-blue-500 border-t-transparent mx-auto"></div>
+                                        <p className="text-base text-slate-500">טוען...</p>
+                                    </div>
+                                </div>
+                            ) : entries.length === 0 ? (
+                                <div className="flex flex-col items-center justify-center py-16">
+                                    <div className="p-5 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/30 dark:to-cyan-950/30 rounded-2xl mb-5">
+                                        <Target className="h-12 w-12 text-blue-500" />
+                                    </div>
+                                    <p className="text-lg font-medium text-slate-600 dark:text-slate-400">אין טעויות</p>
+                                </div>
+                            ) : (
+                                <div className="space-y-5">
+                                    {(() => {
+                                        const aggregate = data.reduce((acc: Record<string, number>, row) => {
+                                            acc[row.topicType] = (acc[row.topicType] || 0) + row.wrongCount;
+                                            return acc;
+                                        }, {});
+                                        const combined = Object.entries(aggregate)
+                                            .sort((a, b) => b[1] - a[1])
+                                            .slice(0, 12);
+                                        const labels: string[] = combined.map(([topic]) => topic);
+                                        const values: number[] = combined.map(([, count]) => count);
+                                        const backgroundColor = values.map((_, i) => backgroundPalette[i % backgroundPalette.length]);
+                                        const borderColor = values.map((_, i) => borderPalette[i % borderPalette.length]);
+                                        const datasets: ChartDataset<'bar'>[] = [{
+                                            label: 'תשובות שגויות',
+                                            data: values,
+                                            backgroundColor,
+                                            borderColor,
+                                            borderWidth: 1,
+                                            borderRadius: 6,
+                                        }];
+                                        const chartData: ChartData<'bar'> = { labels, datasets };
+                                        const chartOptions: ChartOptions<'bar'> = {
+                                            indexAxis: 'x',
+                                            responsive: true,
+                                            maintainAspectRatio: false,
+                                            plugins: { legend: { display: false }, title: { display: false } },
+                                            scales: { x: { beginAtZero: true, ticks: { precision: 0 }, grid: { display: false } }, y: { grid: { color: 'rgba(148, 163, 184, 0.1)' } } },
+                                        };
+                                        return (
+                                            <Card className="border border-slate-200/80 dark:border-slate-800 shadow-sm rounded-xl overflow-hidden">
+                                                <CardHeader className="bg-slate-50/50 dark:bg-slate-800/30 border-b border-slate-100 dark:border-slate-800 py-4">
+                                                    <div className="flex items-center gap-2">
+                                                        <Target className="h-4 w-4 text-blue-500" />
+                                                        <CardTitle className="text-base font-semibold text-slate-800 dark:text-slate-200">נושאי טעויות נפוצים</CardTitle>
+                                                    </div>
+                                                    <CardDescription className="text-slate-500 text-sm">סה״כ תשובות שגויות: {data.reduce((s, r) => s + r.wrongCount, 0)}</CardDescription>
+                                                </CardHeader>
+                                                <CardContent className="p-5">
+                                                    <div className="h-48">
+                                                        <Bar data={chartData} options={chartOptions} />
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        );
+                                    })()}
+                                    {entries.map(([categoryId, items]) => {
+                                        const title = (
+                                            data.find(d => (d.categoryId ?? 'uncategorized') === categoryId)?.categoryType
+                                        ) || (categoryId === 'uncategorized' ? 'ללא קטגוריה' : categoryId);
+                                        const topItems = [...items].sort((a, b) => b.wrongCount - a.wrongCount).slice(0, 10);
+                                        const labels: string[] = Array.from(topItems.map(i => i.topicType));
+                                        const values: number[] = Array.from(topItems.map(i => i.wrongCount));
+                                        const backgroundColor = values.map((_, i) => backgroundPalette[i % backgroundPalette.length]);
+                                        const borderColor = values.map((_, i) => borderPalette[i % borderPalette.length]);
+                                        const datasets: ChartDataset<'bar'>[] = [{
+                                            label: 'תשובות שגויות',
+                                            data: values,
+                                            backgroundColor,
+                                            borderColor,
+                                            borderWidth: 1,
+                                            borderRadius: 6,
+                                        }];
+                                        const chartData: ChartData<'bar'> = { labels, datasets };
+                                        const chartOptions: ChartOptions<'bar'> = {
+                                            indexAxis: 'x',
+                                            responsive: true,
+                                            maintainAspectRatio: false,
+                                            plugins: { legend: { display: false }, title: { display: false } },
+                                            scales: { x: { beginAtZero: true, ticks: { precision: 0 }, grid: { display: false } }, y: { grid: { color: 'rgba(148, 163, 184, 0.1)' } } },
+                                        };
+                                        return (
+                                            <Card key={categoryId} className="border border-slate-200/80 dark:border-slate-800 shadow-sm rounded-xl overflow-hidden">
+                                                <CardHeader className="bg-slate-50/50 dark:bg-slate-800/30 border-b border-slate-100 dark:border-slate-800 py-4">
+                                                    <CardTitle className="text-base font-semibold text-slate-800 dark:text-slate-200">טעויות - {title}</CardTitle>
+                                                    <CardDescription className="text-slate-500 text-sm">נושאים נפוצים בקטגוריה זו</CardDescription>
+                                                </CardHeader>
+                                                <CardContent className="p-5">
+                                                    <div className="h-40">
+                                                        <Bar data={chartData} options={chartOptions} />
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </TabsContent>
+                        <TabsContent value="details">
+                            {loading ? (
+                                <div className="flex items-center justify-center py-16">
+                                    <div className="text-center space-y-4">
+                                        <div className="animate-spin rounded-full h-10 w-10 border-2 border-blue-500 border-t-transparent mx-auto"></div>
+                                        <p className="text-base text-slate-500">טוען...</p>
+                                    </div>
+                                </div>
+                            ) : data.length === 0 ? (
+                                <div className="flex flex-col items-center justify-center py-16">
+                                    <div className="p-5 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/30 dark:to-cyan-950/30 rounded-2xl mb-5">
+                                        <Target className="h-12 w-12 text-blue-500" />
+                                    </div>
+                                    <p className="text-lg font-medium text-slate-600 dark:text-slate-400">אין טעויות</p>
+                                </div>
+                            ) : (
+                                <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
+                                    <table className="w-full text-right" dir="rtl">
+                                        <thead className="bg-slate-50 dark:bg-slate-800/50">
+                                            <tr className="border-b border-slate-200 dark:border-slate-700">
+                                                <th className="text-right p-4 font-semibold text-slate-700 dark:text-slate-300 text-sm">קטגוריה</th>
+                                                <th className="text-right p-4 font-semibold text-slate-700 dark:text-slate-300 text-sm">נושא</th>
+                                                <th className="text-right p-4 font-semibold text-slate-700 dark:text-slate-300 text-sm">שגויות</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {data
+                                                .sort((a, b) => b.wrongCount - a.wrongCount)
+                                                .map((row, idx) => (
+                                                    <tr key={idx} className={`border-b border-slate-100 dark:border-slate-800 ${idx % 2 === 0 ? 'bg-white dark:bg-slate-900' : 'bg-slate-50/30 dark:bg-slate-800/20'}`}>
+                                                        <td className="p-4 text-sm text-slate-600 dark:text-slate-400 text-right">{row.categoryType || row.categoryId || 'ללא קטגוריה'}</td>
+                                                        <td className="p-4 text-sm text-slate-900 dark:text-slate-200 font-medium text-right">{row.topicType}</td>
+                                                        <td className="p-4 text-right">
+                                                            <span className="font-bold text-blue-600 dark:text-blue-400">{row.wrongCount}</span>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+                        </TabsContent>
+                    </Tabs>
                 </div>
             </div>
         </div>
