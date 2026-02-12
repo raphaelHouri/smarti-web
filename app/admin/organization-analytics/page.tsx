@@ -1048,7 +1048,7 @@ function CouponsSection({ coupons }: { coupons: CouponsSummary }) {
                     <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2 uppercase tracking-wide">סטטוס קופונים</p>
                     <p className="text-sm font-bold text-slate-900 dark:text-white mb-3">סך הכל שימושים אפשריים: {coupons.maxCoupons}</p>
                     <div className="flex items-center gap-4">
-                        <div className="flex-1 space-y-2">
+                        <div className="flex-1 sm:flex-0.1 space-y-2">
                             <div className="flex items-center justify-between">
                                 <span className="text-xs text-slate-600 dark:text-slate-400">קופונים שמומשו</span>
                                 <span className="font-bold text-green-600 dark:text-green-400">{coupons.redeemedCoupons}</span>
