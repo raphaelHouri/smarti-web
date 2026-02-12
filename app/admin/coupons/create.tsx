@@ -33,7 +33,11 @@ export const CouponCreate = () => (
             </ReferenceInput>
             <ReferenceInput source="organizationYearId" reference="organizationYears" label="Organization Year" required>
                 <SelectInput
-                    optionText={(record) => record ? `${record.year}` : ''}
+                    optionText={(record) =>
+                        record
+                            ? `${record.year} - ${record.organizationName ?? ''}`
+                            : ''
+                    }
                 />
             </ReferenceInput>
             <NumberInput

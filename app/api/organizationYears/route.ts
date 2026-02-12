@@ -9,8 +9,21 @@ export async function GET() {
     if (!IsAdmin()) {
         return new NextResponse("UnAuthorized", { status: 401 })
     }
-    const data = await db.query.organizationYears.findMany();
-    return NextResponse.json(data);
+    const data = await db.query.organizationYears.findMany({
+        with: {
+            organization: {
+                columns: { name: true },
+            },
+        },
+    });
+    
+    // Add organizationName to each record for easier access in React Admin
+    const dataWithOrgName = data.map(year => ({
+        ...year,
+        organizationName: year.organization?.name ?? null,
+    }));
+    
+    return NextResponse.json(dataWithOrgName);
 }
 
 export async function POST(req: Request) {

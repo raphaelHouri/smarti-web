@@ -42,11 +42,7 @@ export const CouponEdit = () => (
                 <SelectInput
                     optionText={(record) =>
                         record
-                            ? `${record.year} - ${
-                                  (record as any).organization?.name ??
-                                  (record as any).organizationName ??
-                                  ''
-                              }`
+                            ? `${record.year} - ${record.organizationName ?? ''}`
                             : ''
                     }
                 />
