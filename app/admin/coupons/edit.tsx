@@ -30,7 +30,13 @@ export const CouponEdit = () => (
             <NumberInput source="maxUses" />
             <NumberInput source="uses" disabled />
             <ReferenceInput source="planId" reference="plans" label="Plan">
-                <SelectInput optionText="name" />
+                <SelectInput
+                    optionText={(record) =>
+                        record
+                            ? `${record.systemStep ? `שלב ${record.systemStep} - ` : ''}${record.name}`
+                            : ''
+                    }
+                />
             </ReferenceInput>
             <ReferenceInput source="organizationYearId" reference="organizationYears" label="Organization Year">
                 <SelectInput
