@@ -40,7 +40,15 @@ export const CouponEdit = () => (
             </ReferenceInput>
             <ReferenceInput source="organizationYearId" reference="organizationYears" label="Organization Year">
                 <SelectInput
-                    optionText={(record) => record ? `${record.year}` : ''}
+                    optionText={(record) =>
+                        record
+                            ? `${record.year} - ${
+                                  (record as any).organization?.name ??
+                                  (record as any).organizationName ??
+                                  ''
+                              }`
+                            : ''
+                    }
                 />
             </ReferenceInput>
             <NumberInput
