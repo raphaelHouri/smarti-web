@@ -1105,7 +1105,7 @@ function CouponsSection({ coupons }: { coupons: CouponsSummary }) {
                     <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2">הסברים</p>
                     <ul className="space-y-1 text-[10px] text-slate-500 dark:text-slate-400 list-disc list-inside">
                         <li><strong>תוקף הקופון:</strong> התאריך האחרון שבו ניתן להשתמש בקופון</li>
-                        <li><strong>סוג הקופון:</strong> סוג ההנחה שהקופון מספק (חינם או אחוזית או קבועה(פרטים על הערכה))</li>
+                        <li><strong>סוג הקופון:</strong>פרטים על הערכה</li>
                         <li><strong>קופונים מקסימלי:</strong> המספר המקסימלי של קופונים שניתן לחלק</li>
                         <li><strong>קופונים שמומשו:</strong> מספר הקופונים שנוצלו בפועל</li>
                     </ul>
