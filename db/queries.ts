@@ -624,6 +624,7 @@ export interface CouponSummary {
     couponCode: string;
     expiryDate: string;
     couponType: string;
+    planName: string | null;
     maxCoupons: number;
     savedCoupons: number;
     redeemedCoupons: number;
@@ -643,6 +644,13 @@ export const getCouponSummaryByOrganizationYear = async (organizationYearId: str
             eq(coupons.organizationYearId, organizationYearId),
         ),
         orderBy: [desc(coupons.createdAt)],
+        with: {
+            plan: {
+                columns: {
+                    name: true,
+                },
+            },
+        },
     });
 
     if (!coupon) {
@@ -706,6 +714,7 @@ export const getCouponSummaryByOrganizationYear = async (organizationYearId: str
         couponCode: coupon.code,
         expiryDate: coupon.validUntil.toISOString().split('T')[0],
         couponType: couponTypeMap[coupon.type] || coupon.type,
+        planName: coupon.plan?.name || null,
         maxCoupons: coupon.maxUses,
         savedCoupons: couponUsers.length, // Total users who have this coupon
         redeemedCoupons: coupon.uses,

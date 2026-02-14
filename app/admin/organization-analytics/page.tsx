@@ -85,6 +85,7 @@ interface CouponsSummary {
     couponCode: string;
     expiryDate: string;
     couponType: string;
+    planName: string | null;
     maxCoupons: number;
     savedCoupons: number;
     redeemedCoupons: number;
@@ -1038,7 +1039,11 @@ function CouponsSection({ coupons }: { coupons: CouponsSummary }) {
                         </div>
                         <div>
                             <span className="text-slate-500 dark:text-slate-400">סוג הקופון:</span>
-                            <span className="font-semibold text-slate-900 dark:text-white mr-1">{coupons.couponType}</span>
+                            <span className="font-semibold text-slate-900 dark:text-white mr-1">
+                                {coupons.couponType === "חינם" && coupons.planName
+                                    ? coupons.planName
+                                    : coupons.couponType}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -1103,7 +1108,6 @@ function CouponsSection({ coupons }: { coupons: CouponsSummary }) {
                         <li><strong>סוג הקופון:</strong> סוג ההנחה שהקופון מספק (אחוזית או קבועה)</li>
                         <li><strong>קופונים מקסימלי:</strong> המספר המקסימלי של קופונים שניתן לחלק</li>
                         <li><strong>קופונים שמומשו:</strong> מספר הקופונים שנוצלו בפועל</li>
-                        <li><strong>קופונים שלא מומשו:</strong> קופונים שנשמרו אך עדיין לא נוצלו</li>
                     </ul>
                 </div>
             </div>
