@@ -9,6 +9,7 @@ interface UnitProps {
     title: string
     description: string
     isPro?: boolean
+    isRestricted?: boolean
 
     lessons: (typeof lessons.$inferSelect & {
         completed: boolean
@@ -21,6 +22,7 @@ const Unit = ({
     description,
     lessons,
     isPro = false,
+    isRestricted = false,
 }: UnitProps) => {
     return (
         <div>
@@ -43,6 +45,7 @@ const Unit = ({
                             totalQuestions={lesson.totalQuestions}
                             isPremium={(lesson as any).isPremium}
                             isPro={isPro}
+                            isRestricted={isRestricted}
                         />
                     )
                 })}

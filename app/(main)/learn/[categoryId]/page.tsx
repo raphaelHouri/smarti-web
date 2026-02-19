@@ -13,6 +13,7 @@ import { checkIsPro } from "@/lib/server-utils";
 import { auth } from "@clerk/nextjs/server";
 import { LearnPageTracker } from "./_components/LearnPageTracker";
 import { ModeToggle } from "@/components/mode-toggle";
+import { isUserRestricted } from "@/lib/restricted-users";
 
 // כל הטקסטים, פרופס וכו' יתורגמו לעברית
 
@@ -34,6 +35,7 @@ const LearnPage = async ({
     const { userId } = await auth();
     const systemStep = await getUserSystemStep(userId);
     const isPro = await checkIsPro(userSubscription, systemStep);
+    const isRestricted = isUserRestricted(userId);
 
     // יצירת מערך חדש עם שדה 'הושלם'
     const lessonsCategoryWithCompleted = lessonsCategory.map((lessonCategoryItem) => {
@@ -92,6 +94,7 @@ const LearnPage = async ({
                         description={categoryDetails.description || "אין תיאור"}
                         lessons={lessonsCategoryWithCompleted}
                         isPro={isPro}
+                        isRestricted={isRestricted}
                     />
                 </div>
             </FeedWrapper>

@@ -20,6 +20,7 @@ interface LessonButtonProps {
     totalCount: number | null | undefined,
     isPremium: boolean,
     isPro?: boolean,
+    isRestricted?: boolean,
 }
 
 
@@ -33,6 +34,7 @@ const LessonButton = ({
     totalCount,
     isPremium,
     isPro = false,
+    isRestricted = false,
 }: LessonButtonProps) => {
     const { open } = usePremiumModal();
     const [showTooltip, setShowTooltip] = useState(false);
@@ -102,7 +104,7 @@ const LessonButton = ({
                         <Crown className="h-3.5 w-3.5 text-amber-600" />
                     </div>
                 )}
-                {!isPremium && !isPro && (
+                {!isPremium && !isPro && !isRestricted && (
                     <div className={cn("absolute left-1/2 -translate-x-1/2 z-20 flex items-center justify-center rounded-full bg-green-100 border border-green-300 px-2 py-0.5 shadow-md hover:scale-110 transition-transform duration-200", !locked && rightQuestions !== undefined && totalQuestions !== undefined ? "-top-3" : "-bottom-2")}>
                         <span className="text-xs font-bold text-green-700">
                             חינם
