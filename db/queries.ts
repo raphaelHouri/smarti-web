@@ -3,7 +3,7 @@ import { cache } from "react";
 import db from "./drizzle";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { cookies } from "next/headers";
-import { lessonCategory, lessonQuestionGroups, lessons userLessonResults, users, userSettings, userWrongQuestions, onlineLessons, coupons, paymentTransactions, bookPurchases, subscriptions, ProductType, PaymentStatus, userSystemStats, systemConfig, pushNotificationTokens } from './schemaSmarti';
+import { lessonCategory, lessonQuestionGroups, lessons, userLessonResults, users, userSettings, userWrongQuestions, onlineLessons, coupons, paymentTransactions, bookPurchases, subscriptions, ProductType, PaymentStatus, userSystemStats, systemConfig, pushNotificationTokens } from './schemaSmarti';
 import { and, asc, desc, eq, gt, inArray, isNotNull, lt, or, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { hasFullAccess } from "@/lib/admin";
@@ -1891,7 +1891,7 @@ export const getUserPushNotificationTokens = cache(async (userId: string) => {
  */
 export const getUsersPushNotificationTokens = cache(async (userIds: string[]) => {
     if (userIds.length === 0) return [];
-    
+
     const tokens = await db.query.pushNotificationTokens.findMany({
         where: and(
             inArray(pushNotificationTokens.userId, userIds),
