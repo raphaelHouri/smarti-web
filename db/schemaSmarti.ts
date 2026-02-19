@@ -321,6 +321,7 @@ export const userRelations = relations(users, ({ one, many }) => ({
     lessonResults: many(userLessonResults),
     wrongQuestions: many(userWrongQuestions),
     systemStats: many(userSystemStats),
+    pushNotificationTokens: many(pushNotificationTokens),
 }));
 
 export const userSettingsRelations = relations(userSettings, ({ one }) => ({
@@ -453,8 +454,36 @@ export const systemConfig = pgTable("system_config", {
     examDate: timestamp("exam_date"),
     examEndDate: timestamp("exam_end_date"),
     numQuestion: integer("num_question").notNull(),
+    iosVersion: integer("ios_version"), // App version for iOS (nullable)
+    androidVersion: integer("android_version"), // App version for Android (nullable)
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
 });
+
+export const pushNotificationTokens = pgTable("push_notification_tokens", {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: text("user_id").references(() => users.id, { onDelete: "cascade" }), // Allow null userId
+    token: text("token").notNull(),
+    deviceId: text("device_id").notNull(),
+    deviceType: text("device_type").notNull(), // "ios", "android", "web"
+    deviceName: text("device_name"), // Optional device name
+    deviceModel: text("device_model"), // Optional device model
+    isActive: boolean("is_active").default(true).notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => ({
+    // Ensure one token per device (regardless of userId)
+    deviceUnique: {
+        columns: [table.deviceId],
+        unique: true,
+    },
+}));
+
+export const pushNotificationTokensRelations = relations(pushNotificationTokens, ({ one }) => ({
+    user: one(users, {
+        fields: [pushNotificationTokens.userId],
+        references: [users.id],
+    }),
+}));
 
 

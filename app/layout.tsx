@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { ClerkProvider } from '@clerk/nextjs'
 // import {neobrutalism} from '@clerk/themes';
@@ -15,6 +15,7 @@ import { customHeIL } from '@/lib/clerk-localization'
 import FeedbackModal from "@/components/modals/useFeedbacksModal";
 import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 import { PostHogProvider } from "@/components/posthog-provider";
+import { WebViewUserIdHandler } from "@/components/webview-userid-handler";
 
 const font = Poppins({ subsets: ["latin"], weight: ["500"] })
 
@@ -23,7 +24,6 @@ export const metadata: Metadata = {
   description:
     "סמארטי - פלטפורמה להכנה למבחני מחוננים בעיקר לכיתות ב–ג: תרגולים אונליין, חוברות וסימולציות מודפסות, פעילויות פרונטליות והדרכת הורים מותאמת בכל הארץ.",
   manifest: "/manifest.json",
-  themeColor: "#22c55e",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -60,6 +60,10 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  themeColor: "#22c55e",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -90,6 +94,7 @@ export default function RootLayout({
           >
             <PostHogProvider>
               <Toaster richColors position="bottom-right" />
+              <WebViewUserIdHandler />
               <ExitModal />
               <CoinsModal />
               <PracticeModal />

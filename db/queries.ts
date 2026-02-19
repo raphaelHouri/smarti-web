@@ -3,7 +3,7 @@ import { cache } from "react";
 import db from "./drizzle";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { cookies } from "next/headers";
-import { lessonCategory, lessonQuestionGroups, lessons, questions, userLessonResults, users, userSettings, userWrongQuestions, onlineLessons, coupons, paymentTransactions, bookPurchases, subscriptions, ProductType, PaymentStatus, userSystemStats, systemConfig } from './schemaSmarti';
+import { lessonCategory, lessonQuestionGroups, lessons userLessonResults, users, userSettings, userWrongQuestions, onlineLessons, coupons, paymentTransactions, bookPurchases, subscriptions, ProductType, PaymentStatus, userSystemStats, systemConfig, pushNotificationTokens } from './schemaSmarti';
 import { and, asc, desc, eq, gt, inArray, isNotNull, lt, or, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { hasFullAccess } from "@/lib/admin";
@@ -1866,3 +1866,68 @@ export const getAllWrongQuestionsWithDetails = async () => {
 //     })
 //     return data;
 // })
+
+/**
+ * Get all active push notification tokens for a specific user
+ * @param userId - The user ID to get tokens for
+ * @returns Array of active push notification tokens
+ */
+export const getUserPushNotificationTokens = cache(async (userId: string) => {
+    const tokens = await db.query.pushNotificationTokens.findMany({
+        where: and(
+            eq(pushNotificationTokens.userId, userId),
+            eq(pushNotificationTokens.isActive, true)
+        ),
+        orderBy: (tokens, { desc }) => [desc(tokens.createdAt)],
+    });
+    return tokens;
+});
+
+/**
+ * Get all active push notification tokens for multiple users
+ * Useful for sending notifications to multiple users
+ * @param userIds - Array of user IDs to get tokens for
+ * @returns Array of active push notification tokens
+ */
+export const getUsersPushNotificationTokens = cache(async (userIds: string[]) => {
+    if (userIds.length === 0) return [];
+    
+    const tokens = await db.query.pushNotificationTokens.findMany({
+        where: and(
+            inArray(pushNotificationTokens.userId, userIds),
+            eq(pushNotificationTokens.isActive, true)
+        ),
+        orderBy: (tokens, { desc }) => [desc(tokens.createdAt)],
+    });
+    return tokens;
+});
+
+/**
+ * Get all active push notification tokens for a specific device type
+ * Useful for sending platform-specific notifications
+ * @param deviceType - Device type: "ios", "android", or "web"
+ * @returns Array of active push notification tokens for the device type
+ */
+export const getPushNotificationTokensByDeviceType = cache(async (deviceType: "ios" | "android" | "web") => {
+    const tokens = await db.query.pushNotificationTokens.findMany({
+        where: and(
+            eq(pushNotificationTokens.deviceType, deviceType),
+            eq(pushNotificationTokens.isActive, true)
+        ),
+        orderBy: (tokens, { desc }) => [desc(tokens.createdAt)],
+    });
+    return tokens;
+});
+
+/**
+ * Get all active push notification tokens
+ * Use with caution - this can return a large dataset
+ * @returns Array of all active push notification tokens
+ */
+export const getAllActivePushNotificationTokens = cache(async () => {
+    const tokens = await db.query.pushNotificationTokens.findMany({
+        where: eq(pushNotificationTokens.isActive, true),
+        orderBy: (tokens, { desc }) => [desc(tokens.createdAt)],
+    });
+    return tokens;
+});

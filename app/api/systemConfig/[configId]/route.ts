@@ -49,6 +49,8 @@ export const PUT = async (
         if (sanitized.linkWhatsappGroup !== undefined) updateData.linkWhatsappGroup = sanitized.linkWhatsappGroup;
         if (sanitized.examDate !== undefined) updateData.examDate = sanitized.examDate;
         if (sanitized.numQuestion !== undefined) updateData.numQuestion = sanitized.numQuestion;
+        if (sanitized.iosVersion !== undefined) updateData.iosVersion = sanitized.iosVersion;
+        if (sanitized.androidVersion !== undefined) updateData.androidVersion = sanitized.androidVersion;
         updateData.updatedAt = new Date();
 
         const data = await db.update(systemConfig)

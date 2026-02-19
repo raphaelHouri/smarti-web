@@ -35,6 +35,8 @@ export async function POST(req: Request) {
             linkWhatsappGroup: sanitized.linkWhatsappGroup || null,
             examDate: sanitized.examDate || null,
             numQuestion: sanitized.numQuestion || null,
+            iosVersion: sanitized.iosVersion ?? null,
+            androidVersion: sanitized.androidVersion ?? null,
         };
 
         const data = await db.insert(systemConfig).values(values).returning();
