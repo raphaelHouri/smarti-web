@@ -383,7 +383,7 @@ async function createBookPurchaseAndGetDownloadUrl(productBook: typeof ProductsT
     throw new Error("Server misconfigured");
   }
   const filename = `${getFileName(userId, productBook.productType)}.pdf`;
-  const downloadLink = `https://storage.cloud.google.com/${gcsBucket}/${filename}?authuser=3`;
+  const downloadLink = `https://storage.googleapis.com/${gcsBucket}/${filename}?authuser=3`;
   if (status === "fulfilled" || status === "icount" || status === "bookCreated") {
     return { downloadLink, filename };
   }

@@ -27,7 +27,7 @@ function bookPurchaseAlreadyHtmlResponse(hasBookPurchase: typeof bookPurchases.$
     ? new Date(hasBookPurchase.validUntil).toLocaleDateString("he-IL", { year: "numeric", month: "long", day: "numeric" })
     : null;
   const storedLink = hasBookPurchase.filename
-    ? `https://storage.cloud.google.com/${hasBookPurchase.gcsBucket}/${hasBookPurchase.filename}?authuser=3`
+    ? `https://storage.googleapis.com/${hasBookPurchase.gcsBucket}/${hasBookPurchase.filename}?authuser=3`
     : null;
   const vat_id = hasBookPurchase.vatId;
 

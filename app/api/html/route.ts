@@ -25,7 +25,7 @@ export async function GET() {
                     בעוד מספר דקות תקבלו מייל עם לינק להורדת החוברת.
                 </p>
                 
-                <a href="https://storage.cloud.google.com/?authuser=3" 
+                <a href="https://storage.googleapis.com/?authuser=3" 
                    class="block text-center py-3 px-6 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200 mx-auto max-w-md">
                     לצפייה בחוברת
                 </a>

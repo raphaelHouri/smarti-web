@@ -183,7 +183,7 @@ async function handleLegacySuccess(req: NextRequest) {
       <div id="buttonWrapper" class="hidden my-4">
         <div class="flex justify-center">
           <a id="viewButton"
-             href="https://storage.cloud.google.com/${gcsBucket}/${filename}?authuser=3"
+             href="https://storage.googleapis.com/${gcsBucket}/${filename}?authuser=3"
              class="inline-flex items-center justify-center py-3 px-6 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200 min-w-[220px] text-center"
              rel="noopener noreferrer">
             לצפייה בחוברת
@@ -271,7 +271,7 @@ async function handleLegacySuccess(req: NextRequest) {
         email,
         downloadReadyHtml({
           recipient: StudentName,
-          downloadLink: `https://storage.cloud.google.com/${process.env.GCS_BUCKET_NAME}/${filename}?authuser=3`,
+          downloadLink: `https://storage.googleapis.com/${process.env.GCS_BUCKET_NAME}/${filename}?authuser=3`,
           filename,
           password: vat_id,
           expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
