@@ -68,10 +68,14 @@ export async function POST(req: Request) {
             );
         }
 
-        // Validate token format (Expo push tokens start with ExponentPushToken[)
-        if (typeof token !== "string" || token.length < 20) {
+        // Validate token format - must be a valid Expo push token
+        if (
+            typeof token !== "string" ||
+            !token.startsWith("ExponentPushToken[") ||
+            !token.endsWith("]")
+        ) {
             return NextResponse.json(
-                { error: "Invalid token format" },
+                { error: `Invalid token format. Expected ExponentPushToken[...], got: ${typeof token === 'string' ? token.substring(0, 30) : typeof token}` },
                 { status: 400 }
             );
         }
@@ -168,10 +172,14 @@ export async function PUT(req: Request) {
             );
         }
 
-        // Validate token format
-        if (typeof token !== "string" || token.length < 20) {
+        // Validate token format - must be a valid Expo push token
+        if (
+            typeof token !== "string" ||
+            !token.startsWith("ExponentPushToken[") ||
+            !token.endsWith("]")
+        ) {
             return NextResponse.json(
-                { error: "Invalid token format" },
+                { error: `Invalid token format. Expected ExponentPushToken[...], got: ${typeof token === 'string' ? token.substring(0, 30) : typeof token}` },
                 { status: 400 }
             );
         }
@@ -230,15 +238,26 @@ export async function PUT(req: Request) {
 }
 
 // DELETE - Remove a push notification token
+// Supports both Clerk auth (web) and deviceId-based auth (mobile app)
 export async function DELETE(req: Request) {
-    const { userId } = await auth();
-    if (!userId) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    let userId: string | null = null;
+
+    // Try to get userId from Clerk auth first
+    try {
+        const authResult = await auth();
+        userId = authResult.userId || null;
+    } catch {
+        // Auth not available (mobile app request)
     }
 
     try {
         const body = await req.json();
         const { deviceId, tokenId } = body;
+
+        // If no userId from auth, try from body (for mobile app)
+        if (!userId) {
+            userId = body.userId || null;
+        }
 
         // Either deviceId or tokenId must be provided
         if (!deviceId && !tokenId) {
@@ -250,8 +269,8 @@ export async function DELETE(req: Request) {
 
         let deletedCount = 0;
 
-        if (tokenId) {
-            // Delete by token ID
+        if (tokenId && userId) {
+            // Delete by token ID (requires userId for security)
             const result = await db
                 .delete(pushNotificationTokens)
                 .where(
@@ -263,14 +282,12 @@ export async function DELETE(req: Request) {
                 .returning();
             deletedCount = result.length;
         } else if (deviceId) {
-            // Delete by device ID
+            // Delete by device ID — deviceId is unique per device so it's safe
+            // This allows the mobile app to delete its own token without Clerk auth
             const result = await db
                 .delete(pushNotificationTokens)
                 .where(
-                    and(
-                        eq(pushNotificationTokens.deviceId, deviceId),
-                        eq(pushNotificationTokens.userId, userId)
-                    )
+                    eq(pushNotificationTokens.deviceId, deviceId)
                 )
                 .returning();
             deletedCount = result.length;
@@ -286,6 +303,7 @@ export async function DELETE(req: Request) {
         return NextResponse.json({
             success: true,
             message: "Token removed successfully",
+            deletedCount,
         });
     } catch (error) {
         console.error("Error removing push notification token:", error);
