@@ -80,15 +80,39 @@ export async function POST(req: Request) {
             );
         }
 
-        // Check if token exists for this device (with or without userId)
-        const existingToken = await db.query.pushNotificationTokens.findFirst({
+        // 1. Look for existing record by deviceId
+        let existingToken = await db.query.pushNotificationTokens.findFirst({
             where: eq(pushNotificationTokens.deviceId, deviceId),
         });
 
+        // 2. If not found by deviceId, check by token value (Expo tokens are unique per device)
+        if (!existingToken) {
+            existingToken = await db.query.pushNotificationTokens.findFirst({
+                where: eq(pushNotificationTokens.token, token),
+            });
+        }
+
         if (existingToken) {
-            // Update existing token
+            // Check if anything actually changed — if not, don't touch the record
+            const isSameToken = existingToken.token === token;
+            const isSameUserId = existingToken.userId === (userId || null);
+            const isSameDeviceId = existingToken.deviceId === deviceId;
+            const isActive = existingToken.isActive === true;
+
+            if (isSameToken && isSameUserId && isSameDeviceId && isActive) {
+                // Nothing changed — return existing record without updating
+                return NextResponse.json({
+                    success: true,
+                    token: existingToken,
+                    message: "Token already exists, no changes needed",
+                    changed: false,
+                });
+            }
+
+            // Something changed — update only what's needed
             const updateData: any = {
                 token,
+                deviceId, // Update deviceId in case we found by token value
                 deviceType,
                 deviceName: deviceName || null,
                 deviceModel: deviceModel || null,
@@ -96,7 +120,7 @@ export async function POST(req: Request) {
                 updatedAt: new Date(),
             };
 
-            // Only update userId if provided
+            // Only update userId if provided (don't overwrite existing userId with null)
             if (userId) {
                 updateData.userId = userId;
             }
@@ -110,14 +134,15 @@ export async function POST(req: Request) {
             return NextResponse.json({
                 success: true,
                 token: updated[0],
-                message: userId ? "Token updated successfully" : "Token updated (userId will be added later)",
+                message: "Token updated successfully",
+                changed: true,
             });
         } else {
-            // Create new token (with or without userId)
+            // No existing record — create new
             const newToken = await db
                 .insert(pushNotificationTokens)
                 .values({
-                    userId: userId || null, // Allow null userId
+                    userId: userId || null,
                     token,
                     deviceId,
                     deviceType,
@@ -130,7 +155,8 @@ export async function POST(req: Request) {
             return NextResponse.json({
                 success: true,
                 token: newToken[0],
-                message: userId ? "Token registered successfully" : "Token registered (userId will be added later)",
+                message: "Token registered successfully",
+                changed: true,
             });
         }
     } catch (error) {
@@ -184,18 +210,39 @@ export async function PUT(req: Request) {
             );
         }
 
-        // Find token by deviceId (might not have userId yet)
-        const existingToken = await db.query.pushNotificationTokens.findFirst({
+        // Find token by deviceId first, then by token value
+        let existingToken = await db.query.pushNotificationTokens.findFirst({
             where: eq(pushNotificationTokens.deviceId, deviceId),
         });
 
+        if (!existingToken) {
+            existingToken = await db.query.pushNotificationTokens.findFirst({
+                where: eq(pushNotificationTokens.token, token),
+            });
+        }
+
         if (existingToken) {
-            // Update existing token with userId
+            // Check if anything actually changed
+            const isSameToken = existingToken.token === token;
+            const isSameUserId = existingToken.userId === userId;
+            const isActive = existingToken.isActive === true;
+
+            if (isSameToken && isSameUserId && isActive) {
+                return NextResponse.json({
+                    success: true,
+                    token: existingToken,
+                    message: "Token already exists, no changes needed",
+                    changed: false,
+                });
+            }
+
+            // Update only what changed
             const updated = await db
                 .update(pushNotificationTokens)
                 .set({
                     userId,
-                    token, // Update token in case it changed
+                    token,
+                    deviceId,
                     isActive: true,
                     updatedAt: new Date(),
                 })
@@ -206,6 +253,7 @@ export async function PUT(req: Request) {
                 success: true,
                 token: updated[0],
                 message: "Token updated with userId successfully",
+                changed: true,
             });
         } else {
             // Token doesn't exist, create new one with userId
@@ -225,7 +273,8 @@ export async function PUT(req: Request) {
             return NextResponse.json({
                 success: true,
                 token: newToken[0],
-                message: "Token created successfully",
+                message: "Token registered successfully",
+                changed: true,
             });
         }
     } catch (error) {
