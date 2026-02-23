@@ -138,8 +138,10 @@ export async function POST(req: Request) {
                 changed: true,
             });
         } else {
-            // No existing record — create new
-            const newToken = await db
+            // No existing record — upsert to handle race conditions safely
+            // If a concurrent request inserts first, the unique constraint on
+            // deviceId will trigger the onConflict update instead of failing.
+            const upserted = await db
                 .insert(pushNotificationTokens)
                 .values({
                     userId: userId || null,
@@ -150,11 +152,23 @@ export async function POST(req: Request) {
                     deviceModel: deviceModel || null,
                     isActive: true,
                 })
+                .onConflictDoUpdate({
+                    target: pushNotificationTokens.deviceId,
+                    set: {
+                        token,
+                        deviceType,
+                        deviceName: deviceName || null,
+                        deviceModel: deviceModel || null,
+                        isActive: true,
+                        updatedAt: new Date(),
+                        ...(userId ? { userId } : {}),
+                    },
+                })
                 .returning();
 
             return NextResponse.json({
                 success: true,
-                token: newToken[0],
+                token: upserted[0],
                 message: "Token registered successfully",
                 changed: true,
             });
@@ -256,8 +270,8 @@ export async function PUT(req: Request) {
                 changed: true,
             });
         } else {
-            // Token doesn't exist, create new one with userId
-            const newToken = await db
+            // Token doesn't exist — upsert to handle race conditions safely
+            const upserted = await db
                 .insert(pushNotificationTokens)
                 .values({
                     userId,
@@ -268,11 +282,20 @@ export async function PUT(req: Request) {
                     deviceModel: body.deviceModel || null,
                     isActive: true,
                 })
+                .onConflictDoUpdate({
+                    target: pushNotificationTokens.deviceId,
+                    set: {
+                        userId,
+                        token,
+                        isActive: true,
+                        updatedAt: new Date(),
+                    },
+                })
                 .returning();
 
             return NextResponse.json({
                 success: true,
-                token: newToken[0],
+                token: upserted[0],
                 message: "Token registered successfully",
                 changed: true,
             });

@@ -463,21 +463,15 @@ export const systemConfig = pgTable("system_config", {
 export const pushNotificationTokens = pgTable("push_notification_tokens", {
     id: uuid("id").defaultRandom().primaryKey(),
     userId: text("user_id").references(() => users.id, { onDelete: "cascade" }), // Allow null userId
-    token: text("token").notNull(),
-    deviceId: text("device_id").notNull(),
+    token: text("token").notNull().unique(), // Expo push token — globally unique
+    deviceId: text("device_id").notNull(), // One row per physical device
     deviceType: text("device_type").notNull(), // "ios", "android", "web"
     deviceName: text("device_name"), // Optional device name
     deviceModel: text("device_model"), // Optional device model
     isActive: boolean("is_active").default(true).notNull(),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
-}, (table) => ({
-    // Ensure one token per device (regardless of userId)
-    deviceUnique: {
-        columns: [table.deviceId],
-        unique: true,
-    },
-}));
+});
 
 export const pushNotificationTokensRelations = relations(pushNotificationTokens, ({ one }) => ({
     user: one(users, {
