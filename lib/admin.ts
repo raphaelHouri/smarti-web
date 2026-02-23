@@ -13,7 +13,10 @@ const fullAccessUserIds = [
     "user_351nKgCGf2EByDpF9SLvxnRT8kY",
     "user_35kTiNLGDNW4htHyQlpdu0WLfir",
     "user_34jysbbECoozWYDtYDATELi0Xwq",
-    "user_35e887Adqg7eDDBfQ8b4bk5BOas"
+    "user_35e887Adqg7eDDBfQ8b4bk5BOas",
+    "user_3856qGVJPcgdZ9fZbFVsPWxaPZ7",
+    "user_38mnNDVt7QVWxrqEvSI0hokpbZL",
+    "user_38mmuRyPuRvxp28mpn2V4SeAawt"
 
 ]
 
