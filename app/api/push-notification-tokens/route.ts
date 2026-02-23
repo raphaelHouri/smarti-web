@@ -140,7 +140,7 @@ export async function POST(req: Request) {
         } else {
             // No existing record — upsert to handle race conditions safely
             // If a concurrent request inserts first, the unique constraint on
-            // deviceId will trigger the onConflict update instead of failing.
+            // token will trigger the onConflict update instead of failing.
             const upserted = await db
                 .insert(pushNotificationTokens)
                 .values({
@@ -153,9 +153,9 @@ export async function POST(req: Request) {
                     isActive: true,
                 })
                 .onConflictDoUpdate({
-                    target: pushNotificationTokens.deviceId,
+                    target: pushNotificationTokens.token,
                     set: {
-                        token,
+                        deviceId,
                         deviceType,
                         deviceName: deviceName || null,
                         deviceModel: deviceModel || null,
@@ -283,10 +283,10 @@ export async function PUT(req: Request) {
                     isActive: true,
                 })
                 .onConflictDoUpdate({
-                    target: pushNotificationTokens.deviceId,
+                    target: pushNotificationTokens.token,
                     set: {
                         userId,
-                        token,
+                        deviceId,
                         isActive: true,
                         updatedAt: new Date(),
                     },
