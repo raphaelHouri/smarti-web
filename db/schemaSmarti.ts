@@ -322,6 +322,7 @@ export const userRelations = relations(users, ({ one, many }) => ({
     wrongQuestions: many(userWrongQuestions),
     systemStats: many(userSystemStats),
     pushNotificationTokens: many(pushNotificationTokens),
+    appRatingLogs: many(appRatingLogs),
 }));
 
 export const userSettingsRelations = relations(userSettings, ({ one }) => ({
@@ -480,4 +481,24 @@ export const pushNotificationTokensRelations = relations(pushNotificationTokens,
     }),
 }));
 
+// App rating logs — stores every rating action from users
+export const appRatingLogs = pgTable("app_rating_logs", {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: text("user_id").references(() => users.id, { onDelete: "set null" }), // Nullable — might not have userId yet
+    rating: integer("rating").notNull(), // 1-5 stars
+    feedback: text("feedback"), // Optional feedback text (asked when rating < 3)
+    deviceId: text("device_id"), // Device identifier
+    deviceType: text("device_type"), // "ios", "android"
+    deviceModel: text("device_model"), // Device model name
+    appVersion: text("app_version"), // App version at time of rating
+    action: text("action").notNull(), // "rated", "store_review", "dismissed"
+    createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const appRatingLogsRelations = relations(appRatingLogs, ({ one }) => ({
+    user: one(users, {
+        fields: [appRatingLogs.userId],
+        references: [users.id],
+    }),
+}));
 
