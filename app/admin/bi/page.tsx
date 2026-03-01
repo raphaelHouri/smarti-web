@@ -181,7 +181,7 @@ export default function BiPage() {
                     <>
                         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                             <KpiCard
-                                title="Revenue"
+                                title="Revenue (from transactions)"
                                 value={formatCurrency(data.summary.totalRevenue)}
                                 icon={<DollarSign className="h-4 w-4" />}
                             />
@@ -205,6 +205,9 @@ export default function BiPage() {
                             <Card>
                                 <CardHeader>
                                     <CardTitle>Revenue & count over time</CardTitle>
+                                    <p className="text-sm font-normal text-muted-foreground">
+                                        Revenue = sum of payment transaction amounts (total_price), not plan list price.
+                                    </p>
                                 </CardHeader>
                                 <CardContent>
                                     <Bar
@@ -258,9 +261,44 @@ export default function BiPage() {
                                 </CardContent>
                             </Card>
                         </div>
+                        {data.byPlan.length > 0 && (
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Revenue by plan</CardTitle>
+                                    <p className="text-sm font-normal text-muted-foreground">
+                                        Sum of payment transaction amounts (total_price) per plan. Plan name for reference only.
+                                    </p>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-sm">
+                                            <thead>
+                                                <tr className="border-b text-left">
+                                                    <th className="pb-2 pr-4">Plan</th>
+                                                    <th className="pb-2 pr-4">Transactions</th>
+                                                    <th className="pb-2">Revenue (from transactions)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {data.byPlan.map((p) => (
+                                                    <tr key={p.planId} className="border-b">
+                                                        <td className="py-2 pr-4">{p.planName}</td>
+                                                        <td className="py-2 pr-4">{p.count}</td>
+                                                        <td className="py-2 font-medium">{formatCurrency(p.revenue)}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )}
                         <Card>
                             <CardHeader>
                                 <CardTitle>Recent transactions</CardTitle>
+                                <p className="text-sm font-normal text-muted-foreground">
+                                    Amount = payment transaction total_price (actual paid). Plan is for reference only.
+                                </p>
                             </CardHeader>
                             <CardContent>
                                 <div className="overflow-x-auto">
@@ -270,8 +308,10 @@ export default function BiPage() {
                                                 <th className="pb-2 pr-4">Date</th>
                                                 <th className="pb-2 pr-4">Status</th>
                                                 <th className="pb-2 pr-4">Plan</th>
-                                                <th className="pb-2 pr-4">Amount</th>
-                                                <th className="pb-2">Email</th>
+                                                <th className="pb-2 pr-4">Amount paid</th>
+                                                <th className="pb-2 pr-4">Student</th>
+                                                <th className="pb-2 pr-4">Email</th>
+                                                <th className="pb-2">Receipt ID</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -284,10 +324,14 @@ export default function BiPage() {
                                                     </td>
                                                     <td className="py-2 pr-4">{tx.status}</td>
                                                     <td className="py-2 pr-4">{tx.planName}</td>
-                                                    <td className="py-2 pr-4">
+                                                    <td className="py-2 pr-4 font-medium">
                                                         {formatCurrency(tx.totalPrice)}
                                                     </td>
-                                                    <td className="py-2">{tx.email ?? "—"}</td>
+                                                    <td className="py-2 pr-4">{tx.studentName ?? "—"}</td>
+                                                    <td className="py-2 pr-4">{tx.email ?? "—"}</td>
+                                                    <td className="py-2 font-mono text-muted-foreground">
+                                                        {tx.receiptId ?? "—"}
+                                                    </td>
                                                 </tr>
                                             ))}
                                         </tbody>

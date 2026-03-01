@@ -40,9 +40,12 @@ export type BiRecentTransaction = {
     id: string;
     createdAt: Date | null;
     status: string;
+    /** Amount actually paid — from payment_transactions.total_price (not plan price). */
     totalPrice: number;
     planName: string;
     email: string | null;
+    studentName: string | null;
+    receiptId: string | null;
 };
 
 export type BiInsightsData = {
@@ -108,6 +111,7 @@ export async function getBiInsights(
         totalCount: rows.length,
     };
 
+    // All revenue/amounts below are from payment_transactions.total_price (actual paid amount), not from plans.price.
     const byPlanMap = new Map<string, { planName: string; count: number; revenue: number }>();
     const byStatusMap = new Map<string, number>();
     const timeSeriesMap = new Map<string, { count: number; revenue: number }>();
@@ -177,6 +181,8 @@ export async function getBiInsights(
         totalPrice: row.totalPrice,
         planName: row.plan?.name ?? "Unknown",
         email: row.email ?? null,
+        studentName: row.studentName ?? null,
+        receiptId: row.receiptId ?? null,
     }));
 
     return {
