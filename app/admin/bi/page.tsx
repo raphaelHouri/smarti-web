@@ -32,13 +32,14 @@ ChartJS.register(
     ChartLegend
 );
 
-function formatCurrency(cents: number): string {
+/** Format amount in ILS — payment_transactions.total_price is stored in full shekels (same as plans.price). */
+function formatCurrency(shekels: number): string {
     return new Intl.NumberFormat("he-IL", {
         style: "currency",
         currency: "ILS",
         minimumFractionDigits: 0,
         maximumFractionDigits: 0,
-    }).format(cents / 100);
+    }).format(shekels);
 }
 
 function defaultDateRange(): { from: string; to: string } {
@@ -216,7 +217,7 @@ export default function BiPage() {
                                             datasets: [
                                                 {
                                                     label: "Revenue (₪)",
-                                                    data: data.timeSeries.map((p) => p.revenue / 100),
+                                                    data: data.timeSeries.map((p) => p.revenue),
                                                     backgroundColor: "rgba(56, 189, 248, 0.5)",
                                                 },
                                                 {
