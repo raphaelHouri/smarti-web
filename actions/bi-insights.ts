@@ -60,6 +60,9 @@ export type GetBiInsightsResult =
     | { ok: true; data: BiInsightsData }
     | { ok: false; needsAuth: true };
 
+/** Filter which transactions to include: fulfilled (paid/bookCreated/icount/fulfilled), created only, or both. */
+export type BiStatusFilter = "fulfilled" | "created" | "both";
+
 function startOfDay(d: Date): Date {
     const out = new Date(d);
     out.setUTCHours(0, 0, 0, 0);
@@ -78,7 +81,8 @@ function toDateKey(d: Date): string {
 
 export async function getBiInsights(
     from: string,
-    to: string
+    to: string,
+    statusFilter: BiStatusFilter = "fulfilled"
 ): Promise<GetBiInsightsResult> {
     const cookieStore = await cookies();
     const cookie = cookieStore.get(COOKIE_NAME)?.value;
@@ -92,7 +96,7 @@ export async function getBiInsights(
         return { ok: false, needsAuth: true };
     }
 
-    const rows = await db.query.paymentTransactions.findMany({
+    const allRows = await db.query.paymentTransactions.findMany({
         where: and(
             gte(paymentTransactions.createdAt, fromDate),
             lte(paymentTransactions.createdAt, toDate)
@@ -100,6 +104,13 @@ export async function getBiInsights(
         with: { plan: true },
         orderBy: [desc(paymentTransactions.createdAt)],
     });
+
+    const rows =
+        statusFilter === "fulfilled"
+            ? allRows.filter((r) => SUCCESS_STATUSES.includes(r.status as (typeof SUCCESS_STATUSES)[number]))
+            : statusFilter === "created"
+              ? allRows.filter((r) => r.status === "created")
+              : allRows;
 
     const summary: BiSummary = {
         totalRevenue: 0,

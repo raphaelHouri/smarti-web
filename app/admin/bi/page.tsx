@@ -19,8 +19,16 @@ import { authenticateBi } from "@/actions/bi-auth";
 import {
     getBiInsights,
     type GetBiInsightsResult,
+    type BiStatusFilter,
 } from "@/actions/bi-insights";
 import { DollarSign, ShoppingCart, XCircle, Clock, Loader2 } from "lucide-react";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 
 ChartJS.register(
     CategoryScale,
@@ -57,13 +65,14 @@ export default function BiPage() {
     const [loading, setLoading] = useState(true);
     const [from, setFrom] = useState("");
     const [to, setTo] = useState("");
+    const [statusFilter, setStatusFilter] = useState<BiStatusFilter>("fulfilled");
     const [password, setPassword] = useState("");
     const [authError, setAuthError] = useState<string | null>(null);
     const [authLoading, setAuthLoading] = useState(false);
 
-    const fetchInsights = useCallback(async (fromDate: string, toDate: string) => {
+    const fetchInsights = useCallback(async (fromDate: string, toDate: string, filter: BiStatusFilter) => {
         setLoading(true);
-        const res = await getBiInsights(fromDate, toDate);
+        const res = await getBiInsights(fromDate, toDate, filter);
         setResult(res);
         setLoading(false);
     }, []);
@@ -72,12 +81,12 @@ export default function BiPage() {
         const { from: f, to: t } = defaultDateRange();
         setFrom(f);
         setTo(t);
-        fetchInsights(f, t);
+        fetchInsights(f, t, "fulfilled");
     }, [fetchInsights]);
 
     const handleDateSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (from && to) fetchInsights(from, to);
+        if (from && to) fetchInsights(from, to, statusFilter);
     };
 
     const handlePasswordSubmit = async (e: React.FormEvent) => {
@@ -87,7 +96,7 @@ export default function BiPage() {
         const res = await authenticateBi(password);
         setAuthLoading(false);
         if (res.success) {
-            if (from && to) fetchInsights(from, to);
+            if (from && to) fetchInsights(from, to, statusFilter);
         } else {
             setAuthError(res.error);
         }
@@ -168,6 +177,25 @@ export default function BiPage() {
                             value={to}
                             onChange={(e) => setTo(e.target.value)}
                         />
+                    </div>
+                    <div className="space-y-1">
+                        <label className="text-sm text-muted-foreground">Status</label>
+                        <Select
+                            value={statusFilter}
+                            onValueChange={(v) => {
+                                setStatusFilter(v as BiStatusFilter);
+                                if (from && to) fetchInsights(from, to, v as BiStatusFilter);
+                            }}
+                        >
+                            <SelectTrigger className="w-[140px]">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="fulfilled">Fulfilled</SelectItem>
+                                <SelectItem value="created">Created</SelectItem>
+                                <SelectItem value="both">Both</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
                     <Button type="submit" disabled={loading}>
                         {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Apply"}
