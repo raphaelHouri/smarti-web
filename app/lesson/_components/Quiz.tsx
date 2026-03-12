@@ -113,18 +113,12 @@ const Quiz = ({
     const searchParams = useSearchParams();
     const lessonQueryParam = searchParams?.get('lesson');
 
-    if (!questionsMap || questionsMap.length === 0) {
-        return <p>אין תרגילים להצגה</p>;
-    }
-
     // ---- CURRENT QUESTION ----
     const total = questionsMap.length;
-    const currentQuestion = questionsMap[activeIndex];
-    const question = questionsDict[currentQuestion.questionId];
-    if (!question) return <p>השאלה לא נמצאה</p>;
-
-    const options = optionsSchema.parse(question.options);
-    if (!options) return <p>אפשרויות התשובה אינן קיימות</p>
+    const currentQuestion = activeIndex < total ? questionsMap[activeIndex] : null;
+    const question = currentQuestion ? questionsDict[currentQuestion.questionId] : null;
+    const parseResult = question ? optionsSchema.safeParse(question.options) : null;
+    const options = parseResult?.success ? parseResult.data : null;
 
     const { open: OpenCoinsModal } = useCoinsModal();
     const { open: OpenFinishLessonModal, isApproved: isFinishApproved, clearApprove, approve } = useFinishLessonModal();
@@ -202,7 +196,12 @@ const Quiz = ({
                     console.error("Error fetching previous experience:", error);
                 }
 
-                await addResultsToUser(lessonId, userId, resultList, questionsMap.map(q => q.questionId), startAt);
+                try {
+                    await addResultsToUser(lessonId, userId, resultList, questionsMap.map(q => q.questionId), startAt);
+                } catch (error) {
+                    console.error("Failed to save lesson results:", error);
+                    toast.error("שגיאה בשמירת התוצאות");
+                }
 
                 // Fetch new experience after updating results
                 try {
@@ -807,6 +806,10 @@ const Quiz = ({
             </div>
         )
     }
+
+    if (!questionsMap || questionsMap.length === 0) return <p>אין תרגילים להצגה</p>;
+    if (!question) return <p>השאלה לא נמצאה</p>;
+    if (!options) return <p>אפשרויות התשובה אינן קיימות</p>;
 
     const title = question.question ?? ""
 
