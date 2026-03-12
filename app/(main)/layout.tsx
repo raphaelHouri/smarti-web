@@ -4,6 +4,7 @@ import { AnimatedBackground } from "./shop/_components/AnimatedBackground";
 import { getSystemStep } from "@/actions/get-system-step";
 import { SystemStepHandler } from "@/components/system-step-handler";
 import { hasManagedOrganizations } from "@/actions/get-managed-organizations";
+import { Suspense } from "react";
 
 interface Props {
     children: React.ReactNode
@@ -22,7 +23,9 @@ const MainLayout = async ({
             <SideBar className="hidden lg:flex" systemStep={currentStep} hasManaged={hasManaged} />
             <main className="w-full lg:pr-[256px]  h-full pt-[50px] lg:pt-0">
                 <div className="w-full sm:max-w-[1650px] mx-auto p-6   ">
-                    <SystemStepHandler />
+                    <Suspense fallback={null}>
+                        <SystemStepHandler />
+                    </Suspense>
                     {children}
                 </div>
             </main>
