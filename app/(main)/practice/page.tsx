@@ -140,7 +140,7 @@ const PracticePage = async () => {
                             </CardHeader>
                             <CardContent>
                                 <Button asChild className="mt-4 bg-green-600 hover:bg-green-700 text-white">
-                                    <Link href="/learn">התחל ללמוד</Link>
+                                    <Link href="/learn">התחילו ללמוד</Link>
                                 </Button>
                             </CardContent>
                         </Card>

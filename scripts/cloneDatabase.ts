@@ -30,6 +30,7 @@ type DatabaseInstance = typeof sourceDb;
 // Tables with no dependencies come first
 const tableOrder: Array<keyof typeof schema> = [
     "organizationInfo",
+    "systemConfig",
     "products",
     "lessonCategory",
     "organizationYears",
@@ -37,6 +38,9 @@ const tableOrder: Array<keyof typeof schema> = [
     "lessons",
     "questions",
     "users",
+    "userSystemStats",
+    "pushNotificationTokens",
+    "appRatingLogs",
     "coupons",
     "paymentTransactions",
     "subscriptions",
@@ -62,6 +66,7 @@ function getTableName(tableName: keyof typeof schema): string {
     const tableNameMap: Record<string, string> = {
         organizationInfo: "organization_info",
         organizationYears: "organization_years",
+        systemConfig: "system_config",
         products: "products",
         plans: "plans",
         subscriptions: "subscriptions",
@@ -70,6 +75,9 @@ function getTableName(tableName: keyof typeof schema): string {
         lessons: "lessons",
         questions: "questions",
         users: "users",
+        userSystemStats: "user_system_stats",
+        pushNotificationTokens: "push_notification_tokens",
+        appRatingLogs: "app_rating_logs",
         bookPurchases: "book_purchases",
         paymentTransactions: "payment_transactions",
         userSettings: "user_settings",
@@ -131,8 +139,8 @@ async function cloneDatabase(dryRun: boolean = false): Promise<CloneStats[]> {
     const stats: CloneStats[] = [];
 
     console.log("🚀 Starting database clone operation");
-    console.log(`📊 Source: ${sourceDatabaseUrl!.substring(0, 30)}...`);
-    console.log(`📊 Target: ${targetDatabaseUrl!.substring(0, 30)}...`);
+    console.log(`📊 Source: ${sourceDatabaseUrl!.substring(0, 40)}...`);
+    console.log(`📊 Target: ${targetDatabaseUrl!.substring(0, 40)}...`);
     console.log(`🔍 Mode: ${dryRun ? "DRY RUN (no changes will be made)" : "LIVE"}\n`);
 
     if (dryRun) {
