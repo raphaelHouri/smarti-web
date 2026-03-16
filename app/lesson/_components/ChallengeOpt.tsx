@@ -83,9 +83,19 @@ const Challenge = ({
                                 <path d="M12 8h.01" />
                             </svg>
                         </div>
-                        <p className="text-emerald-900 dark:text-emerald-100 text-base leading-relaxed">
-                            {format === "MATH" ? renderTextWithLTRFormulas(questionDetails.explanation || "") : questionDetails.explanation || ""}
-                        </p>
+                        {format === "SHAPES" && (questionDetails.explanation || "").includes("https://firebasestorage.googleapis.com") ? (
+                            <div className="relative aspect-square mb-4 max-h-[80px] lg:max-h-[150px] w-full flex items-center justify-center">
+                                <img
+                                    src={questionDetails.explanation || ""}
+                                    alt={questionDetails.explanation || ""}
+                                    className="max-h-full max-w-full object-contain"
+                                />
+                            </div>
+                        ) : (
+                            <p className="text-emerald-900 dark:text-emerald-100 text-base leading-relaxed">
+                                {format === "MATH" ? renderTextWithLTRFormulas(questionDetails.explanation || "") : questionDetails.explanation || ""}
+                            </p>
+                        )}
                     </div>
                 </div>
             )}
