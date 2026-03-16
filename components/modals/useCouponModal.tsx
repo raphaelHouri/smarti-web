@@ -70,13 +70,14 @@ export default function CouponModal() {
     };
 
     const handleValidateCoupon = async () => {
-        if (!couponCode.trim()) return;
+        const normalizedCode = couponCode.trim().toLowerCase();
+        if (!normalizedCode) return;
 
         setIsValidating(true);
         setValidationResult(null);
 
         try {
-            const result = await validateCouponCode(couponCode.trim());
+            const result = await validateCouponCode(normalizedCode);
             setValidationResult(result);
         } catch (error) {
             setValidationResult({
@@ -229,7 +230,7 @@ export default function CouponModal() {
                         <div className="flex gap-2">
                             <input
                                 value={couponCode}
-                                onChange={(e) => setCouponCode(e.target.value)}
+                                onChange={(e) => setCouponCode(e.target.value.toLowerCase())}
                                 onKeyDown={(e) => {
                                     if (e.key === "Enter") {
                                         handleValidateCoupon();
