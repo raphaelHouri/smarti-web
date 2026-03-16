@@ -168,29 +168,34 @@ export function PWAInstallPrompt() {
 
     return (
         <div className="fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-4 md:w-96">
-            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 flex items-center gap-4">
-                <div className="flex-1">
-                    <h3 className="font-semibold text-sm mb-1">התקן את האפליקציה</h3>
-                    <p className="text-xs text-gray-600 dark:text-gray-400">
-                        התקינו את סמארטי למכשיר שלכם לגישה מהירה יותר
-                    </p>
-                </div>
-                <div className="flex gap-2">
-                    <Button
-                        onClick={handleInstallClick}
-                        size="sm"
-                        className="flex items-center gap-2"
-                    >
-                        <Download className="w-4 h-4" />
-                        {isMobileEnv ? "הורד מחנות האפליקציות" : "התקן"}
-                    </Button>
+            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 flex flex-col gap-3">
+                {/* Header: title + description + close button */}
+                <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 text-right">
+                        <h3 className="font-semibold text-sm mb-1">התקינו את סמארטי כאפליקציה</h3>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 leading-snug">
+                            הורידו את סמארטי למכשיר שלכם לחוויית שימוש מהירה ונוחה יותר
+                        </p>
+                    </div>
                     <Button
                         onClick={handleDismiss}
                         variant="ghost"
-                        size="sm"
-                        className="p-2"
+                        size="icon"
+                        className="p-2 shrink-0"
                     >
                         <X className="w-4 h-4" />
+                    </Button>
+                </div>
+
+                {/* Call-to-action button */}
+                <div className="flex">
+                    <Button
+                        onClick={handleInstallClick}
+                        size="sm"
+                        className="flex-1 flex items-center justify-center gap-2 px-4"
+                    >
+                        <Download className="w-4 h-4" />
+                        {isMobileEnv ? "הורד מחנות האפליקציות" : "התקן כאפליקציה"}
                     </Button>
                 </div>
             </div>
