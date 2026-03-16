@@ -16,10 +16,15 @@ export function PWAInstallPrompt() {
     const [showInstallPrompt, setShowInstallPrompt] = useState(false);
     const [isInstalled, setIsInstalled] = useState(false);
     const { userId } = useAuth();
+    const [isMobileEnv, setIsMobileEnv] = useState(false);
 
     // If user is in a special store flow (?store=android or ?store=ios),
     // don't show the PWA install prompt at all and mark it as dismissed.
-    if (typeof window !== "undefined") {
+    useEffect(() => {
+        if (typeof window === "undefined") {
+            return;
+        }
+
         const url = new URL(window.location.href);
         const storeParam = url.searchParams.get("store");
         const isStoreFlow = storeParam === "android" || storeParam === "ios";
@@ -30,9 +35,13 @@ export function PWAInstallPrompt() {
             } catch {
                 // Ignore storage errors
             }
-            return null;
         }
-    }
+
+        const userAgent = window.navigator.userAgent || "";
+        const isMobileOrTablet =
+            /Android/i.test(userAgent) || /iPhone|iPad|iPod/i.test(userAgent);
+        setIsMobileEnv(isMobileOrTablet);
+    }, []);
 
     useEffect(() => {
         // Check if user is restricted - don't set up event listeners for restricted users
@@ -147,7 +156,9 @@ export function PWAInstallPrompt() {
     }
 
     // Check if user dismissed recently (within 7 days)
-    const dismissedTime = localStorage.getItem("pwa-install-dismissed");
+    const dismissedTime = typeof window !== "undefined"
+        ? localStorage.getItem("pwa-install-dismissed")
+        : null;
     if (dismissedTime) {
         const daysSinceDismissed = (Date.now() - parseInt(dismissedTime)) / (1000 * 60 * 60 * 24);
         if (daysSinceDismissed < 7) {
@@ -171,7 +182,7 @@ export function PWAInstallPrompt() {
                         className="flex items-center gap-2"
                     >
                         <Download className="w-4 h-4" />
-                        התקן
+                        {isMobileEnv ? "הורד מחנות האפליקציות" : "התקן"}
                     </Button>
                     <Button
                         onClick={handleDismiss}
