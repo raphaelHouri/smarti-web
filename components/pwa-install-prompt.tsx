@@ -17,6 +17,23 @@ export function PWAInstallPrompt() {
     const [isInstalled, setIsInstalled] = useState(false);
     const { userId } = useAuth();
 
+    // If user is in a special store flow (?store=android or ?store=ios),
+    // don't show the PWA install prompt at all and mark it as dismissed.
+    if (typeof window !== "undefined") {
+        const url = new URL(window.location.href);
+        const storeParam = url.searchParams.get("store");
+        const isStoreFlow = storeParam === "android" || storeParam === "ios";
+
+        if (isStoreFlow) {
+            try {
+                localStorage.setItem("pwa-install-dismissed", Date.now().toString());
+            } catch {
+                // Ignore storage errors
+            }
+            return null;
+        }
+    }
+
     useEffect(() => {
         // Check if user is restricted - don't set up event listeners for restricted users
         if (!shouldShowPWAPrompt(userId)) {
@@ -73,6 +90,24 @@ export function PWAInstallPrompt() {
     }, [deferredPrompt, userId]);
 
     const handleInstallClick = async () => {
+        if (typeof window !== "undefined") {
+            const userAgent = window.navigator.userAgent || "";
+            const isAndroid = /Android/i.test(userAgent);
+            const isIOS = /iPhone|iPad|iPod/i.test(userAgent);
+
+            if (isAndroid) {
+                window.location.href =
+                    "https://play.google.com/store/apps/details?id=com.mehunanim.mehunanima&hl=he";
+                return;
+            }
+
+            if (isIOS) {
+                window.location.href =
+                    "https://apps.apple.com/il/app/%D7%A1%D7%9E%D7%90%D7%A8%D7%98%D7%99-%D7%94%D7%9B%D7%A0%D7%94-%D7%9C%D7%9E%D7%91%D7%97%D7%9F-%D7%94%D7%9E%D7%97%D7%95%D7%A0%D7%A0%D7%99%D7%9D/id6462846082";
+                return;
+            }
+        }
+
         if (!deferredPrompt) {
             return;
         }
