@@ -1108,7 +1108,24 @@ export const getUserSubscriptions = cache(async () => {
 
     return productTypes;
 })
-// cancelling the subscription tells stripe not to renew next month
+
+export const getUserSubscriptionDetails = cache(async () => {
+    const { userId } = await auth();
+    if (!userId) return [];
+
+    const subs = await db.query.subscriptions.findMany({
+        where: (s, { eq }) => eq(s.userId, userId),
+        with: {
+            product: {
+                columns: { name: true, productType: true, packageType: true },
+            },
+        },
+        orderBy: (s, { desc }) => [desc(s.createdAt)],
+    });
+
+    return subs;
+});
+
 async function getLessonQuestionGroupsWithFirstQuestionCategorySingleQuery(lessonId: string) {
     const result = await db.select({
         id: lessonQuestionGroups.id,

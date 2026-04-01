@@ -2,14 +2,15 @@
 import FeedWrapper from "@/components/FeedWrapper";
 import StickyWrapper from "@/components/sticky-wrapper";
 import { UserProgress } from "@/components/UserProgress";
-import { getUserProgress, getUserSubscriptions, getUserSettingsById, getUserByAuthId, getUserSystemStep } from "@/db/queries"; // Add getUserSettingsById and getUserByAuthId
+import { getUserProgress, getUserSubscriptions, getUserSettingsById, getUserByAuthId, getUserSystemStep, getUserSubscriptionDetails } from "@/db/queries";
 import { checkIsPro } from "@/lib/server-utils";
 import { redirect } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import SettingsAnimation from "./_components/lottie";
 import PromoSection from "../learn/_components/promo";
 import QuestsSection from "../quests/_components/quests";
-import { ProfileSettingsForm } from "./_components/ProfileSettingsForm"; // Import the new form component
+import { ProfileSettingsForm } from "./_components/ProfileSettingsForm";
+import { SubscriptionInfoCard } from "./_components/SubscriptionInfoCard";
 import { auth } from "@clerk/nextjs/server";
 import FeedbackButton from "@/components/feedbackButton";
 import type { Metadata } from "next";
@@ -31,14 +32,16 @@ const SettingsPage = async () => {
 
     const userProgressData = getUserProgress();
     const userSubscriptionData = getUserSubscriptions();
-    const currentUserData = getUserByAuthId(userId); // Fetch current user's data
-    const currentUserSettingsData = getUserSettingsById(userId); // Fetch current user's settings
+    const currentUserData = getUserByAuthId(userId);
+    const currentUserSettingsData = getUserSettingsById(userId);
+    const subscriptionDetailsData = getUserSubscriptionDetails();
 
-    const [userProgress, userSubscription, currentUser, currentUserSettings] = await Promise.all([
+    const [userProgress, userSubscription, currentUser, currentUserSettings, subscriptionDetails] = await Promise.all([
         userProgressData,
         userSubscriptionData,
         currentUserData,
         currentUserSettingsData,
+        subscriptionDetailsData,
     ]);
 
     if (!userProgress || !userProgress.settings?.lessonCategoryId) {
@@ -84,7 +87,7 @@ const SettingsPage = async () => {
                     </p>
                     <Separator className="mb-4 h-0.5 rounded-full" />
 
-                    <div className="w-full max-w-2xl"> {/* Adjusted width for the form */}
+                    <div className="w-full max-w-2xl">
                         <ProfileSettingsForm
                             initialName={currentUser.name || ""}
                             initialLessonClock={currentUserSettings?.lessonClock ?? true}
@@ -93,6 +96,9 @@ const SettingsPage = async () => {
                             initialGender={currentUserSettings?.gender}
                             initialAvatar={currentUserSettings?.avatar}
                         />
+                        <div className="mt-6">
+                            <SubscriptionInfoCard subscriptions={subscriptionDetails} />
+                        </div>
                     </div>
                 </div>
             </FeedWrapper>
