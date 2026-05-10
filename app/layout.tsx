@@ -21,6 +21,9 @@ const font = Poppins({ subsets: ["latin"], weight: ["500"] })
 
 export const metadata: Metadata = {
   title: "סמארטי | הכנה למבחני מחוננים ומצטיינים",
+  verification: {
+    google: "epxDzbgoP1_Rde7iiAWj8fi_bPUE10U9umuPqoBHqX0",
+  },
   description:
     "סמארטי - פלטפורמה להכנה למבחני מחוננים בעיקר לכיתות ב–ג: תרגולים אונליין, חוברות וסימולציות מודפסות, פעילויות פרונטליות והדרכת הורים מותאמת בכל הארץ.",
   manifest: "/manifest.json",

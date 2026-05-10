@@ -8,9 +8,9 @@ interface MarketingLayoutProps {
 
 const MarketingLayout = ({ children }: MarketingLayoutProps) => {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col w-full">
       <HeaderPage />
-      <main className="flex-1 flex flex-col items-center justify-center">
+      <main className="flex-1 flex flex-col min-w-0 w-full">
         {children}
       </main>
       {/* Can extend the number of sections in the future */}
