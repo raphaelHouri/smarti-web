@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import dynamic from "next/dynamic";
 import "./globals.css";
 import { ClerkProvider } from '@clerk/nextjs'
 // import {neobrutalism} from '@clerk/themes';
@@ -7,24 +6,7 @@ import { Toaster } from 'sonner'
 import { ThemeProvider } from "@/components/theme-provider"
 import { customHeIL } from '@/lib/clerk-localization'
 import { PostHogProvider } from "@/components/posthog-provider";
-
-// Modals: only ever render when their zustand store is opened.
-// Loading them lazily keeps them out of the initial bundle and the marketing pages stay light.
-const ExitModal = dynamic(() => import("@/components/modals/useExitModal"), { ssr: false });
-const CoinsModal = dynamic(() => import("@/components/modals/useCoinsModal"), { ssr: false });
-const PracticeModal = dynamic(() => import("@/components/modals/usePracticeModal"), { ssr: false });
-const FinishLessonModal = dynamic(() => import("@/components/modals/useFinishLessonModal"), { ssr: false });
-const RegisterModal = dynamic(() => import("@/components/modals/useRegisterModal"), { ssr: false });
-const PremiumModal = dynamic(() => import("@/components/modals/usePremiumModal"), { ssr: false });
-const FeedbackModal = dynamic(() => import("@/components/modals/useFeedbacksModal"), { ssr: false });
-const PWAInstallPrompt = dynamic(
-  () => import("@/components/pwa-install-prompt").then((m) => m.PWAInstallPrompt),
-  { ssr: false }
-);
-const WebViewUserIdHandler = dynamic(
-  () => import("@/components/webview-userid-handler").then((m) => m.WebViewUserIdHandler),
-  { ssr: false }
-);
+import { ModalsProvider } from "@/components/modals-provider";
 
 export const metadata: Metadata = {
   title: "סמארטי | הכנה למבחני מחוננים ומצטיינים",
@@ -104,15 +86,7 @@ export default function RootLayout({
           >
             <PostHogProvider>
               <Toaster richColors position="bottom-right" />
-              <WebViewUserIdHandler />
-              <ExitModal />
-              <CoinsModal />
-              <PracticeModal />
-              <FinishLessonModal />
-              <FeedbackModal />
-              <RegisterModal />
-              <PremiumModal />
-              <PWAInstallPrompt />
+              <ModalsProvider />
               {children}
             </PostHogProvider>
           </ThemeProvider>
