@@ -45,7 +45,7 @@ export const SideBar = ({
             <Link href="/" onClick={onNavigate}>
                 <div className="pt-8 pb-7 pl-4 flex items-center gap-x-3 flex-shrink-0 flex-col">
                     <Image
-                        src="/smartiLogo.png"
+                        src="/smartiLogo.webp"
                         alt="Smarti logo"
                         height={65}
                         width={240}

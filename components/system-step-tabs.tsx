@@ -98,10 +98,11 @@ export function SystemStepTabs({ isAuthenticated, initialStep }: SystemStepTabsP
                 ))}
             </TabsList>
             <Image
-                src={`/smarti_step${currentValue}.png`}
+                src={`/smarti_step${currentValue}.webp`}
                 alt="Smarti Logo"
                 width={300}
                 height={290}
+                sizes="(max-width: 640px) 200px, 300px"
                 className="mx-auto"
                 priority
             />
@@ -110,7 +111,7 @@ export function SystemStepTabs({ isAuthenticated, initialStep }: SystemStepTabsP
                     <h1 dir="rtl" className="font-bold text-xl lg:text-3xl text-neutral-600 max-w-[600px] text-center dark:bg-clip-text dark:text-transparent dark:bg-gradient-to-tr from-slate-500 to-neutral-300/90">
                         התכוננו למבחני המחוננים ומצטיינים ביחד עם{' '}
                         <Image
-                            src="/logoFont.png"
+                            src="/logoFont.webp"
                             alt="סמארטי"
                             width={100}
                             height={28}

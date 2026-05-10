@@ -38,19 +38,19 @@ const carouselSlides = [
     title: "הכנה למבחן מחוננים שלב א׳",
     description:
       "שאלות מותאמות לכיתה ב׳ עם תרגול אדפטיבי — מתחילים מהבסיס ומתקדמים בקצב הילד",
-    imageSrc: "/smarti_step1.png",
+    imageSrc: "/smarti_step1.webp",
   },
   {
     title: "הכנה למבחן מחוננים שלב ב׳",
     description:
       "חיזוק חשיבה לוגית, אנלוגיות וסדרות צורניות — ההכנה המלאה לשלב ב׳ כיתה ג׳",
-    imageSrc: "/smarti_step2.png",
+    imageSrc: "/smarti_step2.webp",
   },
   {
     title: "מחוננים ומצטיינים — יחד נצליח",
     description:
       "סימולציות מלאות, חוברות מודפסות ושיעורים אונליין עם מורים מנוסים",
-    imageSrc: "/smarti_step3.png",
+    imageSrc: "/smarti_step3.webp",
   },
 ];
 
@@ -159,9 +159,10 @@ export default async function Home() {
             <div className="w-full md:w-[420px] flex-shrink-0 rounded-2xl overflow-hidden shadow-xl border border-emerald-100 dark:border-emerald-900/50 bg-white dark:bg-slate-900 ring-1 ring-emerald-200/50 dark:ring-emerald-800/30">
               <div className="relative aspect-video">
                 <Image
-                  src="/hero.png"
+                  src="/hero.webp"
                   alt="תצוגה מקדימה של לומדת סמארטי להכנה למבחן מחוננים ומצטיינים"
                   fill
+                  sizes="(max-width: 768px) 100vw, 420px"
                   className="object-cover"
                 />
                 <div className="absolute inset-0 flex items-center justify-center bg-black/20">

@@ -26,18 +26,18 @@ const carouselSlides = [
     title: "מבחן מחוננים שלב ב׳",
     description:
       "אנלוגיות, סדרות צורניות וחשיבה לוגית — ההכנה המקיפה לשלב המאתגר",
-    imageSrc: "/smarti_step2.png",
+    imageSrc: "/smarti_step2.webp",
   },
   {
     title: "חיזוק יכולות קוגניטיביות",
     description:
       "תרגול שיטתי בחשיבה מרחבית, יוצא דופן ומטריצות — כדי להגיע מוכן",
-    imageSrc: "/smarti_step1.png",
+    imageSrc: "/smarti_step1.webp",
   },
   {
     title: "הכנה למבחן מחוננים שלב ב׳ כיתה ג׳",
     description: "סימולציות מלאות בפורמט המבחן, עם ניתוח תשובות ומשוב",
-    imageSrc: "/smarti_step3.png",
+    imageSrc: "/smarti_step3.webp",
   },
 ];
 

@@ -75,7 +75,7 @@ const HeaderPage = () => {
         {/* Logo */}
         <Link href="/" className="flex-shrink-0">
           <Image
-            src="/smartiLogo.png"
+            src="/smartiLogo.webp"
             alt="סמארטי — הכנה למבחני מחוננים"
             width={130}
             height={36}

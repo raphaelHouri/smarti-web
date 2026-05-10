@@ -27,19 +27,19 @@ const carouselSlides = [
     title: "מבחן מחוננים כיתה ג׳ — שלב ב׳",
     description:
       "ההכנה המתקדמת ביותר לשלב ב׳: מטריצות, אנלוגיות מורכבות וחשיבה מרחבית",
-    imageSrc: "/smarti_step3.png",
+    imageSrc: "/smarti_step3.webp",
   },
   {
     title: "הכנה למבחן מחוננים שלב ב׳ — כיתה ג׳",
     description:
       "מתרגלים בפורמט המבחן האמיתי עם שאלות ברמת קושי עולה",
-    imageSrc: "/smarti_step2.png",
+    imageSrc: "/smarti_step2.webp",
   },
   {
     title: "סימולציות מלאות לשלב ב׳",
     description:
       "מבחני תרגול מלאים עם תזמון, ניתוח תשובות ומשוב מפורט",
-    imageSrc: "/smarti_step1.png",
+    imageSrc: "/smarti_step1.webp",
   },
 ];
 

@@ -26,18 +26,18 @@ const carouselSlides = [
     title: "מבחן מחוננים שלב א׳ — כיתה ב׳",
     description:
       "שאלות הבנת הנקרא וחשבון מותאמות לגיל, בפורמט זהה למבחן האמיתי",
-    imageSrc: "/smarti_step1.png",
+    imageSrc: "/smarti_step1.webp",
   },
   {
     title: "תרגול אדפטיבי לפי רמת הילד",
     description:
       "המערכת מזהה חולשות ומחזקת אותן — תרגול ממוקד שמביא לתוצאות",
-    imageSrc: "/smarti_step2.png",
+    imageSrc: "/smarti_step2.webp",
   },
   {
     title: "הכנה למבחן מחוננים כיתה ב׳ — מתחילים עכשיו",
     description: "אלפי שאלות, סימולציות ומעקב התקדמות בזמן אמת",
-    imageSrc: "/smarti_step3.png",
+    imageSrc: "/smarti_step3.webp",
   },
 ];
 

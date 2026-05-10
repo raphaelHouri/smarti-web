@@ -43,44 +43,53 @@ export function KeywordCarousel({ slides }: Props) {
       <div className="absolute top-0 left-0 w-48 h-48 rounded-full bg-emerald-200/30 dark:bg-emerald-800/10 blur-3xl pointer-events-none -translate-x-1/3 -translate-y-1/3" />
       <div className="absolute bottom-0 right-0 w-36 h-36 rounded-full bg-green-100/40 dark:bg-green-900/10 blur-2xl pointer-events-none translate-x-1/4 translate-y-1/4" />
 
-      <AnimatePresence mode="wait" custom={direction}>
-        <motion.div
-          key={current}
-          custom={direction}
-          initial={{ x: direction > 0 ? "6%" : "-6%", opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          exit={{ x: direction > 0 ? "-6%" : "6%", opacity: 0 }}
-          transition={{ duration: 0.35, ease: "easeInOut" }}
-          className="absolute inset-0 flex items-center justify-center px-4 sm:px-8 overflow-hidden"
-        >
-          <div className="flex flex-row items-center gap-3 sm:gap-6 w-full max-w-screen-lg min-w-0">
-            {/* Text — right side */}
-            <div className="flex-1 flex flex-col gap-2.5 min-w-0 overflow-hidden">
-              {/* step badge */}
-              <span className="inline-flex self-start items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 text-[11px] font-semibold tracking-wide">
-                סמארטי
-              </span>
-              <h2 className="text-xl sm:text-2xl lg:text-[1.8rem] font-extrabold text-emerald-900 dark:text-emerald-100 leading-tight break-words">
-                {slides[current].title}
-              </h2>
-              <p className="text-sm sm:text-[0.95rem] text-emerald-800/70 dark:text-emerald-200/60 leading-relaxed max-w-md min-w-0">
-                {slides[current].description}
-              </p>
-            </div>
-
-            {/* Image — left side */}
-            <div className="hidden sm:block relative w-[155px] md:w-[210px] h-[175px] md:h-[235px] flex-shrink-0 drop-shadow-md">
-              <Image
-                src={slides[current].imageSrc}
-                alt={slides[current].title}
-                fill
-                className="object-contain"
-                priority={current === 0}
-              />
-            </div>
+      <div className="absolute inset-0 flex items-center justify-center px-4 sm:px-8 overflow-hidden">
+        <div className="flex flex-row items-center gap-3 sm:gap-6 w-full max-w-screen-lg min-w-0">
+          {/* Text — right side. Animated on slide change. */}
+          <div className="flex-1 flex flex-col gap-2.5 min-w-0 overflow-hidden">
+            <AnimatePresence mode="wait" custom={direction}>
+              <motion.div
+                key={current}
+                custom={direction}
+                initial={{ x: direction > 0 ? "6%" : "-6%", opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: direction > 0 ? "-6%" : "6%", opacity: 0 }}
+                transition={{ duration: 0.35, ease: "easeInOut" }}
+                className="flex flex-col gap-2.5 min-w-0"
+              >
+                <span className="inline-flex self-start items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 text-[11px] font-semibold tracking-wide">
+                  סמארטי
+                </span>
+                <h2 className="text-xl sm:text-2xl lg:text-[1.8rem] font-extrabold text-emerald-900 dark:text-emerald-100 leading-tight break-words">
+                  {slides[current].title}
+                </h2>
+                <p className="text-sm sm:text-[0.95rem] text-emerald-800/70 dark:text-emerald-200/60 leading-relaxed max-w-md min-w-0">
+                  {slides[current].description}
+                </p>
+              </motion.div>
+            </AnimatePresence>
           </div>
-        </motion.div>
-      </AnimatePresence>
+
+          {/* Image — left side. All slides are mounted as a stacked layer so the browser fetches
+              each slide image only once. Subsequent rotations only toggle opacity. */}
+          <div className="hidden sm:block relative w-[155px] md:w-[210px] h-[175px] md:h-[235px] flex-shrink-0 drop-shadow-md">
+            {slides.map((slide, idx) => (
+              <Image
+                key={slide.imageSrc}
+                src={slide.imageSrc}
+                alt={slide.title}
+                fill
+                sizes="(max-width: 768px) 0px, 210px"
+                className={`object-contain transition-opacity duration-300 ${
+                  idx === current ? "opacity-100" : "opacity-0"
+                }`}
+                priority={idx === 0}
+                loading={idx === 0 ? "eager" : "lazy"}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
 
       {/* Dots */}
       <div className="absolute bottom-3 inset-x-0 flex justify-center gap-1.5">

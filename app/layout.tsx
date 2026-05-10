@@ -1,23 +1,30 @@
 import type { Metadata, Viewport } from "next";
+import dynamic from "next/dynamic";
 import "./globals.css";
 import { ClerkProvider } from '@clerk/nextjs'
 // import {neobrutalism} from '@clerk/themes';
-import { Toaster, toast } from 'sonner'
-import { Poppins } from "next/font/google"
+import { Toaster } from 'sonner'
 import { ThemeProvider } from "@/components/theme-provider"
-import ExitModal from "@/components/modals/useExitModal";
-import CoinsModal from "@/components/modals/useCoinsModal";
-import PracticeModal from "@/components/modals/usePracticeModal";
-import FinishLessonModal from "@/components/modals/useFinishLessonModal";
-import RegisterModal from "@/components/modals/useRegisterModal";
-import PremiumModal from "@/components/modals/usePremiumModal";
 import { customHeIL } from '@/lib/clerk-localization'
-import FeedbackModal from "@/components/modals/useFeedbacksModal";
-import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 import { PostHogProvider } from "@/components/posthog-provider";
-import { WebViewUserIdHandler } from "@/components/webview-userid-handler";
 
-const font = Poppins({ subsets: ["latin"], weight: ["500"] })
+// Modals: only ever render when their zustand store is opened.
+// Loading them lazily keeps them out of the initial bundle and the marketing pages stay light.
+const ExitModal = dynamic(() => import("@/components/modals/useExitModal"), { ssr: false });
+const CoinsModal = dynamic(() => import("@/components/modals/useCoinsModal"), { ssr: false });
+const PracticeModal = dynamic(() => import("@/components/modals/usePracticeModal"), { ssr: false });
+const FinishLessonModal = dynamic(() => import("@/components/modals/useFinishLessonModal"), { ssr: false });
+const RegisterModal = dynamic(() => import("@/components/modals/useRegisterModal"), { ssr: false });
+const PremiumModal = dynamic(() => import("@/components/modals/usePremiumModal"), { ssr: false });
+const FeedbackModal = dynamic(() => import("@/components/modals/useFeedbacksModal"), { ssr: false });
+const PWAInstallPrompt = dynamic(
+  () => import("@/components/pwa-install-prompt").then((m) => m.PWAInstallPrompt),
+  { ssr: false }
+);
+const WebViewUserIdHandler = dynamic(
+  () => import("@/components/webview-userid-handler").then((m) => m.WebViewUserIdHandler),
+  { ssr: false }
+);
 
 export const metadata: Metadata = {
   title: "סמארטי | הכנה למבחני מחוננים ומצטיינים",
@@ -90,7 +97,7 @@ export default function RootLayout({
           <meta name="apple-mobile-web-app-title" content="סמארטי" />
           <link rel="apple-touch-icon" href="/icon-192x192.png" />
         </head>
-        <body className={font.className}>
+        <body>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
