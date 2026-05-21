@@ -16,6 +16,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/tarugol-ve-simulatzia`, lastModified: now, changeFrequency: "monthly", priority: 0.75 },
     { url: `${baseUrl}/sheelot-dugma`,         lastModified: now, changeFrequency: "monthly", priority: 0.75 },
     { url: `${baseUrl}/faq`,                   lastModified: now, changeFrequency: "weekly",  priority: 0.85 },
+    { url: `${baseUrl}/lomda`,                 lastModified: now, changeFrequency: "weekly",  priority: 0.85 },
     { url: `${baseUrl}/shop`,             lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${baseUrl}/shop/book`,        lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${baseUrl}/shop/system`,      lastModified: now, changeFrequency: "monthly", priority: 0.6 },

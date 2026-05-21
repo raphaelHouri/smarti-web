@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Heebo } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from '@clerk/nextjs'
 // import {neobrutalism} from '@clerk/themes';
@@ -7,6 +8,8 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { customHeIL } from '@/lib/clerk-localization'
 import { PostHogProvider } from "@/components/posthog-provider";
 import { ModalsProvider } from "@/components/modals-provider";
+
+const heebo = Heebo({ subsets: ["hebrew", "latin"] });
 
 export const metadata: Metadata = {
   title: "סמארטי | הכנה למבחני מחוננים ומצטיינים",
@@ -70,7 +73,7 @@ export default function RootLayout({
     //   baseTheme:neobrutalism
     // }}
     >
-      <html lang="he" dir="rtl" suppressHydrationWarning>
+      <html lang="he" dir="rtl" className={heebo.className} suppressHydrationWarning>
         <head>
           <link rel="manifest" href="/manifest.json" />
           <meta name="theme-color" content="#22c55e" />

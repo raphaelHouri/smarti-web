@@ -5,6 +5,7 @@ import Script from "next/script";
 import { buildMetadata, buildArticleJsonLd, buildFAQJsonLd } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 import { MarketingArticleShell, GuideH2, GuideP, GuideUl } from "../_components/MarketingArticleShell";
+import { LearnEntryButton } from "../_components/LearnEntryButton";
 
 export const metadata: Metadata = buildMetadata({
   title: "מה קורה אחרי מבחן מחוננים? תוצאות, שלב ב׳ והמשך הדרך | סמארטי",
@@ -58,6 +59,8 @@ export default function AchareiMevchanPage() {
               description:
                 "ציר זמן טיפוסי, קבלת תוצאות והמשך הכנה לשלב ב׳, עם קישורים למסלולי התרגול בסמארטי.",
               url: canonical,
+              datePublished: "2025-09-01",
+              dateModified: "2026-05-10",
             })
           ),
         }}
@@ -72,6 +75,7 @@ export default function AchareiMevchanPage() {
         title="מה קורה אחרי מבחן מחוננים?"
         subtitle="תוצאות, סינון לשלב ב׳, ומה חשוב לזכור לפני שממשיכים בהכנה — בלי לנחש תאריכים רשמיים: תמיד לוודא מול בית הספר ומול משרד החינוך."
         faq={faqData}
+        canonicalUrl={canonical}
       >
         <GuideP>
           רבים מההורים מתמקדים רק ביום של <strong>מבחן מחוננים שלב א׳</strong>, אבל התהליך האמיתי
@@ -133,9 +137,9 @@ export default function AchareiMevchanPage() {
             במערכת יש סימולציות, תרגול אדפטיבי וחומרים שמכסים את המיומנויות של שלב ב׳. אפשר להתחיל
             מעמוד שלב ב׳ או ישר מהכניסה למערכת.
           </GuideP>
-          <Button variant="secondary" asChild>
-            <Link href="/learn">כניסה ללומדה</Link>
-          </Button>
+          <LearnEntryButton variant="secondary" trackSource="acharei_mevchan">
+            כניסה ללומדה
+          </LearnEntryButton>
         </section>
       </MarketingArticleShell>
     </>

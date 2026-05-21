@@ -100,9 +100,9 @@ export function SystemStepTabs({ isAuthenticated, initialStep }: SystemStepTabsP
             <Image
                 src={`/smarti_step${currentValue}.webp`}
                 alt="Smarti Logo"
-                width={300}
-                height={290}
-                sizes="(max-width: 640px) 200px, 300px"
+                width={150}
+                height={145}
+                sizes="150px"
                 className="mx-auto"
                 priority
             />

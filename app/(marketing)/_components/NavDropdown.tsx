@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { LearnEntryButton } from "./LearnEntryButton";
 
 export type NavSubItem = { label: string; href: string };
 
@@ -11,6 +12,8 @@ export type NavItem = {
   label: string;
   href: string;
   subItems?: NavSubItem[];
+  /** Mobile drawer / compact CTA copy for `/learn`; desktop nav keeps `label`. */
+  learnCtaLabel?: string;
 };
 
 export function NavDropdown({ item }: { item: NavItem }) {
@@ -35,6 +38,17 @@ export function NavDropdown({ item }: { item: NavItem }) {
   }, [open]);
 
   if (!item.subItems?.length) {
+    if (item.href === "/learn") {
+      return (
+        <LearnEntryButton
+          variant="ghost"
+          className="normal-case text-sm font-medium text-neutral-600 dark:text-slate-300 hover:text-green-600 dark:hover:text-green-400 transition-colors px-2 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 whitespace-nowrap h-auto font-normal"
+          trackSource="nav_desktop"
+        >
+          {item.label}
+        </LearnEntryButton>
+      );
+    }
     return (
       <Link
         href={item.href}

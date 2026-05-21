@@ -3,7 +3,7 @@
 import { ClerkLoaded, ClerkLoading, SignedIn, SignedOut, SignUpButton, useAuth } from "@clerk/nextjs";
 import { Loader, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { LearnEntryButton } from "../app/(marketing)/_components/LearnEntryButton";
 import { useEffect, useState } from "react";
 import { trackEvent } from "@/lib/posthog";
 import { useSystemStep } from "@/hooks/use-system-step";
@@ -28,7 +28,7 @@ export function MarketingAuthButtons() {
     }
 
     return (
-        <div className="flex flex-col items-center justify-center gap-y-3 max-w-[330px] w-full">
+        <div className="flex flex-col items-center justify-center gap-y-3 max-w-[330px] w-full ">
             <ClerkLoading>
                 <Loader className="h-5 w-5 text-muted-foreground animate-spin" />
             </ClerkLoading>
@@ -54,16 +54,14 @@ export function MarketingAuthButtons() {
                     </SignUpButton>
                 </SignedOut>}
                 <SignedIn>
-                    <Button
+                    <LearnEntryButton
                         variant="secondary"
                         size="lg"
                         className="w-full group relative animate-bounce-few overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-100"
-                        asChild
+                        trackSource="marketing_auth_signed_in"
                     >
-                        <Link href="/learn" className="flex items-center justify-center gap-2">
-                            <span>התחל ללמוד</span>
-                        </Link>
-                    </Button>
+                        התחל ללמוד
+                    </LearnEntryButton>
                 </SignedIn>
             </ClerkLoaded>
         </div>

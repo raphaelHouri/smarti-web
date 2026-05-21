@@ -1,4 +1,4 @@
-import type { MarketingFaqItem } from "./types";
+type MarketingFaqItem = { question: string; answer: string; href?: string };
 
 /** FAQ לדף הבית — מסונכרן עם JSON-LD ב־page.tsx */
 export const homeMarketingFaq: MarketingFaqItem[] = [

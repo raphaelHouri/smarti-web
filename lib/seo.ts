@@ -68,20 +68,34 @@ export function buildOrganizationJsonLd() {
       "שלב ב מחוננים",
       "מצטיינים",
       "פדגוגיה",
-      "חינוך מחוননים",
+      "חינוך מחוננים",
     ],
     sameAs: [
-      // Add your social/directory URLs here when available, e.g.:
-      // "https://www.facebook.com/smarti.co.il",
-      // "https://www.linkedin.com/company/smarti-gifted",
+      "https://www.facebook.com/smarti.co.il",
+      // Add more when available: LinkedIn, Instagram, d.co.il listing, etc.
     ],
     contactPoint: {
       "@type": "ContactPoint",
       telephone: "+972-58-651-9423",
       contactType: "customer service",
       availableLanguage: "Hebrew",
-      contactOption: "TollFree",
     },
+  };
+}
+
+const ANDROID_STORE_URL =
+  "https://play.google.com/store/apps/details?id=com.mehunanim.mehunanima";
+
+export function buildSoftwareApplicationJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "סמארטי",
+    url: SITE_URL,
+    applicationCategory: "EducationalApplication",
+    operatingSystem: "Android, Web browser",
+    inLanguage: "he-IL",
+    installUrl: ANDROID_STORE_URL,
   };
 }
 
@@ -155,6 +169,19 @@ export function buildArticleJsonLd(params: {
 }
 
 
+export function buildBreadcrumbJsonLd(items: { name: string; url: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: item.url,
+    })),
+  };
+}
+
 export type BuildMetadataParams = {
     /** Visible page title */
     title: string;
@@ -164,7 +191,7 @@ export type BuildMetadataParams = {
     keywords?: string[];
     /** Optional canonical URL for the page */
     canonical?: string;
-    /** Optional social share image(s) */
+    /** Optional social share image(s). Defaults to the site OG image. */
     images?: string[];
 };
 
@@ -180,6 +207,8 @@ const DEFAULT_KEYWORDS: string[] = [
     "למידה מותאמת אישית",
     "הדרכת הורים",
 ];
+
+const DEFAULT_OG_IMAGE = `${SITE_URL}/og-default.webp`;
 
 const DEFAULT_OPEN_GRAPH = {
     type: "website",
@@ -197,13 +226,13 @@ export function buildMetadata(params: BuildMetadataParams): Metadata {
             ...DEFAULT_OPEN_GRAPH,
             title: params.title,
             description: params.description,
-            images: params.images,
+            images: params.images ?? [DEFAULT_OG_IMAGE],
         },
         twitter: {
             card: "summary_large_image",
             title: params.title,
             description: params.description,
-            images: params.images,
+            images: params.images ?? [DEFAULT_OG_IMAGE],
         },
         // he-IL hreflang signals to Google that this content targets Israeli Hebrew searchers
         // (google.co.il), not just generic Hebrew. x-default handles international fallback.

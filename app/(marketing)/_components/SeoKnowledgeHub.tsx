@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 const links = [
+  { href: "/lomda", title: "הלומדה שלנו", desc: "סיור במסכים, מחירים ומידע על כל חוברת הכנה" },
   { href: "/faq", title: "שאלות ותשובות (FAQ)", desc: "מאגר מלא של שאלות נפוצות לפי נושאים" },
   { href: "/madriche-holim", title: "מדריך הורים", desc: "מתי להתחיל, כמה לתרגל ורגשות" },
   { href: "/tarugol-ve-simulatzia", title: "תרגול וסימולציה", desc: "לומדה מחוננים, סימולציה וחוברת הכנה" },
@@ -22,7 +23,7 @@ export function SeoKnowledgeHub() {
           <span className="inline-block px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 text-xs font-semibold tracking-wide mb-3">
             מאגר ידע
           </span>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-neutral-800 dark:text-slate-100 mb-3">
+          <h2 className="text-2xl sm:text-3xl font-bold text-neutral-800 dark:text-slate-100 mb-3">
             מדריכים להכנה למבחני מחוננים
           </h2>
           <p className="text-sm text-muted-foreground max-w-2xl mx-auto leading-relaxed">
@@ -34,15 +35,14 @@ export function SeoKnowledgeHub() {
             <Link
               key={item.href}
               href={item.href}
-              className="group relative rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5 hover:border-emerald-400 dark:hover:border-emerald-600 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 overflow-hidden"
+              className="group relative rounded-2xl border border-emerald-400 dark:border-emerald-600 bg-white dark:bg-slate-900 p-5 shadow-xl -translate-y-1 transition-all duration-200 overflow-hidden hover:border-emerald-500 dark:hover:border-emerald-400 hover:shadow-xl hover:-translate-y-1.5 hover:ring-2 hover:ring-emerald-500/35 hover:ring-offset-2 hover:ring-offset-white dark:hover:ring-offset-slate-900"
             >
-              {/* left accent bar (logical start = right in RTL) */}
-              <span className="absolute inset-y-0 right-0 w-1 rounded-r-2xl bg-emerald-400/0 group-hover:bg-emerald-400 dark:group-hover:bg-emerald-500 transition-colors duration-200" />
+              <span className="absolute inset-y-0 right-0 w-1 rounded-r-2xl bg-emerald-400 dark:bg-emerald-500" />
               <div className="flex items-start justify-between gap-2">
-                <p className="font-bold text-neutral-800 dark:text-slate-100 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 break-words transition-colors">
+                <p className="font-bold text-emerald-700 dark:text-emerald-400 group-hover:text-emerald-800 dark:group-hover:text-emerald-300 break-words transition-colors">
                   {item.title}
                 </p>
-                <ArrowLeft className="w-4 h-4 text-neutral-400 group-hover:text-emerald-500 flex-shrink-0 mt-0.5 transition-colors rotate-180" />
+                <ArrowLeft className="w-4 h-4 text-emerald-500 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 flex-shrink-0 mt-0.5 transition-colors" />
               </div>
               <p className="text-xs text-muted-foreground mt-2 leading-relaxed">{item.desc}</p>
             </Link>

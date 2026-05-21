@@ -6,6 +6,8 @@ import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { homeMarketingFaq } from "../_data/homeFaq";
 
+const remainingFaq = homeMarketingFaq.slice(5);
+
 export function HomeFAQ() {
   const [open, setOpen] = useState<number | null>(null);
 
@@ -13,12 +15,12 @@ export function HomeFAQ() {
     <section className="py-10 px-4 sm:px-6" dir="rtl">
       <div className="flex items-center gap-2 mb-5">
         <span className="inline-block w-1 h-5 rounded-full bg-emerald-400" />
-        <h2 className="text-xl sm:text-2xl font-extrabold text-neutral-800 dark:text-slate-100">
+        <h2 className="text-xl sm:text-2xl font-bold text-neutral-800 dark:text-slate-100">
           שאלות נפוצות
         </h2>
       </div>
       <ul className="flex flex-col gap-2 mb-4">
-        {homeMarketingFaq.map((faq, i) => (
+        {remainingFaq.map((faq, i) => (
           <li
             key={i}
             className={cn(

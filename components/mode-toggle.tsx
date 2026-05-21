@@ -9,10 +9,11 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-export function ModeToggle() {
+export function ModeToggle({ prepend }: { prepend?: React.ReactNode }) {
   const { setTheme } = useTheme()
 
   return (
@@ -25,11 +26,17 @@ export function ModeToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
+        {prepend ? (
+          <>
+            {prepend}
+            <DropdownMenuSeparator />
+          </>
+        ) : null}
         <DropdownMenuItem onClick={() => setTheme("light")} className="cursor-pointer" dir="rtl">
-          יום
+          בהיר
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme("dark")} className="cursor-pointer" dir="rtl">
-          לילה
+          כהה
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

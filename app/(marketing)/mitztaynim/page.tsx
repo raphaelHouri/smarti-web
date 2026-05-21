@@ -5,6 +5,7 @@ import Script from "next/script";
 import { buildMetadata, buildArticleJsonLd, buildFAQJsonLd } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 import { MarketingArticleShell, GuideH2, GuideP, GuideUl } from "../_components/MarketingArticleShell";
+import { LearnEntryButton } from "../_components/LearnEntryButton";
 
 export const metadata: Metadata = buildMetadata({
   title: "מחוננים ומצטיינים — ההבדל, אחוזון והכנה למבחן מצטיינים | סמארטי",
@@ -63,6 +64,8 @@ export default function MitztaynimPage() {
               description:
                 "הסבר על אחוזונים, מסלולי לימוד, ותרגול עם סמארטי.",
               url: canonical,
+              datePublished: "2025-09-01",
+              dateModified: "2026-05-10",
             })
           ),
         }}
@@ -77,6 +80,7 @@ export default function MitztaynimPage() {
         title="מחוננים ומצטיינים — מדריך קצר להבדלים והכנה"
         subtitle="מילות מפתח שחוזרות בחיפוש: מה ההבדל מחוננים ומצטיינים, אחוזון, והכנה למבחן מצטיינים ביחס לשלב א׳ ושלב ב׳."
         faq={faqData}
+        canonicalUrl={canonical}
       >
         <GuideP>
           כשמחפשים <strong>הכנה למבחן מחוננים</strong> או <strong>הכנה למבחן מצטיינים</strong>, חייבים
@@ -128,9 +132,9 @@ export default function MitztaynimPage() {
             ודוחות להורים — כדי שתהיה <strong>הכנה למחוננים</strong> מדודה. מסלול המצטיינים משתמש
             באותה תשתית של שלב א׳/ב׳ כשמדובר בצמד המבחנים; ההבדל הוא בהכוונה ובשיח מול בית הספר.
           </GuideP>
-          <Button variant="secondary" asChild>
-            <Link href="/learn">לתרגול במערכת</Link>
-          </Button>
+          <LearnEntryButton variant="secondary" trackSource="mitztaynim">
+            לתרגול במערכת
+          </LearnEntryButton>
         </section>
       </MarketingArticleShell>
     </>

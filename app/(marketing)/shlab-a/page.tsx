@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Script from "next/script";
 
-import { buildMetadata, buildFAQJsonLd, buildCourseJsonLd } from "@/lib/seo";
+import { buildMetadata, buildFAQJsonLd, buildCourseJsonLd, buildBreadcrumbJsonLd } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 import { PageTemplate } from "../_components/PageTemplate";
+import { LearnEntryButton } from "../_components/LearnEntryButton";
 import { ChevronLeft } from "lucide-react";
 
 export const metadata: Metadata = buildMetadata({
@@ -134,6 +135,18 @@ export default function ShlabAPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(buildFAQJsonLd(faqData)) }}
       />
       <Script
+        id="ld-breadcrumb-shlab-a"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            buildBreadcrumbJsonLd([
+              { name: "בית", url: "https://smarti.co.il" },
+              { name: "מבחן מחוננים שלב א׳", url: "https://smarti.co.il/shlab-a" },
+            ])
+          ),
+        }}
+      />
+      <Script
         id="ld-course-shlab-a"
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -161,9 +174,9 @@ export default function ShlabAPage() {
               הכנה ממוקדת לשלב הראשון — הבנת הנקרא, חשבון ובעיות מילוניות.
               מאות שאלות לדוגמה וסימולציות מלאות.
             </p>
-            <Button variant="secondary" size="lg" className="w-full" asChild>
-              <Link href="/learn">כניסה למערכת — התחל עכשיו</Link>
-            </Button>
+            <LearnEntryButton variant="secondary" size="lg" className="w-full" trackSource="shlab_a_hero">
+              כניסה למערכת — התחל עכשיו
+            </LearnEntryButton>
             <Button variant="primaryOutline" size="default" asChild>
               <Link href="#practice">לדוגמאות חינמיות ↓</Link>
             </Button>
@@ -293,9 +306,9 @@ export default function ShlabAPage() {
               ))}
             </div>
             <div className="mt-6">
-              <Button variant="secondary" asChild>
-                <Link href="/learn">לאלפי שאלות נוספות במערכת ←</Link>
-              </Button>
+              <LearnEntryButton variant="secondary" trackSource="shlab_a_more_questions">
+                לאלפי שאלות נוספות במערכת ←
+              </LearnEntryButton>
             </div>
           </div>
         </section>
@@ -313,9 +326,9 @@ export default function ShlabAPage() {
             במערכת סמארטי תמצאו סימולציות מלאות בפורמט המבחן האמיתי — עם תזמון,
             ניתוח תשובות ומשוב מפורט.
           </p>
-          <Button variant="secondary" size="lg" asChild>
-            <Link href="/learn">כניסה לסימולציה המלאה</Link>
-          </Button>
+          <LearnEntryButton variant="secondary" size="lg" trackSource="shlab_a_simulation">
+            כניסה לסימולציה המלאה
+          </LearnEntryButton>
         </section>
 
         {/* ─── FAQ ───────────────────── */}

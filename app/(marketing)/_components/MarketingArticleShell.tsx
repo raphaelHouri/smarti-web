@@ -1,7 +1,10 @@
 import Link from "next/link";
+import Script from "next/script";
 import { ChevronLeft } from "lucide-react";
 
+import { LearnEntryButton } from "./LearnEntryButton";
 import { Button } from "@/components/ui/button";
+import { buildBreadcrumbJsonLd } from "@/lib/seo";
 
 type FaqItem = { question: string; answer: string };
 
@@ -10,17 +13,37 @@ type MarketingArticleShellProps = {
   subtitle?: string;
   children: React.ReactNode;
   faq: FaqItem[];
+  /** Canonical URL of this page — used to build BreadcrumbList schema */
+  canonicalUrl?: string;
 };
 
-export function MarketingArticleShell({ title, subtitle, children, faq }: MarketingArticleShellProps) {
+export function MarketingArticleShell({ title, subtitle, children, faq, canonicalUrl }: MarketingArticleShellProps) {
+  const breadcrumbId = canonicalUrl
+    ? `ld-breadcrumb-${canonicalUrl.split("/").pop()}`
+    : undefined;
+
   return (
     <>
+      {canonicalUrl && breadcrumbId && (
+        <Script
+          id={breadcrumbId}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(
+              buildBreadcrumbJsonLd([
+                { name: "בית", url: "https://smarti.co.il" },
+                { name: title, url: canonicalUrl },
+              ])
+            ),
+          }}
+        />
+      )}
       {/* Page header */}
       <header className="w-full border-b border-emerald-100 dark:border-emerald-900/50 bg-gradient-to-br from-emerald-50 via-white to-green-50/60 dark:from-emerald-950/50 dark:via-background dark:to-background">
         {/* top accent line */}
         <div className="h-1 w-full bg-gradient-to-l from-emerald-400 via-green-400 to-emerald-300" />
         <div className="max-w-3xl mx-auto px-4 py-10 text-center" dir="rtl">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-neutral-900 dark:text-slate-50 mb-3 leading-snug px-1 break-words">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-neutral-900 dark:text-slate-50 mb-3 leading-snug px-1 break-words">
             {title}
           </h1>
           {subtitle ? (
@@ -45,7 +68,7 @@ export function MarketingArticleShell({ title, subtitle, children, faq }: Market
         <div className="max-w-3xl mx-auto">
           <div className="flex items-center gap-2 mb-6">
             <span className="inline-block w-1 h-6 rounded-full bg-emerald-400" />
-            <h2 className="text-xl sm:text-2xl font-extrabold text-neutral-800 dark:text-slate-100">
+            <h2 className="text-xl sm:text-2xl font-bold text-neutral-800 dark:text-slate-100">
               שאלות נפוצות
             </h2>
           </div>
@@ -69,9 +92,9 @@ export function MarketingArticleShell({ title, subtitle, children, faq }: Market
       {/* CTA row */}
       <section className="w-full bg-gradient-to-l from-emerald-50 to-white dark:from-emerald-950/30 dark:to-background border-b border-slate-100 dark:border-slate-800">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row flex-wrap gap-3 justify-center" dir="rtl">
-          <Button variant="secondary" size="lg" asChild>
-            <Link href="/learn">כניסה לתרגול במערכת</Link>
-          </Button>
+          <LearnEntryButton variant="secondary" size="lg" trackSource="marketing_article_shell">
+            כניסה לתרגול במערכת
+          </LearnEntryButton>
           <Button variant="primaryOutline" asChild>
             <Link href="/">חזרה לעמוד הבית</Link>
           </Button>
@@ -86,7 +109,7 @@ export function GuideH2({ id, children }: { id?: string; children: React.ReactNo
   return (
     <h2
       id={id}
-      className="text-xl sm:text-2xl font-extrabold text-neutral-900 dark:text-slate-50 scroll-mt-24 pt-2 break-words border-b border-slate-100 dark:border-slate-800 pb-2"
+      className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-slate-50 scroll-mt-24 pt-2 break-words border-b border-slate-100 dark:border-slate-800 pb-2"
     >
       {children}
     </h2>

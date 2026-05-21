@@ -5,6 +5,7 @@ import Script from "next/script";
 import { buildMetadata, buildArticleJsonLd, buildFAQJsonLd } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 import { MarketingArticleShell, GuideH2, GuideP, GuideUl } from "../_components/MarketingArticleShell";
+import { LearnEntryButton } from "../_components/LearnEntryButton";
 
 export const metadata: Metadata = buildMetadata({
   title: "תרגול מבחן מחוננים, סימולציה ולומדה מחוננים — סמארטי",
@@ -57,6 +58,8 @@ export default function TarugolVeSimulatziaPage() {
               headline: "תרגול מבחן מחוננים וסימולציה — לומדה וחומרים",
               description: "מדריך לשילוב תרגול, סימולציה ולומדה מחוננים.",
               url: canonical,
+              datePublished: "2025-09-01",
+              dateModified: "2026-05-10",
             })
           ),
         }}
@@ -71,6 +74,7 @@ export default function TarugolVeSimulatziaPage() {
         title="תרגול מבחן מחוננים, סימולציה ולומדה מחוננים"
         subtitle="מקבצים ארוכי זנב בחיפוש: איך לבנות שגרה של תרגול, מתי לעבור לסימולציה מלאה, ומה התפקיד של חוברת הכנה מחוננים וערכת המערכת."
         faq={faqData}
+        canonicalUrl={canonical}
       >
         <GuideP>
           <strong>תרגול מבחן מחוננים</strong> עושה את ההבדל כשהוא נמשך לאורך זמן:           לא ספרינט של לילה לפני המבחן, אלא הרגל של הבנת פורמט השאלון, של זמן מחשבה, ושל צמצום טעויות טיפוסיות.{" "}
@@ -79,9 +83,9 @@ export default function TarugolVeSimulatziaPage() {
         </GuideP>
 
         <div className="flex flex-wrap gap-2 pt-2">
-          <Button variant="default" size="sm" asChild>
-            <Link href="/learn">כניסה ללומדה</Link>
-          </Button>
+          <LearnEntryButton variant="default" size="sm" trackSource="tarugol_simulatzia">
+            כניסה ללומדה
+          </LearnEntryButton>
           <Button variant="default" size="sm" asChild>
             <Link href="/shop">חנות — חוברות וערכות</Link>
           </Button>

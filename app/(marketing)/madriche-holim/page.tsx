@@ -5,6 +5,7 @@ import Script from "next/script";
 import { buildMetadata, buildArticleJsonLd, buildFAQJsonLd } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 import { MarketingArticleShell, GuideH2, GuideP, GuideUl } from "../_components/MarketingArticleShell";
+import { LearnEntryButton } from "../_components/LearnEntryButton";
 
 export const metadata: Metadata = buildMetadata({
   title: "מדריך הורים להכנה למבחן מחוננים — מתי, כמה ואיך | סמארטי",
@@ -78,6 +79,8 @@ export default function MadricheHolimPage() {
               description:
                 "מתי להתחיל, כמה לתרגל, ואיך לשמור על אווירה בריאה לפני מבחני המחוננים.",
               url: canonical,
+              datePublished: "2025-09-01",
+              dateModified: "2026-05-10",
             })
           ),
         }}
@@ -92,6 +95,7 @@ export default function MadricheHolimPage() {
         title="מדריך הורים להכנה למבחן מחוננים"
         subtitle="מתי להתחיל, כמה זמן לתרגל, ואיך לעזור לילד בלי להעמיס — על בסיס מה שעובד אצל אלפי משפחות שמשתמשות בסמארטי."
         faq={faqData}
+        canonicalUrl={canonical}
       >
         <GuideP>
           הכנה למבחן מחוננים אינה “סוד” ולא חייבת להיות אירוע חד־פעמי. ככל שהילד מכיר את{" "}
@@ -177,9 +181,9 @@ export default function MadricheHolimPage() {
             בסמארטי תמצאו תרגול אדפטיבי, סימולציות וחומרי עומק לפי שלב — כדי שההכנה למבחן מחוננים
             תהיה מדודה ולא אינסופית.
           </GuideP>
-          <Button variant="secondary" asChild>
-            <Link href="/learn">מעבר למערכת התרגול</Link>
-          </Button>
+          <LearnEntryButton variant="secondary" trackSource="madriche_holim">
+            מעבר למערכת התרגול
+          </LearnEntryButton>
         </section>
       </MarketingArticleShell>
     </>

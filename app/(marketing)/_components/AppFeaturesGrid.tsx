@@ -43,7 +43,7 @@ const features = [
 export function AppFeaturesGrid() {
   return (
     <section className="py-10 px-4 sm:px-6" dir="rtl">
-      <h2 className="text-xl sm:text-2xl font-extrabold text-neutral-800 dark:text-slate-100 mb-7 text-center">
+      <h2 className="text-xl sm:text-2xl font-bold text-neutral-800 dark:text-slate-100 mb-7 text-center">
         מה כוללות תוכניות ההכנה שלנו?
       </h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">

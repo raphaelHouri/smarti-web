@@ -33,7 +33,7 @@ export function KeywordCarousel({ slides }: Props) {
 
   return (
     <div
-      className="relative w-full h-[230px] sm:h-[290px] overflow-hidden border-b border-emerald-100 dark:border-emerald-900/50"
+      className="relative w-full h-[170px] [@media(max-height:820px)]:h-[140px] [@media(max-height:760px)]:h-[120px] [@media(max-height:660px)]:h-[100px] overflow-hidden border-b border-emerald-100 dark:border-emerald-900/50"
       style={{
         background:
           "linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 40%, #d1fae5 100%)",
@@ -60,10 +60,10 @@ export function KeywordCarousel({ slides }: Props) {
                 <span className="inline-flex self-start items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 text-[11px] font-semibold tracking-wide">
                   סמארטי
                 </span>
-                <h2 className="text-xl sm:text-2xl lg:text-[1.8rem] font-extrabold text-emerald-900 dark:text-emerald-100 leading-tight break-words">
+                <h2 className="text-xl sm:text-2xl lg:text-[1.8rem] [@media(max-height:760px)]:text-lg font-bold text-neutral-800 dark:text-slate-100 leading-tight break-words">
                   {slides[current].title}
                 </h2>
-                <p className="text-sm sm:text-[0.95rem] text-emerald-800/70 dark:text-emerald-200/60 leading-relaxed max-w-md min-w-0">
+                <p className="text-sm sm:text-[0.95rem] [@media(max-height:760px)]:text-xs text-emerald-800/70 dark:text-emerald-200/60 leading-relaxed max-w-md min-w-0 [@media(max-height:660px)]:line-clamp-2">
                   {slides[current].description}
                 </p>
               </motion.div>
@@ -72,7 +72,7 @@ export function KeywordCarousel({ slides }: Props) {
 
           {/* Image — left side. All slides are mounted as a stacked layer so the browser fetches
               each slide image only once. Subsequent rotations only toggle opacity. */}
-          <div className="hidden sm:block relative w-[155px] md:w-[210px] h-[175px] md:h-[235px] flex-shrink-0 drop-shadow-md">
+          <div className="hidden sm:block relative w-[155px] md:w-[180px] h-[155px] md:h-[175px] [@media(max-height:760px)]:w-[100px] [@media(max-height:760px)]:h-[100px] [@media(max-height:660px)]:w-[84px] [@media(max-height:660px)]:h-[84px] flex-shrink-0 drop-shadow-md">
             {slides.map((slide, idx) => (
               <Image
                 key={slide.imageSrc}
@@ -92,7 +92,7 @@ export function KeywordCarousel({ slides }: Props) {
       </div>
 
       {/* Dots */}
-      <div className="absolute bottom-3 inset-x-0 flex justify-center gap-1.5">
+      <div className="absolute bottom-3 [@media(max-height:660px)]:bottom-2 inset-x-0 flex justify-center gap-1.5">
         {slides.map((_, i) => (
           <button
             key={i}

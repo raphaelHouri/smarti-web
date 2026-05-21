@@ -2,7 +2,7 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { getDefaultSystemStep } from '@/lib/utils';
 
-const isPublicRoute = createRouteMatcher(["/", "/learn(.*)", "/lesson(.*)", "/courses", "/leaderboard", "/shop", "/policy", "/shop(.*)", "/book", "/online-lesson(.*)", "/api/pay(.*)", "/api/pay2(.*)", "/api/book(.*)", "/api/android-store-login", "/api/store-credentials", "/api/system-config/public", "/api/push-notification-tokens(.*)", "/api/app-ratings(.*)", "/contact(.*)", "/manifest(.*)", "/manifest.json", "/sign-in(.*)", "/shlab-a(.*)", "/shlab-b(.*)", "/kita-gimel(.*)", "/madriche-holim(.*)", "/acharei-mevchan(.*)", "/misgeret-mechonanim(.*)", "/mitztaynim(.*)", "/tarugol-ve-simulatzia(.*)", "/sheelot-dugma(.*)", "/faq(.*)"],)
+const isPublicRoute = createRouteMatcher(["/", "/learn(.*)", "/lesson(.*)", "/courses", "/leaderboard", "/shop", "/policy", "/shop(.*)", "/book", "/online-lesson(.*)", "/api/pay(.*)", "/api/pay2(.*)", "/api/book(.*)", "/api/android-store-login", "/api/store-credentials", "/api/system-config/public", "/api/push-notification-tokens(.*)", "/api/app-ratings(.*)", "/contact(.*)", "/manifest(.*)", "/manifest.json", "/sign-in(.*)", "/shlab-a(.*)", "/shlab-b(.*)", "/kita-gimel(.*)", "/madriche-holim(.*)", "/acharei-mevchan(.*)", "/misgeret-mechonanim(.*)", "/mitztaynim(.*)", "/tarugol-ve-simulatzia(.*)", "/sheelot-dugma(.*)", "/faq(.*)", "/temp(.*)", "/lomda(.*)"],)
 
 export default clerkMiddleware(async (auth, req) => {
     if (!isPublicRoute(req)) {

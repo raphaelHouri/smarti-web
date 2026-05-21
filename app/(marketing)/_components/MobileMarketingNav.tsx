@@ -3,9 +3,18 @@
 import { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import Image from "next/image";
 import { MenuIcon, X, ChevronDown } from "lucide-react";
+import { SignInButton, useAuth } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
+import { LearnEntryButton } from "./LearnEntryButton";
 import type { NavItem } from "./NavDropdown";
+import { AuthButtons } from "@/components/auth-buttons";
+import { ModeToggle } from "@/components/mode-toggle";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { shouldShowAuthButtons } from "@/lib/restricted-users";
+import { trackEvent } from "@/lib/posthog";
+import { useSystemStep } from "@/hooks/use-system-step";
 
 /** מעל header (sticky z-50) — פריטי פורטל חייבים להיות גבוהים מהכול כדי למקם מול viewport */
 const Z_BACKDROP = 250;
@@ -15,11 +24,21 @@ export function MobileMarketingNav({ items }: { items: NavItem[] }) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const { userId, isSignedIn } = useAuth();
+  const { step: systemStep } = useSystemStep();
 
   const closeDrawer = useCallback(() => {
     setOpen(false);
     setExpanded(null);
   }, []);
+
+  /** Close drawer when step-picker dialog closes; do not close drawer on open (would unmount this button). */
+  const onLearnEntryDialogOpenChange = useCallback(
+    (isOpen: boolean) => {
+      if (!isOpen) closeDrawer();
+    },
+    [closeDrawer]
+  );
 
   const toggle = (label: string) =>
     setExpanded((p) => (p === label ? null : label));
@@ -52,6 +71,29 @@ export function MobileMarketingNav({ items }: { items: NavItem[] }) {
 
   const submenuId = useCallback((label: string) => `submenu-${label.replace(/\s+/g, "-")}`, []);
 
+  const currentPath = typeof window !== "undefined" ? window.location.pathname : "";
+
+  const themeMenuPrepend =
+    mounted && shouldShowAuthButtons(userId) && !isSignedIn ? (
+      <SignInButton mode="modal" forceRedirectUrl="/" signUpForceRedirectUrl="/">
+        <DropdownMenuItem
+          className="cursor-pointer"
+          dir="rtl"
+          onSelect={(e) => e.preventDefault()}
+          onClick={() => {
+            trackEvent("sign_in_started", {
+              systemStep,
+              source: currentPath,
+              location: "mobile_nav_theme_menu",
+              redirectUrl: "/learn",
+            });
+          }}
+        >
+          התחברות
+        </DropdownMenuItem>
+      </SignInButton>
+    ) : null;
+
   /** פורטל ל־body — מונע מה־sticky header עם backdrop-blur ליצור containing block על fixed ולשבור מגירת מסך מלא */
   const drawerPortal =
     mounted &&
@@ -80,11 +122,21 @@ export function MobileMarketingNav({ items }: { items: NavItem[] }) {
           )}
           style={{ zIndex: Z_DRAWER }}
         >
-          {/* dir=rtl על ה-aside: פריט ראשון ב-flex יושב מימין — הכותרת מלאה, X משמאל */}
-          <div className="flex items-center gap-3 shrink-0 border-b border-slate-100 dark:border-slate-800 px-3 sm:px-4 py-3.5 min-h-[52px]">
-            <h2 className="flex-1 min-w-0 text-right text-lg font-bold text-neutral-700 dark:text-slate-200 leading-snug">
-              תפריט
-            </h2>
+          {/* כותרת המגירה: לוגו · סגירה */}
+          <div className="flex items-center justify-between gap-3 shrink-0 border-b border-slate-100 dark:border-slate-800 px-3 sm:px-4 py-3.5 min-h-[52px]">
+            <Link
+              href="/"
+              onClick={closeDrawer}
+              className="shrink-0 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950"
+            >
+              <Image
+                src="/smartiLogo.webp"
+                alt="סמארטי — הכנה למבחני מחוננים"
+                width={100}
+                height={28}
+                className="h-7 w-auto"
+              />
+            </Link>
             <button
               type="button"
               onClick={closeDrawer}
@@ -162,6 +214,18 @@ export function MobileMarketingNav({ items }: { items: NavItem[] }) {
                       </div>
                     )}
                   </>
+                ) : item.href === "/learn" ? (
+                  <LearnEntryButton
+                    variant="ghost"
+                    className={cn(
+                      "normal-case block px-4 py-3.5 text-sm font-medium text-neutral-700 dark:text-slate-300 w-full rounded-none h-auto text-right",
+                      "hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-green-600 dark:hover:text-green-400 transition-colors min-h-[48px] justify-start"
+                    )}
+                    trackSource="nav_mobile"
+                    onDialogOpenChange={onLearnEntryDialogOpenChange}
+                  >
+                    {item.learnCtaLabel ?? item.label}
+                  </LearnEntryButton>
                 ) : (
                   <Link
                     href={item.href}
@@ -177,6 +241,23 @@ export function MobileMarketingNav({ items }: { items: NavItem[] }) {
               </div>
             ))}
           </nav>
+
+          {/* Footer — auth + כניסה ללומדה + theme */}
+          <div className="shrink-0 border-t border-slate-100 dark:border-slate-800 px-4 py-3 flex flex-col items-center gap-3">
+            <div className="w-full flex justify-center [&_div.mt-2]:mt-0 [&_div.mt-1]:mt-0">
+              <AuthButtons />
+            </div>
+            <LearnEntryButton
+              variant="secondaryOutline"
+              size="sm"
+              className="w-full max-w-[16rem] normal-case rounded-lg border-2 border-emerald-600 dark:border-emerald-500 bg-white/80 dark:bg-transparent text-emerald-700 dark:text-emerald-400 font-bold shadow-sm"
+              trackSource="nav_mobile_footer"
+              onDialogOpenChange={onLearnEntryDialogOpenChange}
+            >
+              כניסה ללומדה
+            </LearnEntryButton>
+            <ModeToggle prepend={themeMenuPrepend} />
+          </div>
         </aside>
       </>,
       document.body

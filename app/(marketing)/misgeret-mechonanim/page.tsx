@@ -5,6 +5,7 @@ import Script from "next/script";
 import { buildMetadata, buildArticleJsonLd, buildFAQJsonLd } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 import { MarketingArticleShell, GuideH2, GuideP } from "../_components/MarketingArticleShell";
+import { LearnEntryButton } from "../_components/LearnEntryButton";
 
 export const metadata: Metadata = buildMetadata({
   title: "מסגרות חינוך למחוננים — מקורות רשמיים והסבר להורים | סמארטי",
@@ -70,6 +71,8 @@ export default function MisgeretMechonanimPage() {
               description:
                 "קישורים מומלצים ממשרד החינוך לצד הסבר קצר להורים; תוספת תרגול עם סמארטי.",
               url: canonical,
+              datePublished: "2025-09-01",
+              dateModified: "2026-05-10",
             })
           ),
         }}
@@ -84,6 +87,7 @@ export default function MisgeretMechonanimPage() {
         title="מסגרות חינוך למחוננים — מה אומר המשרד?"
         subtitle="כאן תמצאו מסגרת הסבר קצרה וקישורים ישירים לאתר משרד החינוך. אנחנו ממליצים לשמור את הקישורים האלה לצד ההכנה המעשית בסמארטי."
         faq={faqData}
+        canonicalUrl={canonical}
       >
         <GuideP>
           <strong>סמארטי</strong> מתמחה ב<strong>הכנה למבחני מחוננים ומצטיינים</strong> — תרגול, משוב
@@ -138,9 +142,9 @@ export default function MisgeretMechonanimPage() {
             אחרי שסימנתם לעצמכם את הפרטים הרשמיים — זה הזמן לבנות הרגל תרגול: שלב א׳, שלב ב׳ או
             מסלול מצטיינים, לפי הגדרת הילד.
           </GuideP>
-          <Button variant="secondary" asChild>
-            <Link href="/learn">כניסה למערכת התרגול</Link>
-          </Button>
+          <LearnEntryButton variant="secondary" trackSource="misgeret_mechonanim">
+            כניסה למערכת התרגול
+          </LearnEntryButton>
         </section>
       </MarketingArticleShell>
     </>

@@ -12,6 +12,7 @@ import {
 } from "@/lib/seo";
 
 import { faqAllData, totalFaqCount } from "../_data/faqAll";
+import { LearnEntryButton } from "../_components/LearnEntryButton";
 
 const PAGE_URL = "https://smarti.co.il/faq";
 const PAGE_TITLE =
@@ -77,6 +78,8 @@ export default function FaqPage() {
               headline: PAGE_TITLE,
               description: PAGE_DESCRIPTION,
               url: PAGE_URL,
+              datePublished: "2025-09-01",
+              dateModified: "2026-05-10",
             })
           ),
         }}
@@ -104,7 +107,7 @@ export default function FaqPage() {
             <HelpCircle className="w-3.5 h-3.5" />
             שאלות נפוצות
           </span>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-neutral-900 dark:text-slate-50 mb-4 leading-tight break-words">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-neutral-900 dark:text-slate-50 mb-4 leading-tight break-words">
             שאלות ותשובות על מבחני מחוננים ומצטיינים
           </h1>
           <p className="text-base sm:text-lg text-emerald-800/70 dark:text-emerald-200/60 leading-relaxed max-w-2xl mx-auto">
@@ -161,7 +164,7 @@ export default function FaqPage() {
                 </span>
                 <h2
                   id={`${cat.id}-heading`}
-                  className="text-2xl sm:text-3xl font-extrabold text-neutral-900 dark:text-slate-50 leading-tight break-words"
+                  className="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-slate-50 leading-tight break-words"
                 >
                   {cat.title}
                 </h2>
@@ -209,7 +212,7 @@ export default function FaqPage() {
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-2 mb-6">
             <span className="inline-block w-1 h-6 rounded-full bg-emerald-400" />
-            <h2 className="text-xl sm:text-2xl font-extrabold text-neutral-800 dark:text-slate-100">
+            <h2 className="text-xl sm:text-2xl font-bold text-neutral-800 dark:text-slate-100">
               מדריכים מורחבים
             </h2>
           </div>
@@ -250,20 +253,20 @@ export default function FaqPage() {
         aria-label="קריאה לפעולה"
       >
         <div className="max-w-screen-sm mx-auto flex flex-col items-center gap-4">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white">
             עדיין יש שאלה?
           </h2>
           <p className="text-sm text-white/85 leading-relaxed">
             הצטרפו ללומדה והתחילו לתרגל — אלפי שאלות, סימולציות, מעקב התקדמות והדרכת הורים.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 mt-2">
-            <Button
+            <LearnEntryButton
               size="lg"
               className="bg-white text-emerald-700 hover:bg-emerald-50 font-bold shadow-lg"
-              asChild
+              trackSource="faq_cta"
             >
-              <Link href="/learn">כניסה ללומדה</Link>
-            </Button>
+              כניסה ללומדה
+            </LearnEntryButton>
             <Button
               size="lg"
               variant="primaryOutline"

@@ -537,6 +537,45 @@ export const getProductById = cache(async (productId: string) => {
     return product ?? null;
 });
 
+export type MarketingPlanRecord = ShopPlanRecord & {
+    packageType: PackageType;
+    systemStep: number;
+};
+
+export type MarketingPlansByTypeAndStep = Record<PackageType, Record<number, MarketingPlanRecord[]>>;
+
+/**
+ * Marketing-only query: returns all active plans across every systemStep, grouped by
+ * packageType and then by systemStep. Used by the public לומדה page so visitors can see
+ * the full catalogue (every מסלול and every ספר הכנה לכל שלב), independent of which
+ * step their own cookie/account is on.
+ */
+export const getAllActivePlansForMarketing = cache(async (): Promise<MarketingPlansByTypeAndStep> => {
+    const data = await db.query.plans.findMany({
+        where: (plans, { eq }) => eq(plans.isActive, true),
+        orderBy: (plans, { asc }) => [asc(plans.systemStep), asc(plans.order), asc(plans.name)],
+    });
+
+    const grouped: MarketingPlansByTypeAndStep = { system: {}, book: {} };
+    data.forEach((p) => {
+        const key = (p.packageType as PackageType) ?? "system";
+        const step = (p as any).systemStep ?? 1;
+        if (!grouped[key][step]) grouped[key][step] = [];
+        grouped[key][step].push({
+            id: p.id,
+            name: p.name,
+            description: p.description ?? null,
+            price: p.price,
+            days: p.days,
+            displayData: (p as any).displayData ?? null,
+            productsIds: (p as any).productsIds ?? [],
+            packageType: key,
+            systemStep: step,
+        });
+    });
+    return grouped;
+});
+
 export const getPlan = cache(async (planId: string) => {
     return db.query.plans.findFirst({
         where: (plan, { eq }) => eq(plan.id, planId),

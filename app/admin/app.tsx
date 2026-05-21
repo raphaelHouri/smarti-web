@@ -3,6 +3,9 @@ import { Admin, EditGuesser, ListGuesser, Resource, ShowGuesser, CustomRoutes } 
 import { Route } from 'react-router-dom';
 import simpleRestProvider from "ra-data-simple-rest";
 import AnalyticsWrapper from "./organization-analytics/AnalyticsWrapper";
+import LearningBiWrapper from "./learning-bi/LearningBiWrapper";
+import { AdminAppLayout } from "./admin-app-layout";
+import AdminDashboardHome from "./admin-dashboard-home";
 import { FeedbackList } from "./feedbacks/list";
 import { FeedbackEdit } from "./feedbacks/edit";
 import { FeedbackShow } from "./feedbacks/show";
@@ -67,7 +70,7 @@ const dataProvider = simpleRestProvider("/api");
 
 const App = () => {
     return (
-        <Admin dataProvider={dataProvider}>
+        <Admin dataProvider={dataProvider} layout={AdminAppLayout} dashboard={AdminDashboardHome}>
 
 
             <Resource
@@ -210,6 +213,7 @@ const App = () => {
             />
             <CustomRoutes>
                 <Route path="/organization-analytics" element={<AnalyticsWrapper />} />
+                <Route path="/learning-bi" element={<LearningBiWrapper />} />
             </CustomRoutes>
         </Admin>
     );

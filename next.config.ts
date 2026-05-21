@@ -9,7 +9,16 @@ const withPWA = require("next-pwa")({
 
 const nextConfig: NextConfig = {
   images: {
-    domains: ['img.clerk.com', 'firebasestorage.googleapis.com'],
+    remotePatterns: [
+      { protocol: 'https', hostname: 'img.clerk.com', pathname: '/**' },
+      {
+        protocol: 'https',
+        hostname: 'firebasestorage.googleapis.com',
+        pathname: '/**',
+      },
+    ],
+    /** Next.js 16: every `<Image quality>` must be listed here (75 = default). */
+    qualities: [75, 82],
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
     deviceSizes: [320, 420, 640, 768, 828, 1080, 1200, 1920, 2048],

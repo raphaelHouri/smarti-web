@@ -3,9 +3,10 @@ import Link from "next/link";
 import Script from "next/script";
 import { ChevronLeft } from "lucide-react";
 
-import { buildMetadata, buildFAQJsonLd, buildCourseJsonLd } from "@/lib/seo";
+import { buildMetadata, buildFAQJsonLd, buildCourseJsonLd, buildBreadcrumbJsonLd } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 import { PageTemplate } from "../_components/PageTemplate";
+import { LearnEntryButton } from "../_components/LearnEntryButton";
 
 export const metadata: Metadata = buildMetadata({
   title: "מבחן מחוננים כיתה ג׳ — שלב ב׳ מתקדם | סמארטי",
@@ -125,6 +126,18 @@ export default function KitaGimelPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(buildFAQJsonLd(faqData)) }}
       />
       <Script
+        id="ld-breadcrumb-kita-gimel"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            buildBreadcrumbJsonLd([
+              { name: "בית", url: "https://smarti.co.il" },
+              { name: "הכנה לכיתה ג׳ — שלב ב׳", url: "https://smarti.co.il/kita-gimel" },
+            ])
+          ),
+        }}
+      />
+      <Script
         id="ld-course-kita-gimel"
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -152,9 +165,9 @@ export default function KitaGimelPage() {
               מטריצות, אנלוגיות מורכבות וחשיבה מרחבית — ההכנה המקיפה לשלב ב׳
               ברמת כיתה ג׳.
             </p>
-            <Button variant="secondary" size="lg" className="w-full" asChild>
-              <Link href="/learn">כניסה למערכת — התחל עכשיו</Link>
-            </Button>
+            <LearnEntryButton variant="secondary" size="lg" className="w-full" trackSource="kita_gimel_hero">
+              כניסה למערכת — התחל עכשיו
+            </LearnEntryButton>
             <Button variant="primaryOutline" size="default" asChild>
               <Link href="#examples">לשאלות לדוגמה ↓</Link>
             </Button>
@@ -221,9 +234,9 @@ export default function KitaGimelPage() {
               ))}
             </div>
             <div className="mt-6">
-              <Button variant="secondary" asChild>
-                <Link href="/learn">לאלפי שאלות נוספות במערכת ←</Link>
-              </Button>
+              <LearnEntryButton variant="secondary" trackSource="kita_gimel_more_questions">
+                לאלפי שאלות נוספות במערכת ←
+              </LearnEntryButton>
             </div>
           </div>
         </section>
@@ -241,9 +254,9 @@ export default function KitaGimelPage() {
             סימולציה מלאה ברמת כיתה ג׳ — עם אנלוגיות, מטריצות, חשיבה מרחבית,
             תזמון ומשוב מפורט.
           </p>
-          <Button variant="secondary" size="lg" asChild>
-            <Link href="/learn">כניסה לסימולציה המלאה</Link>
-          </Button>
+          <LearnEntryButton variant="secondary" size="lg" trackSource="kita_gimel_simulation">
+            כניסה לסימולציה המלאה
+          </LearnEntryButton>
         </section>
 
         {/* ─── FAQ ───────────────────── */}

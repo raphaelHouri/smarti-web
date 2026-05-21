@@ -18,7 +18,7 @@
 - [תרגול וסימולציה](https://smarti.co.il/tarugol-ve-simulatzia): סימולציות מלאות ומבחני תרגול
 - [שאלות לדוגמה חינמיות](https://smarti.co.il/sheelot-dugma): דוגמאות שאלות מבחן מחוננים
 - [אחרי המבחן](https://smarti.co.il/acharei-mevchan): תוצאות, ערעור ומה הלאה
-- [מסגרות מחוננים בישראל](https://smarti.co.il/misgeret-mechonanim): כיתות מחוננים, מופת ומדעים
+- [מסגרות מחוננים בישראל](https://smarti.co.il/misgeret-mechonanim): כיתות מחוננים, מופ״ת ומדעים — מקורות רשמיים ממשרד החינוך
 - [חנות](https://smarti.co.il/shop): חוברות תרגול מודפסות
 
 ## עובדות מפתח (לשימוש AI)
