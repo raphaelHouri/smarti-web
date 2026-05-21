@@ -99,22 +99,22 @@ function adaptSystemPlans(records: ShopPlanRecord[]): PlanView[] {
 
     const addOpt = dd.addBookOption as
       | {
-          price?: string | number;
-          originalPrice?: string | number;
-          savings?: string | number;
-          productId?: string;
-        }
+        price?: string | number;
+        originalPrice?: string | number;
+        savings?: string | number;
+        productId?: string;
+      }
       | undefined;
 
     const addBookOption = addOpt
       ? {
-          price: String(addOpt.price ?? ""),
-          originalPrice: String(addOpt.originalPrice ?? ""),
-          savings: String(addOpt.savings ?? ""),
-          productId: String(addOpt.productId ?? ""),
-          priceNum: parsePrice(String(addOpt.price ?? "0")),
-          originalNum: parsePrice(String(addOpt.originalPrice ?? "0")),
-        }
+        price: String(addOpt.price ?? ""),
+        originalPrice: String(addOpt.originalPrice ?? ""),
+        savings: String(addOpt.savings ?? ""),
+        productId: String(addOpt.productId ?? ""),
+        priceNum: parsePrice(String(addOpt.price ?? "0")),
+        originalNum: parsePrice(String(addOpt.originalPrice ?? "0")),
+      }
       : undefined;
 
     return {
@@ -129,7 +129,7 @@ function adaptSystemPlans(records: ShopPlanRecord[]): PlanView[] {
       addBookOption,
       productId:
         Array.isArray((r as { productsIds?: string[] }).productsIds) &&
-        (r as { productsIds: string[] }).productsIds.length > 0
+          (r as { productsIds: string[] }).productsIds.length > 0
           ? (r as { productsIds: string[] }).productsIds[0]
           : undefined,
     };
@@ -238,9 +238,9 @@ export default function MobilePricingClient({
         selectedPlan.addBookOption.savings?.trim() ||
         (selectedPlan.addBookOption.originalNum > selectedPlan.addBookOption.priceNum
           ? `חסוך ${formatCurrency(
-              selectedPlan.addBookOption.originalNum -
-                selectedPlan.addBookOption.priceNum,
-            )}!`
+            selectedPlan.addBookOption.originalNum -
+            selectedPlan.addBookOption.priceNum,
+          )}!`
           : "הנחה!");
       return {
         kind: "bundle" as const,
@@ -259,7 +259,7 @@ export default function MobilePricingClient({
         savingsLabel: null as string | null,
         productId:
           Array.isArray((bookFallback as { productsIds?: string[] }).productsIds) &&
-          (bookFallback as { productsIds: string[] }).productsIds.length > 0
+            (bookFallback as { productsIds: string[] }).productsIds.length > 0
             ? (bookFallback as { productsIds: string[] }).productsIds[0]
             : undefined,
         bookPriceNum: p,
@@ -363,7 +363,7 @@ export default function MobilePricingClient({
         className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 text-center max-w-md mx-auto"
       >
         <p className="text-neutral-700 mb-4">
-         לא נמצאו מסלולים זמינים לשלב הנוכחי. נסו שוב מאוחר יותר או עברו לחנות
+          לא נמצאו מסלולים זמינים לשלב הנוכחי. נסו שוב מאוחר יותר או עברו לחנות
           המלאה.
         </p>
         <Link
@@ -380,15 +380,15 @@ export default function MobilePricingClient({
   return (
     <div dir="rtl" className="min-h-screen bg-slate-50/50 text-neutral-900 p-2 lg:p-6">
       <div className="max-w-md lg:max-w-7xl mx-auto min-h-screen lg:min-h-0 bg-white rounded-[2.5rem] shadow-xl border border-slate-200 relative pb-32 lg:pb-12 lg:pt-12 lg:flex lg:flex-row lg:gap-8 lg:items-start lg:px-6 overflow-hidden">
-        
+
         {/* Background Decorative Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute top-20 left-10 w-32 h-32 rounded-full opacity-20 animate-bounce" style={{ animation: 'float 6s ease-in-out infinite' }}>
-                <Star className="w-full h-full text-emerald-300" />
-            </div>
-            <div className="absolute top-40 right-20 w-24 h-24 rounded-full opacity-20 animate-bounce" style={{ animationDelay: '1s', animation: 'float 8s ease-in-out infinite' }}>
-                <BookOpen className="w-full h-full text-slate-300" />
-            </div>
+          <div className="absolute top-20 left-10 w-32 h-32 rounded-full opacity-20 animate-bounce" style={{ animation: 'float 6s ease-in-out infinite' }}>
+            <Star className="w-full h-full text-emerald-300" />
+          </div>
+          <div className="absolute top-40 right-20 w-24 h-24 rounded-full opacity-20 animate-bounce" style={{ animationDelay: '1s', animation: 'float 8s ease-in-out infinite' }}>
+            <BookOpen className="w-full h-full text-slate-300" />
+          </div>
         </div>
 
         <div className="flex-1 w-full relative z-10">
@@ -402,214 +402,214 @@ export default function MobilePricingClient({
           </header>
 
           <div className="px-3 lg:px-0 flex flex-col lg:grid lg:grid-cols-3 gap-4 lg:gap-6 items-stretch">
-          {plansWithPopular.map((plan) => {
-            const Icon = plan.icon;
-            const isActive = plan.id === selectedPlanId;
-            return (
-              <div key={plan.id} className="relative flex flex-col h-full">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedPlanId(plan.id);
-                    setIsSystemDetailsOpen(false);
-                  }}
-                  className={cn(
-                    "w-full text-right rounded-2xl p-4 lg:p-6 transition-all flex-1 flex flex-col relative",
-                    isActive
-                      ? "border-2 border-emerald-500 bg-emerald-50/20 shadow-md"
-                      : "border border-slate-200 bg-white hover:border-slate-300 shadow-sm",
-                  )}
-                >
-                  {plan.isPopular && (
-                    <span className="absolute -top-3 lg:-top-3 right-4 lg:right-1/2 lg:translate-x-1/2 rounded-full bg-[#fbbf24] text-yellow-900 text-xs lg:text-sm font-bold px-3 py-1 shadow-sm whitespace-nowrap">
-                      הכי פופולרי
-                    </span>
-                  )}
-                  <div className="flex items-start justify-between gap-3 lg:flex-col lg:items-center lg:text-center lg:w-full">
-                    <div className="flex-1 min-w-0 lg:w-full lg:flex lg:flex-col lg:items-center lg:mt-4">
-                      <div className="font-bold text-base lg:text-xl text-neutral-900">
-                        {plan.name}
-                      </div>
-                      <div className="mt-2 text-lg lg:text-4xl font-extrabold text-neutral-900 tabular-nums">
-                        {plan.priceFormatted}
-                      </div>
-                      {plan.isPopular && (
-                        <div className="hidden lg:block text-xs font-bold text-neutral-600 mt-1">
-                          (המשתלם ביותר פר יום!)
+            {plansWithPopular.map((plan) => {
+              const Icon = plan.icon;
+              const isActive = plan.id === selectedPlanId;
+              return (
+                <div key={plan.id} className="relative flex flex-col h-full">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedPlanId(plan.id);
+                      setIsSystemDetailsOpen(false);
+                    }}
+                    className={cn(
+                      "w-full text-right rounded-2xl p-4 lg:p-6 transition-all flex-1 flex flex-col relative",
+                      isActive
+                        ? "border-2 border-emerald-500 bg-emerald-50/20 shadow-md"
+                        : "border border-slate-200 bg-white hover:border-slate-300 shadow-sm",
+                    )}
+                  >
+                    {plan.isPopular && (
+                      <span className="absolute -top-3 lg:-top-3 right-4 lg:right-1/2 lg:translate-x-1/2 rounded-full bg-[#fbbf24] text-yellow-900 text-xs lg:text-sm font-bold px-3 py-1 shadow-sm whitespace-nowrap">
+                        הכי פופולרי
+                      </span>
+                    )}
+                    <div className="flex items-start justify-between gap-3 lg:flex-col lg:items-center lg:text-center lg:w-full">
+                      <div className="flex-1 min-w-0 lg:w-full lg:flex lg:flex-col lg:items-center lg:mt-4">
+                        <div className="font-bold text-base lg:text-xl text-neutral-900">
+                          {plan.name}
                         </div>
-                      )}
-                    </div>
-                    {/* Choose plan button for desktop */}
-                    <div className="hidden lg:flex w-full mt-4 justify-center">
-                       <div className={cn(
+                        <div className="mt-2 text-lg lg:text-4xl font-extrabold text-neutral-900 tabular-nums">
+                          {plan.priceFormatted}
+                        </div>
+                        {plan.isPopular && (
+                          <div className="hidden lg:block text-xs font-bold text-neutral-600 mt-1">
+                            (המשתלם ביותר פר יום!)
+                          </div>
+                        )}
+                      </div>
+                      {/* Choose plan button for desktop */}
+                      <div className="hidden lg:flex w-full mt-4 justify-center">
+                        <div className={cn(
                           "px-6 py-2 rounded-full border text-sm font-bold transition-colors w-3/4",
                           isActive
                             ? "border-transparent bg-emerald-100 text-emerald-700"
                             : "border-neutral-200 text-neutral-700 hover:bg-neutral-50"
                         )}>
                           בחר מסלול
-                       </div>
-                    </div>
-                    {/* Icon for mobile */}
-                    <div
-                      className={cn(
-                        "shrink-0 w-11 h-11 lg:hidden rounded-xl flex items-center justify-center",
-                        isActive
-                          ? "bg-emerald-600 text-white"
-                          : "bg-slate-100 text-slate-600",
-                      )}
-                    >
-                      <Icon className="w-6 h-6" />
-                    </div>
-                  </div>
-                  
-                  {/* Remove desktop always visible features from here (moved to summary) */}
-
-                  {isActive && (
-                    <div className="absolute top-3 right-3 lg:hidden text-emerald-600">
-                      <Check className="w-5 h-5" strokeWidth={3} />
-                    </div>
-                  )}
-                  {isActive && (
-                    <div className="hidden lg:flex absolute top-4 left-4 text-emerald-600 bg-white rounded-full p-0.5 shadow-sm">
-                      <Check className="w-5 h-5" strokeWidth={3} />
-                    </div>
-                  )}
-                </button>
-
-                {/* Mobile Accordion */}
-                {isActive && (
-                  <div className="mt-2 border border-slate-100 rounded-xl overflow-hidden bg-white lg:hidden">
-                    <button
-                      type="button"
-                      className="w-full flex items-center justify-between px-3 py-2.5 text-sm font-semibold text-emerald-700 bg-slate-50/80"
-                      onClick={() =>
-                        setIsSystemDetailsOpen((v) => !v)
-                      }
-                    >
-                      <span>צפה בפרטי המערכת</span>
-                      <ChevronDown
+                        </div>
+                      </div>
+                      {/* Icon for mobile */}
+                      <div
                         className={cn(
-                          "w-5 h-5 transition-transform",
-                          isSystemDetailsOpen && "rotate-180",
+                          "shrink-0 w-11 h-11 lg:hidden rounded-xl flex items-center justify-center",
+                          isActive
+                            ? "bg-emerald-600 text-white"
+                            : "bg-slate-100 text-slate-600",
                         )}
-                      />
-                    </button>
-                    {isSystemDetailsOpen && (
-                      <ul className="grid grid-cols-2 gap-2 px-3 pb-3 pt-1 text-xs text-neutral-700">
-                        {plan.features.slice(0, 6).map((f) => (
-                          <li
-                            key={f}
-                            className="flex gap-1.5 items-start bg-slate-50 rounded-lg p-2"
-                          >
-                            <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                            <span>{f}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        {bookletPricing && selectedPlan && (
-          <section className="mt-6 mx-3 lg:mx-0 rounded-2xl border border-emerald-100 overflow-hidden bg-emerald-50/20 shadow-sm">
-            <div className="p-4 lg:p-6">
-              <div className="flex items-start gap-4">
-                <div className="shrink-0 w-12 h-12 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-red-500 shadow-sm relative">
-                  <FileText className="w-6 h-6" />
-                  <span className="text-[9px] font-bold absolute bottom-1">PDF</span>
-                </div>
-                
-                <div className="flex-1 min-w-0">
-                  <h2 className="text-base lg:text-lg font-bold text-neutral-900 leading-tight">
-                    שדרוג לחבילת פרימיום - הוספת חוברת לימוד (אופציונלי)
-                  </h2>
-                  <p className="text-sm text-neutral-600 mt-1 mb-4">
-                    העניקו לילדכם יתרון אמיתי עם ערכת ההכנה שלנו — חווית לימוד חכמה, מהנה ומותאמת לילדים.
-                  </p>
-
-                  <div className="flex items-center gap-4">
-                    <button
-                      type="button"
-                      role="switch"
-                      aria-checked={isBookletAdded}
-                      onClick={() => setIsBookletAdded((v) => !v)}
-                      className={cn(
-                        "relative shrink-0 inline-flex h-7 w-12 items-center rounded-full transition-colors border-2",
-                        isBookletAdded ? "bg-emerald-500 border-emerald-500" : "bg-slate-200 border-slate-200",
-                      )}
-                    >
-                      <span
-                        className={cn(
-                          "inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform",
-                          isBookletAdded ? "-translate-x-1" : "-translate-x-6",
-                        )}
-                      />
-                    </button>
-                    
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-emerald-600 font-bold">מחיר מוזל: <span className="text-xl">{bookletPricing.displayPrice}</span></span>
-                      {bookletPricing.kind === "bundle" &&
-                        bookletPricing.originalPrice &&
-                        bookletPricing.displayPrice !==
-                          bookletPricing.originalPrice && (
-                          <span className="text-sm text-slate-400 mr-2">
-                            מחיר רגיל: <span className="line-through">{bookletPricing.originalPrice}</span>
-                          </span>
-                        )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="rounded-xl border border-slate-100 overflow-hidden bg-white mt-6 shadow-sm">
-                <button
-                  type="button"
-                  className="w-full flex items-center justify-between px-4 py-3 text-sm font-semibold text-neutral-700"
-                  onClick={() => setIsBookletDetailsOpen((v) => !v)}
-                >
-                  <span className="flex items-center gap-2">
-                    <BookOpen className="w-4 h-4" />
-                    צפה בפרטי החוברת
-                  </span>
-                  <ChevronDown
-                    className={cn(
-                      "w-5 h-5 transition-transform",
-                      isBookletDetailsOpen && "rotate-180",
-                    )}
-                  />
-                </button>
-                {isBookletDetailsOpen && (
-                  <ul className="grid grid-cols-1 lg:grid-cols-2 gap-2 px-4 pb-4 text-xs lg:text-sm text-neutral-600">
-                    {bookFeaturesList.slice(0, 6).map((f) => (
-                      <li
-                        key={f}
-                        className="flex gap-2 items-start"
                       >
-                        <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                        <span>{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </div>
-          </section>
-        )}
+                        <Icon className="w-6 h-6" />
+                      </div>
+                    </div>
 
-        <p className="text-center text-xs text-slate-500 px-6 mt-8 lg:mb-8">
-          <Link href="/shop/system" className="text-emerald-600 font-medium hover:underline">
-            חנות מלאה
-          </Link>
-          {" · "}
-          <Link href="/policy" className="text-emerald-600 font-medium hover:underline">
-            מדיניות
-          </Link>
-        </p>
+                    {/* Remove desktop always visible features from here (moved to summary) */}
+
+                    {isActive && (
+                      <div className="absolute top-3 right-3 lg:hidden text-emerald-600">
+                        <Check className="w-5 h-5" strokeWidth={3} />
+                      </div>
+                    )}
+                    {isActive && (
+                      <div className="hidden lg:flex absolute top-4 left-4 text-emerald-600 bg-white rounded-full p-0.5 shadow-sm">
+                        <Check className="w-5 h-5" strokeWidth={3} />
+                      </div>
+                    )}
+                  </button>
+
+                  {/* Mobile Accordion */}
+                  {isActive && (
+                    <div className="mt-2 border border-slate-100 rounded-xl overflow-hidden bg-white lg:hidden">
+                      <button
+                        type="button"
+                        className="w-full flex items-center justify-between px-3 py-2.5 text-sm font-semibold text-emerald-700 bg-slate-50/80"
+                        onClick={() =>
+                          setIsSystemDetailsOpen((v) => !v)
+                        }
+                      >
+                        <span>צפה בפרטי המערכת</span>
+                        <ChevronDown
+                          className={cn(
+                            "w-5 h-5 transition-transform",
+                            isSystemDetailsOpen && "rotate-180",
+                          )}
+                        />
+                      </button>
+                      {isSystemDetailsOpen && (
+                        <ul className="grid grid-cols-2 gap-2 px-3 pb-3 pt-1 text-xs text-neutral-700">
+                          {plan.features.slice(0, 6).map((f) => (
+                            <li
+                              key={f}
+                              className="flex gap-1.5 items-start bg-slate-50 rounded-lg p-2"
+                            >
+                              <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                              <span>{f}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {bookletPricing && selectedPlan && (
+            <section className="mt-6 mx-3 lg:mx-0 rounded-2xl border border-emerald-100 overflow-hidden bg-emerald-50/20 shadow-sm">
+              <div className="p-4 lg:p-6">
+                <div className="flex items-start gap-4">
+                  <div className="shrink-0 w-12 h-12 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-red-500 shadow-sm relative">
+                    <FileText className="w-6 h-6" />
+                    <span className="text-[9px] font-bold absolute bottom-1">PDF</span>
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <h2 className="text-base lg:text-lg font-bold text-neutral-900 leading-tight">
+                      שדרוג לחבילת פרימיום - הוספת חוברת לימוד (אופציונלי)
+                    </h2>
+                    <p className="text-sm text-neutral-600 mt-1 mb-4">
+                      העניקו לילדכם יתרון אמיתי עם ערכת ההכנה שלנו — חווית לימוד חכמה, מהנה ומותאמת לילדים.
+                    </p>
+
+                    <div className="flex items-center gap-4">
+                      <button
+                        type="button"
+                        role="switch"
+                        aria-checked={isBookletAdded}
+                        onClick={() => setIsBookletAdded((v) => !v)}
+                        className={cn(
+                          "relative shrink-0 inline-flex h-7 w-12 items-center rounded-full transition-colors border-2",
+                          isBookletAdded ? "bg-emerald-500 border-emerald-500" : "bg-slate-200 border-slate-200",
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            "inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform",
+                            isBookletAdded ? "-translate-x-1" : "-translate-x-6",
+                          )}
+                        />
+                      </button>
+
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-emerald-600 font-bold">מחיר מוזל: <span className="text-xl">{bookletPricing.displayPrice}</span></span>
+                        {bookletPricing.kind === "bundle" &&
+                          bookletPricing.originalPrice &&
+                          bookletPricing.displayPrice !==
+                          bookletPricing.originalPrice && (
+                            <span className="text-sm text-slate-400 mr-2">
+                              מחיר רגיל: <span className="line-through">{bookletPricing.originalPrice}</span>
+                            </span>
+                          )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-xl border border-slate-100 overflow-hidden bg-white mt-6 shadow-sm">
+                  <button
+                    type="button"
+                    className="w-full flex items-center justify-between px-4 py-3 text-sm font-semibold text-neutral-700"
+                    onClick={() => setIsBookletDetailsOpen((v) => !v)}
+                  >
+                    <span className="flex items-center gap-2">
+                      <BookOpen className="w-4 h-4" />
+                      צפה בפרטי החוברת
+                    </span>
+                    <ChevronDown
+                      className={cn(
+                        "w-5 h-5 transition-transform",
+                        isBookletDetailsOpen && "rotate-180",
+                      )}
+                    />
+                  </button>
+                  {isBookletDetailsOpen && (
+                    <ul className="grid grid-cols-1 lg:grid-cols-2 gap-2 px-4 pb-4 text-xs lg:text-sm text-neutral-600">
+                      {bookFeaturesList.slice(0, 6).map((f) => (
+                        <li
+                          key={f}
+                          className="flex gap-2 items-start"
+                        >
+                          <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                          <span>{f}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            </section>
+          )}
+
+          <p className="text-center text-xs text-slate-500 px-6 mt-8 lg:mb-8">
+            <Link href="/shop/system" className="text-emerald-600 font-medium hover:underline">
+              חנות מלאה
+            </Link>
+            {" · "}
+            <Link href="/policy" className="text-emerald-600 font-medium hover:underline">
+              מדיניות
+            </Link>
+          </p>
         </div> {/* End of Plans Left side (in RTL right side) */}
 
         {/* Desktop Order Summary Panel */}
@@ -624,8 +624,8 @@ export default function MobilePricingClient({
               <span className="text-emerald-600 text-xl font-bold">עד המבחן</span>
             </h2>
           </div>
-          
-          
+
+
           <div className="mb-6 flex-1">
             <h3 className="font-bold text-neutral-900 text-base mb-2">המסלול כולל:</h3>
             <p className="text-sm text-neutral-500 mb-4">
@@ -640,7 +640,7 @@ export default function MobilePricingClient({
               ))}
             </ul>
           </div>
-          
+
           <div className="pt-5 border-t border-slate-100 mb-6 bg-slate-50/50 -mx-6 px-6 pb-2">
             <h4 className="font-bold text-neutral-900 mb-3 text-sm">סיכום לתשלום</h4>
             <div className="space-y-2.5 text-[13px]">
@@ -648,7 +648,7 @@ export default function MobilePricingClient({
                 <span>{selectedPlan?.name || "מסלול"}:</span>
                 <span className="font-medium tabular-nums text-neutral-900">{selectedPlan?.priceFormatted}</span>
               </div>
-              
+
               {isBookletAdded && bookletPricing && (
                 <div className="flex justify-between text-neutral-600">
                   <span>חוברת (אופציונלי):</span>
@@ -656,7 +656,7 @@ export default function MobilePricingClient({
                 </div>
               )}
             </div>
-            
+
             <div className="flex justify-between items-center mt-4 pt-4 border-t border-slate-200/60 font-bold text-neutral-900">
               <span className="text-base">סך הכל (כולל):</span>
               <span className="text-xl tabular-nums">

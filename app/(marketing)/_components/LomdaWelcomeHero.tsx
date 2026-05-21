@@ -30,9 +30,9 @@ export function LomdaWelcomeHero({ whatsappGroupUrl }: { whatsappGroupUrl?: stri
     <section className="relative w-full overflow-hidden bg-gradient-to-b from-emerald-50/50 to-white dark:from-emerald-950/20 dark:to-background border-b border-slate-100 dark:border-slate-800" dir="rtl">
       <WelcomeConfetti />
       <div className="w-full px-4 sm:px-6 lg:pl-0 pt-12 lg:pt-20 pb-16 lg:pb-24">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-0 items-center max-w-screen-3xl mx-auto">
-          {/* Right side (Text & Actions) — 2/5 on large screens */}
-          <div className="flex flex-col items-center text-center lg:items-start lg:text-right gap-6 lg:gap-8 z-10 lg:col-span-2 lg:pl-12 lg:pr-8 [1920]:pr-8 max-w-xl mx-auto lg:mx-0">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-5 gap-12 lg:gap-0 items-center max-w-screen-3xl mx-auto">
+          {/* Right side (Text & Actions) */}
+          <div className="flex flex-col items-center text-center lg:items-start lg:text-right gap-6 lg:gap-8 z-10 lg:col-span-1 lg:col-start-1 lg:row-span-2 xl:col-span-2 xl:row-span-1 lg:pl-12 lg:pr-8 [1920]:pr-8 max-w-xl mx-auto lg:mx-0">
             <span className="inline-flex self-center lg:self-start items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-700 dark:bg-emerald-800 text-white text-[11px] font-bold tracking-[0.06em]">
               <ShieldCheck className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={2.5} />
               הלומדה שלנו — מקצה לקצה
@@ -50,7 +50,7 @@ export function LomdaWelcomeHero({ whatsappGroupUrl }: { whatsappGroupUrl?: stri
               />
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-neutral-900 dark:text-slate-50 leading-[1.15] tracking-tight">
+            <h1 className="text-4xl sm:text-5xl lg:text-5xl xl:text-6xl font-extrabold text-neutral-900 dark:text-slate-50 leading-[1.15] tracking-tight">
               הלומדה שלנו —
               <br className="hidden sm:block" />
               <span className="text-emerald-700 dark:text-emerald-400">כל מה שצריך כדי להגיע מוכנים.</span>
@@ -83,8 +83,10 @@ export function LomdaWelcomeHero({ whatsappGroupUrl }: { whatsappGroupUrl?: stri
                 <WhatsappGroupPromo href={whatsappGroupUrl} />
               </div>
             )}
+          </div>
 
-            <ul className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4 w-full">
+          {/* Features List (Dynamic Grid Placement) */}
+          <ul className="grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-3 gap-4 mt-4 lg:mt-0 w-full z-10 lg:col-span-1 lg:col-start-2 lg:row-start-2 xl:col-span-5 xl:col-start-1 xl:row-start-3 lg:pl-12 lg:pr-8 [1920]:pr-8 max-w-xl mx-auto lg:max-w-none lg:mx-0 xl:pt-12">
               {heroValueProps.map((prop) => {
                 const Icon = prop.Icon;
                 return (
@@ -103,10 +105,9 @@ export function LomdaWelcomeHero({ whatsappGroupUrl }: { whatsappGroupUrl?: stri
                 );
               })}
             </ul>
-          </div>
 
-          {/* Left side (Devices) — 3/5 on large screens */}
-          <div className="relative hidden lg:flex lg:col-span-3 w-full min-h-[400px] max-h-[70vh] h-[500px] xl:h-[min(600px,70vh)] z-0 items-center justify-center">
+          {/* Left side (Devices) */}
+          <div className="relative hidden lg:flex lg:col-span-1 lg:col-start-2 lg:row-start-1 xl:col-span-3 xl:col-start-3 xl:row-span-2 w-full min-h-[400px] max-h-[70vh] h-[500px] xl:h-[min(600px,70vh)] z-0 items-center justify-center">
             {/* Center glow — fades to transparent, no edge clipping */}
             <div
               className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(55%,420px)] aspect-square pointer-events-none bg-[radial-gradient(circle,rgba(110,231,183,0.45)_0%,rgba(110,231,183,0.18)_45%,transparent_72%)] dark:bg-[radial-gradient(circle,rgba(6,78,59,0.5)_0%,rgba(6,78,59,0.2)_45%,transparent_72%)]"
@@ -120,7 +121,7 @@ export function LomdaWelcomeHero({ whatsappGroupUrl }: { whatsappGroupUrl?: stri
                 alt="מסכי לומדת סמארטי מרהיבים"
                 fill
                 priority
-                sizes="(min-width: 1024px) 60vw, 0vw"
+                sizes="(min-width: 1280px) 60vw, (min-width: 1024px) 50vw, 100vw"
                 className="object-contain object-center"
               />
             </div>
