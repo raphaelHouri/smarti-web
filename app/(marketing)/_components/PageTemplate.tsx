@@ -23,7 +23,7 @@ export function PageTemplate({ carouselSlides, heroSlot, children, whatsappGroup
           </div>
 
           {/* Right 3/5 — hero slot */}
-          <div className="order-first lg:order-first flex-1 lg:w-3/5 min-h-0 min-w-0 flex flex-col justify-center overflow-hidden lg:overflow-visible px-4 lg:pl-4 lg:pr-16 xl:pr-24 2xl:pr-36 py-4 sm:py-6 [@media(max-height:760px)]:py-2 [@media(max-height:660px)]:py-1.5">
+          <div className="order-first lg:order-first flex-1 lg:w-3/5 min-h-0 min-w-0 flex flex-col justify-start overflow-hidden lg:overflow-visible px-4 lg:pl-4 lg:pr-16 xl:pr-24 2xl:pr-36 py-4 sm:py-6 [@media(max-height:760px)]:py-2 [@media(max-height:660px)]:py-1.5">
             <div className="min-h-0 w-full overflow-hidden lg:overflow-visible">{heroSlot}</div>
           </div>
         </div>

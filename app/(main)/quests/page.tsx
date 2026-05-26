@@ -15,6 +15,7 @@ import QuestsJson from "./_components/lottie";
 import FeedbackButton from "@/components/feedbackButton";
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
+import Image from "next/image";
 
 export const metadata: Metadata = buildMetadata({
     title: "סמארטי | הכנה למבחני מחוננים ומצטיינים",
@@ -59,7 +60,12 @@ const QuestsPage = async () => {
                     <div className="flex flex-row items-start justify-end w-full mb-4">
                         <FeedbackButton screenName="quests" />
                     </div>
-                    <QuestsJson />
+                    <div className="block md:hidden w-full max-w-[250px] mb-4">
+                        <Image src="/lomda/cool-BG-smarti.png" alt="Smarti Quests" width={400} height={400} className="w-full h-auto object-contain" />
+                    </div>
+                    <div className="hidden md:block">
+                        <QuestsJson />
+                    </div>
                     <h1 className="text-center font-bold text-neutral-800 dark:text-slate-200 text-2xl my-6">
                         🎯 שלבים
                     </h1>

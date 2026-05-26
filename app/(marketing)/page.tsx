@@ -181,7 +181,7 @@ export default async function Home() {
 
         </div>
 
-        <h1 className="text-3xl sm:text-4xl lg:text-[2.4rem] xl:text-5xl [@media(max-height:820px)]:lg:text-[2.05rem] [@media(max-height:760px)]:text-3xl [@media(max-height:760px)]:lg:text-[1.9rem] font-bold text-neutral-900 dark:text-slate-50 leading-[1.15] tracking-tight">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-neutral-900 dark:text-slate-50 leading-[1.15] tracking-tight max-w-[900px]">
           הכנה רצינית למבחן המחוננים,
           <br />
           <span className="text-emerald-700 dark:text-emerald-400">
@@ -198,26 +198,32 @@ export default async function Home() {
             </p>
 
             {/* Primary CTA */}
-            <div className="flex flex-col gap-3 w-full max-w-full [@media(max-height:660px)]:gap-2">
+            <div className="flex flex-col gap-3 w-full md:w-auto md:max-w-md [@media(max-height:660px)]:gap-2">
               <LearnEntryButton
                 variant="secondary"
                 size="lg"
-                className="w-full group relative animate-bounce-few overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-100"
+                className="w-full md:w-auto md:min-w-[280px] group relative animate-bounce-few overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-100"
                 trackSource="home_hero"
               >
                 כניסה ללומדה
               </LearnEntryButton>
             </div>
 
-            {/* Hero devices: under CTA for sm–below-md; lg column handles desktop */}
-            <div
-              className="hidden sm:block lg:hidden relative w-full min-w-0 aspect-[2/1] isolate overflow-visible mt-2"
-              aria-hidden
-            >
-              <LearningPreviewDeviceStack variant="hero" />
-            </div>
           </div>
 
+          {/* Mobile/tablet image — visible up to lg, replaces the device stack */}
+          <div className="block lg:hidden relative w-full h-[220px] sm:h-[280px] md:h-[340px] order-2 -my-2" aria-hidden>
+            <Image
+              src="/lomda/cool-BG-smarti.png"
+              alt="מסכי לומדת סמארטי"
+              fill
+              priority
+              sizes="(max-width: 1024px) 100vw, 0vw"
+              className="object-contain"
+            />
+          </div>
+
+          {/* Desktop device stack — visible from lg */}
           <div
             className="hidden lg:block relative w-full min-w-0 order-2 isolate overflow-visible lg:pt-4 lg:pb-4 xl:pb-5"
             aria-hidden

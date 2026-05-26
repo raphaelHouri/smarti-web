@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { ShieldCheck, Sparkles, Layers, BarChart2 } from "lucide-react";
 import { LearnEntryButton } from "./LearnEntryButton";
 import Image from "next/image";
@@ -61,21 +60,15 @@ export function LomdaWelcomeHero({ whatsappGroupUrl }: { whatsappGroupUrl?: stri
               וחוברות מודפסות שמשתלבות עם המסך.
             </p>
 
-            <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 w-full sm:max-w-md mt-2 mx-auto lg:mx-0">
+            <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 w-full mt-2 mx-auto lg:mx-0">
               <LearnEntryButton
                 variant="secondary"
                 size="lg"
-                className="flex-1 group relative animate-bounce-few overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-100 py-3.5 text-lg"
+                className="w-full sm:w-auto px-12 group relative animate-bounce-few overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-lg active:scale-100 py-3.5 text-lg"
                 trackSource="lomda_hero"
               >
                 כניסה ללומדה
               </LearnEntryButton>
-              <Link
-                href="#pricing"
-                className="flex-1 inline-flex items-center justify-center rounded-xl border-2 border-emerald-600 dark:border-emerald-500 text-emerald-700 dark:text-emerald-400 font-bold text-base px-6 py-3.5 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors"
-              >
-                ראו מסלולים
-              </Link>
             </div>
 
             {whatsappGroupUrl && (

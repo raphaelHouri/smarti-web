@@ -88,7 +88,8 @@ export function LomdaPricingClient({ plans }: { plans: MarketingPlansByTypeAndSt
         <div className="flex-1 w-full flex flex-col gap-6">
           {/* System Plans Grid */}
           <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6 items-stretch">
-            {systemPlans.map((plan, i) => {
+            {[...systemPlans].reverse().map((plan, reversedIndex) => {
+              const i = systemPlans.length - 1 - reversedIndex;
               const isPopular = i === popularIndex;
               
               let displayPrice = plan.price;
