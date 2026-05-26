@@ -5,13 +5,13 @@ export const sendEmail = (email: string, htmlContent: string, subject: string, t
     return new Promise(async (resolve, reject) => {
         try {
             const form = new FormData();
-            form.append('from', 'mehunanim@mg.smarti-kids.co.il');
+            form.append('from', 'mehunanim@mg.supergifted.co.il');
             form.append('to', email);
             form.append('subject', subject);
             form.append('text', textContent || "");
             form.append('html', htmlContent);
 
-            const url = `https://api.eu.mailgun.net/v3/mg.smarti-kids.co.il/messages`;
+            const url = `https://api.eu.mailgun.net/v3/mg.supergifted.co.il/messages`;
             const credentials = Buffer.from(process.env.MAILGUM_TOKEN || "").toString('base64');
 
             const resp = await fetch(url, {
