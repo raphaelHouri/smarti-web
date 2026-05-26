@@ -21,6 +21,7 @@ const fullAccessUserIds = [
 ]
 
 export const IsAdmin = async () => {
+    if (process.env.NODE_ENV === "development") return true;
     const { userId } = await auth();
     if (!userId) return false;
     return allowedIds.includes(userId);

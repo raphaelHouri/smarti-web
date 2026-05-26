@@ -62,12 +62,19 @@ import { SystemConfigList } from "./systemConfig/list";
 import { SystemConfigEdit } from "./systemConfig/edit";
 import { SystemConfigShow } from "./systemConfig/show";
 import { SystemConfigCreate } from "./systemConfig/create";
+import GrantSubscriptionPage from "./grant-subscription/GrantSubscriptionPage";
+import { AdminAppLayout } from "./admin-app-layout";
+import AdminDashboardHome from "./admin-dashboard-home";
 
 const dataProvider = simpleRestProvider("/api");
 
 const App = () => {
     return (
-        <Admin dataProvider={dataProvider}>
+        <Admin
+            dataProvider={dataProvider}
+            layout={AdminAppLayout}
+            dashboard={AdminDashboardHome}
+        >
 
 
             <Resource
@@ -210,6 +217,7 @@ const App = () => {
             />
             <CustomRoutes>
                 <Route path="/organization-analytics" element={<AnalyticsWrapper />} />
+                <Route path="/grant-subscription" element={<GrantSubscriptionPage />} />
             </CustomRoutes>
         </Admin>
     );
