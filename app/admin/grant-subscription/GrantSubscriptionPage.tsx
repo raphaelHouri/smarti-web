@@ -70,6 +70,8 @@ type GrantSuccess = {
     emailSent?: boolean;
     deliveryEmail?: string;
     isBookGrant?: boolean;
+    books?: { productId: string; filename: string; downloadLink: string }[];
+    bookPassword?: string;
 };
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
@@ -521,6 +523,48 @@ export default function GrantSubscriptionPage() {
                                 <Typography variant="body2">
                                     <strong>אימייל נשלח ל:</strong> {success.deliveryEmail}
                                 </Typography>
+                            ) : null}
+                            {success.isBookGrant && success.bookPassword ? (
+                                <Box
+                                    sx={{
+                                        bgcolor: "action.hover",
+                                        border: "1px solid",
+                                        borderColor: "divider",
+                                        borderRadius: 1,
+                                        p: 1.5,
+                                    }}
+                                >
+                                    <Typography variant="body2" fontWeight={600} gutterBottom>
+                                        סיסמה לפתיחת הקובץ:
+                                    </Typography>
+                                    <Typography
+                                        variant="body1"
+                                        fontFamily="monospace"
+                                        sx={{ letterSpacing: 1 }}
+                                    >
+                                        {success.bookPassword}
+                                    </Typography>
+                                </Box>
+                            ) : null}
+                            {success.isBookGrant && success.books && success.books.length > 0 ? (
+                                <Box>
+                                    <Typography variant="body2" fontWeight={600} gutterBottom>
+                                        קישורי הורדה:
+                                    </Typography>
+                                    <Stack spacing={0.75}>
+                                        {success.books.map((book) => (
+                                            <Typography key={book.productId} variant="body2">
+                                                <Link
+                                                    href={book.downloadLink}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                >
+                                                    {book.filename}
+                                                </Link>
+                                            </Typography>
+                                        ))}
+                                    </Stack>
+                                </Box>
                             ) : null}
                             <Box>
                                 <Link

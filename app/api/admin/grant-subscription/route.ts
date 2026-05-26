@@ -343,6 +343,8 @@ export async function POST(req: Request) {
                 deliveryEmail: bookResult.deliveryEmail,
                 emailSent: true,
                 isBookGrant: true,
+                bookPassword: body.bookPassword as string,
+                books: bookResult.books,
                 updatedSubscriptions: bookResult.books.map((book) => ({
                     productId: book.productId,
                     newSystemUntil: bookResult.newSystemUntil.toISOString(),

@@ -63,6 +63,11 @@ export async function grantBookPlanAdmin(input: AdminBookGrantInput): Promise<Ad
     const books: AdminBookGrantResult["books"] = [];
     let latestExpiry = new Date(0);
 
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+    if (!appUrl) {
+        throw new Error("Server misconfigured: NEXT_PUBLIC_APP_URL");
+    }
+
     for (const productId of input.productIds) {
         const product = await getProductById(productId);
         if (!product) {
@@ -83,7 +88,6 @@ export async function grantBookPlanAdmin(input: AdminBookGrantInput): Promise<Ad
         }
 
         const filename = `${getFileName(input.userId, product.productType)}.pdf`;
-        const downloadLink = `https://storage.googleapis.com/${gcsBucket}/${filename}?authuser=3`;
 
         const existingBook = await db.query.bookPurchases.findFirst({
             where: and(
@@ -103,6 +107,7 @@ export async function grantBookPlanAdmin(input: AdminBookGrantInput): Promise<Ad
                     vatId: input.bookPassword,
                     validUntil,
                     paymentTransactionId: transaction.id,
+                    generated: false,
                     updatedAt: new Date(),
                 })
                 .where(eq(bookPurchases.id, existingBook.id));
@@ -145,19 +150,40 @@ export async function grantBookPlanAdmin(input: AdminBookGrantInput): Promise<Ad
             });
         }
 
+        // Generate the PDF before sending the email so the file actually exists
+        const generateResp = await fetch(
+            `${appUrl}/api/book/generate?userId=${encodeURIComponent(input.userId)}&productId=${encodeURIComponent(productId)}`
+        );
+        if (!generateResp.ok) {
+            throw new Error(`Book generation failed: ${generateResp.status}`);
+        }
+
+        // Re-fetch the book purchase to get the actual filename/bucket written by the generate route
+        const generatedBook = await db.query.bookPurchases.findFirst({
+            where: and(
+                eq(bookPurchases.userId, input.userId),
+                eq(bookPurchases.productId, productId)
+            ),
+            orderBy: (bp, { desc }) => [desc(bp.createdAt)],
+        });
+
+        const actualFilename = generatedBook?.filename ?? filename;
+        const actualBucket = generatedBook?.gcsBucket ?? gcsBucket;
+        const downloadLink = `https://storage.googleapis.com/${actualBucket}/${actualFilename}`;
+
         await sendEmail(
             input.deliveryEmail,
             downloadReadyHtml({
                 recipient: input.studentName,
                 downloadLink,
-                filename,
+                filename: actualFilename,
                 password: input.bookPassword,
                 expiresAt: validUntil.toISOString(),
             }),
             "הקובץ שלך מוכן להורדה"
         );
 
-        books.push({ productId, filename, downloadLink });
+        books.push({ productId, filename: actualFilename, downloadLink });
     }
 
     await db
