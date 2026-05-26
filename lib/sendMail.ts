@@ -35,4 +35,3 @@ export const sendEmail = (email: string, htmlContent: string, subject: string, t
     });
 };
 
-
