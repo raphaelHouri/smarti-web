@@ -31,14 +31,19 @@ export function buildWebSiteJsonLd() {
     description: "פלטפורמה להכנה למבחני מחוננים ומצטיינים לכיתות ב–ג",
     // llms.txt for AI consumption
     significantLink: [`${SITE_URL}/llms.txt`, `${SITE_URL}/llms-full.txt`],
-    potentialAction: {
-      "@type": "SearchAction",
-      target: {
-        "@type": "EntryPoint",
-        urlTemplate: `${SITE_URL}/learn?q={search_term_string}`,
-      },
-      "query-input": "required name=search_term_string",
-    },
+  };
+}
+
+export function buildSiteNavigationJsonLd(
+  items: { name: string; path: string }[],
+) {
+  return {
+    "@context": "https://schema.org",
+    "@graph": items.map((item) => ({
+      "@type": "SiteNavigationElement",
+      name: item.name,
+      url: `${SITE_URL}${item.path}`,
+    })),
   };
 }
 

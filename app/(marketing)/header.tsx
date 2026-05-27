@@ -3,68 +3,16 @@ import Link from "next/link";
 import { LearnEntryButton } from "./_components/LearnEntryButton";
 import { ModeToggle } from "@/components/mode-toggle";
 import { AuthButtons } from "@/components/auth-buttons";
-import { NavDropdown, type NavItem } from "./_components/NavDropdown";
+import { NavDropdown } from "./_components/NavDropdown";
 import { MobileMarketingNav } from "./_components/MobileMarketingNav";
 import { MobileHeaderLogo } from "./_components/MobileHeaderLogo";
+import { marketingNavItems } from "./_data/marketingNav";
 
 const WHATSAPP_URL =
   "https://wa.me/972586519423?text=" +
   encodeURIComponent("שלום, אשמח לקבל מידע על ההכנה למבחן מחוננים");
 
-const navItems: NavItem[] = [
-  {
-    label: "שלב א׳",
-    href: "/shlab-a",
-    subItems: [
-      { label: "מידע על שלב א׳", href: "/shlab-a#info" },
-      { label: "שאלות לדוגמה שלב א׳", href: "/shlab-a#examples" },
-      { label: "מבחן לדוגמא שלב א׳", href: "/shlab-a#practice" },
-    ],
-  },
-  {
-    label: "שלב ב׳",
-    href: "/shlab-b",
-    subItems: [
-      { label: "מידע על שלב ב׳", href: "/shlab-b#info" },
-      { label: "שאלות לדוגמה שלב ב׳", href: "/shlab-b#examples" },
-      { label: "מבחן לדוגמא שלב ב׳", href: "/shlab-b#practice" },
-    ],
-  },
-  {
-    label: "כיתה ג׳ — שלב ב׳",
-    href: "/kita-gimel",
-    subItems: [
-      { label: "מידע על כיתה ג׳", href: "/kita-gimel#info" },
-      { label: "שאלות לדוגמה כיתה ג׳", href: "/kita-gimel#examples" },
-      { label: "מבחן לדוגמא כיתה ג׳", href: "/kita-gimel#practice" },
-    ],
-  },
-  {
-    label: "מדריכים",
-    href: "/madriche-holim",
-    subItems: [
-      { label: "שאלות ותשובות (FAQ)", href: "/faq" },
-      { label: "מדריך הורים", href: "/madriche-holim" },
-      { label: "תרגול וסימולציה", href: "/tarugol-ve-simulatzia" },
-      { label: "שאלות לדוגמה", href: "/sheelot-dugma" },
-      { label: "מחוננים ומצטיינים", href: "/mitztaynim" },
-      { label: "אחרי המבחן", href: "/acharei-mevchan" },
-      { label: "מקורות משרד החינוך", href: "/misgeret-mechonanim" },
-    ],
-  },
-  {
-    label: "חומרי לימוד",
-    href: "/shop",
-    subItems: [
-      { label: "חוברות מבחנים", href: "/shop/book" },
-      { label: "ערכת מערכת מלאה", href: "/shop/system" },
-    ],
-  },
-  {
-    label: "הלומדה שלנו",
-    href: "/lomda",
-  },
-];
+const navItems = marketingNavItems;
 
 const HeaderPage = () => {
   return (

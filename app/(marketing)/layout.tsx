@@ -1,6 +1,7 @@
 import ConnectJson from "./connect";
 import FooterPage from "./footer";
 import HeaderPage from "./header";
+import { MarketingSiteNavJsonLd } from "./_components/MarketingSiteNavJsonLd";
 
 interface MarketingLayoutProps {
   children: React.ReactNode;
@@ -9,6 +10,7 @@ interface MarketingLayoutProps {
 const MarketingLayout = ({ children }: MarketingLayoutProps) => {
   return (
     <div className="min-h-screen flex flex-col w-full">
+      <MarketingSiteNavJsonLd />
       <HeaderPage />
       <main className="flex-1 flex flex-col min-w-0 w-full">
         {children}
