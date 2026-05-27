@@ -2,7 +2,7 @@
 
 import { ErrorFallback } from "@/components/error-fallback";
 
-export default function LearnError({
+export default function MainError({
     error,
     reset,
 }: {

@@ -61,7 +61,7 @@ export function MarketingAuthButtons() {
                         asChild
                     >
                         <Link href="/learn" className="flex items-center justify-center gap-2">
-                            <span>התחל ללמוד</span>
+                            <span>התחילו ללמוד</span>
                         </Link>
                     </Button>
                 </SignedIn>
