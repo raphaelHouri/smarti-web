@@ -230,6 +230,21 @@ export const paymentTransactionRelations = relations(paymentTransactions, ({ one
     bookPurchases: many(bookPurchases),
 }));
 
+export const bookPurchaseRelations = relations(bookPurchases, ({ one }) => ({
+    product: one(products, {
+        fields: [bookPurchases.productId],
+        references: [products.id],
+    }),
+    user: one(users, {
+        fields: [bookPurchases.userId],
+        references: [users.id],
+    }),
+    paymentTransaction: one(paymentTransactions, {
+        fields: [bookPurchases.paymentTransactionId],
+        references: [paymentTransactions.id],
+    }),
+}));
+
 
 export const userSettings = pgTable("user_settings", {
     id: uuid("id").primaryKey(),

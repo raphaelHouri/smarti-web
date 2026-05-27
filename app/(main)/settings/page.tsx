@@ -2,7 +2,7 @@
 import FeedWrapper from "@/components/FeedWrapper";
 import StickyWrapper from "@/components/sticky-wrapper";
 import { UserProgress } from "@/components/UserProgress";
-import { getUserProgress, getUserSubscriptions, getUserSettingsById, getUserByAuthId, getUserSystemStep, getUserSubscriptionDetails } from "@/db/queries";
+import { getUserProgress, getUserSubscriptions, getUserSettingsById, getUserByAuthId, getUserSystemStep, getUserSubscriptionDetails, getUserBookPurchases } from "@/db/queries";
 import { checkIsPro } from "@/lib/server-utils";
 import { redirect } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
@@ -35,13 +35,15 @@ const SettingsPage = async () => {
     const currentUserData = getUserByAuthId(userId);
     const currentUserSettingsData = getUserSettingsById(userId);
     const subscriptionDetailsData = getUserSubscriptionDetails();
+    const bookPurchasesData = getUserBookPurchases();
 
-    const [userProgress, userSubscription, currentUser, currentUserSettings, subscriptionDetails] = await Promise.all([
+    const [userProgress, userSubscription, currentUser, currentUserSettings, subscriptionDetails, bookPurchases] = await Promise.all([
         userProgressData,
         userSubscriptionData,
         currentUserData,
         currentUserSettingsData,
         subscriptionDetailsData,
+        bookPurchasesData,
     ]);
 
     if (!userProgress || !userProgress.settings?.lessonCategoryId) {
@@ -97,7 +99,10 @@ const SettingsPage = async () => {
                             initialAvatar={currentUserSettings?.avatar}
                         />
                         <div className="mt-6">
-                            <SubscriptionInfoCard subscriptions={subscriptionDetails} />
+                            <SubscriptionInfoCard
+                                subscriptions={subscriptionDetails}
+                                bookPurchases={bookPurchases}
+                            />
                         </div>
                     </div>
                 </div>

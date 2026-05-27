@@ -1,5 +1,6 @@
 import { Separator } from "@/components/ui/separator";
 import { CreditCard } from "lucide-react";
+import { BookPurchasePanel, type BookPurchaseDetail } from "./BookPurchasePanel";
 
 const PACKAGE_TYPE_LABELS: Record<string, string> = {
     system: "מערכת",
@@ -8,6 +9,7 @@ const PACKAGE_TYPE_LABELS: Record<string, string> = {
 
 interface SubscriptionDetail {
     id: string;
+    productId: string;
     systemUntil: Date | null;
     systemStep: number;
     createdAt: Date | null;
@@ -20,6 +22,7 @@ interface SubscriptionDetail {
 
 interface SubscriptionInfoCardProps {
     subscriptions: SubscriptionDetail[];
+    bookPurchases: BookPurchaseDetail[];
 }
 
 function formatDate(date: Date | null): string {
@@ -36,7 +39,11 @@ function isActive(systemUntil: Date | null): boolean {
     return new Date(systemUntil).getTime() > Date.now();
 }
 
-export function SubscriptionInfoCard({ subscriptions }: SubscriptionInfoCardProps) {
+export function SubscriptionInfoCard({ subscriptions, bookPurchases }: SubscriptionInfoCardProps) {
+    const bookByProductId = new Map(
+        bookPurchases.map((book) => [book.productId, book])
+    );
+
     return (
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
             <h2 className="text-xl font-semibold text-neutral-800 dark:text-slate-200 mb-4 flex items-center gap-2">
@@ -55,6 +62,10 @@ export function SubscriptionInfoCard({ subscriptions }: SubscriptionInfoCardProp
                 <div className="space-y-4">
                     {subscriptions.map((sub) => {
                         const active = isActive(sub.systemUntil);
+                        const book = sub.product.packageType === "book"
+                            ? bookByProductId.get(sub.productId)
+                            : undefined;
+
                         return (
                             <div
                                 key={sub.id}
@@ -83,6 +94,8 @@ export function SubscriptionInfoCard({ subscriptions }: SubscriptionInfoCardProp
                                         בתוקף עד: {formatDate(sub.systemUntil)}
                                     </span>
                                 </div>
+
+                                {book ? <BookPurchasePanel book={book} /> : null}
                             </div>
                         );
                     })}

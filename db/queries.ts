@@ -1126,6 +1126,23 @@ export const getUserSubscriptionDetails = cache(async () => {
     return subs;
 });
 
+export const getUserBookPurchases = cache(async () => {
+    const { userId } = await auth();
+    if (!userId) return [];
+
+    const now = new Date();
+    return db.query.bookPurchases.findMany({
+        where: (bp, { eq, gt, and }) =>
+            and(eq(bp.userId, userId), gt(bp.validUntil, now)),
+        with: {
+            product: {
+                columns: { name: true },
+            },
+        },
+        orderBy: (bp, { desc }) => [desc(bp.createdAt)],
+    });
+});
+
 async function getLessonQuestionGroupsWithFirstQuestionCategorySingleQuery(lessonId: string) {
     const result = await db.select({
         id: lessonQuestionGroups.id,
