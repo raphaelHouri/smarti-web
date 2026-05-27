@@ -5,7 +5,7 @@ export const sendEmail = (email: string, htmlContent: string, subject: string, t
     return new Promise(async (resolve, reject) => {
         try {
             const form = new FormData();
-            form.append('from', 'mehunanim@mg.smarti-kids.co.il');
+            form.append('from', 'smarti-kids@mg.smarti-kids.co.il');
             form.append('to', email);
             form.append('subject', subject);
             form.append('text', textContent || "");

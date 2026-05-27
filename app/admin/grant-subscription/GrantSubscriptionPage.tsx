@@ -59,6 +59,7 @@ type PlanRecord = {
     packageType: "system" | "book";
     productsIds: string[] | null;
     isActive: boolean;
+    systemStep: number;
 };
 
 type GrantSuccess = {
@@ -919,7 +920,11 @@ export default function GrantSubscriptionPage() {
                                             >
                                                 {plans.map((plan) => (
                                                     <MenuItem key={plan.id} value={plan.id}>
-                                                        {plan.name} — {plan.days} ימים
+                                                        {plan.name}
+                                                        {plan.packageType === "system"
+                                                            ? ` — שלב ${plan.systemStep}`
+                                                            : ""}
+                                                        {" "}— {plan.days} ימים
                                                     </MenuItem>
                                                 ))}
                                             </Select>
@@ -945,6 +950,14 @@ export default function GrantSubscriptionPage() {
                                                                 size="small"
                                                                 label={packageTypeLabel(selectedPlan.packageType)}
                                                             />
+                                                            {selectedPlan.packageType === "system" ? (
+                                                                <Chip
+                                                                    size="small"
+                                                                    color="primary"
+                                                                    label={`שלב ${selectedPlan.systemStep}`}
+                                                                    title="שלב מערכת הלמידה שהמנוי מעניק גישה אליו"
+                                                                />
+                                                            ) : null}
                                                             <Chip
                                                                 size="small"
                                                                 variant="outlined"
@@ -1067,6 +1080,51 @@ export default function GrantSubscriptionPage() {
                                 <Alert severity="error" sx={{ mb: 2 }}>
                                     {submitError}
                                 </Alert>
+                            ) : null}
+
+                            {submitLoading && selectedPlan.packageType === "book" ? (
+                                <Box
+                                    sx={{
+                                        position: "fixed",
+                                        inset: 0,
+                                        zIndex: 9999,
+                                        bgcolor: "rgba(0,0,0,0.75)",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        gap: 3,
+                                        p: 4,
+                                    }}
+                                >
+                                    <CircularProgress size={64} sx={{ color: "#fff" }} />
+                                    <Typography
+                                        variant="h4"
+                                        fontWeight={700}
+                                        color="#fff"
+                                        textAlign="center"
+                                    >
+                                        מעבד את החוברת...
+                                    </Typography>
+                                    <Typography
+                                        variant="h6"
+                                        color="warning.light"
+                                        fontWeight={600}
+                                        textAlign="center"
+                                        sx={{
+                                            border: "2px solid",
+                                            borderColor: "warning.light",
+                                            borderRadius: 2,
+                                            px: 4,
+                                            py: 2,
+                                        }}
+                                    >
+                                        ⚠️ אל תצא מהדף עד שהתהליך יסתיים
+                                    </Typography>
+                                    <Typography variant="body1" color="grey.300" textAlign="center">
+                                        יוצר את קובץ ה-PDF, מעלה לשרת ושולח אימייל — אנא המתן
+                                    </Typography>
+                                </Box>
                             ) : null}
 
                             <Stack direction="row" spacing={1.5} alignItems="center">
