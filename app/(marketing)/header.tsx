@@ -6,7 +6,7 @@ import { AuthButtons } from "@/components/auth-buttons";
 import { NavDropdown } from "./_components/NavDropdown";
 import { MobileMarketingNav } from "./_components/MobileMarketingNav";
 import { MobileHeaderLogo } from "./_components/MobileHeaderLogo";
-import { marketingNavItems } from "./_data/marketingNav";
+import { marketingNavItems } from "@/app/(marketing)/_data/marketingNav";
 
 const WHATSAPP_URL =
   "https://wa.me/972586519423?text=" +

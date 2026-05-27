@@ -1,4 +1,8 @@
-import type { NavItem } from "../_components/NavDropdown";
+import type {
+  MarketingFooterSection,
+  MarketingSiteNavLink,
+  NavItem,
+} from "./types";
 
 /**
  * Primary marketing navigation. Shared between the desktop header dropdowns and
@@ -59,10 +63,7 @@ export const marketingNavItems: NavItem[] = [
   },
 ];
 
-export type MarketingFooterSection = {
-  title: string;
-  links: { label: string; href: string }[];
-};
+export type { MarketingFooterSection, MarketingSiteNavLink, NavItem } from "./types";
 
 /**
  * Footer navigation mirrors the header taxonomy. Repeating these full-page URLs
@@ -96,6 +97,7 @@ export const marketingFooterSections: MarketingFooterSection[] = [
       { label: "הלומדה שלנו", href: "/lomda" },
       { label: "חוברות מבחנים", href: "/shop/book" },
       { label: "ערכת מערכת מלאה", href: "/shop/system" },
+      { label: "תנאי שימוש ופרטיות", href: "/policy" },
     ],
   },
 ];
@@ -105,7 +107,7 @@ export const marketingFooterSections: MarketingFooterSection[] = [
  * Used to emit `SiteNavigationElement` JSON-LD on every marketing page.
  * Anchors (`#section`) are intentionally omitted — Sitelinks point to full pages.
  */
-export const marketingSiteNavLinks: { name: string; path: string }[] = [
+export const marketingSiteNavLinks: MarketingSiteNavLink[] = [
   { name: "בית", path: "/" },
   { name: "מבחן מחוננים שלב א׳", path: "/shlab-a" },
   { name: "מבחן מחוננים שלב ב׳", path: "/shlab-b" },

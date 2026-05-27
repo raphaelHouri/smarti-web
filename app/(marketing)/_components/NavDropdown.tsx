@@ -5,16 +5,9 @@ import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LearnEntryButton } from "./LearnEntryButton";
+import type { NavItem } from "../_data/types";
 
-export type NavSubItem = { label: string; href: string };
-
-export type NavItem = {
-  label: string;
-  href: string;
-  subItems?: NavSubItem[];
-  /** Mobile drawer / compact CTA copy for `/learn`; desktop nav keeps `label`. */
-  learnCtaLabel?: string;
-};
+export type { NavItem, NavSubItem } from "../_data/types";
 
 export function NavDropdown({ item }: { item: NavItem }) {
   const [open, setOpen] = useState(false);
