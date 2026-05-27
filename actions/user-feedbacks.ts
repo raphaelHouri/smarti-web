@@ -3,6 +3,7 @@
 import { auth } from "@clerk/nextjs/server"; // Assuming Clerk for authentication
 import db from "@/db/drizzle"; // Your Drizzle DB instance
 import { feedbacks } from "@/db/schemaSmarti"; // Assuming your feedback schema is her
+import { getUserSystemStep } from "@/db/queries";
 
 // Define the interface for the parameters this action will receive
 interface SubmitFeedbacksParams {
@@ -24,6 +25,8 @@ export async function submitFeedback(params: SubmitFeedbacksParams) {
     }
 
     try {
+        const systemStep = await getUserSystemStep(userId);
+
         await db.insert(feedbacks).values({
             id: crypto.randomUUID(), // Generate a UUID for the primary key
             userId: userId, // Link to the user who submitted it
@@ -32,6 +35,7 @@ export async function submitFeedback(params: SubmitFeedbacksParams) {
             rate: params.rating, // Store the rating as a string
             title: params.title,
             description: params.description,
+            systemStep,
             createdAt: new Date(), // Automatically set the createdAt timestamp
         });
 
