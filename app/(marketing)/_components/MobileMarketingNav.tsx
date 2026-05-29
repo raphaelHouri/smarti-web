@@ -151,17 +151,28 @@ export function MobileMarketingNav({ items }: { items: NavItem[] }) {
             {items.map((item) => (
               <div
                 key={`${item.href}-${item.label}`}
-                className="border-b border-slate-50 dark:border-slate-800/80 last:border-b-0"
+                className="border-b border-slate-100 dark:border-slate-800/80 last:border-b-0"
               >
                 {item.subItems?.length ? (
                   <>
-                    <div className="flex items-stretch">
+                    {/* Row: label link + chevron toggle */}
+                    <div
+                      className={cn(
+                        "flex items-stretch transition-colors duration-150",
+                        expanded === item.label
+                          ? "bg-emerald-50 dark:bg-emerald-950/30"
+                          : "hover:bg-slate-50 dark:hover:bg-slate-800/60"
+                      )}
+                    >
                       <Link
                         href={item.href}
                         onClick={closeDrawer}
                         className={cn(
-                          "flex-1 px-4 py-3.5 text-sm font-medium text-neutral-700 dark:text-slate-300",
-                          "hover:bg-slate-50 dark:hover:bg-slate-800 active:bg-slate-100 transition-colors min-h-[48px] flex items-center leading-snug"
+                          "flex-1 px-4 py-3.5 text-sm font-medium leading-snug",
+                          "min-h-[48px] flex items-center transition-colors duration-150",
+                          expanded === item.label
+                            ? "text-emerald-700 dark:text-emerald-400"
+                            : "text-neutral-700 dark:text-slate-300"
                         )}
                       >
                         {item.label}
@@ -177,49 +188,72 @@ export function MobileMarketingNav({ items }: { items: NavItem[] }) {
                             : `פתח תת־תפריט ${item.label}`
                         }
                         className={cn(
-                          "shrink-0 px-3 flex items-center justify-center min-w-[48px]",
-                          "border-s border-slate-100 dark:border-slate-800",
-                          "hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                          "shrink-0 px-4 flex items-center justify-center min-w-[52px]",
+                          "border-s border-slate-100 dark:border-slate-800 transition-colors duration-150",
+                          expanded === item.label
+                            ? "text-emerald-600 dark:text-emerald-400 border-s-emerald-200 dark:border-s-emerald-800/50"
+                            : "text-neutral-400 dark:text-slate-500"
                         )}
                       >
                         <ChevronDown
                           className={cn(
-                            "w-4 h-4 text-neutral-400 transition-transform duration-200",
-                            expanded === item.label && "-rotate-180"
+                            "w-4 h-4 transition-transform duration-200 ease-out",
+                            expanded === item.label && "rotate-180"
                           )}
                           aria-hidden
                         />
                       </button>
                     </div>
-                    {expanded === item.label && (
-                      <div
-                        id={submenuId(item.label)}
-                        role="region"
-                        className="bg-slate-50/95 dark:bg-slate-900/60 border-t border-slate-100 dark:border-slate-800"
-                      >
-                        {item.subItems.map((sub) => (
-                          <Link
-                            key={sub.href}
-                            href={sub.href}
-                            onClick={closeDrawer}
-                            className={cn(
-                              "block px-6 py-3 text-sm text-neutral-600 dark:text-slate-400",
-                              "hover:text-green-600 dark:hover:text-green-400 hover:bg-white/60 dark:hover:bg-slate-800/70",
-                              "min-h-[44px] flex items-center leading-snug"
-                            )}
-                          >
-                            {sub.label}
-                          </Link>
-                        ))}
+
+                    {/* Submenu — animated height via grid trick */}
+                    <div
+                      id={submenuId(item.label)}
+                      role="region"
+                      className={cn(
+                        "grid transition-all duration-200 ease-out",
+                        expanded === item.label ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+                      )}
+                    >
+                      <div className="overflow-hidden">
+                        {/* Accent bar */}
+                        <div
+                          className={cn(
+                            "h-[2px] w-full bg-gradient-to-l from-emerald-400 to-green-500 transition-opacity duration-200",
+                            expanded === item.label ? "opacity-100" : "opacity-0"
+                          )}
+                          aria-hidden
+                        />
+                        <div className="bg-slate-50/80 dark:bg-slate-900/60 py-1">
+                          {item.subItems.map((sub) => (
+                            <Link
+                              key={sub.href}
+                              href={sub.href}
+                              onClick={closeDrawer}
+                              className={cn(
+                                "group flex items-center gap-2.5 px-6 py-2.5 text-sm",
+                                "min-h-[44px] leading-snug transition-colors duration-100",
+                                "text-neutral-600 dark:text-slate-400",
+                                "hover:text-emerald-700 dark:hover:text-emerald-300",
+                                "hover:bg-white/80 dark:hover:bg-slate-800/60"
+                              )}
+                            >
+                              <span
+                                className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600 group-hover:bg-emerald-400 transition-colors shrink-0"
+                                aria-hidden
+                              />
+                              {sub.label}
+                            </Link>
+                          ))}
+                        </div>
                       </div>
-                    )}
+                    </div>
                   </>
                 ) : item.href === "/learn" ? (
                   <LearnEntryButton
                     variant="ghost"
                     className={cn(
                       "normal-case block px-4 py-3.5 text-sm font-medium text-neutral-700 dark:text-slate-300 w-full rounded-none h-auto text-right",
-                      "hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-green-600 dark:hover:text-green-400 transition-colors min-h-[48px] justify-start"
+                      "hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors min-h-[48px] justify-start"
                     )}
                     trackSource="nav_mobile"
                     onDialogOpenChange={onLearnEntryDialogOpenChange}
@@ -232,7 +266,8 @@ export function MobileMarketingNav({ items }: { items: NavItem[] }) {
                     onClick={closeDrawer}
                     className={cn(
                       "block px-4 py-3.5 text-sm font-medium text-neutral-700 dark:text-slate-300",
-                      "hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-green-600 transition-colors min-h-[48px] flex items-center"
+                      "hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-emerald-600 dark:hover:text-emerald-400",
+                      "transition-colors min-h-[48px] flex items-center"
                     )}
                   >
                     {item.label}
